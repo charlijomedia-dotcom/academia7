@@ -26,15 +26,20 @@ Done on the initial estimation window only:
 - nonlinear structural tests.
 
 ### Parameter re-estimation
-Done on the scheduled rolling refit calendar:
-
-- monthly every 3 months;
-- quarterly every 4 quarters.
+Done at **every forecast origin** using the current rolling estimation window.
 
 ### Forecast production
-Done at every forecast origin using the most recently approved parameter fit and currently available lagged target observations.
+Done at every forecast origin from that origin-specific parameter fit and the information available at that date.
 
-This is the main reason the new pipeline should be much lighter than the previous every-origin full re-search/re-estimation architecture.
+The new pipeline is still expected to be much lighter than the previous design because:
+
+- discrete specification search is not repeated at every origin;
+- MSSTAR is removed;
+- MSAR is more parsimonious;
+- nonlinear fits use warm starts;
+- valid fits are cached;
+- stages are checkpointed;
+- independent tasks can run in parallel.
 
 # 3. Mandatory module structure
 
@@ -110,8 +115,8 @@ Safe parallel units include:
 
 - independent target series;
 - independent model families;
-- bootstrap replications;
-- robustness specifications.
+- robustness specifications;
+- independent model/series/horizon combinations.
 
 Do not parallelize writes to the same output path.
 
@@ -140,7 +145,7 @@ Provide a fast `--smoke-test` mode using:
 
 - one monthly target;
 - one quarterly target;
-- reduced bootstrap replications;
+- simplified diagnostic settings where explicitly allowed by smoke-test configuration;
 - short OOS block;
 - all pipeline stages.
 
@@ -156,7 +161,7 @@ must use:
 
 - frozen data;
 - approved baseline specifications;
-- scheduled refit;
+- every-origin rolling re-estimation;
 - all required outputs.
 
 No internet retrieval in the default run.
@@ -179,18 +184,7 @@ Robustness outputs must be stored separately from baseline outputs.
 
 A robustness model may not overwrite or silently become the baseline because it performs better.
 
-# 13. Every-origin robustness
-
-The expensive every-origin re-estimation is restricted to:
-
-- h=1;
-- final 120 monthly origins;
-- final 40 quarterly origins;
-- fixed model specifications.
-
-This directly tests the effect of the efficient baseline refit schedule while preventing the old full-sample design from dominating runtime.
-
-# 14. Failure behavior
+# 13. Failure behavior
 
 A failed nonlinear model must:
 
@@ -199,7 +193,7 @@ A failed nonlinear model must:
 - allow other independent models to continue;
 - never trigger a silent change in parameterization.
 
-# 15. Reproducibility tests
+# 14. Reproducibility tests
 
 At minimum implement tests for:
 
@@ -209,11 +203,11 @@ At minimum implement tests for:
 - no future data in predictors;
 - forecast target alignment;
 - USREC used only for evaluation;
-- scheduled-refit calendar;
+- every-origin rolling re-estimation alignment;
 - deterministic cache key;
 - reconstructed level forecast when a rate is modeled in differences.
 
-# 16. Part 6 starting condition
+# 15. Part 6 starting condition
 
 Before coding, Claude must read Parts 1–5 and produce an implementation plan.
 
