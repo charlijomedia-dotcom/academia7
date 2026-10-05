@@ -120,6 +120,10 @@ The jury specifically questioned unemployment and the policy rate in levels. The
 
 ## 3.2 Tests used
 
+For every final target series, report the required tests on the **full frozen sample**.
+
+For UNRATE and FEDFUNDS, the same ADF/KPSS/Zivot-Andrews protocol is also run on the **initial estimation window**. The initial-window evidence determines the baseline forecasting transformation. The full-sample evidence is used to assess whether that transformation remains defensible over the complete thesis sample. This avoids choosing the pseudo-out-of-sample transformation using future observations.
+
 For every final target series, report:
 
 ### Augmented Dickey-Fuller (ADF)
@@ -162,13 +166,18 @@ This demonstrates rather than assumes why the growth/inflation transformation is
 
 ## 3.4 Predeclared decision rule for unemployment and policy rate
 
-For each disputed level series:
+Apply this rule first to the **initial estimation window** for each disputed level series:
 
 1. **Clear level stationarity:** ADF rejects unit root and KPSS does not reject stationarity → keep the level as baseline.
 2. **Clear nonstationarity:** ADF does not reject and KPSS rejects → use first difference as baseline.
 3. **ADF/KPSS disagreement:** use Zivot-Andrews as tie-breaker:
    - ZA rejects unit root with break → retain level as baseline and carry a break-sensitive robustness check;
    - ZA does not reject → use first difference as baseline.
+
+Then apply the same tests to the full frozen sample as required by the jury.
+
+- If full-sample evidence agrees, the baseline transformation is confirmed.
+- If full-sample evidence disagrees, **do not retrospectively change the baseline pseudo-OOS transformation**. Flag the disagreement and make the alternative transformation a mandatory Chapter 4 robustness check.
 
 If differenced:
 
