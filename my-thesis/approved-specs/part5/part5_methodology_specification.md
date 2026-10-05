@@ -195,44 +195,58 @@ This rule is fixed before results are seen.
 
 Nonlinearity is treated as an empirical hypothesis, not as a label attached after a nonlinear model fits.
 
-## 4.1 Smooth-transition linearity test
+## 4.1 General nonlinearity test
 
-For each target, after fitting the baseline linear AR structure, apply the Luukkonen-Saikkonen-Teräsvirta / Teräsvirta linearity-testing procedure against STAR alternatives.
+For each target, first fit the selected linear AR benchmark on the initial estimation window and apply the **Tsay (1986) nonlinearity test** to the stationary target/residual structure.
+
+Report:
+
+- test statistic;
+- p-value;
+- 5% decision;
+- interpretation.
+
+This supplies a general pre-estimation test of departure from linear autoregressive dynamics.
+
+## 4.2 Smooth-transition linearity and STAR specification
+
+After the general test, apply the Luukkonen-Saikkonen-Teräsvirta / Teräsvirta linearity-testing and specification procedure against STAR alternatives.
 
 Monthly candidate delays: `d ∈ {1, 2, 3, 4, 5, 6}`.  
 Quarterly candidate delays: `d ∈ {1, 2, 3, 4}`.
 
-Because scanning several delays creates multiple testing, adjust delay-specific p-values using Holm's method.
+Follow the standard Teräsvirta specification sequence:
 
-Report:
+- report the delay-specific linearity-test p-values;
+- select the delay that gives the strongest evidence against linearity, subject to a clear and reproducible rule;
+- use the standard nested-test sequence to choose LSTAR versus ESTAR.
 
-- raw p-values;
-- Holm-adjusted p-values;
-- selected delay if any;
-- LSTAR/ESTAR indication from the Teräsvirta specification sequence.
+No ad hoc multiple-testing correction is imposed on this established specification sequence.
 
-A failure to reject linearity does **not** prevent the pre-approved STAR model from being estimated for comparison. It does prevent the thesis from treating any later STAR regime interpretation as independently validated evidence of nonlinear structure.
+A failure to reject linearity does **not** remove STAR from the predeclared forecast comparison. It does prevent the thesis from treating a later STAR transition as independently validated structural evidence.
 
-## 4.2 Markov-switching evidence
+## 4.3 Markov-switching testing caveat
 
-Testing one regime against two regimes has nonstandard nuisance-parameter problems. Therefore a standard chi-square likelihood-ratio p-value must **not** be used.
+A conventional one-regime versus two-regime likelihood-ratio test is **not** used with an ordinary chi-square reference distribution.
 
-Use a **parametric bootstrap likelihood-ratio test** comparing the fitted linear AR benchmark with the two-regime MSAR on the initial estimation window.
+The regime-switching literature shows that this testing problem is nonstandard because transition probabilities and other nuisance parameters are not identified under the one-regime null and parameters can lie on boundaries.
 
-Computational rule:
+The revised thesis therefore does **not** add a simplistic bootstrap LR test merely to create a p-value. MSAR is a predeclared forecasting alternative motivated by the business-cycle/regime-switching literature. Its empirical credibility is judged through:
 
-- begin with 199 bootstrap replications;
-- if the provisional p-value lies in [0.025, 0.10], extend to 999 replications;
-- use a fixed random seed;
-- record all failures during bootstrap fitting.
+- convergence;
+- regime occupancy;
+- transition behavior;
+- in-sample adequacy;
+- out-of-sample forecast performance;
+- K=3 robustness.
 
-This test is performed once per target for structural evidence. It is not repeated at every forecast origin.
+The thesis must state explicitly that absence of a formal one-versus-two-regime test limits structural regime claims.
 
-## 4.3 Interpretation rule
+## 4.4 Interpretation rule
 
-The nonlinear tests affect **interpretation**, not whether the model is allowed into a predeclared forecast horse race.
+The pre-estimation nonlinearity tests affect **interpretation**, not whether a predeclared nonlinear model is allowed into the forecast horse race.
 
-This avoids a post-selection forecast comparison while still answering the jury's request to test nonlinearity explicitly.
+This avoids post-selection bias while still answering the jury's request to test nonlinearity before interpreting nonlinear models.
 
 ---
 
@@ -303,24 +317,24 @@ If a final target retains a statistically significant deterministic trend after 
 
 ## 5.5 Nonlinear model 1: parsimonious two-regime MSAR
 
-Baseline equation:
+Baseline Hamilton-style equation:
 
-`y_t = c_{s_t} + Σ_{j=1}^p φ_{j,s_t} y_{t-j} + ε_t`, with `ε_t ~ N(0, σ²_{s_t})`.
+`y_t = μ_{s_t} + Σ_{j=1}^p φ_j (y_{t-j} - μ_{s_{t-j}}) + ε_t`, with `ε_t ~ N(0, σ²)`.
 
 where `s_t ∈ {1,2}` follows a first-order Markov chain.
 
 The baseline allows:
 
-- regime-specific intercepts;
-- regime-specific AR coefficients;
-- regime-specific innovation variances.
+- regime-specific conditional means;
+- common AR coefficients across regimes;
+- a common innovation variance.
 
-The model remains parsimonious because the nonlinear lag order is capped at 4 monthly or 2 quarterly lags. This directly tests discrete state-dependent dynamics while preventing the parameter explosion created by combining long lags with multiple switching coefficients.
+This is deliberately close to Hamilton's canonical business-cycle specification. The purpose is to test whether discrete shifts in the conditional mean add useful forecasting information without first allowing every dynamic coefficient and variance to switch.
 
 The AR lag order is inherited from the selected AR benchmark, capped at:
 
 - 4 lags monthly;
-- 2 lags quarterly.
+- 4 lags quarterly.
 
 The thesis must report:
 
@@ -514,12 +528,13 @@ Failed models are reported as failures rather than silently replaced by a simple
 
 For each regime:
 
-- effective smoothed-probability occupancy must be at least 5% of observations **and** at least 20 observations;
-- transition probabilities (le 0.005) or (ge 0.995) are flagged as boundary behavior;
-- expected durations are reported;
-- label switching is resolved by ordering regimes by unconditional/regime mean or variance using a fixed documented rule.
+- report effective smoothed-probability occupancy;
+- flag occupancy below 5% of observations or below 20 effective observations as **low occupancy**;
+- flag transition probabilities ≤ 0.005 or ≥ 0.995 as **boundary behavior**;
+- report expected durations;
+- resolve label switching by ordering regimes by the estimated regime mean using one fixed documented rule.
 
-A boundary transition probability is a **fragility flag**, not automatic proof of failure. An effectively empty regime is failure.
+The 5%, 20-observation, and 0.005/0.995 values are transparent operational warning thresholds, not theoretical critical values. Low occupancy or boundary persistence makes a model **fragile**, not automatically failed. Failure is reserved for computationally or statistically unusable estimation such as non-convergence, non-finite likelihood/parameters, or an effectively unidentified regime.
 
 The policy-rate case receives a dedicated diagnostic table separating:
 
@@ -576,27 +591,13 @@ A major simplification is deliberate.
 Lag orders, ARMA orders, STAR type/delay, and other discrete specification choices are selected from the **initial estimation window** and then fixed through the baseline OOS experiment.
 
 ### Parameters
-Parameters are re-estimated on the rolling window according to the scheduled refit rule below.
+Parameters are re-estimated at **every forecast origin** using the current rolling estimation window.
 
-This prevents repeated specification search at every forecast origin and sharply reduces unnecessary computation.
+The efficiency gain therefore comes from fixing the discrete specification choices once, dropping the old MSSTAR layer, using warm starts, caching, checkpointing, and parallel execution. It does **not** come from holding estimated parameters fixed between forecast origins.
 
-## 9.3 Scheduled re-estimation
+This every-origin pseudo-out-of-sample design is the academically cleaner baseline because each historical forecast uses parameters estimated from the information set available at that date.
 
-Baseline:
-
-- monthly models: re-estimate every **3 months**;
-- quarterly models: re-estimate every **4 quarters**.
-
-At intermediate forecast origins:
-
-- update observed lags/state variables;
-- retain the most recently estimated parameters.
-
-All competing univariate models use the same refit calendar.
-
-This is a predeclared forecast method, not a runtime shortcut applied only to expensive nonlinear models.
-
-## 9.4 Warm starts and cached estimation
+## 9.3 Warm starts and cached estimation
 
 After the first nonlinear fit, use the previous successful refit's parameters as starting values when technically appropriate.
 
@@ -610,7 +611,7 @@ Every fit is cached by:
 
 A rerun must reuse valid cached results unless the relevant input changed.
 
-## 9.5 Forecast horizons
+## 9.4 Forecast horizons
 
 ### Primary horizon
 - monthly: h = 1 month;
@@ -627,16 +628,16 @@ Use iterated multi-step forecasts from the estimated dynamic model.
 
 The h=1 evidence remains the baseline answer; longer horizons test whether the model ranking changes when nonlinear dynamics have more time to matter.
 
-## 9.6 Every-origin re-estimation robustness
+## 9.5 Estimation-window interpretation
 
-To verify that the scheduled refit rule does not create the ranking:
+The baseline rolling windows remain:
 
-- rerun h=1 with **every-origin parameter re-estimation**;
-- use the final 120 monthly forecast origins and final 40 quarterly forecast origins;
-- keep model specifications fixed;
-- compare rankings and loss differentials with the scheduled-refit results over exactly the same recent block.
+- 240 observations for monthly targets;
+- 120 observations for quarterly GDP.
 
-This gives the jury a direct sensitivity check without recreating the old full-sample nine-hour design as the baseline.
+These exact lengths are an ex ante design compromise, not values claimed to be theoretically optimal. A rolling window is appropriate to the thesis because structural change makes very old observations potentially less representative, while nonlinear models still require enough data for stable estimation.
+
+The methodology therefore treats window length as a documented design assumption. The literature justification file records the bias-variance and structural-break rationale.
 
 ---
 
@@ -689,25 +690,39 @@ Report:
 
 This avoids interpreting a large table of pairwise p-values as if one model must be uniquely best.
 
-## 10.4 State-conditioned evaluation
+## 10.4 State-conditioned evaluation and conditional predictive ability
 
-Compute the same forecast losses separately for:
+Compute descriptive RMSE and MAE separately for:
 
 - expansion;
 - recession;
 - peak/trough turning-point window;
 - outside turning-point window.
 
-For each state, report the difference in mean loss relative to AR with a moving-block bootstrap confidence interval.
+For formal inference about whether relative predictive performance changes with the economic state, use a **Giacomini-White conditional predictive ability regression** for each competitor versus AR.
 
-Block lengths:
+Baseline test function:
 
-- monthly: 12 observations;
-- quarterly: 4 observations.
+`d_t = α + β_rec REC_t + β_turn TURN_t + u_t`
 
-Minimum observations for formal state-specific inference: 20 forecast errors.
+where:
 
-If a state/horizon cell has fewer than 20 observations, report descriptive RMSE/MAE only and label inference as unavailable.
+- `d_t` is the loss differential between the competitor and AR;
+- `REC_t` is the target-date recession indicator;
+- `TURN_t` is the target-date turning-point-window indicator.
+
+Use HAC standard errors appropriate to the forecast horizon.
+
+Report:
+
+- joint test of conditional equal predictive ability;
+- coefficient estimates and p-values for recession and turning-point terms;
+- the sign convention for the loss differential;
+- descriptive state-specific RMSE/MAE.
+
+If a state indicator has no variation or the regression is numerically unidentified, report descriptive state results only and mark conditional inference unavailable.
+
+This replaces arbitrary fixed block lengths and cell-count thresholds with a published conditional-predictive-ability framework.
 
 ## 10.5 Why Clark-West and Amisano-Giacomini are not baseline tests
 
@@ -736,10 +751,10 @@ Each robustness exercise has a named threat.
 | Two regimes imposed too strongly | Fit K=3 MSAR | Retain K=2 only if K=3 is not substantively supported |
 | Nonlinear value only at h=1 | h=3/6/12 monthly; h=2/4 quarterly | Address P-05 |
 | Own-history nonlinearity proxies omitted macro information | Monthly VAR | Address R1-19/P-01 |
-| Scheduled refit changes ranking | Every-origin recent-block robustness | Computational/design sensitivity |
 | Classical benchmark too weak | ARMA in main horse race | Test whether nonlinear gain survives stronger linear dynamics |
 | Conditional variance ignored | ARMA-GARCH(1,1) diagnostic when ARCH-LM rejects | Separate mean forecast from variance dynamics |
 | Model failure creates misleading figures | Failure-aware plotting rules | Protect interpretation |
+| Estimation-window choice affects ranking | Document 240-month / 120-quarter rolling-window rationale; interpret as a design assumption rather than an optimal window | Prevent overclaiming robustness to window choice |
 | U.S. sample drives general claim | No false external-validity claim; common-sample/state reporting | Delimit, not “fix,” P-06 |
 
 ## 11.1 K=3 decision rule
