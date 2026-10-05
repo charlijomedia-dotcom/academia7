@@ -9,7 +9,7 @@
 | Core targets | Retain GDP, CPI, unemployment, industrial production, FEDFUNDS, M2 | Preserves the thesis's macroeconomic scope and Verne's theory/policy motivation |
 | M2 | Retain M2SL and call it the M2 monetary aggregate | Current FRED metadata shows monthly history from 1959; old 1992 concern must be resolved with exact output dates |
 | Growth transforms | Annualized log differences for GDP/CPI/INDPRO/M2 | Standard interpretable stationary growth/inflation targets |
-| UNRATE/FEDFUNDS | Baseline level/difference determined by predeclared ADF + KPSS + ZA rule | Direct response to P-02/P-03 without choosing transformation from visual inspection |
+| UNRATE/FEDFUNDS | Baseline level/difference determined by the predeclared ADF + KPSS + ZA rule on the initial estimation window; full-sample tests validate/trigger robustness but do not retrospectively change the baseline | Direct response to P-02/P-03 without forecast look-ahead |
 | Stationarity tests | ADF + KPSS; Zivot-Andrews for disputed level targets | Opposing nulls plus structural-break allowance |
 | Primary classical model | AR(p) | Transparent own-history benchmark |
 | Stronger classical model | ARMA(p,q) | Prevent nonlinear gains from depending on an artificially weak benchmark |
@@ -17,7 +17,7 @@
 | Polynomial model | Excluded from main horse race | Stationary transformed targets do not require deterministic polynomial trend extrapolation |
 | Nonlinear models | MSAR(2) + STAR | Clean discrete-versus-smooth state-dependence comparison |
 | MSSTAR | Removed from core | Too parameter-heavy for the question; increases identification/runtime burden before simpler nonlinear models earn credibility |
-| MSAR parameterization | Regime-specific intercept and variance; common AR slopes | Parsimonious state shift without doubling all AR coefficients |
+| MSAR parameterization | Regime-specific intercept, AR coefficients, and variance, with nonlinear lag cap 4 monthly / 2 quarterly | Directly tests discrete state-dependent dynamics while keeping parameter count controlled |
 | STAR type | LSTAR or ESTAR selected by standard Teräsvirta sequence | Established specification logic |
 | Nonlinearity evidence | STAR linearity test + bootstrap AR-vs-MSAR LR | Addresses R1-18 while respecting nonstandard MS inference |
 | Lag criterion | BIC, then residual-whiteness screen | More parsimonious than old AIC-first procedure and directly addresses CPI over-lagging |
