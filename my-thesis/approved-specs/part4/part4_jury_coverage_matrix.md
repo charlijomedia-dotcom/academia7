@@ -1,62 +1,73 @@
-# Part 4: Jury coverage matrix
+# Part 4: Jury and advisor coverage matrix
 
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
-**Purpose:** Give every verified jury remark a visible home in the revised thesis architecture. This file does not choose the exact Part 5 methodology.
+**Status:** REVISED PROPOSAL FOR USER APPROVAL  
+**Purpose:** Give every verified jury remark and each structural constraint from Prof. Verne a visible home in the revised two-part thesis architecture.
 
-## 1. Reviewer 1
+## 1. Reviewer 1 coverage
 
-| ID | Structural response in revised thesis | Primary home | Part 5 / Part 9 dependency |
+| ID | Structural response | Primary home |
+|---|---|---|
+| R1-01 | Two-part/four-chapter monograph with one scientific function per chapter | Whole thesis |
+| R1-02 | One notation system and typographic audit | Front matter + all chapters |
+| R1-03 | List of abbreviations/acronyms | Front matter |
+| R1-04 | List of symbols/notation | Front matter + Ch. 1–2 |
+| R1-05 | Essential equations/results in body; theorem/proposition status explicit | Ch. 1–2 + appendices |
+| R1-06 | Failed/explosive models shown without destroying figure readability | Ch. 3–4 |
+| R1-07 | Uncertainty on retained cross-correlation displays | Ch. 4 / appendix |
+| R1-08 | Fisher/Phillips/Okun and core model equations explicit and defined | Ch. 1–2 |
+| R1-09 | “Better” defined by fit, diagnostics, forecast loss, and statistical comparison | Ch. 2.8–2.10; Ch. 3 |
+| R1-10 | Concise taxonomy of relevant nonlinearities | Ch. 1.6 |
+| R1-11 | Markov chain, transition matrix, persistence, regime meaning clearly defined | Ch. 2.6 |
+| R1-12 | Exact variables/data/samples; software jargon removed from main narrative | Ch. 2.2 |
+| R1-13 | Tests standardized by purpose, H0, statistic/reference distribution, rule | Ch. 2.3–2.4 |
+| R1-14 | Forecast comparison methods matched to actual design | Ch. 2.10; Ch. 4 |
+| R1-15 | CPI lag issue treated as explicit threat | Ch. 2.12; Ch. 4.3 |
+| R1-16 | One significance convention | All results tables |
+| R1-17 | Regime credibility checked before interpretation | Ch. 2.11; Ch. 3.3; Ch. 4.7 |
+| R1-18 | Nonlinearity diagnostics before nonlinear interpretation | Ch. 2.4; Ch. 3.1 |
+| R1-19 | Single-equation limit + focused cross-variable response | Intro; Ch. 2.7; Ch. 4.6 |
+| R1-20 | Nowcasting/mixed-frequency literature and scope explicitly addressed | Ch. 1.7; Ch. 4.8 |
+| R1-21 | Broad theory compressed; essential theory and evidence kept in body | Ch. 1–2 |
+| R1-22 | Results regenerated and broadened with threat-based robustness | Ch. 3–4 |
+| R1-23 | M2 definition and exact dates resolved explicitly | Ch. 2.2 |
+
+## 2. President of the Jury coverage
+
+| ID | Structural response | Primary home |
+|---|---|---|
+| P-01 | Economic relations motivate explicit single-equation identification limit and cross-variable check | Ch. 1; Ch. 2.1/2.7; Ch. 4.6 |
+| P-02 | Main-text stationarity/break evidence for unemployment and policy rate | Ch. 2.3; Ch. 3.1 |
+| P-03 | Extreme policy-rate MS result treated as diagnostic problem before interpretation | Ch. 3.2–3.3; Ch. 4.2/4.7 |
+| P-04 | K=3 robustness has a dedicated scientific role | Ch. 4.4 |
+| P-05 | Horizon choice justified and longer-horizon robustness explicitly considered | Ch. 2.9; Ch. 4.5 |
+| P-06 | U.S.-specific findings separated from transferable research design | Ch. 4.10; Conclusion |
+
+## 3. Prof. Verne coverage
+
+These are advisor constraints supplied by the user and are tracked separately from the formal Part 2 jury IDs.
+
+| ID | Verne requirement | Structural response | Primary home |
 |---|---|---|---|
-| R1-01 | Replace diffuse two-part architecture with four chapters that each have one research function | Whole structure | Part 9 execution |
-| R1-02 | One notation system and full typographic audit | Front matter + all chapters | Part 9 |
-| R1-03 | Add List of Abbreviations/Acronyms and define first use | Front matter | Part 9 |
-| R1-04 | Add List of Symbols/Notation; stable symbols in equations | Front matter + Ch. 1–2 | Part 9 |
-| R1-05 | Essential formal results in main text; any theorem/proposition labeled by true status | Ch. 1–2; appendices | Part 9 decides wording; Part 5 decides whether formal result is needed |
-| R1-06 | Failed/explosive model output treated as failure evidence without destroying figure readability | Ch. 3–4 | Part 5 defines plotting/failure rule |
-| R1-07 | Any retained cross-correlation display must show appropriate uncertainty | Ch. 4 or appendix | Part 5 |
-| R1-08 | Replace long verbal theory with minimum essential equations/definitions | Ch. 1; Ch. 2 | Part 9 |
-| R1-09 | Define “better” by explicit forecast/fit/statistical criteria before rankings | Ch. 2.8; Ch. 3 | Part 5 |
-| R1-10 | Concise taxonomy of nonlinearity and model scope | Ch. 1.3 | Part 9 |
-| R1-11 | Define Markov chain, transition matrix, persistence, and regime interpretation clearly | Ch. 2.5 | Part 5 + Part 9 |
-| R1-12 | Exact variable/data table and economic justification; remove unnecessary software jargon from main text | Ch. 2.2 | Part 5 verifies choices |
-| R1-13 | Standardized test presentation: purpose, H0, statistic/reference distribution, decision rule | Ch. 2.3–2.4 and relevant appendix | Part 5 |
-| R1-14 | Forecast-comparison framework reviewed and matched to design | Ch. 2.8; Ch. 4 if robustness | Part 5 chooses tests |
-| R1-15 | CPI lag concern becomes explicit pre-estimation/robustness issue | Ch. 2.7/2.10; Ch. 4.3 | Part 5 |
-| R1-16 | One significance notation, defined once | Tables/notes throughout | Part 9 |
-| R1-17 | Transition matrices/regime credibility checked before interpretation; suspicious results revisited as fragility evidence | Ch. 2.9; Ch. 3.2; Ch. 4.7 | Part 5 |
-| R1-18 | Nonlinearity diagnostics placed before nonlinear interpretation and reported visibly | Ch. 2.4; Ch. 3.1 | Part 5 |
-| R1-19 | Single-equation limitation stated early and a focused multivariate/cross-variable response integrated into thesis | Intro; Ch. 1.2; Ch. 2.6; Ch. 4.6 | Part 5 selects response |
-| R1-20 | Nowcasting/mixed-frequency literature and scope explicitly addressed | Intro; Ch. 1.4; Ch. 4.8 | Part 5 decides whether empirical check is included |
-| R1-21 | Broad theory compressed; essential equations/diagnostics moved into body | Ch. 1–2 | Part 9 |
-| R1-22 | All main results regenerated and broadened through predeclared robustness | Ch. 3–4 | Parts 5–8 |
-| R1-23 | M2 definition and exact raw/usable sample dates made explicit; retention not assumed | Ch. 2.2 | Part 5 |
+| V-01 | Plan in two parts and two subdivisions | Two Parts, each containing two chapters | Whole thesis |
+| V-02 | Rich but relevant Fisher/Phillips/Okun/Schumpeter and macro-school theory | Focused theory tied directly to forecast instability | Ch. 1 |
+| V-03 | Relate forecast difficulty to current inflation, conflict, debt/deficit and policy effectiveness | Contemporary policy motivation without automatically expanding target-variable set | Intro; Ch. 1.1; Ch. 4.9 |
+| V-04 | Compare nonlinear models to classical forecasting models such as ARMA, ARCH/GARCH, polynomial | Dedicated classical benchmark section; exact inclusion decided scientifically in Part 5 | Ch. 2.5; Ch. 3–4 |
+| V-05 | Forecast recessions/expansions, peaks/troughs because policy timing matters | Business-cycle states and turning points are a visible empirical block | Ch. 2.10; Ch. 3.5–3.6 |
+| V-06 | Model must fit observed data before credible forecast use | Fitted/predicted adequacy gate before OOS ranking; fit necessary but not sufficient | Ch. 2.8; Ch. 3.2 |
+| V-07 | Conclusion synthesizes theoretical and empirical results and answers problématique | General Conclusion requirement | Conclusion |
+| V-08 | Titles must not be generic | Argumentative, thesis-specific Part and chapter titles | TOC / whole thesis |
 
-## 2. President of the Jury
+## 4. Cross-cutting acceptance checks
 
-| ID | Structural response in revised thesis | Primary home | Part 5 / Part 9 dependency |
-|---|---|---|---|
-| P-01 | Make theory/empirical mismatch visible; define what single-equation forecasts cannot identify and add approved cross-variable response | Intro; Ch. 1.2; Ch. 2.1/2.6; Ch. 4.6 | Part 5 |
-| P-02 | Main-text stationarity evidence for unemployment/policy rate including a break-allowing test | Ch. 2.3; Ch. 3.1 | Part 5 selects tests |
-| P-03 | Policy-rate extreme MS result treated as a diagnostic question, not immediately as an economic regime | Ch. 3.2; Ch. 4.2/4.7 | Parts 5–8 |
-| P-04 | K=3 included as explicit robustness threat to K=2 interpretation | Ch. 4.4 | Part 5 |
-| P-05 | Horizon choice justified; h=1 limitation explicit; longer-horizon check considered in robustness | Ch. 2.7; Ch. 4.5 | Part 5 |
-| P-06 | U.S.-specific findings separated from transferable design principles | Ch. 4.10; Conclusion | Part 9 |
+Part 4 should not be approved unless all of the following are true:
 
-## 3. Cross-jury high-priority issues and their visible homes
-
-| Issue | Visible home |
-|---|---|
-| Is the policy-rate nonlinear result genuine or degenerate? | Ch. 2.3/2.9 → Ch. 3.2 → Ch. 4.2/4.7 |
-| Does single-equation forecasting miss transmitted regime shifts? | Ch. 1.2 → Ch. 2.1/2.6 → Ch. 4.6 |
-| Is nonlinearity established before nonlinear models are interpreted? | Ch. 1.3 → Ch. 2.4 → Ch. 3.1 |
-| Are transformations and samples defensible? | Ch. 2.2–2.3 |
-| Is model ranking robust to regimes/horizons/lags? | Ch. 4.3–4.5 |
-| Are failures visible? | Ch. 2.9 → Ch. 3.2 → Ch. 4.7 |
-| Are conclusions sample-specific or general? | Ch. 4.10 → Conclusion |
-
-## 4. Part 4 acceptance rule
-
-Part 4 should be rejected or revised if a jury ID lacks a visible home in the thesis or if the proposed structure answers a methodological criticism only by moving it to an appendix.
-
-The exact econometric implementation remains a Part 5 decision.
+- the two-Part/two-chapter hierarchy is visible;
+- Chapter 1 links theory to the forecast problem rather than surveying theory for its own sake;
+- Chapter 2 gives classical benchmarks a fair and explicit role;
+- Chapter 3 shows fitted/predicted adequacy before out-of-sample ranking;
+- recessions, expansions, peaks, and troughs are visible in the main empirical architecture;
+- Chapter 4 tests alternative explanations before policy interpretation;
+- each chapter ends with its own one-page concluding synthesis;
+- the General Conclusion answers the central problématique from both theoretical and empirical evidence;
+- no chapter is titled merely “Theory,” “Methodology,” “Results,” or “Robustness.”
