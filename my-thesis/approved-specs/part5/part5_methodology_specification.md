@@ -58,12 +58,12 @@ The final dissertation must report the exact usable sample dates generated from 
 
 | Target | FRED ID | Frequency | Raw form | Baseline target transformation | Main economic role |
 |---|---|---:|---|---|---|
-| Real GDP growth | GDPC1 | Quarterly | Real GDP, SAAR | (400Deltaln(GDPC1_t)) | Aggregate real activity |
-| CPI inflation | CPIAUCSL | Monthly | CPI-U, seasonally adjusted | (1200Deltaln(CPI_t)) | Inflation |
+| Real GDP growth | GDPC1 | Quarterly | Real GDP, SAAR | 400 × [ln(GDPC1_t) - ln(GDPC1_{t-1})] | Aggregate real activity |
+| CPI inflation | CPIAUCSL | Monthly | CPI-U, seasonally adjusted | 1200 × [ln(CPI_t) - ln(CPI_{t-1})] | Inflation |
 | Unemployment | UNRATE | Monthly | Percent, seasonally adjusted | Level or first difference by predeclared stationarity rule in §3.4 | Labour-market slack |
-| Industrial production growth | INDPRO | Monthly | Index, seasonally adjusted | (1200Deltaln(INDPRO_t)) | Monthly real activity |
+| Industrial production growth | INDPRO | Monthly | Index, seasonally adjusted | 1200 × [ln(INDPRO_t) - ln(INDPRO_{t-1})] | Monthly real activity |
 | Federal funds rate | FEDFUNDS | Monthly | Percent, monthly average | Level or first difference by predeclared stationarity rule in §3.4 | Monetary-policy stance |
-| M2 growth | M2SL | Monthly | Billions of dollars, seasonally adjusted | (1200Deltaln(M2_t)) | Monetary aggregate growth |
+| M2 growth | M2SL | Monthly | Billions of dollars, seasonally adjusted | 1200 × [ln(M2_t) - ln(M2_{t-1})] | Monetary aggregate growth |
 
 Notes:
 
@@ -181,9 +181,7 @@ Then apply the same tests to the full frozen sample as required by the jury.
 
 If differenced:
 
-[
-Delta x_t=x_t-x_{t-1}
-]
+`Δx_t = x_t - x_{t-1}`
 
 is the modeled target. Level forecasts are reconstructed from the last observed level for policy-facing figures, while formal predictive tests are conducted on the stationary modeled target.
 
@@ -201,8 +199,8 @@ Nonlinearity is treated as an empirical hypothesis, not as a label attached afte
 
 For each target, after fitting the baseline linear AR structure, apply the Luukkonen-Saikkonen-Teräsvirta / Teräsvirta linearity-testing procedure against STAR alternatives.
 
-Monthly candidate delays: (d=1,ldots,6).  
-Quarterly candidate delays: (d=1,ldots,4).
+Monthly candidate delays: `d ∈ {1, 2, 3, 4, 5, 6}`.  
+Quarterly candidate delays: `d ∈ {1, 2, 3, 4}`.
 
 Because scanning several delays creates multiple testing, adjust delay-specific p-values using Holm's method.
 
@@ -244,16 +242,14 @@ The final model set is intentionally smaller than in the submitted thesis.
 
 ## 5.1 Classical benchmark 1: AR(p)
 
-[
-y_t=c+sum_{j=1}^{p}phi_j y_{t-j}+arepsilon_t
-]
+`y_t = c + Σ_{j=1}^p φ_j y_{t-j} + ε_t`
 
 This remains the primary benchmark because it is transparent, parsimonious, and directly tests whether nonlinear structure adds information beyond own-history linear dynamics.
 
 ### Lag selection
 
-Monthly: (pin{1,ldots,12}).  
-Quarterly: (pin{1,ldots,4}).
+Monthly: `p ∈ {1, ..., 12}`.  
+Quarterly: `p ∈ {1, ..., 4}`.
 
 Primary criterion: BIC.
 
@@ -271,13 +267,13 @@ This strengthens the classical comparison requested by Prof. Verne.
 
 Monthly search grid:
 
-- (p,qin{0,ldots,4});
+- `p,q ∈ {0, ..., 4}`;
 - exclude ARMA(0,0);
 - require stationarity and invertibility.
 
 Quarterly search grid:
 
-- (p,qin{0,ldots,2});
+- `p,q ∈ {0, ..., 2}`;
 - exclude ARMA(0,0).
 
 Selection uses BIC plus the same residual-whiteness rule.
@@ -309,20 +305,17 @@ If a final target retains a statistically significant deterministic trend after 
 
 Baseline equation:
 
-[
-y_t=c_{s_t}+sum_{j=1}^{p}phi_j y_{t-j}+arepsilon_t,qquad
-arepsilon_tsim N(0,sigma^2_{s_t})
-]
+`y_t = c_{s_t} + Σ_{j=1}^p φ_{j,s_t} y_{t-j} + ε_t`, with `ε_t ~ N(0, σ²_{s_t})`.
 
-where (s_tin{1,2}) follows a first-order Markov chain.
+where `s_t ∈ {1,2}` follows a first-order Markov chain.
 
 The baseline allows:
 
 - regime-specific intercepts;
-- regime-specific innovation variances;
-- common AR slopes.
+- regime-specific AR coefficients;
+- regime-specific innovation variances.
 
-This parsimonious form is chosen deliberately. It tests discrete latent state shifts without doubling every AR coefficient inside relatively short rolling windows.
+The model remains parsimonious because the nonlinear lag order is capped at 4 monthly or 2 quarterly lags. This directly tests discrete state-dependent dynamics while preventing the parameter explosion created by combining long lags with multiple switching coefficients.
 
 The AR lag order is inherited from the selected AR benchmark, capped at:
 
@@ -342,12 +335,9 @@ The thesis must report:
 
 Use a standard smooth-transition autoregression:
 
-[
-y_t=oldsymbol{phi}'x_t+
-G(z_{t-d};gamma,c)oldsymbol{	heta}'x_t+arepsilon_t
-]
+`y_t = φ'x_t + G(z_{t-d}; γ, c) θ'x_t + ε_t`
 
-with (G) selected as LSTAR or ESTAR using the Teräsvirta specification sequence.
+with `G` selected as LSTAR or ESTAR using the Teräsvirta specification sequence.
 
 The AR lag order is inherited from the selected AR benchmark, capped at:
 
@@ -361,7 +351,7 @@ Report:
 - transition type;
 - delay;
 - threshold (c);
-- smoothness (gamma);
+- smoothness `γ`;
 - transition-function range and dispersion;
 - convergence;
 - regime-side coefficient interpretation.
@@ -400,7 +390,7 @@ Common sample begins when all five series are available, therefore from the M2 s
 
 Lag order:
 
-- (pin{1,2,3});
+- `p ∈ {1,2,3}`;
 - BIC selection;
 - require VAR stability.
 
@@ -545,7 +535,7 @@ The policy-rate case receives a dedicated diagnostic table separating:
 
 Flag as fragile if:
 
-- (gamma) lands on its optimization bound;
+- `γ` lands on its optimization bound;
 - (c) lies outside the 5th–95th percentile of the transition variable;
 - the fitted transition function is nearly constant over the sample;
 - the nonlinear Hessian/covariance is singular or unstable.
@@ -660,9 +650,7 @@ For every model, series, horizon, and evaluation state:
 - MAE;
 - out-of-sample (R^2) relative to the AR benchmark.
 
-[
-R^2_{OOS}=1-rac{sum e^2_{model}}{sum e^2_{AR}}
-]
+`R²_OOS = 1 - [Σ e²_model / Σ e²_AR]`
 
 A positive value indicates improvement over AR under squared-error loss.
 
