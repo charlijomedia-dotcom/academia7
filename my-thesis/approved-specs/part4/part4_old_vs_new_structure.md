@@ -30,28 +30,28 @@ The main weakness was not the number of chapters. It was the allocation of funct
 ## 3. Revised architecture
 
 ### General Introduction
-**Forecasting macroeconomic aggregates when economic relationships become unstable**
+**Forecasting Macroeconomic Aggregates Under Instability: Problem, Contribution and Research Strategy**
 
 ### PART I
-**Why unstable macroeconomic relationships make forecasting a policy problem**
+**From Macroeconomic Instability to a Testable Forecasting Problem**
 
 **Chapter 1**  
-*From Fisher, Phillips and Okun to regime change: why inflation, activity and monetary conditions become hard to forecast*
+*Why Macroeconomic Relationships Become Unstable: Fisher, Phillips, Okun and the Forecasting Problem*
 
 **Chapter 2**  
-*From classical benchmarks to state-dependent models: how to test forecast value without confusing fit, complexity and instability*
+*Testing Nonlinear Forecast Value Against Classical Benchmarks: Model Adequacy and Forecast Design*
 
 ### PART II
-**When nonlinear complexity improves macroeconomic forecasts, and when it fails**
+**Testing the Forecast Value of Nonlinear State Dependence**
 
 **Chapter 3**  
-*From fitted adequacy to forecast performance: evidence across expansions, recessions and turning points*
+*From Model Adequacy to Forecast Performance: Evidence Across Expansions, Recessions, Peaks and Troughs*
 
 **Chapter 4**  
-*Do nonlinear forecast gains survive? Regime robustness, cross-variable dynamics and policy meaning*
+*Do Nonlinear Forecast Gains Survive? Specification Robustness, Cross-Variable Dynamics and Policy Relevance*
 
 ### General Conclusion
-**What nonlinear forecasting can and cannot contribute to policy under macroeconomic instability**
+**What Nonlinear Forecasting Can and Cannot Contribute to Macroeconomic Policy Under Instability**
 
 ## 4. What changes and why
 
