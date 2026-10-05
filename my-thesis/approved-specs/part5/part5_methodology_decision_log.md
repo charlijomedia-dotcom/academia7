@@ -17,9 +17,9 @@
 | Polynomial model | Excluded from main horse race | Stationary transformed targets do not require deterministic polynomial trend extrapolation |
 | Nonlinear models | MSAR(2) + STAR | Clean discrete-versus-smooth state-dependence comparison |
 | MSSTAR | Removed from core | Too parameter-heavy for the question; increases identification/runtime burden before simpler nonlinear models earn credibility |
-| MSAR parameterization | Regime-specific intercept, AR coefficients, and variance, with nonlinear lag cap 4 monthly / 2 quarterly | Directly tests discrete state-dependent dynamics while keeping parameter count controlled |
+| MSAR parameterization | Hamilton-style regime-specific mean, common AR coefficients, common variance; lag cap 4 monthly / 4 quarterly | Strong canonical precedent, clearer interpretation, and lower identification risk than switching every coefficient |
 | STAR type | LSTAR or ESTAR selected by standard Teräsvirta sequence | Established specification logic |
-| Nonlinearity evidence | STAR linearity test + bootstrap AR-vs-MSAR LR | Addresses R1-18 while respecting nonstandard MS inference |
+| Nonlinearity evidence | Tsay general nonlinearity test + Luukkonen-Saikkonen-Teräsvirta / Teräsvirta STAR specification tests; no naive one-vs-two MS chi-square LR | Strong published pre-estimation diagnostics while respecting the nonstandard nature of regime-switching tests |
 | Lag criterion | BIC, then residual-whiteness screen | More parsimonious than old AIC-first procedure and directly addresses CPI over-lagging |
 | CPI robustness | p = 1, 3, 6, 12 | Direct jury response |
 | Main regime count | K=2 | Interpretability and parsimony |
@@ -34,15 +34,14 @@
 | Forecast metric | RMSE, MAE, OOS R² | Simple, interpretable point-forecast metrics |
 | Formal pairwise test | DM with HLN correction | Familiar global comparison, improved finite-sample treatment |
 | Multiple-model test | Model Confidence Set | Stronger than choosing a winner from many pairwise p-values |
-| State comparison | RMSE/MAE + block-bootstrap loss-difference CI | Directly tests recession/turning-point relevance |
+| State comparison | State-specific RMSE/MAE + Giacomini-White conditional predictive ability regression | Published Q1 framework for testing whether relative forecast performance changes in recessions/turning points |
 | Clark-West | Not baseline | Main nonlinear comparisons are not simple nested linear models |
 | Amisano-Giacomini | Not baseline | Thesis evaluates point forecasts, not comparable predictive densities |
 | Baseline horizon | h=1 | Preserves main question and direct interpretation |
 | Horizon robustness | monthly h=3,6,12; quarterly h=2,4 | Direct P-05 response |
-| Rolling windows | 240 monthly; 120 quarterly | Adequate nonlinear sample size while allowing changing macro dynamics |
+| Rolling windows | 240 monthly; 120 quarterly | Ex ante bias-variance compromise under instability; literature supports rolling windows but does not uniquely dictate these exact lengths, so the thesis will state them as design assumptions rather than optimal values |
 | Model specification search | Initial estimation window only | Prevents repeated search and reduces computational waste |
-| Parameter refit | Every 3 months monthly; every 4 quarters quarterly | Fair scheduled refit for all models, much cheaper than every-origin refit |
-| Every-origin refit | Final 120 months / 40 quarters at h=1 as robustness | Tests whether the efficient baseline refit schedule drives results |
+| Parameter refit | Every forecast origin on the rolling window | Standard pseudo-out-of-sample logic; runtime is controlled by fixed specifications, simpler models, warm starts, caching, checkpointing, and parallelization rather than by holding parameters fixed |
 | Silent fallback after nonlinear failure | Prohibited | Failure is evidence and must remain visible |
 | Figure scaling | Failure-aware separate panels | Direct R1-06 response |
 | Cross-correlation uncertainty | 95% bands if any such figure survives | Direct R1-07 response |
