@@ -1,0 +1,343 @@
+# Part 5: Required empirical outputs specification
+
+**Date:** 5 October 2026  
+**Status:** PROPOSED FOR USER APPROVAL  
+**Purpose:** Tell Claude Code exactly what tables, figures, diagnostics, manifests, and result files must exist so Part 8 and Part 9 can be written without manually reconstructing evidence.
+
+# 1. Mandatory machine-readable outputs
+
+Every table shown in the thesis must also exist as CSV or Parquet.
+
+Minimum directories:
+
+```
+output/
+  manifests/
+  data_audit/
+  diagnostics/
+  models/
+  forecasts/
+  forecast_tests/
+  robustness/
+  tables/
+  figures/
+  logs/
+```
+
+Every output must carry:
+
+- run ID;
+- data snapshot hash;
+- code commit SHA;
+- configuration hash;
+- creation timestamp;
+- series/model/horizon identifiers where relevant.
+
+# 2. Data and transformation outputs
+
+## T2.1 Data dictionary and sample audit
+
+Columns:
+
+- target name;
+- FRED ID;
+- raw units;
+- seasonal adjustment;
+- raw first date;
+- raw last date;
+- transformed first date;
+- transformed last date;
+- transformation;
+- baseline/robustness role;
+- source institution.
+
+## T2.2 Stationarity and transformation decision table
+
+For each relevant raw and transformed series:
+
+- ADF statistic/p-value/lag/decision;
+- KPSS statistic/p-value/bandwidth/decision;
+- ZA statistic/p-value or critical-value decision/break date for UNRATE/FEDFUNDS;
+- final baseline transformation;
+- reason.
+
+## F2.1 Raw/transformed series overview
+
+One readable figure per target.
+
+Requirements:
+
+- NBER recession shading;
+- break date marker for UNRATE/FEDFUNDS where ZA identifies one;
+- no multi-series scaling that makes a target unreadable.
+
+# 3. Nonlinearity outputs
+
+## T2.3 STAR linearity diagnostic
+
+- series;
+- delay;
+- raw p-value;
+- Holm-adjusted p-value;
+- selected delay;
+- LSTAR/ESTAR indication.
+
+## T2.4 Bootstrap AR-vs-MSAR evidence
+
+- observed LR;
+- bootstrap replications;
+- valid bootstrap fits;
+- empirical p-value;
+- failure count;
+- interpretation.
+
+# 4. Model-selection and adequacy outputs
+
+## T2.5 Selected classical specifications
+
+- AR lag;
+- AR BIC;
+- ARMA order;
+- ARMA BIC;
+- residual adequacy status;
+- fixed baseline specification.
+
+## T3.1 In-sample adequacy summary
+
+By series/model/refit date:
+
+- convergence;
+- log-likelihood;
+- AIC;
+- BIC;
+- RMSE;
+- MAE;
+- Ljung-Box 12/24 or 4/8;
+- ARCH-LM;
+- Jarque-Bera;
+- adequate/fragile/failed classification.
+
+## T3.2 Nonlinear credibility summary
+
+MSAR:
+
+- transition matrix;
+- occupancy;
+- expected durations;
+- transition-boundary flags.
+
+STAR:
+
+- type;
+- delay;
+- gamma;
+- threshold;
+- transition-function minimum/maximum/SD;
+- parameter-boundary flags.
+
+## F3.1 Representative fitted-vs-observed plots
+
+Show:
+
+- actual series;
+- fitted values;
+- model name;
+- sample;
+- recession shading.
+
+Do not overlay every model if readability suffers.
+
+## F3.2 Residual ACF diagnostics
+
+95% confidence bands.
+
+## F3.3 Regime-probability / STAR-transition plots
+
+Readable, one model per panel or figure.
+
+# 5. Baseline forecast outputs
+
+## T3.3 Main h=1 forecast table
+
+By target and model:
+
+- N forecasts;
+- RMSE;
+- MAE;
+- OOS R² vs AR;
+- DM-HLN squared-loss statistic/p-value vs AR;
+- DM-HLN absolute-loss statistic/p-value vs AR;
+- model status.
+
+## T3.4 Model Confidence Set
+
+By target/horizon/loss:
+
+- 90% MCS membership;
+- 95% MCS membership;
+- elimination order/statistic where available.
+
+## F3.4 Actual versus forecast
+
+One target per figure.
+
+Rules:
+
+- AR and ARMA always shown;
+- nonlinear models shown only if valid;
+- failed/extreme models moved to separate diagnostic panel;
+- no silent axis clipping.
+
+## F3.5 Cumulative loss difference
+
+Cumulative squared-error difference versus AR for each valid competitor.
+
+Purpose: show when relative performance accumulates or reverses over time without claiming causal timing.
+
+# 6. State-conditioned outputs
+
+## T3.5 State forecast performance
+
+For each target/model/horizon and state:
+
+- N;
+- RMSE;
+- MAE;
+- mean loss difference vs AR;
+- block-bootstrap 95% CI;
+- inference available yes/no.
+
+States:
+
+- expansion;
+- recession;
+- turning-point window;
+- outside turning-point window.
+
+## T3.6 Peak-versus-trough detail
+
+At h=1:
+
+- peak window;
+- trough window;
+- RMSE/MAE and N.
+
+Use descriptive reporting if cell size is too small for formal inference.
+
+## F3.6 State loss-difference plot
+
+Point estimate + 95% CI by model/state.
+
+# 7. Mandatory robustness outputs
+
+## T4.1 UNRATE/FEDFUNDS transformation robustness
+
+Baseline transformation vs alternative.
+
+## T4.2 CPI lag robustness
+
+p = 1, 3, 6, 12.
+
+## T4.3 K=2 versus K=3 MSAR
+
+- BIC;
+- convergence;
+- occupancy;
+- transition matrix summary;
+- forecast metrics;
+- final retention decision.
+
+## T4.4 Horizon robustness
+
+Monthly h=1/3/6/12; quarterly h=1/2/4.
+
+## T4.5 Monthly VAR cross-variable comparison
+
+For CPI, INDPRO, UNRATE, FEDFUNDS, M2 on common sample:
+
+- VAR lag;
+- stability;
+- RMSE/MAE;
+- OOS R² vs AR;
+- difference from univariate ranking.
+
+## T4.6 Scheduled-refit versus every-origin recent-block robustness
+
+Same dates, h=1, same model specifications.
+
+## T4.7 ARCH/GARCH diagnostic where triggered
+
+- ARCH-LM result;
+- GARCH parameters;
+- persistence;
+- standardized-residual diagnostics;
+- note on whether mean forecast changed.
+
+# 8. Failure registry
+
+## T4.8 Model failure and fragility registry
+
+One row per event:
+
+- series;
+- model;
+- refit date;
+- horizon;
+- category adequate/fragile/failed;
+- reason code;
+- raw diagnostic;
+- whether forecast retained;
+- whether figure separated.
+
+Reason codes should include at minimum:
+
+- NONCONVERGENCE
+- NONFINITE
+- SINGULAR_COV
+- UNSTABLE_AR
+- EMPTY_REGIME
+- TRANSITION_BOUNDARY
+- STAR_GAMMA_BOUND
+- STAR_THRESHOLD_EXTREME
+- RESIDUAL_AUTOCORR
+- EXTREME_FORECAST
+
+# 9. Main-text figure rule
+
+The main dissertation should use only figures that answer a research question.
+
+Do not include:
+
+- optimizer traces;
+- every residual plot;
+- every transition probability;
+- giant multi-model overlays;
+- code/config screenshots.
+
+Those belong in appendices or repository documentation.
+
+# 10. Significance and confidence display
+
+- exact p-values where space permits;
+- superscript *, **, *** only for 10/5/1%;
+- 95% CI for bootstrap/state-difference figures;
+- 95% bands for ACF/cross-correlation displays.
+
+# 11. Part 8 claim-ready outputs
+
+Claude must create a machine-readable claim matrix:
+
+`output/manifests/claim_evidence_matrix.csv`
+
+Columns:
+
+- claim_id;
+- claim_text_stub;
+- target;
+- supporting_output_files;
+- baseline_result;
+- robustness_result;
+- status: SUPPORTED / QUALIFIED / NOT_SUPPORTED / INCONCLUSIVE;
+- jury_ids_addressed.
+
+This matrix is the bridge from empirical execution to Part 9 writing.
