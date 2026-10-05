@@ -54,7 +54,7 @@ These are advisor constraints supplied by the user and are tracked separately fr
 | V-03 | Relate forecast difficulty to current inflation, conflict, debt/deficit and policy effectiveness | Contemporary policy motivation without automatically expanding target-variable set | Intro; Ch. 1.1; Ch. 4.9 |
 | V-04 | Compare nonlinear models to classical forecasting models such as ARMA, ARCH/GARCH, polynomial | Dedicated classical benchmark section; exact inclusion decided scientifically in Part 5 | Ch. 2.5; Ch. 3–4 |
 | V-05 | Forecast recessions/expansions, peaks/troughs because policy timing matters | Business-cycle states and turning points are a visible empirical block | Ch. 2.10; Ch. 3.5–3.6 |
-| V-06 | Model must fit observed data before credible forecast use | Fitted/predicted adequacy gate before OOS ranking; fit necessary but not sufficient | Ch. 2.8; Ch. 3.2 |
+| V-06 | Model must fit observed data before credible forecast use | In-sample model adequacy gate before OOS ranking; fit necessary but not sufficient | Ch. 2.8; Ch. 3.2 |
 | V-07 | Conclusion synthesizes theoretical and empirical results and answers problématique | General Conclusion requirement | Conclusion |
 | V-08 | Titles must not be generic | Argumentative, thesis-specific Part and chapter titles | TOC / whole thesis |
 
@@ -65,7 +65,7 @@ Part 4 should not be approved unless all of the following are true:
 - the two-Part/two-chapter hierarchy is visible;
 - Chapter 1 links theory to the forecast problem rather than surveying theory for its own sake;
 - Chapter 2 gives classical benchmarks a fair and explicit role;
-- Chapter 3 shows fitted/predicted adequacy before out-of-sample ranking;
+- Chapter 3 shows in-sample model adequacy before out-of-sample ranking;
 - recessions, expansions, peaks, and troughs are visible in the main empirical architecture;
 - Chapter 4 tests alternative explanations before policy interpretation;
 - each chapter ends with its own one-page concluding synthesis;
