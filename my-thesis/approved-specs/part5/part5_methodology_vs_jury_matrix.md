@@ -12,10 +12,10 @@
 | R1-11 | First-order Markov chain, transition matrix, occupancy, duration, persistence explicitly reported | Transition/regime table |
 | R1-12 | Frozen data dictionary with IDs, units, dates, transformations, rationale | Data audit table |
 | R1-13 | Every diagnostic table states H0, statistic, distribution/bootstrap, p-value, rule | Standardized diagnostics table |
-| R1-14 | DM-HLN + Model Confidence Set; explicit explanation for not mechanically using Clark-West/Amisano-Giacomini | Forecast-comparison section |
+| R1-14 | DM-HLN + Giacomini-White conditional predictive ability + Model Confidence Set; explicit explanation for not mechanically using Clark-West/Amisano-Giacomini | Forecast-comparison section |
 | R1-15 | BIC lag selection + CPI p=1/3/6/12 robustness | CPI lag-robustness table/plot |
 | R1-17 | MS convergence, occupancy, transition boundaries, durations, policy-rate diagnostic block | MS credibility table + failure flags |
-| R1-18 | LST/Teräsvirta STAR linearity test + bootstrap AR-vs-MSAR LR before nonlinear interpretation | Nonlinearity table |
+| R1-18 | Tsay general nonlinearity test + LST/Teräsvirta STAR specification tests before nonlinear interpretation; no naive MS chi-square LR | Nonlinearity table + explicit MS testing caveat |
 | R1-19 | Monthly five-variable VAR robustness | VAR forecast comparison on common sample |
 | R1-20 | Nowcasting explicitly outside core; no claim that native-frequency forecasting is nowcasting | Scope subsection |
 | R1-22 | Entire empirical set regenerated from frozen data, with all failures visible | Part 8 audit |
