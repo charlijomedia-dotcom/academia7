@@ -61,7 +61,7 @@ The empirical design must retain a visible role for business-cycle states and tu
 
 ### V-06. Adequate fit comes before forecast claims
 
-The empirical sequence must first establish whether a model fits the observed data credibly through fitted/predicted adequacy and diagnostics.
+The empirical sequence must first establish whether a model fits the observed data credibly through in-sample model adequacy and diagnostics.
 
 Only models that pass the approved adequacy/admissibility rules should be interpreted as serious forecasting candidates.
 
@@ -124,7 +124,7 @@ The revised thesis must allow adverse evidence.
 The proposition that nonlinear complexity adds useful forecast information would be weakened if:
 
 - nonlinear/state-dependent dynamics are not supported by the approved diagnostics;
-- nonlinear models fail basic fitted/predicted adequacy or residual diagnostics;
+- nonlinear models fail basic in-sample model adequacy or residual diagnostics;
 - nonlinear models fit in-sample but do not improve out-of-sample forecasts;
 - forecast gains are statistically weak or economically trivial;
 - gains disappear under approved transformation, lag, regime-count, horizon, or sample checks;
@@ -139,7 +139,7 @@ An ARMA or other classical benchmark remaining dominant is therefore a valid sci
 # 7. Revised two-part monograph architecture
 
 ## General Introduction
-### Forecasting macroeconomic aggregates when economic relationships become unstable
+### Forecasting Macroeconomic Aggregates Under Instability: Problem, Contribution and Research Strategy
 
 The General Introduction must establish:
 
@@ -159,7 +159,7 @@ The General Introduction must establish:
 ---
 
 # PART I
-## Why unstable macroeconomic relationships make forecasting a policy problem
+## From Macroeconomic Instability to a Testable Forecasting Problem
 
 **Purpose of Part I:** move from macroeconomic theory and policy relevance to a testable forecasting design.
 
@@ -174,7 +174,7 @@ Part I answers:
 ---
 
 # Chapter 1
-## From Fisher, Phillips and Okun to regime change: why inflation, activity and monetary conditions become hard to forecast
+## Why Macroeconomic Relationships Become Unstable: Fisher, Phillips, Okun and the Forecasting Problem
 
 ### Core question
 
@@ -226,7 +226,7 @@ After Chapter 1, the reader must know **why an economist should care**, **why in
 ---
 
 # Chapter 2
-## From classical benchmarks to state-dependent models: how to test forecast value without confusing fit, complexity and instability
+## Testing Nonlinear Forecast Value Against Classical Benchmarks: Model Adequacy and Forecast Design
 
 ### Core question
 
@@ -259,7 +259,7 @@ Define the approved Markov-switching, STAR, hybrid, or other nonlinear models wi
 **2.7 Cross-variable information and the boundary of single-equation forecasting**  
 Explain what own-history models miss and define the role of the focused Part 5 multivariate/cross-variable response.
 
-**2.8 Fitted/predicted adequacy as a prerequisite for forecast interpretation**  
+**2.8 In-sample model adequacy as a prerequisite for forecast interpretation**  
 Define the in-sample adequacy and residual-diagnostic gate. A model that cannot credibly represent observed data is not promoted as serious forecast evidence. Also state explicitly that good fit alone does not prove forecast superiority.
 
 **2.9 Forecast experiment: origins, windows, horizons, and re-estimation policy**  
@@ -292,7 +292,7 @@ After Chapter 2, the reader must know **why these data and methods were chosen**
 ---
 
 # PART II
-## When nonlinear complexity improves macroeconomic forecasts, and when it fails
+## Testing the Forecast Value of Nonlinear State Dependence
 
 **Purpose of Part II:** move from model adequacy to genuine forecast evidence, then try to break the conclusions before interpreting them for economics and policy.
 
@@ -307,7 +307,7 @@ Part II answers:
 ---
 
 # Chapter 3
-## From fitted adequacy to forecast performance: evidence across expansions, recessions and turning points
+## From Model Adequacy to Forecast Performance: Evidence Across Expansions, Recessions, Peaks and Troughs
 
 ### Core question
 
@@ -322,7 +322,7 @@ This chapter contains the baseline empirical answer in the order Prof. Verne's r
 **3.1 Pre-estimation evidence and model eligibility**  
 Report the main stationarity, structural-break, nonlinearity, and data-quality results.
 
-**3.2 Fitted/predicted adequacy and residual diagnostics**  
+**3.2 In-sample model adequacy and residual diagnostics**  
 Show whether each candidate can represent the observed data credibly before forecast rankings are discussed.
 
 **3.3 Regime and parameter credibility for nonlinear models**  
@@ -359,7 +359,7 @@ Chapter 3 produces the **baseline empirical answer**, not the final thesis concl
 ---
 
 # Chapter 4
-## Do nonlinear forecast gains survive? Regime robustness, cross-variable dynamics and policy meaning
+## Do Nonlinear Forecast Gains Survive? Specification Robustness, Cross-Variable Dynamics and Policy Relevance
 
 ### Core question
 
@@ -417,7 +417,7 @@ After Chapter 4, every major empirical claim should be classified as **supported
 ---
 
 # General Conclusion
-## What nonlinear forecasting can and cannot contribute to policy under macroeconomic instability
+## What Nonlinear Forecasting Can and Cannot Contribute to Macroeconomic Policy Under Instability
 
 The General Conclusion must:
 
