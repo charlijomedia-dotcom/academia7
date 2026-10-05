@@ -73,23 +73,25 @@ Requirements:
 
 # 3. Nonlinearity outputs
 
-## T2.3 STAR linearity diagnostic
+## T2.3 General nonlinearity diagnostic
+
+For each target:
+
+- Tsay test statistic;
+- p-value;
+- 5% decision;
+- interpretation.
+
+## T2.4 STAR linearity and specification diagnostic
 
 - series;
-- delay;
-- raw p-value;
-- Holm-adjusted p-value;
+- candidate delay;
+- delay-specific p-value;
 - selected delay;
-- LSTAR/ESTAR indication.
-
-## T2.4 Bootstrap AR-vs-MSAR evidence
-
-- observed LR;
-- bootstrap replications;
-- valid bootstrap fits;
-- empirical p-value;
-- failure count;
+- LSTAR/ESTAR indication from the Teräsvirta sequence;
 - interpretation.
+
+No naive chi-square one-regime versus two-regime MS likelihood-ratio p-value is reported. The reason must be stated in the methodology text.
 
 # 4. Model-selection and adequacy outputs
 
@@ -196,16 +198,14 @@ Purpose: show when relative performance accumulates or reverses over time withou
 
 # 6. State-conditioned outputs
 
-## T3.5 State forecast performance
+## T3.5 State forecast performance and conditional predictive ability
 
 For each target/model/horizon and state:
 
 - N;
 - RMSE;
 - MAE;
-- mean loss difference vs AR;
-- block-bootstrap 95% CI;
-- inference available yes/no.
+- mean loss difference vs AR.
 
 States:
 
@@ -213,6 +213,17 @@ States:
 - recession;
 - turning-point window;
 - outside turning-point window.
+
+In the same output family, report the Giacomini-White conditional predictive ability regression for each valid competitor versus AR:
+
+- intercept;
+- recession coefficient;
+- turning-point coefficient;
+- HAC standard errors;
+- p-values;
+- joint conditional-equality test;
+- sign convention for the loss differential;
+- inference-available flag.
 
 ## T3.6 Peak-versus-trough detail
 
@@ -224,9 +235,9 @@ At h=1:
 
 Use descriptive reporting if cell size is too small for formal inference.
 
-## F3.6 State loss-difference plot
+## F3.6 State-conditioned forecast comparison plot
 
-Point estimate + 95% CI by model/state.
+Plot state-specific RMSE or MAE differences relative to AR, clearly labeled as descriptive. Formal state dependence is reported through the Giacomini-White conditional predictive ability table rather than an ad hoc bootstrap confidence interval.
 
 # 7. Mandatory robustness outputs
 
@@ -261,11 +272,7 @@ For CPI, INDPRO, UNRATE, FEDFUNDS, M2 on common sample:
 - OOS R² vs AR;
 - difference from univariate ranking.
 
-## T4.6 Scheduled-refit versus every-origin recent-block robustness
-
-Same dates, h=1, same model specifications.
-
-## T4.7 ARCH/GARCH diagnostic where triggered
+## T4.6 ARCH/GARCH diagnostic where triggered
 
 - ARCH-LM result;
 - GARCH parameters;
@@ -275,7 +282,7 @@ Same dates, h=1, same model specifications.
 
 # 8. Failure registry
 
-## T4.8 Model failure and fragility registry
+## T4.7 Model failure and fragility registry
 
 One row per event:
 
@@ -320,7 +327,7 @@ Those belong in appendices or repository documentation.
 
 - exact p-values where space permits;
 - superscript *, **, *** only for 10/5/1%;
-- 95% CI for bootstrap/state-difference figures;
+- 95% confidence intervals only where a published inferential procedure supplies them;
 - 95% bands for ACF/cross-correlation displays.
 
 # 11. Part 8 claim-ready outputs
