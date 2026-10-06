@@ -23,7 +23,65 @@ Part 4 retains Fisher, Phillips/Phelps, Okun, monetary-policy, money-supply, and
 
 The data set is therefore generated from the thesis logic, not chosen because the series happen to be easy to download.
 
-# 2. Selection criteria
+# 2. Why the United States rather than another country?
+
+The United States is a deliberate empirical case selection, not a default chosen only because FRED is convenient.
+
+The choice combines economic, statistical, and reproducibility arguments.
+
+## 2.1 Economic reason
+
+The thesis is explicitly concerned with inflation, output growth, unemployment, monetary conditions, interest rates, recessions, and policy response. The United States provides a coherent setting in which all of these mechanisms are economically important and where the Federal Reserve gives the monetary-policy dimension a clear institutional interpretation.
+
+The U.S. postwar record also contains multiple forms of instability relevant to the thesis question: inflation and disinflation episodes, recessions and recoveries, financial stress, prolonged low-rate conditions, rapid tightening cycles, and the pandemic shock.
+
+This makes the country suitable for asking whether linear relationships remain adequate across changing macroeconomic states.
+
+## 2.2 Statistical reason
+
+The nonlinear models require long histories and repeated state changes.
+
+The U.S. offers:
+
+- long monthly and quarterly official series;
+- repeated NBER-dated recessions and expansions;
+- enough observations for rolling estimation;
+- enough variation to examine peaks, troughs, structural breaks, and regime behavior;
+- a common institutional setting, avoiding the cross-country heterogeneity that would arise if different countries with different monetary frameworks, definitions, currencies, and statistical systems were pooled.
+
+A multi-country design would answer an additional external-validity question, but it would also require harmonization and country-specific institutional controls beyond the central thesis question.
+
+## 2.3 Data and reproducibility reason
+
+The U.S. is especially suitable because the required official series are accessible through FRED/ALFRED with:
+
+- stable series identifiers;
+- simple Python retrieval;
+- historical vintages;
+- consistent metadata;
+- no manual spreadsheet construction.
+
+This is not merely a convenience. It materially strengthens reproducibility.
+
+## 2.4 What the U.S. choice does not imply
+
+The thesis does **not** claim that a model ranking obtained for U.S. macroeconomic series is universal.
+
+The correct conclusion is:
+
+> the United States provides a rich, long, reproducible empirical environment in which to test whether nonlinear state dependence adds forecast value under instability; international generalization requires separate evidence.
+
+Accordingly:
+
+- **country-specific result:** which model forecasts a U.S. aggregate better in this sample;
+- **potentially transferable contribution:** the benchmark-centred comparative design, diagnostic sequence, failure rules, and robustness logic;
+- **future external-validity test:** replication on other economies with sufficiently long and harmonized data.
+
+### Defense-ready answer
+
+> We chose the United States because it combines high economic relevance with an unusually long and reproducible postwar macroeconomic database containing repeated recessions, inflation regimes, and monetary-policy changes. These characteristics are particularly important for nonlinear and state-dependent forecasting. We deliberately avoid a cross-country panel because that would add institutional and measurement heterogeneity to a thesis whose central question is model-form robustness. Our model rankings are therefore U.S.-specific, while the research design can later be replicated internationally.
+
+# 3. Selection criteria
 
 A core series must satisfy all seven criteria:
 
@@ -37,7 +95,7 @@ A core series must satisfy all seven criteria:
 
 FRED satisfies the retrieval criterion because it distributes official series from the BEA, BLS, Federal Reserve Board, and other authorities and exposes observations programmatically.
 
-# 3. Why each target is retained
+# 4. Why each target is retained
 
 ## 3.1 Real GDP, GDPC1
 
@@ -115,7 +173,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Role:** USREC is used only after forecasts are produced to classify realized target dates. It is not a contemporaneous predictor. This prevents the official recession chronology from leaking future information into the forecasting model.
 
-# 4. Why more core targets are not added
+# 5. Why more core targets are not added
 
 The methodology is deliberately parsimonious.
 
@@ -131,7 +189,7 @@ The methodology is deliberately parsimonious.
 
 This is not a claim that these variables are unimportant. It is a claim that adding them would reduce focus without improving identification of the thesis's central question.
 
-# 5. Open-access and automatic retrieval architecture
+# 6. Open-access and automatic retrieval architecture
 
 ## 5.1 Primary provider
 
@@ -172,7 +230,7 @@ Therefore the baseline can be reconstructed later from the web even if FRED's cu
 
 The saved local frozen files remain the primary reproducibility source. The historical-vintage API is an independent reconstruction route.
 
-# 6. Sample-period justification
+# 7. Sample-period justification
 
 ## 6.1 Why the start dates differ across targets
 
@@ -221,7 +279,7 @@ M2 is the latest-starting monthly component, so the common multivariate sample b
 
 No series is artificially extended backward.
 
-# 7. Transformation justification
+# 8. Transformation justification
 
 ## 7.1 Log differences
 
@@ -256,7 +314,7 @@ Their level/difference representation is determined by the stationarity protocol
 
 If differencing is required statistically, policy-facing figures reconstruct the level from the last observed value, while formal forecast evaluation remains on the modeled stationary target.
 
-# 8. Test justification
+# 9. Test justification
 
 | Test | Why it exists in the design |
 |---|---|
@@ -275,7 +333,7 @@ If differencing is required statistically, policy-facing figures reconstruct the
 
 Each test therefore answers a named methodological question. None is included only because it is conventional.
 
-# 9. Frozen-data reproducibility protocol
+# 10. Frozen-data reproducibility protocol
 
 Exact future reproduction requires more than remembering the series IDs.
 
@@ -294,7 +352,7 @@ The baseline workflow is:
 
 Therefore a rerun years later does not depend on whatever FRED happens to report at that future date.
 
-# 10. Defense-ready answers
+# 11. Defense-ready answers
 
 **Why these six series?**  
 Because together they give the minimum non-redundant representation of the macroeconomic concepts explicitly used in Part 4: inflation, real growth, monthly cyclical activity, labour slack, monetary policy, and the monetary aggregate.
