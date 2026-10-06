@@ -604,25 +604,29 @@ It does not provide a separate inferential test and is not used alone to claim s
 
 ---
 
-## 3.24 Diebold-Mariano with Harvey-Leybourne-Newbold finite-sample correction
+## 3.24 Harvey-Leybourne-Zu under instability, with DM-HLN retained secondarily
 
 ### Methodological choice
 
-Retain DM for pairwise point-forecast comparison and use the Harvey-Leybourne-Newbold small-sample modification.
+Use **Harvey, Leybourne, and Zu (2025)** as the primary pairwise equal-average-accuracy test and retain DM-HLN only as a secondary conventional benchmark.
 
 ### Academic support
 
-**Diebold and Mariano (1995)** propose tests of equal predictive accuracy under broad loss functions and allow forecast errors to be non-Gaussian and serially/contemporaneously correlated.
+**Harvey, Leybourne, and Zu (2025)** study equal average forecast accuracy when the mean of the forecast-loss differential may vary through time. They show that the standard Diebold-Mariano long-run variance estimator can become inconsistent under such instability and propose a modified statistic based on nonparametric local demeaning.
 
-**Harvey, Leybourne, and Newbold (1997)** study finite-sample shortcomings and propose modifications for practical forecast comparison.
+This is unusually well matched to the dissertation because instability is not a nuisance feature of the application; it is the central empirical setting.
+
+**Diebold and Mariano (1995)** remains the foundational point-forecast comparison framework.
+
+**Harvey, Leybourne, and Newbold (1997)** provide the familiar finite-sample modification retained for secondary comparison.
 
 ### Defense sentence
 
-> DM remains because the thesis asks whether two point forecasts have equal predictive accuracy. The finite-sample correction addresses the reviewer's concern that an old unmodified DM implementation is not enough.
+> We do not discard Diebold-Mariano, but we no longer let it carry the main inferential conclusion. Because the thesis explicitly studies unstable macroeconomic environments, the primary pairwise test is the recent Harvey-Leybourne-Zu procedure designed to remain valid when relative forecast performance changes over time.
 
 ### Status
 
-**Strong Q1 forecasting/econometrics support.**
+**Very strong and directly thesis-specific recent Q1 support.**
 
 ---
 
@@ -636,7 +640,11 @@ Use conditional predictive ability regression to test whether relative forecast 
 
 **Giacomini and White (2006)** develop a conditional predictive-ability framework designed for realistic forecasting models that may be misspecified.
 
+**Odendahl, Rossi, and Sekhposyan (2023)** provide recent Q1 evidence that forecast performance can itself be state-dependent and develop hard/smooth threshold evaluation procedures for such settings.
+
 This is a direct match to the thesis question: not only “which model wins on average?” but “does the relative loss change with the economic state?”
+
+The thesis does not adopt the full Odendahl-Rossi-Sekhposyan unknown-threshold machinery as a baseline test because its principal states are predeclared economically through NBER recession/expansion and turning-point windows.
 
 ### Defense sentence
 
@@ -1135,7 +1143,7 @@ If the final empirical conclusion turns out to be highly sensitive to one of the
 
 ## “Why not just use the model with the lowest in-sample AIC?”
 
-Because the thesis asks a **forecasting** question. In-sample information criteria help specification, but genuine predictive value must be evaluated out of sample. West (1996), Diebold and Mariano (1995), and Giacomini and White (2006) provide the inferential forecasting framework.
+Because the thesis asks a **forecasting** question. In-sample information criteria help specification, but genuine predictive value must be evaluated out of sample. West (1996), Diebold and Mariano (1995), Harvey, Leybourne, and Zu (2025), and Giacomini and White (2006) provide the inferential forecasting framework.
 
 ## “Why BIC rather than AIC?”
 
@@ -1176,6 +1184,10 @@ Because the statistical experiment should not be weakened merely to save runtime
 ## “Why multiple horizons?”
 
 Because model rankings can be horizon-dependent. Marcellino et al. (2006) provide large-scale macroeconomic evidence on multi-horizon forecasting, and the President specifically questioned h=1.
+
+## “Why Harvey-Leybourne-Zu rather than relying on DM-HLN?”
+
+Because Harvey, Leybourne, and Zu (2025) directly study equal average forecast accuracy when the mean loss differential may be unstable through time. That setting is closer to this dissertation than the stable relative-performance environment underlying the conventional DM implementation. DM-HLN remains visible as a conventional benchmark, but the primary pairwise conclusion follows the instability-robust test.
 
 ## “Why Giacomini-White?”
 
@@ -1254,6 +1266,8 @@ Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence set. *Econ
 
 Harvey, D., Leybourne, S., & Newbold, P. (1997). Testing the equality of prediction mean squared errors. *International Journal of Forecasting, 13*(2), 281–291. https://doi.org/10.1016/S0169-2070(96)00719-4
 
+Harvey, D. I., Leybourne, S. J., & Zu, Y. (2025). Testing for equal average forecast accuracy in possibly unstable environments. *Journal of Business & Economic Statistics, 43*(3), 643–656. https://doi.org/10.1080/07350015.2024.2418835
+
 Hyndman, R. J., & Koehler, A. B. (2006). Another look at measures of forecast accuracy. *International Journal of Forecasting, 22*(4), 679–688. https://doi.org/10.1016/j.ijforecast.2006.03.001
 
 Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root? *Journal of Econometrics, 54*(1–3), 159–178. https://doi.org/10.1016/0304-4076(92)90104-Y
@@ -1261,6 +1275,8 @@ Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). Testing the
 Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988). Testing linearity against smooth transition autoregressive models. *Biometrika, 75*(3), 491–499. https://doi.org/10.1093/biomet/75.3.491
 
 Marcellino, M., Stock, J. H., & Watson, M. W. (2006). A comparison of direct and iterated multistep AR methods for forecasting macroeconomic time series. *Journal of Econometrics, 135*(1–2), 499–526. https://doi.org/10.1016/j.jeconom.2005.07.020
+
+Odendahl, F., Rossi, B., & Sekhposyan, T. (2023). Evaluating forecast performance with state dependence. *Journal of Econometrics, 237*(2), 105220. https://doi.org/10.1016/j.jeconom.2021.07.015
 
 Pesaran, M. H., & Timmermann, A. (2007). Selection of estimation window in the presence of breaks. *Journal of Econometrics, 137*(1), 134–161. https://doi.org/10.1016/j.jeconom.2006.03.010
 
