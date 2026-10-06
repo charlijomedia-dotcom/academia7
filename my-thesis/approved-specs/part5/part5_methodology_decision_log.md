@@ -32,11 +32,12 @@
 | Model adequacy | Formal gate before forecast interpretation | Implements Verne's fit-before-forecast point |
 | MAPE | Removed | Unstable for zero/negative growth and inflation observations |
 | Forecast metric | RMSE, MAE, OOS R² | Simple, interpretable point-forecast metrics |
-| Formal pairwise test | DM with HLN correction | Familiar global comparison, improved finite-sample treatment |
+| Primary pairwise forecast test | Harvey-Leybourne-Zu (2025) instability-robust equal-average-accuracy test | Recent Q1 procedure directly designed for forecast-loss differentials whose mean may vary over time, matching the thesis instability setting |
+| Secondary pairwise test | DM with Harvey-Leybourne-Newbold correction | Retained as a familiar conventional benchmark and for transparent comparison with the submitted thesis; not the primary inferential result |
 | Multiple-model test | Model Confidence Set | Stronger than choosing a winner from many pairwise p-values |
-| State comparison | State-specific RMSE/MAE + Giacomini-White conditional predictive ability regression | Published Q1 framework for testing whether relative forecast performance changes in recessions/turning points |
-| Clark-West | Not baseline | Main nonlinear comparisons are not simple nested linear models |
-| Amisano-Giacomini | Not baseline | Thesis evaluates point forecasts, not comparable predictive densities |
+| State comparison | State-specific RMSE/MAE + Giacomini-White conditional predictive ability regression | Top-journal framework for testing whether relative forecast performance changes in predeclared recessions/turning points; recent Odendahl-Rossi-Sekhposyan evidence supports state-dependent evaluation |
+| Clark-McCracken / Clark-West | Not baseline | Designed for regular nested comparisons; main AR-vs-MSAR/STAR comparisons are not regular nested linear settings |
+| Amisano-Giacomini | Not baseline | Thesis evaluates point forecasts, not a common validated set of predictive densities |
 | Baseline horizon | h=1 | Preserves main question and direct interpretation |
 | Horizon robustness | monthly h=3,6,12; quarterly h=2,4 | Direct P-05 response |
 | Rolling windows | 240 monthly; 120 quarterly | Ex ante bias-variance compromise under instability; literature supports rolling windows but does not uniquely dictate these exact lengths, so the thesis will state them as design assumptions rather than optimal values |
