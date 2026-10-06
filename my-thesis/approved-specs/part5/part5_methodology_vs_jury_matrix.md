@@ -12,7 +12,7 @@
 | R1-11 | First-order Markov chain, transition matrix, occupancy, duration, persistence explicitly reported | Transition/regime table |
 | R1-12 | Concept-to-series selection rationale, official source/ID, machine-retrieval rule, exact dates, transformations, and frozen-vintage manifest | Data selection table + data audit + frozen manifest |
 | R1-13 | Every diagnostic table states H0, statistic, distribution/bootstrap, p-value, rule | Standardized diagnostics table |
-| R1-14 | DM-HLN + Giacomini-White conditional predictive ability + Model Confidence Set; explicit explanation for not mechanically using Clark-West/Amisano-Giacomini | Forecast-comparison section |
+| R1-14 | Harvey-Leybourne-Zu (2025) as primary instability-robust pairwise test + Giacomini-White conditional predictive ability + Model Confidence Set; DM-HLN retained secondarily; explicit explanation for not mechanically using Clark-McCracken/Clark-West or Amisano-Giacomini | Forecast-comparison section + pairwise/state/MCS output tables |
 | R1-15 | BIC lag selection + CPI p=1/3/6/12 robustness | CPI lag-robustness table/plot |
 | R1-17 | MS convergence, occupancy, transition boundaries, durations, policy-rate diagnostic block | MS credibility table + failure flags |
 | R1-18 | Tsay general nonlinearity test + LST/Teräsvirta STAR specification tests before nonlinear interpretation; no naive MS chi-square LR | Nonlinearity table + explicit MS testing caveat |
