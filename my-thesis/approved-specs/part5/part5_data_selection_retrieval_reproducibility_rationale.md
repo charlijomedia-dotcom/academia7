@@ -97,7 +97,7 @@ FRED satisfies the retrieval criterion because it distributes official series fr
 
 # 4. Why each target is retained
 
-## 3.1 Real GDP, GDPC1
+## 4.1 Real GDP, GDPC1
 
 **Why:** GDP is the broadest standard measure of real aggregate production and therefore the natural quarterly growth target. It connects directly to the thesis's growth discussion and to Okun-style output-labour relations.
 
@@ -112,7 +112,7 @@ This produces an annualized continuously compounded quarter-over-quarter real-gr
 
 **Expected frozen range:** 1947Q1 to 2026Q2 in raw levels, subject to vintage verification.
 
-## 3.2 CPI, CPIAUCSL
+## 4.2 CPI, CPIAUCSL
 
 **Why:** CPI gives a long official monthly consumer-price series beginning in 1947. Inflation is central to Fisher, Phillips/Phelps, and stabilization-policy reasoning.
 
@@ -125,7 +125,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Expected frozen range:** 1947M1 to 2026M8 in raw levels.
 
-## 3.3 Unemployment, UNRATE
+## 4.3 Unemployment, UNRATE
 
 **Why:** UNRATE is the direct U.S. labour-market slack variable in Phillips/Phelps and Okun reasoning. It is monthly, official, and begins in 1948.
 
@@ -135,7 +135,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Expected frozen range:** 1948M1 to 2026M8 for the common monthly endpoint.
 
-## 3.4 Industrial production, INDPRO
+## 4.4 Industrial production, INDPRO
 
 **Why:** GDP is quarterly, but the thesis also needs a monthly real-activity target to evaluate state dependence around recessions and turning points. INDPRO is an official Federal Reserve index and is strongly tied to cyclical fluctuations.
 
@@ -146,7 +146,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Sample:** deliberately truncated to 1947M1 through 2026M8.
 
-## 3.5 Federal funds rate, FEDFUNDS
+## 4.5 Federal funds rate, FEDFUNDS
 
 **Why:** it is the long monthly effective federal funds rate and the most direct policy-rate series for the thesis's Federal Reserve focus.
 
@@ -156,7 +156,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Expected frozen range:** 1954M7 to 2026M8.
 
-## 3.6 M2 monetary aggregate, M2SL
+## 4.6 M2 monetary aggregate, M2SL
 
 **Why:** Prof. Verne explicitly asked the thesis to retain the money-supply/monetary-aggregate dimension. M2 supplies empirical content to that discussion and gives the monthly VAR a monetary-conditions variable.
 
@@ -167,7 +167,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Expected frozen range:** 1959M1 to 2026M8.
 
-## 3.7 USREC
+## 4.7 USREC
 
 **Why:** Prof. Verne and the jury require visible analysis of recessions, expansions, peaks, and troughs.
 
