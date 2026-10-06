@@ -24,7 +24,7 @@ This preserves the four scientific functions identified in the first Part 4 draf
 | Question | What is the economic problem, why is it unresolved, what is added, and how will it be tested? |
 | Input | Parts 1–3 and Verne constraints V-01 to V-08 |
 | Contribution | Defines one precise problématique and the burden of proof |
-| Analysis | Contemporary policy motivation; literature gap; central question; bounded contribution; falsification conditions; empirical logic; scope |
+| Analysis | Contemporary policy motivation; explicit justification for choosing the United States as the empirical case; literature gap; central question; bounded contribution; falsification conditions; empirical logic; scope and external-validity boundary |
 | Jury requirements | R1-01, R1-09, R1-19, R1-20, R1-21, P-01, P-05, P-06 |
 | Part 1 principles | P1-01, P1-03, P1-04, P1-05, P1-07, P1-12, P1-15 |
 | Output | Reader understands the whole thesis before Chapter 1 |
@@ -40,7 +40,7 @@ This preserves the four scientific functions identified in the first Part 4 draf
 | Question | Which economic mechanisms make the selected aggregates policy-relevant, and why can their relationships become unstable? |
 | Input | General Introduction |
 | Contribution | Converts macroeconomic theory into a precise forecasting problem |
-| Analysis | Fisher; Phillips/Phelps; Okun; monetary transmission; relevant macro traditions; Schumpeter/structural change; nonlinear taxonomy; focused literature gap |
+| Analysis | Fisher; Phillips/Phelps; Okun; monetary transmission; relevant macro traditions; Schumpeter/structural change; explicit U.S. case motivation; nonlinear taxonomy; focused literature gap |
 | Jury requirements | R1-08, R1-10, R1-19, R1-20, R1-21, P-01, P-06 |
 | Verne requirements | V-02, V-03, V-05, V-08 |
 | Part 1 principles | P1-01 to P1-07, P1-12, P1-13 |
