@@ -12,7 +12,40 @@ No old thesis code is assumed to exist.
 
 Scientific validity has priority over runtime, but the code must not repeat work that the methodology does not require.
 
-# 2. Main efficiency rule
+# 2. Frozen-data initialization and default no-internet rule
+
+The thesis baseline must be generated from a historical FRED/ALFRED vintage dated **2026-10-05**.
+
+Provide an initialization command, for example:
+
+`python code/run_all.py --initialize-frozen`
+
+The exact CLI name may differ, but the behavior is fixed:
+
+- read `FRED_API_KEY` from the environment;
+- retrieve only the approved FRED series IDs;
+- request the 2026-10-05 historical vintage;
+- request raw levels only;
+- save each series under `data/frozen/fred_vintage_2026-10-05/`;
+- save metadata, query parameters, row counts, and SHA-256 hashes;
+- create one immutable manifest;
+- verify expected start/end dates;
+- stop on any unexplained discrepancy.
+
+After frozen initialization, the normal thesis command must not contact the internet.
+
+`python code/run_all.py`
+
+must:
+
+- verify frozen hashes;
+- read the local frozen files;
+- transform locally;
+- reproduce all baseline outputs.
+
+A separate optional command may reconstruct the same 2026-10-05 vintage from ALFRED for audit purposes. A current-data refresh must write to a different dated namespace and may never overwrite the thesis baseline.
+
+# 3. Main efficiency rule
 
 The pipeline must distinguish:
 
@@ -41,7 +74,7 @@ The new pipeline is still expected to be much lighter than the previous design b
 - stages are checkpointed;
 - independent tasks can run in parallel.
 
-# 3. Mandatory module structure
+# 4. Mandatory module structure
 
 Recommended logical modules:
 
@@ -64,7 +97,7 @@ code/
 
 Exact filenames may differ, but separation of responsibilities must remain clear.
 
-# 4. Checkpointing
+# 5. Checkpointing
 
 After each stage, save a deterministic checkpoint.
 
@@ -83,7 +116,7 @@ Minimum checkpoints:
 
 If a later stage fails, rerunning the project must not repeat valid earlier work.
 
-# 5. Cache keys
+# 6. Cache keys
 
 Model-fit cache key must include:
 
@@ -98,7 +131,7 @@ Model-fit cache key must include:
 
 Never reuse a cache entry when any key element changes.
 
-# 6. Warm starts
+# 7. Warm starts
 
 For MSAR and STAR:
 
@@ -109,7 +142,7 @@ For MSAR and STAR:
 
 Warm starts may accelerate optimization but may not change the objective function or parameter bounds.
 
-# 7. Parallelization
+# 8. Parallelization
 
 Safe parallel units include:
 
@@ -122,7 +155,7 @@ Do not parallelize writes to the same output path.
 
 Randomized procedures must use reproducible child seeds.
 
-# 8. Runtime reporting
+# 9. Runtime reporting
 
 Every stage must log:
 
@@ -139,7 +172,7 @@ Create:
 
 The purpose is to identify genuine bottlenecks rather than assume nonlinear models are slow.
 
-# 9. Smoke-test mode
+# 10. Smoke-test mode
 
 Provide a fast `--smoke-test` mode using:
 
@@ -151,7 +184,7 @@ Provide a fast `--smoke-test` mode using:
 
 Smoke test validates code paths only. Its outputs must never be mixed with thesis baseline outputs.
 
-# 10. Baseline run
+# 11. Baseline run
 
 Normal:
 
@@ -166,7 +199,7 @@ must use:
 
 No internet retrieval in the default run.
 
-# 11. Refresh run
+# 12. Refresh run
 
 Only explicit:
 
@@ -178,13 +211,13 @@ It must create a new dated snapshot and a separate output namespace.
 
 It must not replace baseline outputs.
 
-# 12. Robustness run separation
+# 13. Robustness run separation
 
 Robustness outputs must be stored separately from baseline outputs.
 
 A robustness model may not overwrite or silently become the baseline because it performs better.
 
-# 13. Failure behavior
+# 14. Failure behavior
 
 A failed nonlinear model must:
 
@@ -193,11 +226,16 @@ A failed nonlinear model must:
 - allow other independent models to continue;
 - never trigger a silent change in parameterization.
 
-# 14. Reproducibility tests
+# 15. Reproducibility tests
 
 At minimum implement tests for:
 
+- frozen-file hash verification;
+- historical-vintage date equals 2026-10-05;
+- expected raw and common sample endpoints;
+- no manual or silent data substitution;
 - transformations;
+- annualization factors;
 - lag construction;
 - rolling-window boundaries;
 - no future data in predictors;
@@ -207,7 +245,7 @@ At minimum implement tests for:
 - deterministic cache key;
 - reconstructed level forecast when a rate is modeled in differences.
 
-# 15. Part 6 starting condition
+# 16. Part 6 starting condition
 
 Before coding, Claude must read Parts 1–5 and produce an implementation plan.
 
