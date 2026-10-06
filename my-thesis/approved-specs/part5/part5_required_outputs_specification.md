@@ -33,7 +33,43 @@ Every output must carry:
 - creation timestamp;
 - series/model/horizon identifiers where relevant.
 
-# 2. Data and transformation outputs
+# 2. Data selection, retrieval, sample, and transformation outputs
+
+## T2.0 Concept-to-series selection table
+
+For every retained or explicitly excluded candidate:
+
+- Part 4 economic concept;
+- candidate series;
+- FRED ID if applicable;
+- retained yes/no;
+- economic justification;
+- statistical/frequency justification;
+- open-access retrieval status;
+- reason for exclusion if not retained.
+
+## T2.0A Frozen-data manifest
+
+For every baseline file:
+
+- series ID;
+- source;
+- vintage date;
+- exact request parameters;
+- raw first date;
+- raw last date;
+- row count;
+- retrieval timestamp;
+- SHA-256 hash;
+- hash verification status.
+
+## F2.0 Sample-coverage timeline
+
+One horizontal timeline showing the raw/usable sample coverage of every target, the common monthly endpoint, and the VAR common sample.
+
+Purpose: make the date choices visually auditable for the jury.
+
+# 3. Data and transformation outputs
 
 ## T2.1 Data dictionary and sample audit
 
@@ -71,7 +107,7 @@ Requirements:
 - break date marker for UNRATE/FEDFUNDS where ZA identifies one;
 - no multi-series scaling that makes a target unreadable.
 
-# 3. Nonlinearity outputs
+# 4. Nonlinearity outputs
 
 ## T2.3 General nonlinearity diagnostic
 
@@ -93,7 +129,7 @@ For each target:
 
 No naive chi-square one-regime versus two-regime MS likelihood-ratio p-value is reported. The reason must be stated in the methodology text.
 
-# 4. Model-selection and adequacy outputs
+# 5. Model-selection and adequacy outputs
 
 ## T2.5 Selected classical specifications
 
@@ -157,7 +193,7 @@ Do not overlay every model if readability suffers.
 
 Readable, one model per panel or figure.
 
-# 5. Baseline forecast outputs
+# 6. Baseline forecast outputs
 
 ## T3.3 Main h=1 forecast table
 
@@ -196,7 +232,7 @@ Cumulative squared-error difference versus AR for each valid competitor.
 
 Purpose: show when relative performance accumulates or reverses over time without claiming causal timing.
 
-# 6. State-conditioned outputs
+# 7. State-conditioned outputs
 
 ## T3.5 State forecast performance and conditional predictive ability
 
@@ -239,7 +275,7 @@ Use descriptive reporting if cell size is too small for formal inference.
 
 Plot state-specific RMSE or MAE differences relative to AR, clearly labeled as descriptive. Formal state dependence is reported through the Giacomini-White conditional predictive ability table rather than an ad hoc bootstrap confidence interval.
 
-# 7. Mandatory robustness outputs
+# 8. Mandatory robustness outputs
 
 ## T4.1 UNRATE/FEDFUNDS transformation robustness
 
@@ -280,7 +316,7 @@ For CPI, INDPRO, UNRATE, FEDFUNDS, M2 on common sample:
 - standardized-residual diagnostics;
 - note on whether mean forecast changed.
 
-# 8. Failure registry
+# 9. Failure registry
 
 ## T4.7 Model failure and fragility registry
 
@@ -309,7 +345,7 @@ Reason codes should include at minimum:
 - RESIDUAL_AUTOCORR
 - EXTREME_FORECAST
 
-# 9. Main-text figure rule
+# 10. Main-text figure rule
 
 The main dissertation should use only figures that answer a research question.
 
@@ -323,14 +359,14 @@ Do not include:
 
 Those belong in appendices or repository documentation.
 
-# 10. Significance and confidence display
+# 11. Significance and confidence display
 
 - exact p-values where space permits;
 - superscript *, **, *** only for 10/5/1%;
 - 95% confidence intervals only where a published inferential procedure supplies them;
 - 95% bands for ACF/cross-correlation displays.
 
-# 11. Part 8 claim-ready outputs
+# 12. Part 8 claim-ready outputs
 
 Claude must create a machine-readable claim matrix:
 
