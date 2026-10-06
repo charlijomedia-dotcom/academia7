@@ -19,7 +19,7 @@
 | R1-19 | Monthly five-variable VAR robustness | VAR forecast comparison on common sample |
 | R1-20 | Nowcasting explicitly outside core; no claim that native-frequency forecasting is nowcasting | Scope subsection |
 | R1-22 | Entire empirical set regenerated from frozen data, with all failures visible | Part 8 audit |
-| R1-23 | M2SL exact raw/transformed dates printed from frozen data | Data audit; M2 note |
+| R1-23 | M2SL exact raw/transformed dates printed from the 2026-10-05 frozen vintage; M2 retained for explicit monetary-aggregate rationale | Data audit; M2 note; frozen manifest |
 | P-01 | Single-equation identification limit + VAR alternative-explanation check | VAR results + explicit limitation |
 | P-02 | ADF + KPSS + Zivot-Andrews decision rule for UNRATE/FEDFUNDS | Stationarity table + break plot |
 | P-03 | Policy-rate transformation and MS credibility separated into diagnostic stages | Dedicated policy-rate diagnostic output |
@@ -44,3 +44,16 @@
 - P1-10: each robustness exercise is tied to a named threat.
 - P1-11: decisive evidence stays in main text, repetitive detail moves to appendices.
 - P1-17: every numerical claim must trace to a reproduced output.
+
+
+## Part 4 alignment check
+
+Part 5 must remain traceable to the approved Part 4 structure:
+
+- Chapter 1 concepts determine the series-selection rationale;
+- Chapter 2 contains the data, transformation, diagnostic, and model-design decisions;
+- Chapter 3 receives adequacy and baseline forecast outputs;
+- Chapter 4 receives robustness, multivariate, horizon, transformation, and failure analyses;
+- the General Conclusion may use only Part 8 claims supported by the frozen outputs.
+
+Any empirical output without a clear Part 4 home requires explicit user approval before implementation.
