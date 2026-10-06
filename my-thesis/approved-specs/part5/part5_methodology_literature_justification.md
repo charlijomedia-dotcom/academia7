@@ -842,6 +842,192 @@ They are transparent warning flags for closer inspection.
 
 ---
 
+## 3.34 Why these macroeconomic series and not an unrestricted list
+
+### Methodological choice
+
+Use six core forecast targets:
+
+- real GDP;
+- CPI inflation;
+- unemployment;
+- industrial production;
+- federal funds rate;
+- M2 growth;
+
+with USREC used only for ex post business-cycle classification.
+
+### Academic and economic support
+
+The selection follows the economic mechanisms retained in Part 4 rather than an unrestricted data-mining search.
+
+**Stock and Watson (1999)** study U.S. inflation forecasting using unemployment, broader real-activity indicators, interest rates, money, and commodity prices. Their results demonstrate that inflation forecasting is naturally connected to labour-market slack and real activity rather than being an isolated univariate question.
+
+**Bernanke, Boivin, and Eliasz (2005)** emphasize that monetary-policy analysis involves a broad information set and that choosing a specific series to represent a general concept such as real activity is itself a substantive empirical decision. This supports the thesis's explicit distinction between quarterly GDP as comprehensive real output and monthly industrial production as a higher-frequency cyclical activity measure.
+
+The final target set maps one-to-one onto the theory retained at Prof. Verne's request:
+
+- Fisher: inflation and interest rates;
+- Phillips/Phelps: inflation and unemployment;
+- Okun: output/activity and unemployment;
+- monetarist/money-supply discussion: M2;
+- monetary-policy implementation: federal funds rate;
+- business-cycle timing: GDP/INDPRO/UNRATE plus external recession chronology.
+
+### Defense sentence
+
+> We did not begin with all downloadable FRED series and search for variables that make nonlinear models look good. We began with the economic mechanisms in Part 4 and selected the minimum official series needed to observe those concepts.
+
+### Status
+
+**Strong economic-theory and macroeconometric support.**
+
+---
+
+## 3.35 Why CPI is the core inflation target rather than PCEPI
+
+### Methodological choice
+
+Keep CPIAUCSL as the core inflation target while explicitly acknowledging PCEPI as the Federal Reserve's preferred inflation measure.
+
+### Official evidence and logic
+
+FRED records CPIAUCSL from January 1947, while PCEPI begins in January 1959. PCEPI is explicitly described by FRED/BEA as the Federal Reserve's preferred inflation measure.
+
+The thesis chooses CPI because:
+
+1. it gives twelve additional years of postwar monthly history;
+2. it preserves a longer sequence of inflation regimes and business cycles;
+3. the thesis compares model forms across macroeconomic aggregates, not competing inflation indexes;
+4. adding both CPI and PCE as core targets would give inflation disproportionate weight relative to labour, output, money, and policy rates.
+
+### Defense sentence
+
+> PCE is highly relevant for Federal Reserve policy and is acknowledged as such. CPI is retained as the core forecasting target because it provides the longer postwar sample required for the cross-regime comparison and avoids duplicating one macroeconomic concept in the core horse race.
+
+### Status
+
+**Official-data and logical design justification.**
+
+---
+
+## 3.36 Why GDP and industrial production are both retained
+
+### Methodological choice
+
+Keep quarterly real GDP and monthly industrial production.
+
+### Official and economic support
+
+GDP is the comprehensive real-output aggregate.
+
+FRED's documentation for INDPRO states that industrial production and related sectors account for a large share of variation in national output over the business cycle. INDPRO therefore supplies a monthly cyclical activity measure when GDP itself is only observed quarterly.
+
+### Defense sentence
+
+> GDP and industrial production do not duplicate the same empirical role. GDP provides comprehensive quarterly growth; industrial production provides monthly real-activity information needed for turning-point and recession analysis without fabricating monthly GDP.
+
+### Status
+
+**Official-measurement and frequency-based logic.**
+
+---
+
+## 3.37 Why the sample begins in the postwar period
+
+### Methodological choice
+
+Use the earliest defensible postwar observation for each univariate target and truncate INDPRO to January 1947.
+
+### Economic and statistical basis
+
+This is an ex ante economic comparability rule.
+
+The thesis studies modern U.S. macroeconomic forecasting and policy. Extending industrial production back through the Great Depression and World War II would introduce monetary, fiscal, production-control, and institutional regimes that are absent from the other target histories.
+
+At the same time, using the earliest postwar observation available for each series maximizes the number of recessions, expansions, and forecast observations available for nonlinear estimation.
+
+### Defense sentence
+
+> The start date is not chosen around a favorable result. It is the earliest coherent postwar U.S. policy sample supported by the official series, with INDPRO deliberately truncated so that one variable does not import prewar and wartime regimes that the other targets cannot share.
+
+### Status
+
+**Economic and logical design justification.**
+
+---
+
+## 3.38 Why the sample ends at 2026M8 / 2026Q2
+
+### Methodological choice
+
+Freeze the information set on 5 October 2026.
+
+Use:
+
+- August 2026 as the common monthly endpoint;
+- 2026Q2 as the GDP endpoint.
+
+### Official evidence and logic
+
+As of the frozen information date, UNRATE already contained September 2026, while CPIAUCSL, INDPRO, FEDFUNDS, and M2SL were all available through August 2026. Therefore August is the latest month jointly observable across the monthly core targets.
+
+Real GDP for 2026Q2 was available, while the next quarterly release was scheduled later in October.
+
+### Defense sentence
+
+> The terminal date is determined mechanically by what was jointly observable on the predeclared vintage date. We do not stop the sample at a recession, policy event, or point that improves forecast performance.
+
+### Status
+
+**Official release-calendar and no-selection-bias logic.**
+
+---
+
+## 3.39 Why the data are frozen and why ALFRED vintage retrieval matters
+
+### Methodological choice
+
+Build one immutable thesis snapshot corresponding to 2026-10-05, save raw files and hashes, and make normal reruns read only those files.
+
+### Official support
+
+The Federal Reserve Bank of St. Louis explicitly distinguishes FRED's current historical data from ALFRED's real-time historical vintages. Its API documentation states that `vintage_dates` can retrieve observations as they existed on a specified historical date.
+
+This matters because GDP, industrial production, monetary aggregates, and price indexes can be revised after initial publication.
+
+### Defense sentence
+
+> A dissertation result must not change simply because the statistical agency revises history after submission. We therefore freeze the exact vintage used for the thesis and keep ALFRED as an independent web-based reconstruction route.
+
+### Status
+
+**Strong official reproducibility justification.**
+
+---
+
+## 3.40 Why raw levels are retrieved and transformations are computed locally
+
+### Methodological choice
+
+Download raw official series values, freeze them, and compute every transformation in the thesis code.
+
+### Logical basis
+
+If the remote provider performs transformations, a future change in provider defaults, aggregation conventions, or historical values can make the transformation harder to audit.
+
+Local transformation gives one explicit formula and one immutable input.
+
+### Defense sentence
+
+> We separate data acquisition from statistical transformation. The raw official observations are frozen first, then every growth rate and difference is produced transparently by the thesis code.
+
+### Status
+
+**Strong reproducibility logic.**
+
+---
+
 # 4. Choices for which no unique Q1 paper dictates the exact number
 
 Several details are necessary to implement a reproducible dissertation but are not uniquely determined by high-level literature.
@@ -1002,6 +1188,10 @@ This table verifies the present quality of the venues. It is not a claim about h
 ---
 
 # 8. Core references in APA style
+
+Bernanke, B. S., Boivin, J., & Eliasz, P. (2005). Measuring the effects of monetary policy: A factor-augmented vector autoregressive (FAVAR) approach. *The Quarterly Journal of Economics, 120*(1), 387–422. https://doi.org/10.1162/0033553053327452
+
+Stock, J. H., & Watson, M. W. (1999). Forecasting inflation. *Journal of Monetary Economics, 44*(2), 293–335. https://doi.org/10.1016/S0304-3932(99)00027-6
 
 Amisano, G., & Giacomini, R. (2007). Comparing density forecasts via weighted likelihood ratio tests. *Journal of Business & Economic Statistics, 25*(2), 177–190. https://doi.org/10.1198/073500106000000332
 
