@@ -45,6 +45,28 @@ This mapping is mandatory. Claude Code must not produce empirical analyses that 
 
 # 2. Empirical targets, data selection, retrieval, and frozen reproducibility
 
+## 2.1 Why the United States is the empirical case
+
+The country choice is part of the research design and must be defended before individual series are selected.
+
+The United States is chosen because it jointly satisfies five requirements that are unusually important for this thesis:
+
+1. **Economic and policy relevance.** The thesis studies inflation, output, unemployment, money, and interest-rate dynamics in a major monetary economy where Federal Reserve policy is central to the interpretation developed in Part 4.
+2. **Long postwar history.** Official U.S. series provide several decades of monthly and quarterly observations, covering repeated recessions, expansions, inflation episodes, disinflation, low-rate periods, tightening cycles, financial stress, and the pandemic period. This is especially valuable for MSAR, STAR, rolling estimation, and turning-point evaluation.
+3. **Measurement breadth and consistency.** The required concepts can be represented with official series from BEA, BLS, and the Federal Reserve without constructing synthetic proxies.
+4. **Machine-retrievable open data.** FRED/ALFRED exposes the required series through stable identifiers and Python-accessible web services, satisfying the thesis's requirement that the database be reproducible without manual CSV construction.
+5. **Historical-vintage reproducibility.** ALFRED allows the thesis to reconstruct the 2026-10-05 information set even after future revisions to U.S. macroeconomic history.
+
+The United States is therefore selected because it is a particularly strong empirical environment for the thesis question, **not because the methodology is assumed to be U.S.-specific by construction**.
+
+The external-validity rule remains strict:
+
+- empirical rankings are conclusions about the U.S. sample studied;
+- the comparative research design may be transferable;
+- superiority of a specific model family may not be generalized internationally without separate country evidence.
+
+This country-selection rationale belongs in the General Introduction and Chapter 1 in Part 4, while the exact data implementation belongs in Chapter 2.
+
 ## 2.1 Data-selection rule
 
 A series is retained in the core thesis only if it satisfies all of the following:
