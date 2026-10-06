@@ -790,9 +790,11 @@ For every model, series, horizon, and evaluation state:
 
 A positive value indicates improvement over AR under squared-error loss.
 
-## 10.2 Pairwise predictive-accuracy test
+## 10.2 Primary pairwise test: Harvey-Leybourne-Zu under instability
 
-Use the Diebold-Mariano test with the Harvey-Leybourne-Newbold small-sample correction.
+The primary pairwise test of average point-forecast accuracy is **Harvey, Leybourne, and Zu (2025)**.
+
+The test is chosen because the thesis explicitly studies forecasting under instability. Harvey-Leybourne-Zu show that the conventional Diebold-Mariano long-run variance estimator can become inconsistent when the mean forecast-loss differential changes over time. Their modification replaces full-sample demeaning with nonparametric local demeaning and is designed to test equal **average** forecast accuracy while allowing the relative performance of the forecasts to vary through time.
 
 Report comparisons:
 
@@ -806,13 +808,31 @@ Use:
 
 - squared-error loss;
 - absolute-error loss;
-- HAC variance appropriate to horizon, with minimum truncation lag (h-1).
+- the Harvey-Leybourne-Zu long-run variance construction and local-demeaning procedure exactly as defined in the published paper and supplementary material.
 
-The null is equal predictive accuracy.
+The null is equal average forecast accuracy over the evaluation period.
 
-DM is retained as a familiar pairwise test but is no longer the only formal comparison.
+Implementation must record every tuning choice required by the published procedure, including the local-smoothing/bandwidth rule. Claude may not substitute a generic HAC estimator or an undocumented approximation and still label the result Harvey-Leybourne-Zu.
 
-## 10.3 Multiple-model comparison
+This is the **primary pairwise inferential test** for the thesis.
+
+## 10.3 Secondary conventional comparison: DM-HLN
+
+Retain the Diebold-Mariano test with the Harvey-Leybourne-Newbold finite-sample correction as a **secondary conventional benchmark**.
+
+Use the same five model pairs and the same squared- and absolute-error losses.
+
+For multi-step horizons, use a horizon-appropriate long-run variance treatment and document the truncation/bandwidth rule.
+
+DM-HLN is retained because:
+
+- it makes the revision from the submitted thesis transparent;
+- it is familiar to the reviewer and wider forecasting literature;
+- disagreement between DM-HLN and Harvey-Leybourne-Zu is itself informative about sensitivity to instability.
+
+If DM-HLN and Harvey-Leybourne-Zu disagree, the thesis's principal pairwise inferential conclusion follows **Harvey-Leybourne-Zu**, with the discrepancy reported rather than hidden.
+
+## 10.4 Multiple-model comparison
 
 Use the Hansen-Lunde-Nason **Model Confidence Set (MCS)** across all admissible forecast models.
 
@@ -825,7 +845,7 @@ Report:
 
 This avoids interpreting a large table of pairwise p-values as if one model must be uniquely best.
 
-## 10.4 State-conditioned evaluation and conditional predictive ability
+## 10.5 State-conditioned evaluation and conditional predictive ability
 
 Compute descriptive RMSE and MAE separately for:
 
@@ -857,21 +877,23 @@ Report:
 
 If a state indicator has no variation or the regression is numerically unidentified, report descriptive state results only and mark conditional inference unavailable.
 
-This replaces arbitrary fixed block lengths and cell-count thresholds with a published conditional-predictive-ability framework.
+**Odendahl, Rossi, and Sekhposyan (2023)** provides recent Q1 support for the broader principle that forecast performance may be state-dependent. Their full hard/smooth unknown-threshold procedure is not a core test here because the economically relevant states are predeclared as NBER recession/expansion and peak/trough windows rather than estimated from an unknown threshold.
 
-## 10.5 Why Clark-West and Amisano-Giacomini are not baseline tests
+## 10.6 Why Clark-McCracken / Clark-West and Amisano-Giacomini are not baseline tests
 
-### Clark-West
-Designed for nested forecast comparisons. The principal nonlinear models here are not simple nested linear expansions of AR, so Clark-West is not the main test.
+### Clark-McCracken / Clark-West
+These procedures are designed for nested forecast-model comparisons. The principal nonlinear comparisons here, especially AR versus MSAR and AR versus STAR, are not regular nested linear comparisons; under linearity, the nonlinear models also raise nuisance/identification complications.
 
-It may be used for a specifically nested robustness comparison if Part 8 identifies one, but Claude may not add it automatically.
+They therefore are not added mechanically merely because the reviewer named Clark-McCracken as an example of modern forecast-comparison work.
+
+A nested-model test may be used only if a deliberately nested robustness comparison is separately defined and approved.
 
 ### Amisano-Giacomini
-Primarily a predictive-density comparison. The thesis evaluates point forecasts, not a common set of calibrated predictive densities.
+Amisano-Giacomini is designed for predictive-density comparison using weighted likelihood scores. The thesis evaluates point forecasts and does not construct one common, validated predictive-density system across AR, ARMA, MSAR, and STAR.
 
-Therefore it is not appropriate merely because the reviewer listed it as an example.
+It is therefore not appropriate to add the test merely as a checklist response.
 
-This is an explicit methodological answer to R1-14 rather than a checklist response.
+This combination of Harvey-Leybourne-Zu, Giacomini-White, MCS, and secondary DM-HLN is the explicit methodological response to **R1-14**.
 
 ---
 
@@ -1029,10 +1051,12 @@ The final thesis bibliography should verify and include the methodological works
 - Hamilton, J. D. (1989) on Markov-switching macroeconomic dynamics.
 - Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988) on linearity testing against STAR.
 - Teräsvirta, T. (1994) on specification, estimation, and evaluation of STAR models.
+- Harvey, D. I., Leybourne, S. J., & Zu, Y. (2025) on equal average forecast accuracy in possibly unstable environments; this is the primary pairwise test.
 - Diebold, F. X., & Mariano, R. S. (1995) on predictive-accuracy comparison.
-- Harvey, D., Leybourne, S., & Newbold, P. on small-sample correction to forecast-comparison tests.
-- Giacomini, R., & White, H. (2006) as relevant conditional-predictive-ability literature, even though it is not the primary final test.
-- Clark, T. E., & West, K. D. (2007) for nested-model forecast comparison and the reason it is not applied mechanically.
+- Harvey, D., Leybourne, S., & Newbold, P. (1997) on the finite-sample modification retained as a secondary conventional comparison.
+- Giacomini, R., & White, H. (2006) on conditional predictive ability for the predeclared recession/turning-point states.
+- Odendahl, F., Rossi, B., & Sekhposyan, T. (2023) on state-dependent forecast evaluation.
+- Clark, T. E., & McCracken, M. W. and Clark, T. E., & West, K. D. on nested-model forecast comparison and why those tests are not applied mechanically.
 - Hansen, P. R., Lunde, A., & Nason, J. M. (2011) on the Model Confidence Set.
 - Sims, C. A. on VAR methodology.
 
