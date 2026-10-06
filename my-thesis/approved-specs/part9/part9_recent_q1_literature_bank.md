@@ -89,11 +89,9 @@ The thesis explicitly studies forecasting **under macroeconomic instability**. A
 - Chapter 3/4 forecast-evaluation interpretation.
 - Methodological limitations if conventional DM statistics are also displayed.
 
-**Part 5 flag**
+**Part 5 decision**
 
-**FLAG-M5-01:** Before Part 5 is finally approved, reconsider whether the current DM-HLN pairwise test should be supplemented or replaced by the Harvey-Leybourne-Zu instability-robust test for average forecast accuracy. This paper is too directly relevant to ignore.
-
-No Part 5 change should be made solely from this literature-bank note without explicit approval.
+**RESOLVED-M5-01:** The user approved the forecast-comparison update on 6 October 2026. Harvey-Leybourne-Zu (2025) is now the primary pairwise equal-average-accuracy test. DM-HLN is retained only as a secondary conventional comparison. Giacomini-White remains the primary state-conditioned test, and the Hansen-Lunde-Nason Model Confidence Set remains the multiple-model procedure.
 
 **Relevance:** CRITICAL.
 
@@ -627,21 +625,22 @@ Use:
 
 ---
 
-# 6. One major methodological implication that should be resolved before Part 5 approval
+# 6. Resolved methodological implication for Part 5
 
 ## Forecast-accuracy testing under instability
 
-The current Part 5 methodology contains conventional DM-HLN pairwise forecast comparisons plus Giacomini-White conditional predictive ability and the Model Confidence Set.
+The issue is now resolved before Part 8 results are known.
 
-Harvey, Leybourne, and Zu (2025) is specifically about **equal average forecast accuracy in unstable environments** and argues that the conventional DM framework can behave poorly when the mean loss differential changes over time.
+The approved inferential hierarchy is:
 
-Because instability is the central setting of this thesis, Part 5 should be reviewed once more before approval to decide among the following defensible options:
+1. **Harvey-Leybourne-Zu (2025)** as the primary pairwise equal-average-accuracy test under possible instability;
+2. **Giacomini-White (2006)** as the primary conditional/state test for recession and turning-point dependence;
+3. **Hansen-Lunde-Nason Model Confidence Set** for multiple-model inference;
+4. **DM-HLN** retained secondarily as a familiar conventional comparison.
 
-1. make the Harvey-Leybourne-Zu instability-robust test the primary equal-average-accuracy test and retain DM-HLN only as a conventional comparison;
-2. report both, clearly distinguishing their assumptions and purposes;
-3. if software/implementation prevents the modified test, state this as a limitation and rely more heavily on state-dependent/conditional predictive-ability evidence.
+Clark-McCracken / Clark-West are not applied mechanically because the central AR-vs-MSAR/STAR comparisons are not regular nested linear comparisons. Amisano-Giacomini is not a core test because the thesis does not construct a common predictive-density forecasting system.
 
-The decision must be taken **before seeing the final Part 8 model rankings**.
+This decision was taken before seeing the final Part 8 rankings, which protects it from result-driven test selection.
 
 ---
 
