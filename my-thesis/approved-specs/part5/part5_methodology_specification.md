@@ -26,72 +26,185 @@ The methodology is deliberately designed so that:
 
 This follows Part 1, especially P1-03, P1-07, P1-09, P1-10, and P1-17.
 
+## 1.1 Alignment with the approved Part 4 structure
+
+Part 5 is not a separate econometric exercise. It is the empirical implementation of the Part 4 argument.
+
+| Part 4 block | Methodological role in Part 5 | Main empirical output |
+|---|---|---|
+| General Introduction | Define one forecasting problem under instability and the burden of proof | Research-question and claim map |
+| Part I, Chapter 1 | Economic theory identifies the macroeconomic concepts that must be represented: prices, real activity, labour-market slack, monetary policy, monetary conditions, and the business cycle | Series-selection rationale |
+| Part I, Chapter 2 | Convert those concepts into observable time series, transformations, diagnostics, classical benchmarks, nonlinear alternatives, and a pseudo-OOS experiment | Data audit, transformation decisions, model specification |
+| Part II, Chapter 3 | Require credible in-sample representation before comparing real forecasts, then evaluate expansions, recessions, peaks, and troughs | Adequacy tables, main OOS tables, state-conditioned evidence |
+| Part II, Chapter 4 | Challenge the baseline conclusions with transformations, lag choices, regime count, horizons, cross-variable information, and model fragility | Robustness tables, VAR block, failure registry |
+| General Conclusion | Use only verified Part 8 outputs to state what survives and what can or cannot be generalized | Claim-evidence matrix |
+
+This mapping is mandatory. Claude Code must not produce empirical analyses that have no identifiable home in Part 4 unless the user explicitly approves a methodology revision.
+
 ---
 
-# 2. Empirical targets and frozen data
+# 2. Empirical targets, data selection, retrieval, and frozen reproducibility
 
-## 2.1 Baseline frozen snapshot
+## 2.1 Data-selection rule
+
+A series is retained in the core thesis only if it satisfies all of the following:
+
+1. **Economic necessity:** it represents a macroeconomic concept used explicitly in Part 4's Fisher, Phillips/Phelps, Okun, monetary-policy, monetary-aggregate, or business-cycle discussion.
+2. **Forecasting relevance:** it is a meaningful target for macroeconomic monitoring or policy analysis rather than a decorative control.
+3. **Official measurement:** the underlying source is an official U.S. statistical authority or the Federal Reserve.
+4. **Machine accessibility:** observations can be retrieved automatically from FRED/ALFRED using a stable series ID and Python code. No manual spreadsheet construction is permitted.
+5. **Sufficient history:** the series has enough postwar observations for the approved rolling forecast design and for recurrent recession/expansion episodes.
+6. **Frequency compatibility:** the series is monthly or quarterly and can be used without artificial interpolation.
+7. **Parsimony:** a second series measuring the same concept is not added to the core unless it answers a distinct methodological question.
+
+This rule makes the data set a consequence of the thesis argument rather than an arbitrary collection of variables.
+
+## 2.2 Baseline frozen snapshot and online retrieval
 
 The baseline thesis dataset must be created once and then frozen.
 
-**Snapshot date:** 2026-10-05  
-**Data source:** Federal Reserve Economic Data (FRED), exact raw observations saved locally.  
-**Default pipeline behavior:** read only from `data/frozen/`.  
+**Thesis vintage date:** 2026-10-05.  
+**Primary provider:** Federal Reserve Economic Data / ALFRED, Federal Reserve Bank of St. Louis.  
+**Default pipeline behavior after initialization:** read only from `data/frozen/`.  
 **Refresh behavior:** explicit `--refresh-data` only, writing to `data/refreshed/YYYY-MM-DD/`.  
 **Never overwrite the baseline snapshot.**
 
-Every raw file must record:
+### Programmatic retrieval rule
 
-- FRED series ID;
-- series title;
+No thesis series may require manual CSV construction.
+
+The initialization code must retrieve each raw series from FRED/ALFRED by its series ID. The preferred reproducibility path is the official FRED web service with:
+
+- the series ID;
+- `vintage_dates=2026-10-05` or an equivalent real-time setting;
+- raw units, with no FRED-side transformation;
+- a free FRED API key read from the environment variable `FRED_API_KEY`.
+
+The FRED API explicitly supports historical vintage dates, allowing data to be requested as they existed on a specified historical date. This provides an independent reconstruction route if the local frozen files are ever lost.
+
+A simple no-manual-download alternative such as `pandas_datareader.get_data_fred()` may be used for exploratory or refreshed current data. It may **not** silently replace the thesis vintage because current FRED history can be revised.
+
+### Frozen-file rule
+
+At the first approved initialization, save the exact returned raw observations under:
+
+`data/frozen/fred_vintage_2026-10-05/`
+
+For every raw series, save:
+
+- raw CSV or Parquet file;
+- series ID;
+- exact API request parameters;
 - source institution;
+- title;
 - frequency;
 - units;
 - seasonal-adjustment status;
-- retrieval date/time;
+- vintage date;
+- retrieval timestamp;
 - first and last raw observation;
-- SHA-256 hash of the saved file.
+- row count;
+- SHA-256 file hash.
 
-The final dissertation must report the exact usable sample dates generated from this frozen snapshot.
+Also save a master manifest containing the hash of every frozen file.
 
-## 2.2 Core target series
+All transformations must be calculated locally from the frozen raw levels. Do not rely on a remotely transformed series for the baseline. This guarantees that rerunning the same code on the same frozen files reproduces the same transformed observations and model inputs.
 
-| Target | FRED ID | Frequency | Raw form | Baseline target transformation | Main economic role |
+The normal `python code/run_all.py` command must not contact the internet. It must first verify the frozen-file hashes and then reproduce the thesis outputs from those local files.
+
+## 2.3 Core target series and why these variables are selected
+
+| Target | FRED ID | Frequency | Raw form | Baseline target transformation | Why it is in this thesis |
 |---|---|---:|---|---|---|
-| Real GDP growth | GDPC1 | Quarterly | Real GDP, SAAR | 400 × [ln(GDPC1_t) - ln(GDPC1_{t-1})] | Aggregate real activity |
-| CPI inflation | CPIAUCSL | Monthly | CPI-U, seasonally adjusted | 1200 × [ln(CPI_t) - ln(CPI_{t-1})] | Inflation |
-| Unemployment | UNRATE | Monthly | Percent, seasonally adjusted | Level or first difference by predeclared stationarity rule in §3.4 | Labour-market slack |
-| Industrial production growth | INDPRO | Monthly | Index, seasonally adjusted | 1200 × [ln(INDPRO_t) - ln(INDPRO_{t-1})] | Monthly real activity |
-| Federal funds rate | FEDFUNDS | Monthly | Percent, monthly average | Level or first difference by predeclared stationarity rule in §3.4 | Monetary-policy stance |
-| M2 growth | M2SL | Monthly | Billions of dollars, seasonally adjusted | 1200 × [ln(M2_t) - ln(M2_{t-1})] | Monetary aggregate growth |
+| Real GDP growth | GDPC1 | Quarterly | Real GDP, SAAR | 400 × [ln(GDPC1_t) - ln(GDPC1_{t-1})] | The comprehensive real-output aggregate. It gives the thesis a direct measure of economic growth and links to Okun-style output-labour dynamics. |
+| CPI inflation | CPIAUCSL | Monthly | CPI-U, seasonally adjusted | 1200 × [ln(CPI_t) - ln(CPI_{t-1})] | Direct consumer-price inflation measure with a long postwar history. It is central to Fisher/Phillips reasoning and price-stability policy. |
+| Unemployment | UNRATE | Monthly | Percent, seasonally adjusted | Level or first difference by predeclared stationarity rule in §3.4 | Direct labour-market slack measure. It is required by Phillips/Phelps and Okun mechanisms and by recession-policy interpretation. |
+| Industrial production growth | INDPRO | Monthly | Index, seasonally adjusted | 1200 × [ln(INDPRO_t) - ln(INDPRO_{t-1})] | Monthly real-activity measure. It complements quarterly GDP and gives the monthly forecast system a cyclical activity target without interpolating GDP. |
+| Federal funds rate | FEDFUNDS | Monthly | Percent, monthly average | Level or first difference by predeclared stationarity rule in §3.4 | Long monthly U.S. monetary-policy rate. It links Fisherian interest-rate reasoning to the Federal Reserve policy focus of Part 4. |
+| M2 growth | M2SL | Monthly | Billions of dollars, seasonally adjusted | 1200 × [ln(M2_t) - ln(M2_{t-1})] | Monetary aggregate required to give empirical content to the monetarist/money-supply discussion retained at Prof. Verne's request. |
+| Business-cycle state | USREC | Monthly | 0/1 recession indicator | No transformation; evaluation only | External NBER-based chronology used to classify realized forecast errors in expansions, recessions, peaks, and troughs. It is not a forecast target and not a contemporaneous regressor. |
 
-Notes:
+### Economic coverage
 
-1. The factors 400 and 1200 express one-period log changes at annualized percentage rates. Scaling does not change the underlying serial dependence, but it improves macroeconomic interpretation.
-2. The final thesis must call M2 **the M2 monetary aggregate**, not generically “broad money.”
-3. Current FRED metadata confirms that M2SL is a monthly seasonally adjusted series beginning in January 1959 and continuing through the present frozen period. The old suggestion that the usable M2 history ended in 1992 is therefore not carried forward. The pipeline must still print the exact raw and transformed dates from the frozen file.
-4. The policy-rate series remains FEDFUNDS because it is a long monthly U.S. effective federal funds rate series consistent with the thesis's Federal Reserve policy focus.
-5. INDPRO is retained because it provides monthly real-activity information and a useful business-cycle counterpart to quarterly GDP.
-6. All series are U.S. series. The thesis must not generalize the resulting model ranking to other countries.
+The six forecast targets deliberately cover five distinct macroeconomic blocks:
 
-## 2.3 Baseline sample rules
+- **prices:** CPI;
+- **real activity:** real GDP and industrial production;
+- **labour market:** unemployment;
+- **monetary policy:** federal funds rate;
+- **monetary conditions:** M2.
 
-The processed sample begins at the earliest postwar observation available for each target, subject to the minimum rolling estimation window.
+GDP and INDPRO are not treated as duplicate targets. GDP is the comprehensive quarterly output measure; INDPRO provides a monthly cyclical real-activity measure. This frequency distinction is essential because the thesis refuses to create artificial monthly GDP observations.
 
-For interpretability and consistency:
+### Why no additional core targets are added
 
-- INDPRO is truncated to January 1947 even though a longer historical series exists.
-- GDP uses 1947Q1 onward.
-- CPI uses 1947M1 onward.
-- unemployment uses its available postwar history beginning in 1948.
-- FEDFUNDS begins with its available monthly history in 1954.
-- M2 begins in January 1959.
+The baseline does **not** add more variables merely to make the thesis look broader.
 
-The monthly core endpoint is **August 2026** so that the monthly targets share a common terminal month in the frozen snapshot. The quarterly GDP endpoint is **2026Q2**.
+- **PCE price index (PCEPI):** economically important and the Federal Reserve's preferred inflation measure, but it begins in 1959 and largely duplicates the inflation concept already represented by CPI. CPI is retained because it provides a longer postwar history beginning in 1947 and preserves one inflation target rather than overweighting inflation in the cross-series comparison.
+- **Public debt and fiscal deficit:** important to the policy motivation in Part 4, but they are not necessary to identify the thesis's model-form forecasting question and would introduce additional frequency, accounting, and persistence issues.
+- **Exchange rates and commodity/oil prices:** economically relevant sources of shocks, but making them additional core targets would broaden the thesis beyond the selected U.S. aggregate-policy system. The previous Brent exercise is therefore not a core block.
+- **Core inflation, alternative unemployment measures, additional interest rates, and financial-market variables:** potentially useful extensions, but they represent robustness to measurement choice rather than a new element of the central research question.
 
-If the frozen raw files contradict an expected date above, Claude must stop and document the discrepancy instead of silently changing the sample.
+The methodological principle is therefore **conceptual coverage with minimum redundancy**.
 
-## 2.4 Business-cycle chronology
+### Transformation rationale
+
+For GDPC1, CPIAUCSL, INDPRO, and M2SL, the raw level is positive and strongly trending. The log-difference transformation:
+
+`g_t = k × [ln(X_t) - ln(X_{t-1})]`
+
+has three roles:
+
+1. it converts multiplicative level changes into approximately percentage growth rates;
+2. it reduces deterministic/stochastic trend behavior that can create spurious autoregressive persistence;
+3. it produces economically interpretable growth/inflation targets suitable for AR, ARMA, MSAR, and STAR comparison.
+
+Use `k=400` for quarterly GDP and `k=1200` for monthly CPI, INDPRO, and M2 so one-period continuously compounded changes are expressed at annualized percentage rates.
+
+UNRATE and FEDFUNDS are already rates. Logging them is neither necessary nor always economically meaningful, especially around low values. Their baseline level/difference representation is therefore decided by the stationarity protocol rather than imposed mechanically.
+
+The thesis must state that transformation is chosen to create a defensible dynamic target, not to improve a model's forecast ranking after results are observed.
+
+## 2.4 Baseline sample rules and date justification
+
+The sample dates are chosen by an explicit rule, not by searching for a favorable result.
+
+### Start-date rule
+
+The univariate analysis uses the earliest available **post-World War II official observation** for each retained target, with one deliberate harmonization:
+
+- GDPC1: 1947Q1 onward;
+- CPIAUCSL: 1947M1 onward;
+- UNRATE: 1948M1 onward;
+- FEDFUNDS: 1954M7 onward;
+- M2SL: 1959M1 onward;
+- INDPRO: truncated to 1947M1 even though the official series begins earlier.
+
+The 1947 truncation of INDPRO is intentional. The thesis studies modern postwar U.S. macroeconomic forecasting and policy regimes. Including Great Depression and World War II industrial-production observations would introduce institutional and wartime regimes that are not observed for the other core targets and would make the cross-series historical scope less comparable.
+
+Using the earliest defensible postwar observation maximizes the number of business-cycle episodes and observations available for nonlinear estimation without choosing the start date after looking at forecast performance.
+
+### End-date rule
+
+The thesis vintage is fixed at **2026-10-05**.
+
+The monthly core endpoint is **2026M8** because August 2026 is the latest month available for **all** five monthly core targets in the 2026-10-05 information set. Some series already contain September, but using September selectively would create unequal end dates across the monthly comparison.
+
+The quarterly GDP endpoint is **2026Q2**, the latest released quarterly real-GDP observation available by the thesis vintage date.
+
+Thus the endpoint is determined by the information set, not by an economic event or a favorable forecast result.
+
+### VAR common-sample rule
+
+The monthly VAR begins in **1959M1**, because M2 is the latest-starting variable in the five-variable monthly system. The VAR ends in 2026M8, the common monthly endpoint.
+
+No missing earlier observations are backfilled and quarterly GDP is not interpolated.
+
+### Reproducibility check
+
+The frozen-data initialization must verify these expected ranges against the 2026-10-05 vintage. If the historical-vintage API returns a different start or terminal observation, Claude must stop, save the discrepancy, and request approval rather than silently alter the sample.
+
+## 2.5 Business-cycle chronology
 
 Use FRED `USREC` only as an **ex post evaluation chronology**, not as a contemporaneous forecasting regressor.
 
