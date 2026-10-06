@@ -243,7 +243,13 @@ At minimum implement tests for:
 - USREC used only for evaluation;
 - every-origin rolling re-estimation alignment;
 - deterministic cache key;
-- reconstructed level forecast when a rate is modeled in differences.
+- reconstructed level forecast when a rate is modeled in differences;
+- Harvey-Leybourne-Zu loss-differential construction for squared and absolute loss;
+- Harvey-Leybourne-Zu local-demeaning and long-run variance calculation exactly matching the published procedure;
+- deterministic recording of all Harvey-Leybourne-Zu smoothing/bandwidth choices;
+- DM-HLN retained as a separate secondary procedure rather than overwriting the primary test;
+- Giacomini-White recession/turning-point conditioning variables aligned to the forecast target date;
+- Model Confidence Set input loss matrix contains only admissible model forecasts on common forecast dates.
 
 # 16. Part 6 starting condition
 
