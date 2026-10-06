@@ -10,7 +10,7 @@
 | R1-09 | “Better” defined by RMSE/MAE/OOS R² plus formal predictive tests | Main forecast table + test table |
 | R1-10 | Discrete MS state dependence separated from smooth STAR state dependence | Chapter 2 taxonomy + model equations |
 | R1-11 | First-order Markov chain, transition matrix, occupancy, duration, persistence explicitly reported | Transition/regime table |
-| R1-12 | Frozen data dictionary with IDs, units, dates, transformations, rationale | Data audit table |
+| R1-12 | Concept-to-series selection rationale, official source/ID, machine-retrieval rule, exact dates, transformations, and frozen-vintage manifest | Data selection table + data audit + frozen manifest |
 | R1-13 | Every diagnostic table states H0, statistic, distribution/bootstrap, p-value, rule | Standardized diagnostics table |
 | R1-14 | DM-HLN + Giacomini-White conditional predictive ability + Model Confidence Set; explicit explanation for not mechanically using Clark-West/Amisano-Giacomini | Forecast-comparison section |
 | R1-15 | BIC lag selection + CPI p=1/3/6/12 robustness | CPI lag-robustness table/plot |
