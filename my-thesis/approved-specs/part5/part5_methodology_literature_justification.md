@@ -842,7 +842,44 @@ They are transparent warning flags for closer inspection.
 
 ---
 
-## 3.34 Why these macroeconomic series and not an unrestricted list
+## 3.34 Why the United States is the empirical case
+
+### Methodological choice
+
+Use the United States as the single-country empirical environment for the core dissertation.
+
+### Academic and economic support
+
+Several of the methodological references that motivate this thesis are themselves grounded in U.S. macroeconomic forecasting and business-cycle applications.
+
+**Hamilton (1989)** develops the canonical Markov-switching business-cycle application using U.S. output dynamics.
+
+**Stock and Watson (1999, 2007)** study U.S. inflation forecasting and changing inflation dynamics.
+
+**Marcellino, Stock, and Watson (2006)** use a large set of U.S. macroeconomic time series to study multi-step forecasting.
+
+These precedents do not prove that the United States is the only valid country. They show that the U.S. provides a well-established empirical environment for exactly the kind of macroeconomic forecasting questions studied here.
+
+The additional design rationale is:
+
+- repeated postwar expansions and recessions;
+- long monthly and quarterly official series;
+- a clear Federal Reserve policy institution;
+- stable machine-readable data identifiers;
+- ALFRED historical-vintage reconstruction;
+- no need to introduce cross-country measurement and institutional heterogeneity before the model-form question has been answered cleanly.
+
+### Defense sentence
+
+> The United States is not selected merely because its data are convenient. It provides the combination of macroeconomic relevance, repeated regime changes, long official histories, and historical-vintage reproducibility required by a state-dependent forecasting study. The model ranking remains U.S.-specific, while the research design can be replicated internationally.
+
+### Status
+
+**Strong empirical-precedent support plus economic and reproducibility logic.**
+
+---
+
+## 3.35 Why these macroeconomic series and not an unrestricted list
 
 ### Methodological choice
 
@@ -884,7 +921,7 @@ The final target set maps one-to-one onto the theory retained at Prof. Verne's r
 
 ---
 
-## 3.35 Why CPI is the core inflation target rather than PCEPI
+## 3.36 Why CPI is the core inflation target rather than PCEPI
 
 ### Methodological choice
 
@@ -911,7 +948,7 @@ The thesis chooses CPI because:
 
 ---
 
-## 3.36 Why GDP and industrial production are both retained
+## 3.37 Why GDP and industrial production are both retained
 
 ### Methodological choice
 
@@ -933,7 +970,7 @@ FRED's documentation for INDPRO states that industrial production and related se
 
 ---
 
-## 3.37 Why the sample begins in the postwar period
+## 3.38 Why the sample begins in the postwar period
 
 ### Methodological choice
 
@@ -957,7 +994,7 @@ At the same time, using the earliest postwar observation available for each seri
 
 ---
 
-## 3.38 Why the sample ends at 2026M8 / 2026Q2
+## 3.39 Why the sample ends at 2026M8 / 2026Q2
 
 ### Methodological choice
 
@@ -984,7 +1021,7 @@ Real GDP for 2026Q2 was available, while the next quarterly release was schedule
 
 ---
 
-## 3.39 Why the data are frozen and why ALFRED vintage retrieval matters
+## 3.40 Why the data are frozen and why ALFRED vintage retrieval matters
 
 ### Methodological choice
 
@@ -1006,7 +1043,7 @@ This matters because GDP, industrial production, monetary aggregates, and price 
 
 ---
 
-## 3.40 Why raw levels are retrieved and transformations are computed locally
+## 3.41 Why raw levels are retrieved and transformations are computed locally
 
 ### Methodological choice
 
