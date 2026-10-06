@@ -203,9 +203,41 @@ By target and model:
 - RMSE;
 - MAE;
 - OOS R² vs AR;
-- DM-HLN squared-loss statistic/p-value vs AR;
-- DM-HLN absolute-loss statistic/p-value vs AR;
+- Harvey-Leybourne-Zu squared-loss statistic/p-value vs AR;
+- Harvey-Leybourne-Zu absolute-loss statistic/p-value vs AR;
 - model status.
+
+## T3.3A Complete Harvey-Leybourne-Zu pairwise table
+
+For each approved pair, target, horizon, and loss:
+
+- model A;
+- model B;
+- N;
+- mean loss differential;
+- Harvey-Leybourne-Zu statistic;
+- p-value;
+- local-demeaning/bandwidth configuration;
+- 5% decision.
+
+Pairs:
+
+- AR vs ARMA;
+- AR vs MSAR;
+- AR vs STAR;
+- ARMA vs MSAR;
+- ARMA vs STAR.
+
+## T3.3B Secondary conventional DM-HLN table
+
+For the same model pairs and losses:
+
+- DM-HLN statistic;
+- p-value;
+- long-run variance/truncation rule;
+- whether the DM-HLN conclusion agrees with Harvey-Leybourne-Zu.
+
+This table is secondary. If the two procedures disagree, the disagreement must remain visible.
 
 ## T3.4 Model Confidence Set
 
