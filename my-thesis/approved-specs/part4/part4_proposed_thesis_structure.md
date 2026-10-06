@@ -145,16 +145,19 @@ The General Introduction must establish:
 
 1. the contemporary economic and policy problem;
 2. why forecasting inflation, growth, unemployment, monetary conditions, and interest rates matters;
-3. why instability makes forecasting more difficult;
-4. what theory and existing forecasting research already explain;
-5. what remains unresolved;
-6. the central research question and subquestions;
-7. the bounded contribution;
-8. the empirical logic;
-9. what evidence could weaken the argument;
-10. scope and identification limits;
-11. the two-part roadmap;
-12. in the final Part 9 version, only the verified headline findings.
+3. **why the United States is the empirical case studied rather than an arbitrary country choice**;
+4. why instability makes forecasting more difficult;
+5. what theory and existing forecasting research already explain;
+6. what remains unresolved;
+7. the central research question and subquestions;
+8. the bounded contribution;
+9. the empirical logic;
+10. what evidence could weaken the argument;
+11. scope, U.S.-case rationale, and identification limits;
+12. the two-part roadmap;
+13. in the final Part 9 version, only the verified headline findings.
+
+The U.S. case must be justified by a combination of economic importance, unusually long and internally consistent postwar macroeconomic series, repeated inflation/recession/policy episodes, direct relevance of Federal Reserve policy to the thesis, and reproducible access to official FRED/ALFRED vintages. The thesis must also state that choosing the United States does **not** make the final model ranking internationally general. International validation remains an external-validity question.
 
 ---
 
@@ -187,7 +190,7 @@ This chapter supplies the economic foundation without becoming a history of macr
 ### Proposed sections
 
 **1.1 Forecasting as a policy problem under inflation, conflict, debt pressure, and cyclical instability**  
-Explain why policy becomes harder when the expected paths of inflation, growth, unemployment, interest rates, and monetary conditions are uncertain.
+Explain why policy becomes harder when the expected paths of inflation, growth, unemployment, interest rates, and monetary conditions are uncertain. This section must also motivate the United States as the empirical case: a major monetary economy with a long postwar record of inflation, recessions, recoveries, and policy shifts, combined with unusually strong official-data availability and reproducibility.
 
 **1.2 Fisherian relations between inflation, nominal rates, real rates, and expectations**  
 Present the essential Fisher relation explicitly, define each term, state assumptions, and explain why unstable inflation expectations can alter the forecasting environment.
