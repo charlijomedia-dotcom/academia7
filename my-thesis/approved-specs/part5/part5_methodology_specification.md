@@ -236,12 +236,35 @@ For monthly data:
 - expansion = USREC = 0;
 - peak = month immediately preceding a 0→1 transition;
 - trough = month immediately preceding a 1→0 transition;
-- turning-point window = ±3 months around each peak or trough.
+- **baseline turning-point window = ±3 months** around each peak or trough.
 
 For quarterly GDP:
 
 - a quarter is recession-affected if at least one month in the quarter has USREC = 1;
-- quarterly peak/trough windows are ±1 quarter around the quarter containing the monthly peak/trough date.
+- **baseline quarterly peak/trough window = ±1 quarter** around the quarter containing the monthly peak/trough date.
+
+### Why ±3 months is the baseline monthly window
+
+The literature does **not** establish a universal theorem saying that a business-cycle turning-point neighborhood must be exactly ±3 months. The thesis therefore treats ±3 months as a **predeclared operational choice**, not as an estimated or theoretically privileged constant.
+
+The choice is nevertheless informed by high-level business-cycle research:
+
+- **Chauvet and Piger (2008, Journal of Business & Economic Statistics)** use a conservative real-time dating rule in which recession probabilities must remain on the new side of a threshold for **three consecutive months** before a new phase is confirmed.
+- **Li, Sheng, and Yang (2021, International Journal of Forecasting)** describe turning-point identifications occurring **within three months of the NBER date** as reasonably accurate, and report that CFNAI recession signals under benchmark thresholds occurred within three months of NBER dates.
+- **Stock and Watson (2014, Journal of Econometrics)** treat an aggregate turning-point date as an estimated object with a sampling distribution and standard error, supporting the general principle that a turning point should not be interpreted as a perfectly measured single month.
+- **Hamilton (2011, International Journal of Forecasting)** emphasizes the accuracy-versus-timeliness problem in real-time business-cycle dating and the difficulty created by data revisions and changing economic relationships.
+- **Berge and Jordà (2011, American Economic Journal: Macroeconomics)** formally evaluate recession/expansion classification and the horizons at which indicators predict future turning points.
+
+Taken together, these papers support treating the immediate neighborhood of an NBER peak or trough as economically special, and they provide precedent for a short three-month scale. They do **not** establish the exact symmetric ±3-month window used here.
+
+### Mandatory turning-window sensitivity
+
+To prevent the result from depending on the arbitrary number 3, Chapter 4 must repeat the turning-point analysis using:
+
+- **monthly:** ±1 month, **±3 months baseline**, and ±6 months;
+- **quarterly GDP:** turning quarter only, **±1 quarter baseline**, and ±2 quarters.
+
+The sensitivity exercise uses the union of all months/quarters falling within the relevant windows. An observation is counted once even if peak and trough windows overlap. The baseline claim is considered robust only if its substantive interpretation does not depend solely on the ±3-month / ±1-quarter definition.
 
 This chronology must never leak into model estimation unless a future approved methodology explicitly adds it as a lagged predictor.
 
@@ -912,6 +935,7 @@ Each robustness exercise has a named threat.
 | Conditional variance ignored | ARMA-GARCH(1,1) diagnostic when ARCH-LM rejects | Separate mean forecast from variance dynamics |
 | Model failure creates misleading figures | Failure-aware plotting rules | Protect interpretation |
 | Estimation-window choice affects ranking | Document 240-month / 120-quarter rolling-window rationale; interpret as a design assumption rather than an optimal window | Prevent overclaiming robustness to window choice |
+| Turning-point result depends on the arbitrary window width | Monthly ±1 / ±3 / ±6 months; quarterly 0 / ±1 / ±2 quarters | Confirm, qualify, or reject any claim that nonlinear gains are concentrated around peaks/troughs |
 | U.S. sample drives general claim | No false external-validity claim; common-sample/state reporting | Delimit, not “fix,” P-06 |
 
 ## 11.1 K=3 decision rule
