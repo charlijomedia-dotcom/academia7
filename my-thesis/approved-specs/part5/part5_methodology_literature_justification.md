@@ -792,19 +792,47 @@ That is materially different from comparing model forms on aligned monthly/quart
 
 Use NBER/FRED recession chronology only for ex post evaluation of forecast errors, not as a contemporaneous model regressor.
 
+Use a **±3-month window around monthly NBER peaks and troughs** as the predeclared baseline turning-point neighborhood, with **±1 and ±6 months** as mandatory sensitivity checks. For quarterly GDP, use **±1 quarter** as the baseline, with the turning quarter only and ±2 quarters as sensitivity checks.
+
 ### Academic and logical basis
 
-Hamilton (1989) directly connects regime switching to recurring business-cycle recessions.
+**Hamilton (1989)** directly connects regime switching to recurring business-cycle recessions.
 
-Using the official chronology to classify realized forecast targets answers Prof. Verne's policy timing question while preventing look-ahead leakage into the forecast model.
+The exact width of a turning-point neighborhood is not fixed by a universal business-cycle theorem. The baseline ±3-month choice is therefore an operational design convention, but it is informed by high-level business-cycle research.
+
+**Chauvet and Piger (2008, Journal of Business & Economic Statistics)** evaluate real-time U.S. business-cycle dating. Their Markov-switching dating rule uses a conservative confirmation requirement in which recession probabilities must remain on the new side of a threshold for **three consecutive months** before a new phase is declared. This does not equal a symmetric ±3-month evaluation window, but it provides direct precedent for treating three months as a short confirmation scale around regime changes.
+
+**Li, Sheng, and Yang (2021, International Journal of Forecasting)** evaluate real-time U.S. turning-point detection. They describe four of five recession beginnings identified within **three months of the NBER date** as reasonably accurate and also report CFNAI recession signals within three months of NBER dates under benchmark thresholds. This is the closest high-level evidence found to a three-month neighborhood around NBER turning points.
+
+**Stock and Watson (2014, Journal of Econometrics)** formalize aggregate turning points as estimated objects and derive sampling distributions and standard errors for turning-point dates. Their result supports the broader principle that an economy-wide turning point should not be treated as a perfectly measured single calendar month.
+
+**Hamilton (2011, International Journal of Forecasting)** emphasizes that real-time turning-point dating involves data revisions, changing relationships, and an accuracy-versus-timeliness trade-off.
+
+**Berge and Jordà (2011, American Economic Journal: Macroeconomics)** evaluate the NBER recession/expansion chronology using formal classification methods and study which indicators predict future turning points and at what horizons.
+
+The literature therefore supports two claims:
+
+1. the neighborhood around a peak or trough is economically and statistically special;
+2. a three-month scale has credible precedent in high-level U.S. business-cycle dating work.
+
+It does **not** support the stronger claim that ±3 months is the uniquely correct or universally accepted symmetric window.
+
+### Why the sensitivity check is mandatory
+
+Because the exact width remains a design convention, the thesis must repeat the turning-point analysis with narrower and wider definitions:
+
+- monthly: ±1, ±3, ±6 months;
+- quarterly: 0, ±1, ±2 quarters.
+
+If the apparent nonlinear advantage exists only under ±3 months, the final claim must be qualified as window-sensitive. If the substantive conclusion survives the narrower and wider definitions, the jury can see that the finding is not manufactured by the arbitrary choice of the number 3.
 
 ### Defense sentence
 
-> The recession chronology is used to ask where errors occurred, not to give the model information that was unavailable when the forecast was made.
+> We use ±3 months as a predeclared short turning-point neighborhood informed by Q1 business-cycle dating research, not as a universal theorem. Because the literature does not identify one uniquely correct window width, we test ±1, ±3, and ±6 months and qualify any result that depends on the baseline width.
 
 ### Status
 
-**Strong literature support plus no-look-ahead logic.**
+**High-level literature support for the turning-point concept and three-month scale; exact symmetric window remains a transparent design convention protected by mandatory sensitivity analysis.**
 
 ---
 
@@ -1089,7 +1117,7 @@ They are retained only because they are transparent, predeclared, and logically 
 | MS warning thresholds | Make degenerate regimes auditable | Not statistical critical values |
 | STAR optimization bounds | Necessary numerical constraints | Not economically meaningful thresholds |
 | Frozen endpoint | Reproducibility requirement | Not an economically privileged terminal date |
-| USREC ±3-month / ±1-quarter turning window | Transparent operational definition around peaks/troughs | Not a universal business-cycle theorem |
+| USREC ±3-month / ±1-quarter baseline turning window | Short scale informed by Chauvet-Piger and Li-Sheng-Yang; protected by ±1/±3/±6 month and 0/±1/±2 quarter sensitivity | Not a universal or uniquely correct business-cycle theorem |
 
 If the final empirical conclusion turns out to be highly sensitive to one of these conventions, the Part 8 report must classify the relevant claim as **qualified** rather than hide the sensitivity.
 
@@ -1244,6 +1272,10 @@ Stock, J. H., & Watson, M. W. (1999). Forecasting inflation. *Journal of Monetar
 
 Amisano, G., & Giacomini, R. (2007). Comparing density forecasts via weighted likelihood ratio tests. *Journal of Business & Economic Statistics, 25*(2), 177–190. https://doi.org/10.1198/073500106000000332
 
+Berge, T. J., & Jordà, Ò. (2011). Evaluating the classification of economic activity into recessions and expansions. *American Economic Journal: Macroeconomics, 3*(2), 246–277. https://doi.org/10.1257/mac.3.2.246
+
+Chauvet, M., & Piger, J. (2008). A comparison of the real-time performance of business cycle dating methods. *Journal of Business & Economic Statistics, 26*(1), 42–49. https://doi.org/10.1198/073500107000000296
+
 Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. *Journal of Econometrics, 31*(3), 307–327. https://doi.org/10.1016/0304-4076(86)90063-1
 
 Cho, J. S., & White, H. (2007). Testing for regime switching. *Econometrica, 75*(6), 1671–1720. https://doi.org/10.1111/j.1468-0262.2007.00809.x
@@ -1262,6 +1294,8 @@ Giannone, D., Reichlin, L., & Small, D. (2008). Nowcasting: The real-time inform
 
 Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357–384. https://doi.org/10.2307/1912559
 
+Hamilton, J. D. (2011). Calling recessions in real time. *International Journal of Forecasting, 27*(4), 1006–1026.
+
 Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence set. *Econometrica, 79*(2), 453–497. https://doi.org/10.3982/ECTA5771
 
 Harvey, D., Leybourne, S., & Newbold, P. (1997). Testing the equality of prediction mean squared errors. *International Journal of Forecasting, 13*(2), 281–291. https://doi.org/10.1016/S0169-2070(96)00719-4
@@ -1273,6 +1307,8 @@ Hyndman, R. J., & Koehler, A. B. (2006). Another look at measures of forecast ac
 Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root? *Journal of Econometrics, 54*(1–3), 159–178. https://doi.org/10.1016/0304-4076(92)90104-Y
 
 Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988). Testing linearity against smooth transition autoregressive models. *Biometrika, 75*(3), 491–499. https://doi.org/10.1093/biomet/75.3.491
+
+Li, H., Sheng, X. S., & Yang, J. (2021). Monitoring recessions: A Bayesian sequential quickest detection method. *International Journal of Forecasting, 37*(2), 500–510. https://doi.org/10.1016/j.ijforecast.2020.06.013
 
 Marcellino, M., Stock, J. H., & Watson, M. W. (2006). A comparison of direct and iterated multistep AR methods for forecasting macroeconomic time series. *Journal of Econometrics, 135*(1–2), 499–526. https://doi.org/10.1016/j.jeconom.2005.07.020
 
@@ -1289,6 +1325,8 @@ Schwarz, G. (1978). Estimating the dimension of a model. *The Annals of Statisti
 Sims, C. A. (1980). Macroeconomics and reality. *Econometrica, 48*(1), 1–48. https://doi.org/10.2307/1912017
 
 Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become harder to forecast? *Journal of Money, Credit and Banking, 39*(s1), 3–33. https://doi.org/10.1111/j.1538-4616.2007.00014.x
+
+Stock, J. H., & Watson, M. W. (2014). Estimating turning points using large data sets. *Journal of Econometrics, 178*(Part 2), 368–381. https://doi.org/10.1016/j.jeconom.2013.08.034
 
 Teräsvirta, T. (1994). Specification, estimation, and evaluation of smooth transition autoregressive models. *Journal of the American Statistical Association, 89*(425), 208–218. https://doi.org/10.1080/01621459.1994.10476462
 
