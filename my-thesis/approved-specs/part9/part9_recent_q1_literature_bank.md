@@ -8,6 +8,36 @@
 
 ---
 
+# 0. Mandatory source files for Part 9 writing
+
+Part 9 must not rely on this recent-literature bank alone.
+
+For every methodology paragraph in the final thesis, Part 9 must also consult:
+
+- `part5_methodology_literature_justification.md` for the decision-by-decision academic justification of the methodology;
+- `part5_methodology_specification.md` for the exact approved implementation;
+- `part5_methodology_decision_log.md` for the reason each major choice was retained or rejected;
+- `part5_data_selection_retrieval_reproducibility_rationale.md` for country, series, sample, transformation, and reproducibility arguments.
+
+The Part 5 literature-justification file is the main source of the agreed methodological citations, including:
+
+- ADF, KPSS, and Zivot-Andrews for stationarity and breaks;
+- BIC for lag/order selection;
+- Tsay and Luukkonen-Saikkonen-Teräsvirta/Teräsvirta for nonlinearity and STAR specification;
+- Hamilton, Cho-White, and Qu-Zhuo for Markov-switching design and testing limits;
+- Engle and Bollerslev for ARCH/GARCH;
+- Pesaran-Timmermann and Rossi-Inoue for rolling/window issues;
+- Marcellino-Stock-Watson for pseudo-out-of-sample and multi-horizon forecasting;
+- Harvey-Leybourne-Zu, DM-HLN, Giacomini-White, and Hansen-Lunde-Nason for forecast comparison;
+- Clark-West and Amisano-Giacomini for explicit exclusion logic;
+- Sims for the VAR robustness block;
+- Giannone-Reichlin-Small for the nowcasting boundary;
+- Chauvet-Piger, Li-Sheng-Yang, Stock-Watson (2014), Hamilton (2011), and Berge-Jordà for the turning-point-window rationale.
+
+Part 9 must use those citations where the corresponding methodological choice is explained. It must not replace them with uncited general statements.
+
+---
+
 # 1. Selection rule
 
 This bank prioritizes research that satisfies most or all of the following:
