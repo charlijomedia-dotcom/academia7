@@ -36,6 +36,8 @@
 | Secondary pairwise test | DM with Harvey-Leybourne-Newbold correction | Retained as a familiar conventional benchmark and for transparent comparison with the submitted thesis; not the primary inferential result |
 | Multiple-model test | Model Confidence Set | Stronger than choosing a winner from many pairwise p-values |
 | State comparison | State-specific RMSE/MAE + Giacomini-White conditional predictive ability regression | Top-journal framework for testing whether relative forecast performance changes in predeclared recessions/turning points; recent Odendahl-Rossi-Sekhposyan evidence supports state-dependent evaluation |
+| Turning-point window | Monthly ±3 months baseline; quarterly ±1 quarter baseline | Predeclared short transition neighborhood informed by Q1 business-cycle dating literature; not claimed to be a universal theorem |
+| Turning-window robustness | Monthly ±1 / ±3 / ±6 months; quarterly 0 / ±1 / ±2 quarters | Prevent any peak/trough conclusion from depending on the arbitrary baseline width |
 | Clark-McCracken / Clark-West | Not baseline | Designed for regular nested comparisons; main AR-vs-MSAR/STAR comparisons are not regular nested linear settings |
 | Amisano-Giacomini | Not baseline | Thesis evaluates point forecasts, not a common validated set of predictive densities |
 | Baseline horizon | h=1 | Preserves main question and direct interpretation |
