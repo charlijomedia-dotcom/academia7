@@ -295,13 +295,37 @@ In the same output family, report the Giacomini-White conditional predictive abi
 
 ## T3.6 Peak-versus-trough detail
 
-At h=1:
+At h=1 under the **baseline** turning-window definition:
 
 - peak window;
 - trough window;
 - RMSE/MAE and N.
 
 Use descriptive reporting if cell size is too small for formal inference.
+
+## T4.TP1 Turning-point-window sensitivity
+
+For each target/model/horizon, repeat the turning-point classification under:
+
+- monthly ±1 month;
+- monthly **±3 months baseline**;
+- monthly ±6 months;
+- quarterly turning quarter only;
+- quarterly **±1 quarter baseline**;
+- quarterly ±2 quarters.
+
+Report:
+
+- N observations in each window;
+- RMSE;
+- MAE;
+- mean loss difference vs AR;
+- direction of the nonlinear-versus-classical ranking;
+- whether the substantive turning-point conclusion is unchanged, weakened, reversed, or unavailable.
+
+Where Giacomini-White inference is numerically feasible, re-estimate the conditional predictive-ability regression with the alternative `TURN_t` definition. If the state becomes too broad or collinear for reliable inference, retain descriptive sensitivity results and mark inference unavailable.
+
+The output must never describe ±3 months as an established universal convention. It is the predeclared baseline whose arbitrariness is tested by this table.
 
 ## F3.6 State-conditioned forecast comparison plot
 
