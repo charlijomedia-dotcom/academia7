@@ -249,6 +249,10 @@ At minimum implement tests for:
 - deterministic recording of all Harvey-Leybourne-Zu smoothing/bandwidth choices;
 - DM-HLN retained as a separate secondary procedure rather than overwriting the primary test;
 - Giacomini-White recession/turning-point conditioning variables aligned to the forecast target date;
+- monthly turning-point masks are reproducibly generated for ±1, ±3, and ±6 months around each NBER peak/trough;
+- quarterly turning-point masks are reproducibly generated for the turning quarter only, ±1 quarter, and ±2 quarters;
+- overlapping peak/trough windows are represented as a union so an observation is counted once;
+- the baseline state table uses ±3 months monthly and ±1 quarter quarterly, while sensitivity outputs remain separate and may not silently replace the baseline;
 - Model Confidence Set input loss matrix contains only admissible model forecasts on common forecast dates.
 
 # 16. Part 6 starting condition
