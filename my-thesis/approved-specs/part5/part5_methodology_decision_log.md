@@ -1,7 +1,7 @@
 # Part 5: Methodology decision log
 
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED AND FROZEN
 **Purpose:** Record the main methodological choices, why they were made, and what from the previous thesis is not carried forward automatically.
 
 | Decision | Part 5 choice | Why |
