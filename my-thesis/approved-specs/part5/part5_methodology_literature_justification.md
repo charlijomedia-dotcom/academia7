@@ -2,7 +2,7 @@
 
 **Project:** *Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications*  
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED AND FROZEN
 **Purpose:** Provide a defense-ready academic justification for every important Part 5 methodological choice. This file distinguishes choices directly supported by high-level literature from transparent design conventions and records choices that were changed or removed after the literature audit.
 
 ---
