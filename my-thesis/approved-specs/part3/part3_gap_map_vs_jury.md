@@ -1,7 +1,7 @@
 # Part 3: Gap map versus jury remarks
 
 **Date:** 3 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED
 **Sources:**  
 - `CHARLIJO TANNOURY PHD THESIS May 2026.pdf`  
 - Part 2 jury registry (`R1-*`, `P-*`)
