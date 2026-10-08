@@ -1,7 +1,7 @@
 # Part 1: Structure principles for the revised forecasting monograph
 
 **Date:** 3 October 2026  
-**Status:** Proposed principles, supported by the completed Part 1 comparison and submitted for user review. No final chapter structure or methodology is approved by this file.  
+**Status:** APPROVED
 **Evidence companion:** `part1_reference_thesis_benchmarks.md`  
 **Intended repository location after review:** `approved-specs/part1/`
 
