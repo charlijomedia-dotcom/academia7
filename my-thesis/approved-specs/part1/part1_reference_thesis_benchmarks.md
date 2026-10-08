@@ -3,7 +3,7 @@
 **Project:** Revision of the dissertation described in the project brief as *Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications*.
 
 **Date:** 3 October 2026  
-**Status:** Completed Part 1 benchmark analysis, submitted for user review. This file is not evidence of approval of Parts 4 or 5.  
+**Status:** APPROVED
 **Companion:** `part1_thesis_structure_principles.md`  
 **Intended repository location after review:** `approved-specs/part1/`
 
