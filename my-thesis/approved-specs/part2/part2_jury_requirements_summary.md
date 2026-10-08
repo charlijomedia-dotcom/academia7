@@ -1,7 +1,7 @@
 # Part 2: Jury requirements summary
 
 **Date:** 3 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED
 **Companion file:** `part2_jury_remark_registry.md`  
 **Purpose:** Convert the detailed jury registry into a concise set of requirements that Parts 4 and 5 must satisfy.
 
