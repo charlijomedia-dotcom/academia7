@@ -1,7 +1,7 @@
 # Part 5: Methodology versus jury matrix
 
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL
+**Status:** APPROVED AND FROZEN
 
 | Jury ID | Part 5 methodological response | Required evidence/output |
 |---|---|---|
