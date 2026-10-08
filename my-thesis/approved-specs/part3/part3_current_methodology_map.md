@@ -1,7 +1,7 @@
 # Part 3: Current methodology map
 
 **Date:** 3 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED
 **Source:** `CHARLIJO TANNOURY PHD THESIS May 2026.pdf`  
 **Purpose:** Record the methodology currently implemented and described in the submitted thesis, without yet approving it as the final Part 5 methodology.
 
