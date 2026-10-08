@@ -1,7 +1,7 @@
 # Part 4: Old versus new thesis structure
 
 **Date:** 5 October 2026  
-**Status:** REVISED PROPOSAL FOR USER APPROVAL
+**Status:** APPROVED
 
 ## 1. Why the first Part 4 draft was revised
 
