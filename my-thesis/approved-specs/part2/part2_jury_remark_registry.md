@@ -1,7 +1,7 @@
 # Part 2: Jury remark registry
 
 **Date:** 3 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED
 **Purpose:** Record the jury remarks exactly enough that Parts 4 and 5 can answer them without confusing the jury's requests with later methodological choices.  
 **Source documents:**  
 1. Philippe de Peretti, *Rapport du référé #1*, 3 pages.  
