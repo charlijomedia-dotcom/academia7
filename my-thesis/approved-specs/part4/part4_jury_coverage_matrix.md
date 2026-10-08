@@ -1,7 +1,7 @@
 # Part 4: Jury and advisor coverage matrix
 
 **Date:** 5 October 2026  
-**Status:** REVISED PROPOSAL FOR USER APPROVAL  
+**Status:** APPROVED
 **Purpose:** Give every verified jury remark and each structural constraint from Prof. Verne a visible home in the revised two-part thesis architecture.
 
 ## 1. Reviewer 1 coverage
