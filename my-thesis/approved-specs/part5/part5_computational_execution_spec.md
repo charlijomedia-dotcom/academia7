@@ -1,7 +1,7 @@
 # Part 5: Computational execution specification
 
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED AND FROZEN
 **Purpose:** Implement the approved methodology from scratch without reproducing the unnecessary computational burden of the previous thesis pipeline.
 
 # 1. Clean build
