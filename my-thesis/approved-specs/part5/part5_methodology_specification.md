@@ -2,7 +2,7 @@
 
 **Project:** *Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications*  
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED AND FROZEN
 **Inputs:** Parts 1–4, Part 2 jury registry, Prof. Verne requirements recorded in Part 4, and external econometric literature used only to choose appropriate procedures  
 **Purpose:** Freeze the empirical methodology that Claude Code must implement in Parts 6–8.
 
