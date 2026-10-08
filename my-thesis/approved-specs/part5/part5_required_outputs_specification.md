@@ -1,7 +1,7 @@
 # Part 5: Required empirical outputs specification
 
 **Date:** 5 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED AND FROZEN
 **Purpose:** Tell Claude Code exactly what tables, figures, diagnostics, manifests, and result files must exist so Part 8 and Part 9 can be written without manually reconstructing evidence.
 
 # 1. Mandatory machine-readable outputs
