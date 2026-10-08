@@ -26,7 +26,7 @@ Part 9 will be completed externally by ChatGPT after Part 8 is finished and appr
 
 ## 2. Your responsibilities
 
-### Part 6 — Build and execute the empirical pipeline
+### Part 6 — Build and validate the empirical pipeline
 
 Build the Python code required to implement the methodology defined in:
 
@@ -51,7 +51,11 @@ The pipeline must cover, where required by the approved methodology:
 - equations or parameter summaries;
 - execution logs.
 
+Part 6 is an implementation-and-validation stage. Use unit tests, targeted test runs, and smoke tests to verify the code paths and scientific logic. Do not treat Part 6 as the final full empirical execution.
+
 Do not silently modify the approved methodology during implementation.
+
+When the Part 6 implementation is complete and passes its required tests/smoke runs, stop and wait for explicit user approval before starting Part 7.
 
 
 ### Part 7 — Reproducibility
@@ -62,7 +66,7 @@ Maintain:
 
 or the equivalent approved project entry point.
 
-A single command must reproduce the complete empirical pipeline from the frozen thesis dataset to the final empirical outputs.
+Demonstrate that a single command can reproduce the complete empirical pipeline from the frozen thesis dataset to the final empirical outputs.
 
 The pipeline must:
 
@@ -74,12 +78,16 @@ The pipeline must:
 - separate baseline analysis from robustness analysis;
 - never overwrite the frozen thesis dataset with refreshed data.
 
+Part 7 is the reproducibility stage. Its purpose is to verify that the approved pipeline can be reproduced end to end from the frozen data using the approved entry point.
 
-### Part 8 — Empirical audit and analysis
+After reproducibility has been demonstrated, stop and wait for explicit user approval before beginning Part 8.
 
-After the pipeline is complete:
 
-1. run the complete analysis;
+### Part 8 — Final empirical execution, audit, and analysis
+
+After Part 7 is complete and the user approves starting Part 8:
+
+1. run the complete final analysis;
 2. inspect all tables and figures;
 3. check whether models converged correctly;
 4. identify unstable, failed, fragile, or implausible results;
@@ -189,6 +197,23 @@ solely because a change improves the empirical result.
 The purpose is to test the approved research design, not to manufacture model superiority.
 
 
+## 6A. Implementation-error correction rule
+
+Coding or implementation errors may be corrected when discovered.
+
+For every material correction:
+
+1. document the error and its cause in `notes/claude/`;
+2. record what code was changed;
+3. identify which outputs may have been affected;
+4. regenerate all affected downstream outputs;
+5. preserve enough information to distinguish superseded outputs from corrected outputs.
+
+A coding fix must not be used to alter an approved methodological choice.
+
+If the proposed correction would change any locked methodological element in `approved-specs/part5/`, stop and request explicit user approval before making that methodological change.
+
+
 ## 7. Model failures
 
 Do not hide failed models.
@@ -231,11 +256,18 @@ Fresh data must be stored separately under:
 
 and must never overwrite the thesis baseline dataset or its outputs.
 
-Every final empirical output must record:
+Every final empirical output must record, directly or through an associated manifest:
 
+- the run ID;
 - the data snapshot used;
+- the frozen-data hash or manifest hash;
 - the data cutoff date;
-- retrieval/vintage information where relevant.
+- retrieval/vintage information where relevant;
+- the code commit SHA;
+- the configuration hash;
+- the execution timestamp.
+
+These provenance fields must be sufficient to reconstruct which data, code, and configuration produced every thesis-facing empirical artifact.
 
 
 ## 9. Numerical traceability
@@ -335,6 +367,8 @@ Before writing research code:
 6. stop and wait for user approval.
 
 Do not begin empirical coding until the user approves the implementation plan.
+
+After that approval, proceed only through Part 6. When Part 6 is complete, stop for approval before Part 7. When Part 7 reproducibility is complete, stop again for approval before Part 8. Do not collapse Parts 6, 7, and 8 into one uninterrupted execution.
 
 
 ## 14. Final principle
