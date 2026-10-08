@@ -1,7 +1,7 @@
 # Part 5: Data selection, retrieval, sample, transformation, and frozen-reproducibility rationale
 
 **Date:** 6 October 2026  
-**Status:** PROPOSED FOR USER APPROVAL  
+**Status:** APPROVED AND FROZEN
 **Companion files:** `part5_methodology_specification.md`, `part5_methodology_literature_justification.md`  
 **Purpose:** Give a defense-ready answer to five questions: why these macroeconomic series, why not others, how they are retrieved, why the sample dates are chosen, and how exact future reproducibility is guaranteed.
 
