@@ -2,7 +2,7 @@
 
 **Project:** *Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications*  
 **Date:** 5 October 2026  
-**Status:** REVISED PROPOSAL FOR USER APPROVAL  
+**Status:** APPROVED
 **Inputs:** approved Parts 1–3, the user's Part 4 requirements, and Prof. Jean-François Verne's earlier structural remarks  
 **Purpose:** Define the scientific architecture of the revised monograph before Part 5 freezes the econometric methodology.
 
