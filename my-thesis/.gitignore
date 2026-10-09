@@ -1,0 +1,26 @@
+# Derived, regenerable, or non-thesis-facing artifacts.
+#
+# Deliberately NOT ignored:
+#   data/frozen/   the immutable thesis snapshot and its manifest (decision D13)
+#   output/        thesis-facing results, which must be traceable from the repository
+
+# Fit caches and checkpoints (regenerable; keyed by data, code and config hashes)
+cache/
+smoke_cache/
+cache_refreshed/
+
+# Non-baseline output namespaces (never thesis-facing, decision D16)
+smoke_output/
+output_refreshed/
+
+# Refreshed and audit data snapshots (never the thesis baseline)
+data/refreshed/
+data/audit/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/

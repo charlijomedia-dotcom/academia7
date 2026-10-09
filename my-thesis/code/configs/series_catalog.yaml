@@ -1,0 +1,178 @@
+# Concept-to-series catalogue.
+#
+# Source for output T2.0, which must list every retained *and* explicitly excluded
+# candidate with its economic and statistical justification (Outputs §2, jury R1-12).
+# All text is taken from the approved Part 5 rationale; nothing here is my own argument.
+
+catalog:
+  - series_id: GDPC1
+    concept: "Aggregate real growth"
+    retained: true
+    title: "Real Gross Domestic Product"
+    source: "U.S. Bureau of Economic Analysis"
+    frequency: Q
+    units: "Billions of chained dollars, SAAR"
+    seasonal_adjustment: "Seasonally adjusted annual rate"
+    economic_justification: >-
+      Broadest standard measure of real aggregate production and the natural quarterly
+      growth target; connects to the growth discussion and to Okun-style output-labour
+      relations. Real rather than nominal so price movements are not embedded in the
+      output target.
+    statistical_justification: >-
+      Officially observed quarterly; long postwar history from 1947Q1; no interpolation
+      to monthly frequency.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  - series_id: CPIAUCSL
+    concept: "Price dynamics / inflation"
+    retained: true
+    title: "Consumer Price Index for All Urban Consumers: All Items"
+    source: "U.S. Bureau of Labor Statistics"
+    frequency: M
+    units: "Index 1982-1984=100"
+    seasonal_adjustment: "Seasonally adjusted"
+    economic_justification: >-
+      Long official monthly consumer-price series; inflation is central to Fisher,
+      Phillips/Phelps and stabilization-policy reasoning.
+    statistical_justification: >-
+      Monthly history from 1947M1, twelve years longer than PCEPI, preserving more
+      postwar inflation regimes and business cycles.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  - series_id: UNRATE
+    concept: "Labour-market slack"
+    retained: true
+    title: "Unemployment Rate"
+    source: "U.S. Bureau of Labor Statistics"
+    frequency: M
+    units: "Percent"
+    seasonal_adjustment: "Seasonally adjusted"
+    economic_justification: >-
+      Direct U.S. labour-market slack variable in Phillips/Phelps and Okun reasoning.
+    statistical_justification: >-
+      Monthly, official, from 1948M1. Already a rate, so it is not logged; its
+      level-versus-difference representation is set by the predeclared ADF/KPSS/ZA rule.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  - series_id: INDPRO
+    concept: "Monthly cyclical real activity"
+    retained: true
+    title: "Industrial Production: Total Index"
+    source: "Board of Governors of the Federal Reserve System"
+    frequency: M
+    units: "Index 2017=100"
+    seasonal_adjustment: "Seasonally adjusted"
+    economic_justification: >-
+      Monthly real-activity target needed to evaluate state dependence around recessions
+      and turning points when GDP is observed only quarterly; strongly tied to cyclical
+      fluctuations.
+    statistical_justification: >-
+      Deliberately truncated to 1947M1 so that Great Depression and wartime institutional
+      regimes, absent from the other targets, are not imported.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  - series_id: FEDFUNDS
+    concept: "Monetary-policy stance"
+    retained: true
+    title: "Federal Funds Effective Rate"
+    source: "Board of Governors of the Federal Reserve System"
+    frequency: M
+    units: "Percent"
+    seasonal_adjustment: "Not seasonally adjusted"
+    economic_justification: >-
+      Long monthly effective federal funds rate and the most direct policy-rate series
+      for the thesis's Federal Reserve focus. Not replaced by a Treasury yield, which
+      would introduce term-premium and maturity effects.
+    statistical_justification: >-
+      Monthly from 1954M7; already a rate, so its representation is set by the
+      stationarity and break rule.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  - series_id: M2SL
+    concept: "Monetary aggregate"
+    retained: true
+    title: "M2 Money Stock"
+    source: "Board of Governors of the Federal Reserve System"
+    frequency: M
+    units: "Billions of dollars"
+    seasonal_adjustment: "Seasonally adjusted"
+    economic_justification: >-
+      Gives empirical content to the money-supply dimension retained at Prof. Verne's
+      request and supplies the monthly VAR with a monetary-conditions variable. Named the
+      M2 monetary aggregate rather than 'broad money' because the official object is M2SL.
+    statistical_justification: >-
+      Official monthly history begins 1959M1, which also fixes the VAR common sample.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  - series_id: USREC
+    concept: "Expansion / recession / turning points"
+    retained: true
+    role: evaluation_only
+    title: "NBER based Recession Indicators for the United States"
+    source: "NBER chronology distributed by the Federal Reserve Bank of St. Louis"
+    frequency: M
+    units: "0 or 1"
+    seasonal_adjustment: "Not applicable"
+    economic_justification: >-
+      External chronology used only after forecasts are produced, to classify realized
+      target dates into expansions, recessions, peaks and troughs.
+    statistical_justification: >-
+      Not a forecast target and not a contemporaneous regressor, which prevents the
+      official recession chronology from leaking future information into any model.
+    retrieval: "FRED/ALFRED stable series ID"
+
+  # Explicitly considered and excluded. Outputs T2.0 requires the reason for exclusion.
+  - series_id: PCEPI
+    concept: "Price dynamics / inflation"
+    retained: false
+    exclusion_reason: >-
+      Economically important and the Federal Reserve's preferred inflation measure, but
+      it begins in 1959 and duplicates the inflation concept already represented by CPI.
+      CPI is retained because it provides a longer postwar history from 1947 and keeps
+      one inflation target rather than overweighting inflation in the cross-series
+      comparison.
+
+  - series_id: CPILFESL
+    concept: "Core inflation"
+    retained: false
+    exclusion_reason: >-
+      Alternative inflation measurement question, not necessary to answer the model-form
+      question; robustness to measurement choice rather than a new element of the central
+      research question.
+
+  - series_id: GFDEBTN
+    concept: "Public debt / fiscal deficit"
+    retained: false
+    exclusion_reason: >-
+      Important to the policy motivation but not necessary to identify the model-form
+      forecasting question; would introduce additional frequency, accounting and
+      persistence issues and a separate fiscal-dynamics research problem.
+
+  - series_id: DTWEXBGS
+    concept: "Exchange rate"
+    retained: false
+    exclusion_reason: >-
+      Relevant for open-economy analysis but not required for the U.S.-aggregate core
+      question; would broaden the thesis beyond the selected policy system.
+
+  - series_id: DCOILBRENTEU
+    concept: "Oil / commodity prices"
+    retained: false
+    exclusion_reason: >-
+      Useful shock variable, but the previous Brent exercise remained a single-equation
+      extension and did not resolve the multivariate criticism. Removed from the core
+      design; restorable only as a clearly secondary application with explicit approval.
+
+  - series_id: GS3M
+    concept: "Additional interest rates"
+    retained: false
+    exclusion_reason: >-
+      Would duplicate the policy-rate concept and introduce term-structure questions
+      outside the core design.
+
+  - series_id: SP500
+    concept: "Stock prices / credit spreads"
+    retained: false
+    exclusion_reason: >-
+      Financial predictors rather than core macro aggregates in the approved Part 4
+      question.

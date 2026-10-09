@@ -1,0 +1,30 @@
+# Smoke-test overrides (C§10).
+#
+# The smoke test validates code paths only. Its outputs go to the smoke namespace and may
+# never be mixed with thesis baseline outputs (C§10, [D16]).
+#
+# Targets: INDPRO (monthly) and GDPC1 (quarterly). Both are complete in the approved
+# vintage, so the smoke test neither depends on nor prejudges the open N1 decision about
+# the 2025-10 gap in CPIAUCSL and UNRATE.
+
+smoke:
+  enabled: true
+  targets: ["INDPRO", "GDPC1"]
+  # Short out-of-sample block: the last N origins only.
+  max_origins: 24
+  # The monthly VAR block still loads all five monthly series, but forecasts only the
+  # smoke subset.
+  var_enabled: true
+
+forecasting:
+  star_multistep:
+    paths: 200          # reduced from 5000 for speed; smoke output is never thesis-facing
+
+evaluation:
+  mcs:
+    replications: 200   # reduced from 5000
+  hlz:
+    critical_value_replications: null   # still unset; HLZ cannot run until M3 resolves
+
+execution:
+  parallel_workers: 2

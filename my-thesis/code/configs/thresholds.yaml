@@ -1,0 +1,67 @@
+# Operational warning thresholds and failure rules.
+#
+# These are transparent, predeclared audit flags, NOT statistical critical values
+# (Part 5 §8.1 and the literature justification §3.33). They were fixed before any result
+# was seen and may not be changed because a change alters an empirical conclusion.
+#
+# Values marked "frozen Part 5" are taken verbatim from the approved methodology.
+# Values marked [D8] are the additional rules approved on 2026-10-09; several thresholds
+# I had proposed were explicitly rejected and are recorded here as removed so they cannot
+# creep back in.
+
+thresholds:
+  msar:
+    # frozen Part 5 §8.1
+    low_occupancy_fraction: 0.05        # occupancy below 5% of observations -> fragile
+    low_occupancy_effective_obs: 20     # or below 20 effective observations -> fragile
+    transition_boundary_low: 0.005      # p <= 0.005 -> fragile
+    transition_boundary_high: 0.995     # p >= 0.995 -> fragile (incl. near-alternating)
+    # [D8] EMPTY_REGIME is a failure only on evidence of effective non-identification,
+    # never on low occupancy alone. All listed conditions must be documented in the
+    # fit record when the code is raised.
+    empty_regime_requires:
+      - "numerically zero posterior occupancy"
+      - "together with unidentified regime parameters, singular covariance, or non-finite likelihood/parameters"
+
+  star:
+    # frozen Part 5 §8.2
+    threshold_percentile_low: 5         # c outside the 5th-95th percentile -> fragile
+    threshold_percentile_high: 95
+    # [D8] contact with the actual optimizer bound within optimizer tolerance.
+    # The "within 5% of the bound" rule I proposed was rejected.
+    gamma_bound_rule: "optimizer_tolerance_contact"
+    gamma_bound_tolerance: 1.0e-8
+    # [D8] transparent operational fragility warning, explicitly non-theoretical
+    near_constant_transition_sd: 0.05
+    near_constant_transition_range: 0.10
+
+  covariance:
+    # [D8] non-finite / non-invertible / not positive definite -> failure
+    # ill-conditioned but computable -> fragile, recorded as an engineering diagnostic
+    ill_conditioned_condition_number: 1.0e+12
+
+  forecasts:
+    # [D8] warning only. Never an automatic failure, never a reason to delete a forecast
+    # from the numerical results.
+    extreme_forecast_window_sds: 6.0
+
+  residuals:
+    # frozen Part 5 §7.5: primary Ljung-Box rejection at 5% -> fragile
+    ljung_box_significance: 0.05
+
+# Explicitly rejected on 2026-10-09; recorded so they are not reintroduced.
+removed_rules:
+  - id: "empty_regime_occupancy_lt_2"
+    reason: "Low occupancy alone is already fragile under frozen Part 5; failure needs evidence of non-identification."
+  - id: "star_gamma_within_5pct_of_bound"
+    reason: "Arbitrary; replaced by contact with the actual optimizer bound within tolerance."
+  - id: "se_gt_10x_series_sd_or_5_dimensionless"
+    reason: "Arbitrary fragility rule; parameter uncertainty is reported directly instead."
+  - id: "near_unit_root_modulus_lt_1_01"
+    reason: "Unnecessary threshold; not added to the methodology."
+  - id: "mcs_eligibility_90pct_valid_origins"
+    reason: "No model-eligibility percentage is invented; common-date intersection governs instead [M7]."
+  - id: "state_cell_n_lt_5_inference_unavailable"
+    reason: "Replaced by numerical-failure criteria; small cells are reported and flagged as weak evidence [M12]."
+  - id: "tp_sensitivity_magnitude_halved"
+    reason: "Replaced by the inferential-support criterion plus a separate support_change field [M13]."
