@@ -47,10 +47,20 @@ class TestConfig:
         assert config.get("forecasting.windows.W", 99) == 99
 
     def test_require_rejects_unset_value(self, config):
-        # The HLZ tuning choices may only come from the published article (M3), so they
-        # are present but null and must not be usable until supplied.
+        # `missing_data_policy` is present but null while the N1 decision is open, and
+        # must not be usable until the user supplies a rule.
+        assert config.get("missing_data_policy") is None
         with pytest.raises(KeyError):
-            config.require("evaluation.hlz.lrv_kernel")
+            config.require("missing_data_policy")
+
+    def test_hlz_tuning_choices_come_from_the_article(self, config):
+        # M3: these may only be the authors' own values, never defaults of mine.
+        assert config.require("evaluation.hlz.lrv_kernel") == "quadratic_spectral"
+        assert config.require("evaluation.hlz.lrv_bandwidth.b0") == 1.5
+        assert config.require("evaluation.hlz.demean_kernel") == "gaussian"
+        assert config.require("evaluation.hlz.demean_bandwidth.h0") == 0.25
+        assert config.require("evaluation.hlz.critical_value_replications") == 50000
+        assert "Harvey" in config.get("evaluation.hlz.source")
 
     def test_hash_changes_with_content(self):
         a = Config(data={"x": 1}, sources=("t",))

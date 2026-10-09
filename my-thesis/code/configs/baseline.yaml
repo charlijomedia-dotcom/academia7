@@ -219,21 +219,41 @@ evaluation:                                            # S§10
     - ["ARMA", "STAR"]
   alignment: "pairwise_intersection_of_valid_dates"    # [M7]
   hlz:
-    # [M3] Harvey, Leybourne and Zu (2025). The estimator structure is verified from the
-    # supplementary appendix (see source-materials/hlz2025/PROVENANCE.md):
-    #   m_hat_t = sum_s w_ts d_s,  w_ts = K((s-t)/(nh)) / sum_j K((j-t)/(nh))
+    # [M3] Harvey, Leybourne and Zu (2025), JBES 43(3), 643-656.
+    # Every value below is taken from the article and its supplementary appendix, both
+    # held with checksums in source-materials/hlz2025/. Nothing here is inferred.
+    #
+    # Structure (article eq. 4 and p.648; supplement Theorem 4, Appendix C):
+    #   m_hat_t    = sum_s w_ts d_s,  w_ts = K((s-t)/(nh)) / sum_s K((s-t)/(nh))
     #   Omega_hat' = n^-1 sum_t sum_s (d_t - m_hat_t)(d_s - m_hat_s) k((t-s)/b)
-    #   DM' = sqrt(n) * d_bar / sqrt(Omega_hat')
-    #   finite-sample critical values by the Appendix C parametric-bootstrap scheme
-    # The following come only from the main article and are deliberately unset. The HLZ
-    # module refuses to run until they are supplied. No generic HAC substitute may ever
-    # be labelled HLZ.
-    lrv_kernel: null            # k(.)
-    lrv_bandwidth_rule: null    # b
-    demean_kernel: null         # K(.)
-    demean_bandwidth_rule: null # h
-    critical_value_replications: null   # B in Appendix C
-    two_sided: null
+    #   DM'        = sqrt(n) * d_bar / sqrt(Omega_hat')
+    #   V_hat_m    = (1/n) sum m_hat_t^2 - ((1/n) sum m_hat_t)^2        (article eq. 5)
+    #
+    # Kernels and bandwidths: article §5 p.649, adopted "throughout the remainder of the
+    # article" and used unchanged in the empirical applications (§6 p.653).
+    source: "Harvey, Leybourne & Zu (2025), JBES 43(3), 643-656, section 5 (p.649)"
+    lrv_kernel: "quadratic_spectral"       # k(.), chosen for its optimality properties
+    lrv_bandwidth:
+      rule: "b0 * n**(1/3)"                # satisfies b = O(n^tau_b), 0 < tau_b < 1/2
+      b0: 1.5
+    demean_kernel: "gaussian"              # K(.) for the local mean estimator
+    demean_bandwidth:
+      rule: "h0 * n**(-2/5)"               # satisfies h = O(n^-tau_h), 1/3 < tau_h < 2/3
+      h0: 0.25
+    # Finite-sample null critical values: supplement Appendix C. Simulate iid N(0,1)
+    # d*_t of the actual length n, recompute DM' with the same kernels and bandwidths,
+    # and take empirical quantiles. Article §5 p.649 uses 50,000 replications.
+    critical_value_scheme: "appendix_C_iid_normal"
+    critical_value_replications: 50000
+    critical_value_seed: 20261005
+    # The formal test (Theorems 2 and 5) is two-sided; the applications in §6 also report
+    # one-sided tail p-values. Both are produced; the two-sided result is the headline.
+    two_sided: true
+    report_one_sided: true
+    # Standardized mean-variation diagnostic V_hat_m / Omega_hat' reported in the
+    # article's Tables 3 and 4. It shows how much loss-differential mean variation is
+    # actually present, which is the condition that motivates using HLZ at all.
+    report_mean_variation_ratio: true
   dm_hln:                                              # S§10.3, [D10]
     hac_kernel: "bartlett"
     truncation: "h_minus_1"

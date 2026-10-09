@@ -47,9 +47,9 @@ All seven tensions (T1–T7), thirteen methodological issues (M1–M13), twenty 
 **Blocked until decided:** transformation and sample construction for CPI and UNRATE; their full-sample KPSS/ZA; the balanced monthly VAR sample; the CPI AR-lag robustness date set; anything consuming those.
 **Not blocked:** everything else, because GDPC1, INDPRO, FEDFUNDS, M2SL and USREC are complete and the initial estimation window predates the hole by ~60 years, so no locked specification or stationarity decision is affected.
 
-### 3.2 Open dependency
+### 3.2 Closed dependency
 
-**M3 — HLZ article and supplementary appendix.** Confirmed open access (CC-BY-NC-ND, Unpaywall/OpenAlex/Semantic Scholar). The publisher page and the Nottingham repository file both sit behind a Cloudflare bot challenge that automated retrieval cannot pass, and every aggregator mirror resolves to those same two URLs. Retrieval attempts continue. HLZ will **not** be implemented from memory, and no generic HAC estimator will be labelled HLZ (Part 5 §10.2, Comp §15). If retrieval ultimately fails I report Part 6 as *incomplete on HLZ* rather than substituting anything.
+**M3 — HLZ article and supplementary appendix: resolved 2026-10-09.** The supplement was downloaded from figshare; the article was supplied by the user after automated retrieval failed on every open-access route (Cloudflare bot challenge on both the publisher page and the Nottingham repository; all aggregators resolve to those two URLs). Both documents are held with checksums in `source-materials/hlz2025/`, and `PROVENANCE.md` there records every equation, kernel, bandwidth and critical-value rule used, with its page reference. The module is implemented and validated (§5.7). Nothing was taken from memory and no generic HAC estimator is labelled HLZ.
 
 ## 4. Architecture
 
@@ -213,14 +213,14 @@ Unchanged from the approved plan: `test_data_frozen.py`, `test_transforms.py`, `
 | 3 | Specification: AR, ARMA, STAR delay/type, VAR lag | selection-rule tests | not blocked |
 | 4 | Models: AR, ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH; status/flags | recovery and cross-check tests; early runtime benchmark | not blocked |
 | 5 | Forecasting engine: windows, chains, warm starts, cache, checkpoints, parallel, STAR bootstrap | alignment, no-look-ahead, resume, seed tests | not blocked |
-| 6 | Evaluation: metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS; **HLZ when M3 resolves** | evaluation tests | HLZ pending |
+| 6 | Evaluation: metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS; **HLZ done** | evaluation tests | HLZ complete (39 tests); rest not started |
 | 7 | Robustness modules | integration tests | CPI-lag date set pending N1 |
 | 8 | Reporting: tables, figures, registries, provenance, logs, full CLI | schema and provenance tests | not blocked |
 | 9 | Smoke test on **INDPRO** (monthly, complete) and **GDPC1** (quarterly, complete) | all stages run; outputs only in `smoke_output/`; every artifact carries provenance; reviewed for completeness only, never for ranking (R8) | needs frozen data |
 
 **Smoke-test target choice:** Comp §10 requires one monthly and one quarterly target. INDPRO and GDPC1 are used because both are complete, so the smoke test neither depends on nor prejudges the N1 decision. The monthly VAR block loads all five monthly series but forecasts only the smoke subset.
 
-**Part 6 is complete when** all unit, integration and validation tests pass; every output ID has a generator exercised by the smoke test; the N1 decision is implemented; and HLZ is implemented from the article (or Part 6 is reported as incomplete on HLZ). No full thesis-baseline run is performed in Part 6. Then I stop for approval before Part 7.
+**Part 6 is complete when** all unit, integration and validation tests pass; every output ID has a generator exercised by the smoke test; and the N1 decision is implemented. HLZ is done. No full thesis-baseline run is performed in Part 6. Then I stop for approval before Part 7.
 
 ## 10. What I will not do
 
