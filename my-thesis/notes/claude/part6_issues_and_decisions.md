@@ -1,114 +1,142 @@
-# Part 6 — Issues register and decisions requested
+# Part 6 — Decisions register
 
-**Status:** AWAITING USER DECISIONS. No methodology has been changed. No research code has been written.
-**Authority:** `approved-specs/part5/` (frozen) > Part 4 > Part 2 > Part 3 > Part 1.
-**Rule applied (CLAUDE.md §4):** every item below is flagged with options. Items marked "proposed default" are *my suggestion only*; none is applied until you approve it.
-**Companion:** `part6_implementation_plan.md`.
-
-Legend — **Blocks**: what cannot be implemented/validated until the item is settled. "—" means I can proceed with the proposed default once you approve the plan as a whole.
+**Status:** DECIDED BY USER on 2026-10-09, before any empirical result existed. These are fixed Part 6 implementation decisions.
+**Authority:** `approved-specs/part5/` remains frozen and unmodified. Nothing here amends it. Where an item resolves an ambiguity, silence or undefined term in frozen Part 5, it is tagged **[UAIC]** — *user-approved implementation clarification* — and must be cited as such in Part 8/Part 9 wording, never as a change of approved methodology.
+**Result-blind rule (CLAUDE.md §6):** every value below was fixed before results were seen and may not be revised because it changes an empirical outcome.
+**Companion:** `part6_implementation_plan.md`. **Open blocker:** see §E (N1) and `data_discrepancy_2026-10-09.md`.
 
 ---
 
-## A. Tensions inside the authoritative texts
+## A. Approved resolutions of tensions in the authoritative texts
 
-I found **no direct contradiction between two authoritative files that would trigger the "stop and tell the user" rule of CLAUDE.md §3**. I did find the following places where two statements are in tension or where a term is used but never defined.
-
-| ID | Tension | Where | Options | Proposed default | Blocks |
-|---|---|---|---|---|---|
-| T1 | MSAR/STAR inherit the AR lag, **capped at 4 (MSAR) / 4 monthly, 2 quarterly (STAR)**; but the CPI robustness re-runs "p = 1, 3, 6, 12 under common comparison". For p = 6 and 12 the cap and "inherit" cannot both hold. | Spec §5.5, §5.6 vs §11; Outputs T4.2 | (a) Lag variants apply to **AR only**; MSAR/STAR/ARMA stay at baseline spec. (b) Lag variants apply to AR; MSAR/STAR use min(p, cap), so p=6 and p=12 duplicate p=4 (cap respected, duplicates flagged). (c) Lift the cap for the robustness run (changes a locked rule → needs your explicit approval). | (b), with the duplication shown explicitly in T4.2 and ARMA held at baseline | T4.2 |
-| T2 | ADF/KPSS "deterministic term: intercept for transformed targets", yet §3.3 requires ADF/KPSS on **log levels**, which are trending. The deterministic term for log levels is not stated. | Spec §3.2 vs §3.3 | (a) Intercept only (literal reading). (b) Intercept only as the declared test, plus constant+trend as a clearly labelled additional diagnostic. (c) Constant+trend only. | (a) literal; (b) only if you want the extra column | T2.2 |
-| T3 | "Joint test of conditional equal predictive ability" — joint over α, β_rec, β_turn (Giacomini–White's H0: E[h_t d_t]=0) or over the two state slopes only? | Spec §10.5, Outputs T3.5 | (a) Joint over all three (GW's null) as the headline; slopes-only reported as a second, labelled statistic. (b) Slopes only. | (a), report both, headline = all three | T3.5 |
-| T4 | Cache-key definitions differ: methodology §9.3 (series, model, refit date, spec, window hash) vs computational spec §6 (adds snapshot hash, transformation, window start/end, code/config hash). | Spec §9.3 vs Comp §6 | Use the superset (stricter). | Superset | — |
-| T5 | Spec says the monthly endpoint is 2026M8 but also that UNRATE already has 2026M9 in the vintage. T2.0A asks for "raw last date". | Spec §2.4; Rationale §6.3; Outputs T2.0A | (a) Freeze raw data **exactly as returned** (UNRATE ends 2026M9) and truncate to 2026M8 during processing; T2.0A reports both raw-last and usable-last. (b) Truncate before freezing (loses raw provenance). | (a) | Data layer |
-| T6 | `vintage_dates=2026-10-05` is the quoted request, "or an equivalent real-time setting". To my understanding the ALFRED `vintage_dates` parameter may only accept dates on which a series actually had a release, so a non-release date may be rejected; `realtime_start=realtime_end=2026-10-05` returns the history *as known* on that date. I cannot test this until a FRED key exists. | Spec §2.2; Comp §2 | (a) `realtime_start=realtime_end=2026-10-05` (documented as the "equivalent real-time setting"), with the exact request saved in the manifest. (b) `vintage_dates` if the API accepts it. | (a); verify against (b) where accepted | Initialization |
-| T7 | **"Initial estimation window" is used throughout but never defined.** | Spec §3.2, §3.4, §4.1, §5.1, §9.2 | (a) The **first rolling window** (first 240 monthly / 120 quarterly observations of the modeled series). (b) A separate training share (the submitted thesis used 50%). | (a); it keeps specification selection on exactly the data the first forecast uses | Specification stage |
-
-## B. Methodological issues (flag only — you decide)
-
-| ID | Issue | Why it matters | Options | Proposed default | Blocks |
-|---|---|---|---|---|---|
-| M1 | **Giacomini–White conditioning variables are target-date NBER indicators**, which are not known at the forecast origin (and NBER dates arrive with a long delay). GW's theory takes a test function measurable at the origin. | The test is valid as a test of *equal average loss across states*, but the label "conditional predictive ability" is stronger than what target-date dummies identify. Part 8/9 wording depends on this. | (a) Implement exactly as specified; label output "state-dependent equal-accuracy test (target-date states)", state the ex-post nature in every table note. (b) (a) plus a diagnostic using origin-date `USREC` (information-set measurable). (c) Replace with (b) only (changes a locked item → needs approval). | (a). (b) only if you want it added as a labelled diagnostic | T3.5, T4.TP1 |
-| M2 | **STAR multi-step forecasts.** "Iterated" is specified, but for a nonlinear model the naive plug-in iteration (set future shocks to zero) is not the conditional mean. | Horizon-robustness ranking at h = 3, 6, 12 could be driven by the iteration method rather than by the model. | (a) Naive/skeleton iteration (deterministic, cheap, biased for h>1). (b) Monte-Carlo conditional mean with fixed child seeds (e.g. 10,000 paths, Gaussian shocks from the fitted σ). (c) Report both, designate one as baseline. | (b) as baseline, (a) stored as a labelled diagnostic. *MSAR needs no choice:* its h-step conditional mean is computed exactly via the state-probability recursion. | T4.4 (STAR h>1) |
-| M3 | **HLZ (2025) must be implemented "exactly as defined in the published paper and supplementary material."** I do not have the paper or supplement in the repository and will not reconstruct kernel, bandwidth, long-run-variance and reference-distribution details from memory. | Substituting a generic HAC estimator is forbidden by §10.2 and Comp §15. | (a) You place the paper + supplement (PDF) under `source-materials/` (CLAUDE.md §10) — I implement from it. (b) I try to retrieve it myself (publisher access may block this; no guarantee). (c) Defer HLZ and implement everything else first. | (a) or (b); (c) is the fallback. HLZ stays unimplemented until one of these happens. | HLZ module, T3.3, T3.3A |
-| M4 | The ARMA grid **includes q = 0 (pure AR) and p = 0 (pure MA)**; "ARMA" can therefore select an AR(p≤4) that is statistically close to the AR benchmark, making "AR vs ARMA" a near-degenerate comparison. | Interpretation of the "stronger classical benchmark". | (a) Implement literally; flag in T2.5 whenever the selected ARMA has q=0 or p=0. (b) Require p≥1 and q≥1 (changes the grid → needs approval). | (a) | — |
-| M5 | **UNRATE/FEDFUNDS "break-sensitive robustness check"** (Spec §3.4, ZA-rejects-with-break branch) is not defined beyond the alternative transformation in T4.1. | Without a definition I would either skip it or invent a model. | (a) The mandatory T4.1 alternative-transformation exercise *is* the break-sensitive check. (b) Add a level model with a break dummy at the ZA date (new model → needs approval). | (a) | T4.1 |
-| M6 | **T4.1 comparison basis.** Baseline and alternative targets differ (level vs difference), so RMSE/MAE are on different scales; for differenced targets at h>1 it is also unclear whether the evaluated object is Δx_{t+h} or x_{t+h}−x_t. Spec: formal tests are on the *modeled stationary target*. | Cross-transformation ranking is meaningless without a common scale. | (a) Baseline tests on the modeled target (as specified). T4.1 *additionally* compares both specs on the **common level-forecast error** x̂_{t+h} − x_{t+h} (equals the Δ-error at h=1; cumulative at h>1), clearly labelled. (b) Compare on modeled targets only (not comparable). | (a). For h>1 differenced baseline: modeled-target error = one-period Δ at t+h (iterated), level error also stored. | T4.1, T4.4 |
-| M7 | **Missing forecasts / admissibility granularity.** Failed fits produce no forecast (no fallback). RMSE, HLZ/DM, GW and MCS need paired forecasts; MCS needs a common date set across *all* admissible models. | If one nonlinear model fails at scattered origins, "common dates" can shrink the whole evaluation. | (a) Descriptive metrics on each model's own valid forecasts, **and** all relative metrics/tests/MCS on the intersection of valid dates; always report N valid, N failed, N dropped. (b) Exclude any model with any failed origin from MCS (model-level admissibility). (c) (a)+(b) as two labelled MCS variants. | (a) for metrics/tests; (c) for MCS (declare admissibility as: model has ≥ X% valid origins — **X needs your value**; proposed 90%) | T3.3, T3.4 |
-| M8 | **K=3 scope.** "Fit a three-regime version" — all six targets? all origins? all horizons? | Cost (K=3 with p=4 has 243 expanded states) and what T4.3 shows. | (a) All six targets, every origin, h=1 plus the horizon set. (b) All six targets, every origin, h=1 only. (c) Subset of targets. | (b) first; extend to horizons if runtime allows (all MSAR horizon forecasts come from the same fit, so (a) costs little extra) → effectively (a) | T4.3 |
-| M9 | **ARMA-GARCH diagnostic scope:** "when ARCH-LM rejects" — on which model (AR, ARMA, both), which fit (initial window or every refit), and is the GARCH model's mean forecast evaluated out of sample? | The note on "whether mean forecast changed" requires forecasts; §5.3 says its forecast must be "evaluated under the same OOS rules" if different. | (a) Trigger = ARCH-LM(12 or 4 lags) rejection on the selected ARMA's initial-window residuals; GARCH fit once on the initial window; mean-forecast comparison at the first origin only. (b) Same trigger; **full pseudo-OOS ARMA-GARCH mean forecasts** for triggered series, stored as diagnostic only, excluded from horse race/MCS. (c) Trigger evaluated at every refit. | (b), trigger per (a) | T4.6 |
-| M10 | **VAR pseudo-OOS design is not specified** (window, lag fixing, horizons, evaluation dates, differenced entries). | T4.5 needs RMSE/MAE/OOS R² vs AR "on common sample". | (a) Mirror the univariate design: rolling 240, lag chosen once on the first window by BIC over {1,2,3} with stability, parameters re-estimated at every origin, h = 1 and 3/6/12 from one fit, each variable's forecasts evaluated against the univariate models **restricted to the same target dates** (≥ 1979M2 if the first window is 1959M2–1979M1). (b) h=1 only. | (a) | T4.5 |
-| M11 | **USREC edge cases:** (i) unannounced recent recessions will read as expansion at the end of the sample; (ii) a recession ongoing at the sample end has no trough; (iii) windows truncated at sample boundaries; (iv) states overlap (a recession month can also be inside a turning window). | Affects N and interpretation at the sample end. | Document and implement: windows built only from observed transitions, clipped to the sample, union counted once, overlap allowed between *state categories* (not within the turning mask). | As stated | T3.5, T3.6, T4.TP1 |
-| M12 | **Inference-available rule for GW** ("numerically unidentified", "too broad or collinear") has no numeric criterion. | Determines when conditional inference is "unavailable". | Proposed: unavailable if any state indicator has < 5 observations in either state, or the design matrix is rank-deficient, or its condition number > 1e8, or the HAC covariance is not positive definite. | Proposed rule | T3.5, T4.TP1 |
-| M13 | **T4.TP1 classification** (unchanged / weakened / reversed / unavailable) has no stated rule. | Must be fixed before results exist (result-blind rule). | Proposed: compare, for each window, the sign of the mean loss differential (competitor − AR) in the turning window **and** GW β_turn significance at 5%: *unchanged* = same sign and same significance class as baseline; *weakened* = same sign, significance lost or magnitude halved; *reversed* = opposite sign; *unavailable* = inference unavailable or N < 5. | Proposed rule | T4.TP1 |
-
-## C. Missing implementation details (defaults proposed, need approval)
-
-| ID | Missing detail | Proposed default |
+| ID | Decision | Notes |
 |---|---|---|
-| D1 | **Ljung–Box "primary" lag** for the §5.1 selection rule and §7.5 classification (12 and 24 monthly, 4 and 8 quarterly are both listed) and the degrees-of-freedom adjustment. | Primary = the first listed lag (12 monthly / 4 quarterly); both lags always reported; df = number of estimated ARMA parameters (p+q). |
-| D2 | **BIC comparability across AR orders.** Fitting each p on all available observations compares models on different samples. | Compare all candidate orders on a **common effective sample** (condition on the first p_max observations of the initial window). The final fitted model then uses its own maximal sample. |
-| D3 | **Tsay (1986) test specification.** | Standard Tsay F-test: residuals of the selected AR(p) regressed on the lag-cross-products of order p; F-version; m = p (selected order). Implemented by hand (no standard library routine, to my knowledge). |
-| D4 | **STAR specification details:** transition variable, test version, delay and type rules. | z_t = y_t (own lag z_{t−d}); F-version of the third-order Taylor LST test with x_t including the constant; delay = argmin of the joint-linearity p-value over the candidate set (ties → smaller d); type by the Teräsvirta (1994) sequence (H04, H03, H02: ESTAR if H03 has the smallest p, otherwise LSTAR); STAR remains in the horse race whatever the result (§4.4). |
-| D5 | **Optimization bounds and parameterization** (MSAR probabilities/variance; STAR γ and c). Bounds must be fixed before any run (Comp §7: warm starts may not change them). | MSAR: logistic transform for transition probabilities, log σ; STAR: γ̃ = γ/σ_z scaled, bounds [1e-3, 1e3] (as in the submitted thesis), c bounds = [min z, max z] of the window. All in `configs/thresholds.yaml`, hashed. |
-| D6 | **Deterministic multi-start recipe** for the first MSAR/STAR fit. | MSAR: means from the 25th/75th (K=2) or 15th/50th/85th (K=3) percentiles, diagonal P of 0.90 and 0.95, φ from OLS on demeaned data, σ from residuals → ≥ 3 fixed starts; STAR: coarse (γ, c) grid then local refinement. No RNG in starts. Best log-likelihood/SSE among converged starts wins; the winning start is logged. |
-| D7 | **Convergence definition.** | Optimizer success flag **and** finite objective, finite gradient norm below tolerance, parameters not on a hard bound; the optimizer message is stored. |
-| D8 | **Numeric thresholds not given in Part 5** (see table below). | See table D8. Declared in `configs/thresholds.yaml`, fixed before any result is seen. |
-| D9 | **ZA/KPSS/ADF settings:** ZA max lag, KPSS lag rule, p-value truncation. | ADF: `autolag='BIC'`, maxlag 12/4, regression 'c'. KPSS: 'c', `nlags='auto'`, recorded; flag p-values truncated at the library table limits (0.01/0.10). ZA: regression 'ct' (break in intercept and trend), trim 0.15, `autolag='BIC'`, max lag = library default (recorded); compare the statistic against published ZA critical values (5% ≈ −5.08 for the "both" model) in addition to the library p-value. |
-| D10 | **HAC rule for GW and DM at horizon h; reference distributions; tails.** | Newey–West/Bartlett with truncation lag h−1 (h=1: heteroskedasticity-robust, lag 0); DM-HLN: HLN small-sample factor with Student-t(T−1), two-sided; GW: χ²(q) Wald; all recorded in the output row. |
-| D11 | **MCS tuning:** statistic, bootstrap type, block length, replications. | Hansen–Lunde–Nason T_R statistic, circular/stationary block bootstrap, 5,000 replications, block length from a documented rule (e.g. ⌈T^{1/3}⌉ at h=1; ≥ h otherwise), fixed child seed; implemented with `arch.bootstrap.MCS`, cross-checked in tests. |
-| D12 | **Sign convention.** | d_t = L(competitor) − L(benchmark) for every test and table; negative = competitor more accurate. The benchmark is the first-named model of each pair (AR or ARMA). Stated in every table. |
-| D13 | **Frozen-data mechanics:** file format, hashing, git. | CSV (+ metadata JSON per series), SHA-256 of file bytes, one master manifest (itself hashed); `data/frozen/` committed to git and write-protected by code (initialization refuses to run if a manifest exists). The ALFRED audit reconstruction (`--verify-vintage`) writes to `data/audit/<date>/` and only compares. |
-| D14 | **Provenance mechanics:** run ID, commit SHA, dirty tree. | `run_id = UTC timestamp + short config hash`; commit SHA recorded; a dirty working tree is recorded and **blocks `thesis-facing` runs** (smoke/dev runs allowed, labelled); config hash = SHA-256 of canonical-JSON of the resolved config. |
-| D15 | **Code hash inside the cache key.** Hashing the whole repo would invalidate every fit on any edit. | Hash of the source files of the modules that determine the fit (models, specification, transforms, shared numerics) + the config subtree. Reporting/plotting code is excluded. |
-| D16 | **Output namespaces for non-baseline runs.** | Smoke: `smoke_output/<run_id>/` and `smoke_cache/`; refresh: `data/refreshed/<date>/` and `output_refreshed/<date>/`; baseline: `output/` only. Never inside `output/`. Fit cache: `cache/` (git-ignored). |
-| D17 | **Outputs required by methodology but without an ID in the outputs spec:** the policy-rate diagnostic table (§8.1, jury P-03) and the standardized hypothesis-test table (§7.2, R1-13). | Provisional IDs `T3.2-FF` and `T-DIAG`; flagged so you can rename. |
-| D18 | **Claim-evidence matrix** (outputs spec §12) is a Part 8 deliverable. | Part 6 builds the schema + validator only; the content is produced in Part 8. |
-| D19 | **Figure validity rule** for "valid vs failed/extreme" panels (F3.4, F3.5). | Per forecast point: a point flagged FAILED or EXTREME_FORECAST is never drawn in the main panel; models with any flagged point also appear in the failure panel with their own scale; no clipping, ever. |
-| D20 | **Significance display.** | CSVs hold numeric p-values and a `stars` column (* 0.10, ** 0.05, *** 0.01); superscript typesetting is Part 9. No cross-correlation figure is produced (matrix R1-07 allows "no cross-correlation figure"); residual-ACF figures carry 95% bands. |
+| **T1** | **Option (a).** The p = 1, 3, 6, 12 exercise is an **AR-lag benchmark robustness check** (jury R1-15, suspicious CPI AR(12)). Re-estimate the **CPI AR benchmark only** at p = 1, 3, 6, 12. ARMA, MSAR and STAR stay at their approved baseline specifications and approved lag caps. Compare the nonlinear models against each alternative AR benchmark on **common forecast dates**. No duplicate p=6/p=12 nonlinear models capped back to 4. Caps are not lifted. | T4.2 must be labelled "CPI AR-lag benchmark robustness". **[UAIC]** |
+| **T2** | Keep the **intercept-only** ADF/KPSS versions required by frozen Part 5 as the traceable baseline. **Additionally** run constant-plus-trend versions on the log levels as a clearly labelled extra diagnostic. The trend diagnostics may not change any predeclared baseline transformation or selection rule. | **[UAIC]** |
+| **T3** | Report **both** the joint test over all regression coefficients **and** a slopes-only Wald test. Naming and interpretation follow **M1**. | superseded in naming by M1 |
+| **T4** | Approved: **stricter superset cache key**. | — |
+| **T5** | **Option (a).** Freeze raw official observations **exactly as returned**. UNRATE's 2026M9 observation is preserved in frozen raw data and truncated to the approved 2026M8 common endpoint only when the empirical sample is constructed. Report **both raw-last and usable-last** dates. | applies equally to FEDFUNDS (see N2). **[UAIC]** |
+| **T6** | Use **`vintage_dates=2026-10-05`** as the primary historical-vintage request. Save exact API parameters. Use `realtime_start=realtime_end=2026-10-05` as an **audit cross-check**. On material discrepancy: **stop and document**, never choose silently. | Verified 2026-10-09: both forms return identical row counts and endpoints for all seven series (N3). **[UAIC]** |
+| **T7** | **Option (a).** "Initial estimation window" = the **first approved rolling estimation window**: 240 observations (monthly targets), 120 observations (quarterly GDP). | **[UAIC]** |
 
-### D8 — thresholds Part 5 uses but does not number
+## B. Approved methodological handling
 
-| Flag / class | Part 5 wording | Proposed value |
+| ID | Decision |
+|---|---|
+| **M1** | **Retain** the target-date `REC_t` / `TURN_t` analysis, but **do not call it a Giacomini–White conditional predictive-ability test**. Target-date NBER states are not measurable from the forecast-origin information set that Giacomini–White requires. Implement `d_t = α + β_rec REC_t + β_turn TURN_t + u_t` with horizon-appropriate HAC inference and name it an **ex-post state-dependent forecast-loss regression**. It tests whether *realized* relative forecast loss differs across recessions and turning-point neighbourhoods; it does **not** establish real-time conditional forecast selection. **Report:** α, β_rec, β_turn; individual p-values; joint Wald α = β_rec = β_turn = 0; separate state-dependence Wald β_rec = β_turn = 0; HAC rule; state sample sizes; descriptive state RMSE/MAE. Giacomini–White is preserved in the methodological discussion as the conditional-predictive-ability reference, without claiming our regression meets its information-set requirement. **[UAIC — naming and interpretation only; the regression specified in Part 5 §10.5 is implemented unchanged]** |
+| **M2** | **STAR multi-step:** no naive/skeleton iteration as baseline. Use **residual-bootstrap simulation** of the iterated nonlinear conditional mean (Teräsvirta–van Dijk–Medeiros approach): at every origin resample **centred fitted STAR residuals from that estimation window**, propagate the nonlinear recursion, average simulated h-step forecasts. **5,000 paths per origin**, deterministic child seeds, record path count and seed logic. **h = 1 remains analytic.** Skeleton iteration retained only as a clearly labelled numerical diagnostic, never the headline. **MSAR multi-step:** exact state-probability recursion where technically valid. **[UAIC]** |
+| **M3** | **Do not defer HLZ and do not wait for a user upload.** Retrieve the open-access Harvey–Leybourne–Zu (2025) JBES article (DOI `10.1080/07350015.2024.2418835`) **and** its official supplementary appendix, read both, and implement local demeaning, LRV construction, bandwidth/smoothing rules, reference distribution / finite-sample critical-value procedure and all other tuning choices **exactly as the authors state**. Generic Newey–West/HAC machinery may **never** be labelled HLZ. Record the article/supplement version or checksum used for validation. |
+| **M4** | **Option (a).** Preserve the approved ARMA grid literally. A selected q = 0 or p = 0 specification is allowed and must be **flagged transparently in T2.5**. Do not force p ≥ 1 and q ≥ 1. |
+| **M5** | **Option (a).** No new structural-break-dummy forecasting model. The approved alternative level/difference exercise **is** the transformation robustness check. If ZA detects a break, report the break evidence and state that the robustness exercise does not identify a separate break-dummy model. |
+| **M6** | **Option (a).** Formal predictive tests stay on the **modeled stationary target**. **Additionally** report common-scale reconstructed **level** forecast errors for baseline and alternative transformations where meaningful. Keep formal modeled-target inference and the additional level-error comparison clearly distinguished. **[UAIC]** |
+| **M7** | **The proposed 90% valid-origin threshold is rejected. No model-eligibility percentage is invented.** Fixed rule: report each model's **attempted / valid / failed** origins; model-specific descriptive metrics on that model's valid observations with N shown; **every pairwise relative comparison uses the intersection of valid dates for that pair**; **MCS uses the intersection of finite-loss dates across all models in that MCS**; report `T_common` and the number of observations removed by common-date alignment; **never** silently drop a poorly behaving model to enlarge the common sample; if the common loss matrix is too small or MCS is numerically undefined, mark **MCS inference unavailable** and report why. No "≥90% valid" MCS variant unless separately approved later. **[UAIC]** |
+| **M8** | **K=3 for all six targets and every approved forecast origin.** h = 1 is the mandatory headline K=3 robustness result; the approved longer horizons are also generated from those same fits. Execution is **not** conditional on whether K=3 results look favourable. |
+| **M9** | **Trigger:** rejection of ARCH-LM on the **selected ARMA model's initial-window residuals**. For triggered series, run the ARMA-GARCH(1,1) diagnostic through the **same rolling pseudo-OOS chronology** and generate its mean forecasts. Explicitly diagnostic: **excluded from the main AR/ARMA/MSAR/STAR horse race and from MCS**. **[UAIC]** |
+| **M10** | **Option (a).** VAR: 240-month rolling window; p ∈ {1,2,3} by BIC on the **initial VAR window**; lag fixed; parameters re-estimated at each origin; stability required; h = 1, 3, 6, 12; each component compared against the corresponding univariate forecasts on **identical common target dates**. **[UAIC]** |
+| **M11** | Approved as proposed: states built only from **observed USREC transitions**; turning windows **clipped at sample boundaries**; **unions** so no observation is double-counted within the turning mask; recession and turning-window categories **may overlap** because they answer different state questions. Documented in output notes. **[UAIC]** |
+| **M12** | **The "fewer than 5 observations" rule is rejected.** Always report state-cell N and flag **very small cells as weak evidence**. Formal regression inference is unavailable **only** when: the state variable has no variation; the design matrix is rank deficient; the covariance calculation is non-finite or singular; or the regression otherwise fails numerically. **[UAIC]** |
+| **M13** | **The "magnitude halved" criterion is rejected.** Categories: **`unchanged`** = same direction and same substantive inferential conclusion as baseline; **`weakened`** = same direction but inferential support present under baseline is lost under the alternative window; **`reversed`** = sign of the relevant relative-loss comparison reverses; **`unavailable`** = required comparison/inference cannot be computed. Add a separate **`support_change`** field (plus notes) so a same-direction result that becomes statistically **stronger** is recorded as strengthened without inventing a fifth headline category. **[UAIC]** |
+
+## C. Approved implementation details
+
+| ID | Decision |
+|---|---|
+| **D1** | Primary Ljung–Box lag **12 monthly / 4 quarterly**; also report **24 monthly / 8 quarterly**. df correction: **AR → AR parameter df**; **ARMA → p+q**. **Do not** mechanically apply a p+q correction to MSAR/STAR — their Ljung–Box results are **diagnostic** and the exact nonlinear df convention must be **documented** in the output. **[UAIC]** |
+| **D2** | Approved: **common effective sample** for BIC comparison across candidate AR orders. **[UAIC]** |
+| **D3** | **Revised.** Implement the standard **Tsay (1986) quadratic nonlinearity test**: construct **all unique quadratic lag terms** for the working AR(p) and use the appropriate **nested / orthogonalized auxiliary-regression F test**. Validate against reference values from a recognized implementation (e.g. R `TSA::Tsay.test`) **and** against simulations. An informal residual-on-cross-products regression is **not** acceptable on its own. **[UAIC]** |
+| **D4** | Approved standard LST/Teräsvirta procedure, with **H02/H03/H04 labels, auxiliary equations and the LSTAR-vs-ESTAR decision rule matching the published procedure exactly**. Store **all** delay-specific test results and the deterministic tie rule. **[UAIC]** |
+| **D5** | **Scale-free transition parameterization.** Standardized transition distance `(z − c)/s_z`. **LSTAR:** logistic with γ multiplying the standardized distance. **ESTAR:** γ multiplying the **squared** standardized distance. (Equivalent to SD scaling for logistic, variance scaling for exponential.) **γ > 0**, numerical bound **[1e-3, 1e3]** for the dimensionless γ; **c ∈ [min(z), max(z)]**. These are **numerical optimization bounds, not economic thresholds**, and the parameterization must be recorded. **MSAR:** stable logistic/simplex parameterization for transition probabilities; positive transform (e.g. log σ) for the innovation SD. **[UAIC]** |
+| **D6** | Approved **deterministic multi-starts**. Record **every** initial start, its convergence outcome, objective value, and the winning start. |
+| **D7** | **Modified.** An estimate landing on a hard optimization bound does **not** by itself mean non-convergence. Convergence requires: optimizer success, finite objective and parameters, acceptable numerical termination. **Boundary contact is classified separately under the approved fragility rules** (frozen Part 5 treats a STAR γ on its bound as a fragility warning). **[UAIC]** |
+| **D8** | **Not all proposed thresholds approved.** See §D8 table below. |
+| **D9** | ADF with BIC and the approved monthly/quarterly caps. KPSS with the **pinned library's** automatic lag/bandwidth rule, recorded. ZA on UNRATE/FEDFUNDS: **intercept+trend break, trim 0.15, BIC, maximum lag 12** (monthly). Use critical values corresponding **exactly** to the implemented ZA specification/library or a published reference — **do not hard-code an approximate generic value such as −5.08**. **[UAIC]** |
+| **D10** | Approved **Newey–West/Bartlett truncation h−1** for DM-HLN and for the ex-post state-loss regression, all choices recorded. The **HLZ variance estimator is kept completely separate** and implemented per Harvey–Leybourne–Zu. **[UAIC]** |
+| **D11** | MCS: Hansen–Lunde–Nason, **method `R`**, **stationary bootstrap**, **fixed deterministic seed**, **5,000 replications**, block length **`ceil(sqrt(T_common))`**. Run separately for squared-error and absolute-error loss and for **90% and 95%** sets. Record `T_common`, block length, replications, seed and elimination results. **[UAIC]** |
+| **D12** | Approved: **`d_t = loss_competitor − loss_benchmark`**; negative ⇒ competitor more accurate. Stated in every relevant table. **[UAIC]** |
+| **D13** | Approved: frozen CSV + metadata JSON + SHA-256 + master manifest; **refusal to overwrite an existing frozen manifest**. Commit frozen thesis data to the repository only if repository size/policy permits; otherwise commit the **immutable manifest** and use the approved persistent storage arrangement. **Never silently replace the baseline snapshot.** *(Measured 2026-10-09: all seven raw series total well under 1 MB, so committing them is within normal repository policy.)* |
+| **D14** | Approved provenance mechanics and **dirty-tree protection for thesis-facing runs**. |
+| **D15** | Approved **dependency-aware code/config hashing** for caches; reporting-only changes do not invalidate econometric fits. |
+| **D16** | Approved **separate smoke / refresh / robustness / baseline namespaces**. No smoke or refresh output may overwrite baseline output. |
+| **D17** | Approved provisional IDs **`T3.2-FF`** (policy-rate diagnostic) and **`T-DIAG`** (standardized hypothesis-test table). |
+| **D18** | Approved: Part 6 builds and validates the **claim-evidence schema**; Part 8 populates the substantive matrix from final results. |
+| **D19** | Approved **failure-aware figures**: no clipping, separate failure/extreme panels. |
+| **D20** | Approved numeric p-values **plus** a stars column at 10/5/1%. **No cross-correlation figure is required**; if one is later retained, the frozen 95% uncertainty-band rule applies. |
+
+### D8 — approved flag and failure thresholds
+
+**Preserved exactly as frozen in Part 5** (operational warning flags, never statistical critical values):
+
+| Flag | Rule | Class |
 |---|---|---|
-| EMPTY_REGIME (failure) | "effectively empty Markov regime" / "unidentified regime" | Effective occupancy (sum of smoothed probabilities) < 2 observations |
-| Low occupancy (fragile) | below 5% or 20 effective obs | as specified |
-| TRANSITION_BOUNDARY (fragile) | ≤ 0.005 or ≥ 0.995 | as specified; "near-alternating" = an off-diagonal ≥ 0.995 |
-| STAR_GAMMA_BOUND | "γ lands on its bound" | γ̃ within 5% (multiplicative) of either bound |
-| STAR_THRESHOLD_EXTREME | outside 5th–95th percentile | as specified |
-| Near-constant G (fragile) | "nearly constant over the sample" | SD(G) < 0.05 or (max G − min G) < 0.10 over the window |
-| SINGULAR_COV | "singular/invalid covariance" | Hessian/Jacobian not invertible, not positive-definite, or condition number > 1e12 (failure); 1e8–1e12 → "unusually large uncertainty" (fragile) |
-| Unusually large parameter uncertainty | unspecified | any standard error non-finite (failure) or > 10× the window SD of y for location parameters / > 5 for dimensionless parameters (fragile) |
-| UNSTABLE_AR | stability violated (failure) | any AR/ARMA root with modulus ≤ 1 (AR polynomial), or invertibility violated; near-unit-root flag (fragile) if smallest root modulus < 1.01 |
-| EXTREME_FORECAST (fragile) | "extreme but finite" | forecast farther than 6 window-SDs from the window mean |
-| RESIDUAL_AUTOCORR | Ljung–Box rejects at 5% | primary lag per D1 |
+| Low occupancy | occupancy < 5% **or** < 20 effective observations | fragile |
+| Boundary behaviour | transition probability ≤ 0.005 **or** ≥ 0.995 | fragile |
+| `STAR_THRESHOLD_EXTREME` | c outside the 5th–95th percentile of the transition variable | fragile |
+| `RESIDUAL_AUTOCORR` | primary Ljung–Box rejects at 5% | fragile |
+| `UNSTABLE_AR` | required AR/ARMA stationarity or invertibility condition violated | **failure** |
 
-## D. Technical risks
+**Additional approved rules:**
 
-| ID | Risk | Mitigation |
-|---|---|---|
-| R1 | **No `FRED_API_KEY` in this environment, and frozen data do not exist.** Network access to the FRED host works (an invalid-key test returned an API error, not a connection failure). Without a key I cannot run the initialization, verify the expected endpoints, or run smoke tests on real data. Initialization creates the thesis baseline and, per the spec, needs your approved run. | You add `FRED_API_KEY` as an environment secret and approve `--initialize-frozen`. Until then: mocked-HTTP tests and seeded synthetic data only. |
-| R2 | **No scientific Python packages are installed** (only PyYAML, Jinja2, requests). A dry-run install resolved numpy 2.4, pandas 3.0, scipy 1.17, statsmodels 0.15, arch 8.0. | Install into the environment, pin exact versions in a lock file, record versions in every run's environment log. Library behaviour (p-value tables, defaults) is pinned by version. |
-| R3 | **Runtime.** About 3,500 forecast origins across six targets (≈700 monthly, ≈200 quarterly per target); each origin refits MSAR, STAR, ARMA; K=3 MSAR with p=4 has 243 expanded states; CPI lag variants and the alternative transformations multiply this. A rough order-of-magnitude is tens of CPU-hours for the full robustness set. This is a guess to be replaced by a measured benchmark. | Early benchmark spike; chains parallelized across 4 cores; `runtime_summary.csv`. Full run belongs to Part 8, not Part 6. |
-| R4 | **Library gaps (to be verified in a first spike, not assumed):** to my knowledge statsmodels' Markov-switching classes do not give out-of-sample forecasts, `arch` supports an AR mean but not an MA mean (so ARMA-GARCH needs a custom likelihood), and no standard routine exists for the Tsay test. | Own Hamilton-filter MSAR engine with exact h-step conditional means, validated against statsmodels' `MarkovAutoregression` log-likelihood on identical parameters; custom ARMA-GARCH(1,1) Gaussian quasi-ML validated on simulated data. |
-| R5 | **Warm starts make fits path-dependent** (spec §7 is explicit). A resumed or partial run could land on a different local optimum than a full run. | Parallel unit = one (series, model, spec) **chain** processed chronologically; each cache entry's key includes the hash of the predecessor solution used as start; a changed predecessor invalidates all successors. Which start won is logged. |
-| R6 | **Identification/failure frequency.** Policy-rate and unemployment MSAR are known troublemakers in the submitted thesis; quarterly GDP has only 120-observation windows (K=3, p=4 → ~14 parameters). Many failed or fragile fits are plausible and are *results*, not bugs. | No fallback (spec §8.3); failures logged with raw diagnostics; admissibility handled by M7. |
-| R7 | **AR benchmark failures.** OLS AR on a near-unit-root level (UNRATE/FEDFUNDS in levels) can produce explosive roots at some origins, which Part 5 classes as Failed and removes from all paired comparisons. | Logged and counted; see M7. |
-| R8 | **Result-blindness during Part 6 testing.** Smoke runs on real frozen data will display model results. | Validation relies on **synthetic data with known truth**; real-data smoke runs are inspected only for completeness (schemas, finiteness, provenance, no crash), never for ranking or specification choices; no parameter in `configs/` is touched after a real-data smoke run unless a coding error is documented (CLAUDE.md §6A). |
-| R9 | **Numerical reproducibility** across BLAS builds/thread counts. | Single-thread workers, fixed seeds derived from stable keys (not scheduling order), pinned library versions; equality tests use documented tolerances; exact byte-equality is claimed only for deterministic text outputs (Part 7 will state the tolerance policy). |
-| R10 | **Data caveats outside my control:** the spec's availability claims (Aug 2026 for INDPRO/FEDFUNDS/M2/CPI, Sept for UNRATE, GDP 2026Q2) can only be confirmed at initialization. | The initializer stops and writes a discrepancy note if the returned start/end dates differ (spec §2.4); no silent sample change. |
+| Item | Approved rule |
+|---|---|
+| `EMPTY_REGIME` | **Not** defined as occupancy < 2. Low occupancy alone is already *fragile* under Part 5. **Failure** requires effective non-identification or computational/statistical unusability: numerically zero posterior occupancy **together with** unidentified regime parameters, singular covariance, non-finite likelihood/parameters, or equivalent **documented** evidence. |
+| `STAR_GAMMA_BOUND` | **Numerical contact with the actual optimizer bound within optimizer tolerance.** The proposed arbitrary "within 5% of the bound" rule is rejected. |
+| Near-constant transition | `SD(G) < 0.05` **OR** `range(G) < 0.10` — transparent operational fragility warning, **explicitly labelled non-theoretical**. |
+| Covariance | Non-finite / non-invertible / not positive definite when required for meaningful inference ⇒ **failure**. A very ill-conditioned but still computable covariance ⇒ **fragile**, with the condition-number rule recorded as an **engineering diagnostic**. |
+| Parameter uncertainty | The proposed "SE > 10× series SD / > 5 dimensionless" rule is **removed**. **Report parameter uncertainty directly** instead. |
+| Near-unit-root | The proposed 1.01 near-unit-root fragility threshold is **not added** to the methodology. |
+| `EXTREME_FORECAST` | A forecast beyond **6 rolling-window standard deviations** from the rolling-window mean is a **transparent fragility/plotting warning only** — **not** an automatic failure and **not** a reason to delete the forecast from numerical results. |
+
+## D. Approved risk handling
+
+| ID | Decision |
+|---|---|
+| **R1** | **One-time `--initialize-frozen` approved** (key supplied 2026-10-09). Must use the approved 2026-10-05 vintage, preserve exact raw data, write hashes/metadata, and **stop on any unexplained discrepancy**. **If initialization fails, do not substitute another source or current data.** |
+| **R2** | Install the required scientific Python environment and **pin exact tested versions** in the lock/environment record. *(Done 2026-10-09 — see plan §1.)* |
+| **R3–R10** | Proposed engineering mitigations approved **where they do not alter the methodological decisions above**. |
+
+**Key handling (my own operational note, not a user decision):** the FRED key was supplied in chat and is therefore exposed in the conversation transcript. It is stored only outside the repository (session scratchpad, mode 600), read from the environment by code, never hard-coded, never logged, and never committed. **Recommend rotating the key at fred.stlouisfed.org once the frozen snapshot exists**; the frozen data and manifest make the key unnecessary for every later baseline run.
 
 ---
 
-## E. Decisions requested
+## E. New findings from vintage verification (2026-10-09)
 
-**Blocking (affect what I can build or run):**
-1. **M3** — provide the HLZ (2025) paper + supplement, or tell me to retrieve it, or defer HLZ.
-2. **R1 / T5 / T6** — add `FRED_API_KEY` and explicitly approve the one-time `--initialize-frozen` run (and confirm that frozen data is committed to git).
-3. **T1** — CPI lag robustness: option (a), (b) or (c).
-4. **M2** — STAR multi-step method.
-5. **M7** — admissibility rule for MCS and the threshold X.
-6. **D8** — approve (or change) the numeric flag thresholds, and **D5** the STAR/MSAR bounds.
+Verified directly against the FRED/ALFRED 2026-10-05 vintage before writing any pipeline code.
 
-**Approvable together with the plan (defaults as proposed):** T2, T3, T4, T7, M1, M4, M5, M6, M8, M9, M10, M11, M12, M13, D1–D4, D6, D7, D9–D20.
+### N1 — BLOCKER: October 2025 is permanently missing from CPIAUCSL and UNRATE
 
-Reply "approve plan with all proposed defaults except …" or list changes per ID.
+The 2026-10-05 vintage returns a **complete monthly grid with no gaps and no duplicates** for every series, but **CPIAUCSL and UNRATE each contain exactly one missing value, both at 2025-10-01**. This is not an API artifact and no later vintage will repair it: during the 2025 federal shutdown the BLS could not collect the October 2025 reference-period data, the October 2025 CPI release was cancelled, and the October 2025 household survey — the source of the unemployment rate — was never collected and **cannot be collected retroactively**.
+
+Frozen Part 5 assumes contiguous monthly series. It forbids backfilling and artificial interpolation (§2.1 criterion 6, §2.4) and it does not define how a permanent interior hole is handled. **The affected analysis is stopped and awaiting your decision** (CLAUDE.md §4). Full impact analysis and the options are in `data_discrepancy_2026-10-09.md`.
+
+Unaffected: GDPC1, INDPRO, FEDFUNDS, M2SL, USREC are complete. The **initial estimation window** (1947/1948 onward) is decades away from the hole, so **no locked specification-selection or stationarity decision is affected**. The approved monthly endpoint 2026M8 is unaffected.
+
+### N2 — FEDFUNDS raw series extends to 2026M9, not 2026M8
+
+`part5_data_selection_retrieval_reproducibility_rationale.md` §6.3 states that CPI, INDPRO, FEDFUNDS and M2 were all available through August 2026. In the actual vintage **FEDFUNDS ends 2026-09-01** (as does UNRATE). The **operative endpoint rule is unaffected**: the latest month jointly available across the five monthly targets is still **2026M8**, because CPI, INDPRO and M2 end in August. So the approved endpoint stands and only the explanatory sentence in the rationale is factually off. Handled exactly like UNRATE under **T5(a)**: freeze 2026M9 as returned, truncate to 2026M8 when building the sample, report both dates. **No methodology change; recorded for Part 9 so the thesis does not repeat the inaccurate sentence.**
+
+### N3 — T6 cross-check passes
+
+For all seven series, `vintage_dates=2026-10-05` and `realtime_start=realtime_end=2026-10-05` returned **identical row counts, first dates, last dates and last values**. The initializer will additionally perform a **full value-by-value** comparison and halt on any material difference.
+
+### N4 — Observed raw ranges (2026-10-05 vintage)
+
+| Series | Raw first | Raw last | Rows | Interior missing | Approved usable range |
+|---|---|---|---:|---|---|
+| GDPC1 | 1947-01-01 | 2026-04-01 (2026Q2) | 318 | none | 1947Q1–2026Q2 |
+| CPIAUCSL | 1947-01-01 | 2026-08-01 | 956 | **2025-10** | 1947M1–2026M8 |
+| UNRATE | 1948-01-01 | **2026-09-01** | 945 | **2025-10** | 1948M1–2026M8 |
+| INDPRO | 1919-01-01 | 2026-08-01 | 1292 | none | truncated to 1947M1–2026M8 |
+| FEDFUNDS | 1954-07-01 | **2026-09-01** | 867 | none | 1954M7–2026M8 |
+| M2SL | 1959-01-01 | 2026-08-01 | 812 | none | 1959M1–2026M8 |
+| USREC | 1854-12-01 | 2026-09-01 | 2062 | none | clipped to each target's evaluation span |
+
+All start dates match frozen Part 5. INDPRO's pre-1947 history exists as Part 5 anticipated and is truncated as specified.
+
+---
+
+## F. Items still open
+
+| ID | Item | Status |
+|---|---|---|
+| **N1** | Handling of the permanent 2025-10 hole in CPIAUCSL and UNRATE | **Awaiting your decision.** Affected analysis stopped. Options in `data_discrepancy_2026-10-09.md`. Unblocked work continues meanwhile. |
+| **M3** | HLZ article + supplementary appendix retrieval | **In progress.** Confirmed open access (CC-BY-NC-ND). The publisher and the Nottingham repository both sit behind a Cloudflare bot challenge that automated retrieval cannot pass; aggregator mirrors resolve to those same two URLs. Retrying alternative routes. HLZ will not be implemented from memory and no generic HAC substitute will be labelled HLZ. |

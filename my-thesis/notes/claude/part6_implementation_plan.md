@@ -1,71 +1,64 @@
-# Part 6 — Implementation plan (for approval)
+# Part 6 — Implementation plan
 
-**Status:** PLAN ONLY. No research code written. Stops here until you approve (CLAUDE.md §13).
-**Scope:** Part 6 only (build + validate). Part 7 (reproducibility demonstration) and Part 8 (final execution/analysis) are not started.
-**Companion:** `part6_issues_and_decisions.md` (IDs such as M3, D8, T1 refer to it).
-**Paths:** project root is `my-thesis/`; all paths below are relative to it.
+**Status:** **APPROVED by the user on 2026-10-09**, subject to the decisions recorded in `part6_issues_and_decisions.md`. Coding has begun on all components not blocked by §3.1.
+**Scope:** Part 6 only (build + validate). Part 7 (reproducibility demonstration) and Part 8 (final execution and analysis) are **not** started. When Part 6 is complete I stop and wait for approval (CLAUDE.md §13).
+**Companions:** `part6_issues_and_decisions.md` (all approved decisions; IDs T1–T7, M1–M13, D1–D20, R1–R10, N1–N4) and `data_discrepancy_2026-10-09.md` (open blocker).
+**Paths:** project root is `my-thesis/`; paths below are relative to it.
+**Frozen Part 5 is unmodified.** Decisions tagged **[UAIC]** in the register are user-approved implementation clarifications of Part 5 ambiguities, not amendments.
 
 ---
 
-## 0. What I did
+## 0. What was read
 
-- Read `CLAUDE.md` and every file in `approved-specs/part1/` … `part5/` (Part 5: 7 files; Parts 1–4: 12 files). `approved-specs/part9/` also exists (literature bank); it is outside the Part 1–5 reading scope and I did not use it.
-- My local branch was 78 commits behind `origin/claude/trusting-feynman-871wks` (that is where your approved specs live). I fast-forwarded it; no conflicts, nothing overwritten.
+- `CLAUDE.md` and every file in `approved-specs/part1/` … `part5/` (Part 5: 7 files; Parts 1–4: 12 files). `approved-specs/part9/` (recent-literature bank) exists but is outside the Parts 1–5 reading scope and was not used.
+- The local branch was 78 commits behind `origin/claude/trusting-feynman-871wks`; fast-forwarded, no conflicts.
 
-## 1. Repository and environment inspection
+## 1. Repository and environment
 
-| Item | Finding |
+| Item | State |
 |---|---|
-| Repo | Single git repo `academia7`; thesis project in `my-thesis/`. |
-| `code/`, `data/`, `output/`, `reports/` | Empty (`.gitkeep` only). **No code exists**, as the spec assumes. |
-| `approved-specs/` | part1 (2), part2 (2), part3 (4), part4 (4), part5 (7), part9 (1) files. |
-| `source-materials/` | Does not exist (CLAUDE.md §10 mentions it; HLZ paper would go there — M3). |
-| Python | 3.11.15. Installed: PyYAML, Jinja2, requests only. **numpy/pandas/scipy/statsmodels/matplotlib/pytest are not installed** (R2). A dry-run install resolves fine. |
+| Repo | `academia7`; thesis project in `my-thesis/`. Branch `claude/trusting-feynman-871wks`. |
+| `code/`, `data/`, `output/`, `reports/` | Empty at plan time (`.gitkeep` only). No pre-existing code, as Comp §1 assumes. |
+| `approved-specs/` | part1 (2), part2 (2), part3 (4), part4 (4), part5 (7), part9 (1). |
+| `source-materials/` | Did not exist; created for the HLZ article when retrieved (CLAUDE.md §10: originals never modified). |
+| Python | 3.11.15 |
+| Installed and pinned (R2) | numpy 2.4.6, scipy 1.17.1, pandas 3.0.6, statsmodels 0.15.0, arch 8.0.0, matplotlib 3.11.2, pyarrow 26.0.0, plus pytest, pytest-cov, psutil, joblib, tabulate. Exact versions go into `code/requirements.lock` and into `output/logs/environment.json` on every run. |
 | Machine | 4 cores, 15 GB RAM. |
-| `FRED_API_KEY` | **Not set** (R1). The FRED host is reachable from the container. |
-| Frozen data | None yet. `data/frozen/` does not exist. |
+| `FRED_API_KEY` | Supplied 2026-10-09. Stored **outside the repository** (session scratchpad, mode 600), read from the environment, never hard-coded, never logged, never committed. **Rotation recommended** once the frozen snapshot exists. |
+| Frozen data | Not yet created. `--initialize-frozen` is approved (R1) and runs once the N1 decision is in, so the first frozen build is not immediately followed by a sample-rule change. |
 
-## 2. My understanding of the approved methodology
+## 2. Vintage verification performed before writing code
 
-**Question.** When U.S. macro relationships are unstable, do state-dependent nonlinear models forecast better than appropriately specified classical benchmarks, in a way that survives threat-based robustness? An unfavourable answer is a valid result.
+Direct read-only probes of the 2026-10-05 vintage (details and the full table in the register, N1–N4):
 
-**Data (frozen).** FRED/ALFRED vintage **2026-10-05**, raw levels, SHA-256 manifest, no internet in the default run. Targets: GDPC1 (quarterly, 400·Δln), CPIAUCSL / INDPRO / M2SL (monthly, 1200·Δln), UNRATE and FEDFUNDS (level or first difference by a predeclared rule), USREC (evaluation only, never a regressor). Starts 1947Q1 / 1947M1 / 1948M1 / 1954M7 / 1959M1 / INDPRO truncated to 1947M1; monthly end 2026M8, GDP end 2026Q2; VAR 1959M1–2026M8.
+- **T6 cross-check passes (N3):** `vintage_dates=2026-10-05` and `realtime_start=realtime_end=2026-10-05` return identical row counts, first dates, last dates and last values for all seven series. The initializer additionally performs a full value-by-value comparison and halts on any material difference.
+- **All approved start dates confirmed (N4).** INDPRO's pre-1947 history exists (from 1919M1) and is truncated to 1947M1 as specified.
+- **FEDFUNDS raw last = 2026M9 (N2)**, not 2026M8 as the rationale text states. The operative endpoint rule still yields **2026M8**, so the approved endpoint stands; handled under T5(a) like UNRATE. Recorded so Part 9 does not repeat the inaccurate sentence.
+- **Blocker found (N1):** CPIAUCSL and UNRATE are each permanently missing **2025-10**.
 
-**Transformation rule.** ADF (BIC, cap 12/4, intercept), KPSS (intercept), Zivot–Andrews (break in intercept+trend, trim 15%, BIC) on UNRATE/FEDFUNDS levels. The decision uses the **initial estimation window**; full-sample tests only confirm or trigger a mandatory robustness check, never retroactively change the baseline.
+## 3. Contradictions, ambiguities, missing detail, risks — resolved
 
-**Pre-estimation evidence.** Tsay (1986) on the AR residual structure; Luukkonen–Saikkonen–Teräsvirta / Teräsvirta (1994) delay and LSTAR/ESTAR sequence. No Markov-switching LR test (nonstandard). Nonlinearity evidence affects **interpretation only**, never which models enter the horse race.
+All seven tensions (T1–T7), thirteen methodological issues (M1–M13), twenty implementation details (D1–D20) and ten risks (R1–R10) are now decided; see the register. No contradiction between two authoritative files was found that would require the CLAUDE.md §3 stop.
 
-**Models.** AR(p) (BIC then Ljung–Box screen; p ≤ 12 monthly / 4 quarterly), ARMA(p,q) (grid 0–4 monthly, 0–2 quarterly; BIC + whiteness; stationarity and invertibility), MSAR (Hamilton: regime-specific mean, common AR, common variance, K=2; lag = AR lag capped at 4), STAR (LSTAR/ESTAR, delay from the specification stage, lag capped 4 monthly / 2 quarterly). ARMA-GARCH(1,1) only as a variance **diagnostic** when ARCH-LM rejects. No polynomial trend model, no MSSTAR, no silent fallback.
+### 3.1 Open blocker (work stopped on the affected components)
 
-**Experiment.** Rolling windows (240 monthly / 120 quarterly). **Discrete specification fixed once from the initial window; parameters re-estimated at every origin.** Iterated multi-step forecasts; h=1 baseline; robustness monthly 3/6/12, quarterly 2/4. Warm starts + caching + checkpointing + parallelism for speed only.
+**N1 — October 2025 permanently missing from CPIAUCSL and UNRATE** (2025 shutdown; BLS cancelled the October CPI and never collected the October household survey, which cannot be collected retroactively). Frozen Part 5 assumes contiguous monthly series and prohibits backfilling and interpolation, but defines no rule for a permanent interior hole. Impact, options A–F and the four questions are in `data_discrepancy_2026-10-09.md`.
 
-**Evaluation.** RMSE, MAE, OOS R² vs AR; **Harvey–Leybourne–Zu (2025) primary** pairwise test (squared and absolute loss; AR–ARMA, AR–MSAR, AR–STAR, ARMA–MSAR, ARMA–STAR); DM-HLN secondary (disagreement stays visible, HLZ prevails); Model Confidence Set (90%/95%); state-conditioned RMSE/MAE and Giacomini–White regression on `REC_t`, `TURN_t`; turning window ±3 months / ±1 quarter baseline with mandatory ±1/±6 and 0/±2 sensitivity.
+**Blocked until decided:** transformation and sample construction for CPI and UNRATE; their full-sample KPSS/ZA; the balanced monthly VAR sample; the CPI AR-lag robustness date set; anything consuming those.
+**Not blocked:** everything else, because GDPC1, INDPRO, FEDFUNDS, M2SL and USREC are complete and the initial estimation window predates the hole by ~60 years, so no locked specification or stationarity decision is affected.
 
-**Adequacy and failure.** Every fit is classified Adequate / Fragile / Failed with fixed reason codes; failures are recorded and never replaced.
+### 3.2 Open dependency
 
-**Robustness.** UNRATE/FEDFUNDS alternative transformation; CPI lag 1/3/6/12; K=3 MSAR; horizons; monthly 5-variable VAR; ARMA-GARCH diagnostic; turning-window widths; failure-aware figures. Baseline and robustness kept strictly separate.
-
-**Provenance.** Every artifact carries run ID, data-snapshot hash, code commit SHA, config hash, timestamp (+ cutoff date and vintage via the manifest).
-
-## 3. Contradictions, ambiguities, missing detail, risks
-
-Full register with options is in `part6_issues_and_decisions.md`. Summary:
-
-- **No hard contradiction** between authoritative files requiring a stop. **Seven tensions/undefined terms** (T1–T7), of which the important ones are: CPI lag robustness vs the MSAR/STAR lag cap (T1); "initial estimation window" is never defined (T7); the raw UNRATE series extends one month beyond the 2026M8 endpoint (T5).
-- **13 methodological issues** (M1–M13), of which the substantive ones are: Giacomini–White uses target-date states that are not known at the origin (M1); naive iteration of STAR is not the conditional mean (M2); **HLZ must follow the paper exactly and I do not have it (M3)**; the ARMA grid contains pure-AR and pure-MA models (M4); handling of failed origins in paired tests and MCS (M7).
-- **20 missing implementation details** (D1–D20) with proposed defaults, including a table of numeric thresholds that Part 5 uses but never numbers (D8).
-- **10 technical risks** (R1–R10), most importantly: no API key (R1), no libraries installed (R2), runtime (R3), library gaps for out-of-sample Markov forecasts and ARMA-GARCH (R4), path-dependent warm starts (R5).
+**M3 — HLZ article and supplementary appendix.** Confirmed open access (CC-BY-NC-ND, Unpaywall/OpenAlex/Semantic Scholar). The publisher page and the Nottingham repository file both sit behind a Cloudflare bot challenge that automated retrieval cannot pass, and every aggregator mirror resolves to those same two URLs. Retrieval attempts continue. HLZ will **not** be implemented from memory, and no generic HAC estimator will be labelled HLZ (Part 5 §10.2, Comp §15). If retrieval ultimately fails I report Part 6 as *incomplete on HLZ* rather than substituting anything.
 
 ## 4. Architecture
 
-All code under `code/`, as Comp §4 prescribes.
-
 ```
 code/
-  run_all.py                 CLI: (default) baseline from frozen data | --initialize-frozen | --refresh-data
-                             | --verify-vintage | --smoke-test | --stage NAME | --robustness | --resume
+  run_all.py                 CLI: (default) baseline from frozen data | --initialize-frozen | --verify-vintage
+                             | --refresh-data | --smoke-test | --stage NAME | --robustness | --resume
   pyproject.toml, requirements.lock
-  configs/  baseline.yaml  smoke.yaml  series_catalog.yaml  thresholds.yaml  (all hashed into config_hash)
+  configs/  baseline.yaml  smoke.yaml  series_catalog.yaml  thresholds.yaml   (all hashed into config_hash)
   src/thesis/
     core/           config.py  paths.py  provenance.py  seeds.py  schemas.py  cache.py
                     checkpoints.py  parallel.py  runtime.py  logging_utils.py
@@ -74,234 +67,161 @@ code/
     diagnostics/    stationarity.py  decision_rule.py  nonlinearity.py  residual_tests.py  garch_diag.py
     specification/  ar_select.py  arma_select.py  star_spec.py  var_select.py  spec_registry.py
     models/         base.py  ar.py  arma.py  msar.py  star.py  var.py  arma_garch.py  status.py  flags.py
-    forecasting/    windows.py  rolling.py  iterate.py  store.py
-    evaluation/     losses.py  metrics.py  states.py  alignment.py  hlz.py  dm_hln.py  gw.py  mcs.py
-                    tp_sensitivity.py
+    forecasting/    windows.py  rolling.py  iterate.py  simulate.py  store.py
+    evaluation/     losses.py  metrics.py  states.py  alignment.py  hlz.py  dm_hln.py
+                    state_loss_regression.py  mcs.py  tp_sensitivity.py
     robustness/     transformation.py  cpi_lags.py  k3.py  horizons.py  var_compare.py  garch_diag.py
     reporting/      tables.py  figures.py  test_registry.py  failure_registry.py  equations.py
                     claim_matrix_schema.py
-  tests/  unit/  integration/  validation/ (seeded simulations)  fixtures/
+  tests/  unit/  integration/  validation/  fixtures/
 ```
 
-**Core objects.** `TestResult` (name, H0, statistic, reference distribution/bootstrap, p-value, 5% decision, implication, tuning choices, provenance) is the one record every test returns — this is how the §7.2 standardized presentation (R1-13) is guaranteed. `FitRecord` (series, model, spec hash, window start/end, refit date, converged, loglik, AIC/BIC, parameters, SEs, start used, optimizer message, wall time, status, reason codes, raw diagnostics). `FailureEvent` (T4.7 row).
+Note `evaluation/state_loss_regression.py`, not `gw.py`: per **M1** the module and every output label name it an **ex-post state-dependent forecast-loss regression**.
 
-**Engineering rules.** Workers write only their own shard; one process merges (no concurrent writes to one path). Child seeds come from `SeedSequence` keyed by a stable hash of (series, model, spec), not by scheduling order. Single-threaded BLAS in workers. Cache entries stored as JSON/NPZ/Parquet (no pickle). Cache key = data-snapshot hash + series + transformation + model + spec hash + window start/end + refit date + code hash (D15) + config subtree hash + predecessor-solution hash (warm-start chain, R5). Checkpoints after each of the ten stages in Comp §5 as `cache/checkpoints/<stage>.json` (inputs hash, outputs hash, status), so a failed run resumes without repeating valid work.
+**Core records.** `TestResult` (name, H0, statistic, reference distribution or bootstrap, p-value, 5% decision, implication, all tuning choices, provenance) is what every test returns, which is how the Part 5 §7.2 standardized presentation (jury R1-13) is guaranteed structurally. `FitRecord` (series, model, spec hash, window bounds, refit date, convergence, loglik, AIC/BIC, parameters, standard errors, start used, optimizer message, wall time, status, reason codes, raw diagnostics). `FailureEvent` (one T4.7 row). `DataGapEvent` — separate from `FailureEvent` per the N1 options, so no model is penalised for an external data outage.
+
+**Engineering rules.** Workers write only their own shard; one process merges. Child seeds from `SeedSequence` keyed by a stable hash of (series, model, spec, origin), never by scheduling order. Single-threaded BLAS in workers. Cache entries as JSON/NPZ/Parquet, never pickle. Cache key (T4 superset): data-snapshot hash + series + transformation + model + spec hash + window start/end + refit date + dependency-aware code hash (D15) + config subtree hash + predecessor-solution hash for warm-start chains (R5). Checkpoints after each of the ten Comp §5 stages.
 
 ## 5. Traceability: Part 5 requirement → implementation
 
-Columns: **Code** (module/function) · **Model/procedure** · **Tests** · **Outputs**. Robustness and logs are called out where they apply.
-
-### 5.1 Data, frozen vintage, samples (Spec §2; Comp §2; Rationale)
+### 5.1 Data, frozen vintage, samples (Spec §2; Comp §2)
 
 | Requirement | Code | Tests | Outputs |
 |---|---|---|---|
-| Programmatic FRED/ALFRED retrieval, `FRED_API_KEY` from env only, raw levels, vintage 2026-10-05 | `data/fred_client.py::fetch_series(series_id, realtime_start, realtime_end, units='lin')`; never logs the key | `test_fred_client_mocked` (request params, key never persisted), `test_vintage_date_is_2026_10_05` | `data/frozen/fred_vintage_2026-10-05/<ID>.csv` + `<ID>.meta.json` |
-| Frozen files + per-file metadata (ID, params, source, title, frequency, units, SA, vintage, retrieval timestamp, first/last obs, row count, SHA-256) | `data/frozen.py::initialize_frozen()`, `data/manifest.py::write_manifest()` (refuses if manifest exists) | `test_initialize_refuses_overwrite`, `test_manifest_contains_all_hashes` | master manifest `data/frozen/.../MANIFEST.json`; `output/manifests/frozen_manifest.csv` (T2.0A) |
-| Verify hashes before any estimation; no internet in default run | `data/frozen.py::verify_frozen()`; `run_all.py` guard that socket access is disabled in default mode | `test_hash_verification_detects_tamper`, `test_default_run_makes_no_network_calls` | `output/logs/hash_verification.csv` |
-| Expected start/end dates; stop and save discrepancy | `data/samples.py::check_expected_ranges()` (expected table in config) | `test_expected_endpoints_pass`, `test_endpoint_mismatch_halts_and_writes_note` | `notes/claude/data_discrepancy_<date>.md` (on failure) |
-| Start-date harmonization, INDPRO truncated 1947M1, common monthly end 2026M8, GDP end 2026Q2, VAR from 1959M1 | `data/samples.py::build_target_samples()`, `::var_common_sample()` | `test_sample_boundaries`, `test_var_sample_starts_1959M1`, `test_no_backfill_no_interpolation` | `output/data_audit/sample_audit.csv` (T2.1), F2.0 data |
-| Local transformations, annualization 400/1200 | `transforms/growth.py::annualized_logdiff(x, k)`; `transforms/differences.py::first_diff` | `test_annualization_factors`, `test_logdiff_known_values`, `test_transform_from_frozen_is_deterministic` | `output/data_audit/transformed_series.parquet` |
-| Concept→series table incl. excluded candidates | `reporting/tables.py::concept_to_series()` from `configs/series_catalog.yaml` | `test_catalog_covers_all_spec_exclusions` | T2.0 |
-| USREC evaluation-only | import-boundary rule: `models/`, `forecasting/`, `specification/` may not import `evaluation.states` or load USREC | `test_usrec_not_imported_by_models` (static), `test_forecasts_invariant_to_usrec` (perturb USREC → byte-identical forecasts) | — |
-| Optional audit reconstruction from ALFRED | `data/vintage_audit.py::verify_vintage()` (`--verify-vintage`): writes to `data/audit/<date>/`, compares hashes, never overwrites | `test_audit_writes_elsewhere` | `output/manifests/vintage_audit.csv` |
-| Refresh | `run_all.py --refresh-data` → `data/refreshed/<date>/`, outputs to `output_refreshed/<date>/` | `test_refresh_never_touches_frozen_or_output` | separate namespace |
+| Programmatic retrieval; key from env only; raw levels; `vintage_dates=2026-10-05` primary with realtime cross-check (T6) | `data/fred_client.py::fetch_series` | mocked-request params; key never persisted or logged; vintage equals 2026-10-05; both request forms compared value-by-value | `data/frozen/fred_vintage_2026-10-05/<ID>.csv` + `<ID>.meta.json` |
+| Per-file metadata and SHA-256; one immutable master manifest; refuse overwrite (D13) | `data/frozen.py::initialize_frozen`, `data/manifest.py` | refuses when a manifest exists; manifest covers every file | `MANIFEST.json`; T2.0A |
+| Preserve raw exactly, truncate only when building the sample; report raw-last and usable-last (T5) | `data/frozen.py`, `data/samples.py` | UNRATE/FEDFUNDS 2026M9 preserved raw, excluded from the sample | T2.0A, T2.1 |
+| Hash verification before estimation; no internet in the default run | `data/frozen.py::verify_frozen`; network guard in `run_all.py` | tamper detection; default run makes no network call | `output/logs/hash_verification.csv` |
+| Expected ranges; stop on unexplained discrepancy | `data/samples.py::check_expected_ranges` | mismatch halts and writes a note | `notes/claude/data_discrepancy_<date>.md` |
+| Start dates, INDPRO truncation, endpoint 2026M8, GDP 2026Q2, VAR from 1959M1 | `data/samples.py` | boundary tests; no backfill; no interpolation | `output/data_audit/sample_audit.csv` |
+| Local transformations, 400/1200 annualization | `transforms/growth.py`, `transforms/differences.py` | known values; annualization factors; determinism from frozen input | `output/data_audit/transformed_series.parquet` |
+| Concept→series incl. exclusions | `reporting/tables.py::concept_to_series` from `configs/series_catalog.yaml` | catalog covers every Part 5 exclusion | T2.0 |
+| USREC evaluation-only | import boundary: `models/`, `forecasting/`, `specification/` may not import `evaluation.states` or load USREC | static import test; perturbing USREC leaves forecasts byte-identical | — |
+| Audit reconstruction; refresh namespace (D16) | `data/vintage_audit.py`; `run_all.py --refresh-data` | audit writes to `data/audit/<date>/`; refresh never touches frozen or `output/` | `output/manifests/vintage_audit.csv` |
 
-### 5.2 Stationarity and transformation decision (Spec §3)
-
-| Requirement | Code | Tests | Outputs |
-|---|---|---|---|
-| ADF (BIC, cap 12/4, intercept, 5%) | `diagnostics/stationarity.py::adf()` → `TestResult` | validated on seeded random walk / AR(1); lag-cap test | T2.2 |
-| KPSS (intercept, automatic bandwidth recorded, 5%) | `::kpss()`; flags truncated p-values (D9) | seeded stationary/non-stationary cases | T2.2 |
-| Zivot–Andrews on UNRATE/FEDFUNDS levels (break in intercept+trend, trim 15%, BIC); break date reported | `::zivot_andrews()`; critical-value comparison in addition to library p-value | known-break simulation recovers break date within tolerance; statistic vs published critical value | T2.2; F2.1 break marker |
-| ADF/KPSS on log level and on growth rate for GDP/CPI/INDPRO/M2 (§3.3) | `diagnostics/stationarity.py::transformation_verification()` | — | T2.2 |
-| Decision rule on **initial window**, full-sample confirmation, no retroactive change, alternative retained as mandatory robustness | `diagnostics/decision_rule.py::decide_transformation(initial_window_results)` and `::full_sample_agreement()` | table-driven test of all ADF×KPSS×ZA combinations (rules 1–3), `test_decision_uses_only_initial_window`, `test_disagreement_sets_robustness_flag` | T2.2 (decision + reason), `output/diagnostics/transformation_decision.json` |
-| Level forecasts reconstructed when modeled in differences | `transforms/level_reconstruction.py` | `test_level_reconstruction_roundtrip`, multi-step cumulative check | F2.1-style policy figures; T4.1 level metrics (M6) |
-
-### 5.3 Nonlinearity evidence (Spec §4)
+### 5.2 Stationarity and transformation decision (Spec §3; T2, T7, D9)
 
 | Requirement | Code | Tests | Outputs |
 |---|---|---|---|
-| Tsay (1986) after fitting the selected AR on the initial window (D3) | `diagnostics/nonlinearity.py::tsay_test()` | size ≈ 5% under simulated linear AR; power against simulated LSTAR/bilinear | T2.3 |
-| LST/Teräsvirta linearity per delay, delay selection, H04/H03/H02 LSTAR-vs-ESTAR (D4); monthly d∈1..6, quarterly 1..4; no multiplicity correction | `::lst_linearity_by_delay()`, `::select_delay_and_type()` | recovers delay/type on simulated LSTAR and ESTAR; deterministic tie-break | T2.4 |
-| No naive MS chi-square LR test; limitation stated | no such function exists; `reporting/` note string attached to T2.4 | `test_no_ms_lr_function` (guards against accidental addition) | note in T2.4 |
-| Nonlinearity result does not gate model entry | model registry lists all four models unconditionally | `test_star_msar_run_even_if_linearity_not_rejected` | interpretation field only |
+| ADF (BIC, cap 12/4, intercept, 5%) | `diagnostics/stationarity.py::adf` → `TestResult` | seeded random-walk vs AR(1); lag cap honoured | T2.2 |
+| KPSS (intercept, library auto bandwidth recorded) | `::kpss`; truncated-p flag | seeded stationary/nonstationary | T2.2 |
+| ZA on UNRATE/FEDFUNDS levels: intercept+trend, trim 0.15, BIC, **max lag 12**; critical values matching the implemented specification, **never a hard-coded −5.08** (D9) | `::zivot_andrews` | known-break recovery; critical-value source recorded | T2.2; F2.1 break marker |
+| ADF/KPSS on log level and on the growth rate (§3.3), **plus labelled constant+trend diagnostics** (T2) | `::transformation_verification` | trend variants cannot alter any baseline decision | T2.2 |
+| Decision rule on the **initial window** = first 240/120 observations (T7); full-sample confirmation; no retroactive change; alternative becomes mandatory robustness (M5) | `diagnostics/decision_rule.py` | table-driven over all ADF×KPSS×ZA branches; decision uses only the initial window; disagreement sets the robustness flag | T2.2; `output/diagnostics/transformation_decision.json` |
+| Level reconstruction when modeled in differences; common-scale level errors (M6) | `transforms/level_reconstruction.py` | round-trip; multi-step cumulation | T4.1 level columns |
 
-### 5.4 Models (Spec §5, §6; D5–D7)
-
-| Model | Code | Estimation / forecasting | Tests |
-|---|---|---|---|
-| **AR(p)** | `specification/ar_select.py`, `models/ar.py` | OLS with intercept; selection on initial window, common effective sample (D2), BIC rank, first candidate passing Ljung–Box (D1), else BIC minimum flagged "diagnostically weak"; order fixed; refit each origin; iterated forecast | equals statsmodels `AutoReg` on same sample; selection rule table-test incl. all-fail branch; companion-matrix stability |
-| **ARMA(p,q)** | `specification/arma_select.py`, `models/arma.py` | Gaussian ML (statsmodels state space), stationarity+invertibility enforced, grid minus (0,0), BIC + whiteness; M4 flag; exact iterated forecast | recovers simulated ARMA orders/params; grid exclusion; q=0/p=0 flag |
-| **MSAR (K=2)** | `models/msar.py` | **Own Hamilton filter** on the expanded state (s_t…s_{t−p}); regime means, common φ, common σ; logistic/log parameterization; deterministic multi-start (D6); warm start from previous successful vector, fallback to deterministic starts, winner recorded; regimes ordered by mean; smoothed probabilities, transition matrix, occupancy, expected durations; filtered probabilities at the origin; **exact h-step conditional mean** | log-likelihood equals statsmodels `MarkovAutoregression` at identical parameters; parameter recovery on simulated MS-AR; label-switching rule; h-step forecast equals Monte-Carlo benchmark; boundary and empty-regime flags |
-| **STAR** | `specification/star_spec.py`, `models/star.py` | Conditional NLS: linear coefficients by OLS given (γ,c), grid then refinement, standardized transition variable, bounds per D5; delay and type fixed from initial window; warm start (γ,c); one-step exact; h>1 per M2; transition-function range/SD | parameter recovery on simulated LSTAR/ESTAR; G in [0,1]; flag logic; reduces to AR when G≡0 |
-| **K=3 MSAR** | `models/msar.py` with `K=3` | same structure and lag as K=2 | simulated 3-state recovery; 243-state filter agrees with brute-force enumeration for small T |
-| **VAR(p)** | `specification/var_select.py`, `models/var.py` | OLS, p∈{1,2,3} by BIC on a common sample, stability required, iterated forecasts | equals statsmodels VAR; stability via companion eigenvalues |
-| **ARMA-GARCH(1,1) diagnostic** | `models/arma_garch.py`, `diagnostics/garch_diag.py` | custom Gaussian quasi-ML (R4); persistence α+β; standardized-residual LB, LB² and ARCH-LM | recovers simulated GARCH(1,1); stationarity constraint |
-| Adequacy classification | `models/status.py`, `models/flags.py` | Adequate / Fragile / Failed with reason codes from D8 thresholds; one function, one table of rules | one test per reason code; `test_no_silent_fallback` (failed fit never replaced by another model) |
-
-### 5.5 In-sample adequacy and credibility (Spec §7, §8)
+### 5.3 Nonlinearity evidence (Spec §4; D3, D4)
 
 | Requirement | Code | Tests | Outputs |
 |---|---|---|---|
-| loglik, AIC, BIC, in-sample RMSE/MAE, Ljung–Box (12/24; 4/8), ARCH-LM (12; 4), Jarque–Bera, per series/model/refit | `diagnostics/residual_tests.py` (statsmodels wrappers returning `TestResult`) | compared with statsmodels directly; df-adjustment test | T3.1 (`output/diagnostics/adequacy_by_refit.parquet` + summary CSV) |
-| Standardized H0/statistic/distribution/p/decision/implication table | `reporting/test_registry.py` | schema test: every test row complete | `T-DIAG` (D17) |
-| MSAR credibility (matrix, occupancy, durations, boundary flags) | `models/flags.py::msar_flags()` | threshold edge cases | T3.2 |
-| STAR credibility (type, delay, γ, c, G min/max/SD, bound flags) | `models/flags.py::star_flags()` | edge cases | T3.2 |
-| Policy-rate dedicated diagnostic (§8.1) | `reporting/tables.py::policy_rate_diagnostic()` assembling transformation status, convergence, transition probabilities, occupancy, coefficient magnitude, residual adequacy, forecast behaviour | schema test | `T3.2-FF` |
-| Fitted-vs-observed, residual ACF (95% bands), regime/STAR plots | `reporting/figures.py` | smoke-render test; bands present | F3.1, F3.2, F3.3 |
+| **Tsay (1986) quadratic test** with all unique quadratic lag terms and the nested/orthogonalized auxiliary F test (D3) | `diagnostics/nonlinearity.py::tsay_test` | validated against R `TSA::Tsay.test` reference values **and** simulations; size ≈ 5% under linear AR; power against LSTAR/bilinear | T2.3 |
+| LST/Teräsvirta sequence with **H02/H03/H04 labels, auxiliary equations and the LSTAR/ESTAR rule exactly as published** (D4); monthly d ∈ 1..6, quarterly 1..4; no multiplicity correction | `::lst_linearity_by_delay`, `::select_delay_and_type` | recovers delay and type on simulated LSTAR/ESTAR; deterministic tie rule; all delay results stored | T2.4 |
+| No naive MS chi-square LR test | no such function; guard test forbids adding one | `test_no_ms_lr_function` | note in T2.4 |
+| Nonlinearity result does not gate model entry (§4.4) | registry lists all four models unconditionally | MSAR/STAR run even when linearity is not rejected | interpretation field only |
 
-### 5.6 Pseudo-out-of-sample design (Spec §9; Comp §3, §5–§8)
+### 5.4 Models (Spec §5–§6; D5–D8, M4, M8–M10)
+
+| Model | Implementation | Validation |
+|---|---|---|
+| **AR(p)** | OLS with intercept; order chosen on the initial window by BIC on a **common effective sample** (D2), then the lowest-BIC candidate passing the **primary Ljung–Box** check (D1), else BIC minimum flagged "diagnostically weak"; order fixed; parameters refit every origin | matches statsmodels `AutoReg`; selection-rule table test incl. the all-fail branch; companion-matrix stability |
+| **ARMA(p,q)** | Gaussian ML (state space); stationarity and invertibility enforced; grid minus (0,0); BIC + whiteness; **q=0 / p=0 allowed and flagged** (M4) | recovers simulated orders and parameters; grid exclusion; flag logic |
+| **MSAR (K=2)** | Own Hamilton filter over the expanded state; regime means, common AR, common variance; **logistic/simplex transition probabilities, log σ** (D5); deterministic multi-starts with every start recorded (D6); warm start then deterministic fallback; regimes ordered by mean; transition matrix, smoothed probabilities, occupancy, expected durations; **exact h-step conditional mean** | log-likelihood equals statsmodels `MarkovAutoregression` at identical parameters; parameter recovery; label-switching; h-step equals Monte-Carlo benchmark |
+| **STAR** | Conditional NLS (linear coefficients by OLS given γ, c); **scale-free parameterization on `(z−c)/s_z`, logistic for LSTAR and squared distance for ESTAR, γ > 0 in [1e-3, 1e3], c ∈ [min z, max z]** (D5); delay and type fixed from the initial window; warm starts; transition-function range/SD recorded | recovers simulated LSTAR/ESTAR; G ∈ [0,1]; reduces to AR when G is constant; flag logic |
+| **K=3 MSAR** | Same structure and lag; **all six targets, every origin, h=1 headline plus approved longer horizons from the same fits** (M8) | simulated 3-state recovery; filter agrees with brute-force enumeration at small T |
+| **VAR(p)** | 240-month rolling; p ∈ {1,2,3} by BIC on the **initial VAR window**; lag fixed; refit each origin; stability required; h = 1, 3, 6, 12; compared on **identical common target dates** (M10) | matches statsmodels VAR; companion-eigenvalue stability |
+| **ARMA-GARCH(1,1)** | Custom Gaussian quasi-ML; trigger = ARCH-LM rejection on the **selected ARMA's initial-window residuals**; **full rolling OOS chain with mean forecasts**; **excluded from the horse race and from MCS** (M9) | recovers simulated GARCH(1,1); stationarity constraint |
+| Status classification | `models/status.py` + `models/flags.py`: Adequate / Fragile / Failed from the **D8-approved** rules only. Convergence per **D7** (bound contact is fragility, not non-convergence). Parameter uncertainty **reported directly**, no invented SE threshold. `EXTREME_FORECAST` is a plotting/fragility warning that never deletes a forecast. | one test per reason code; `test_no_silent_fallback` |
+
+### 5.5 In-sample adequacy and credibility (Spec §7–§8)
+
+| Requirement | Code | Outputs |
+|---|---|---|
+| loglik, AIC, BIC, in-sample RMSE/MAE, Ljung–Box **12/24 monthly, 4/8 quarterly with D1 df conventions**, ARCH-LM (12/4), Jarque–Bera, per series/model/refit | `diagnostics/residual_tests.py` | T3.1 |
+| Standardized H0/statistic/distribution/p/decision/implication for every test | `reporting/test_registry.py` | `T-DIAG` (D17) |
+| MSAR credibility; STAR credibility | `models/flags.py` | T3.2 |
+| Policy-rate dedicated diagnostic (§8.1, jury P-03) | `reporting/tables.py::policy_rate_diagnostic` | `T3.2-FF` (D17) |
+| Fitted-vs-observed; residual ACF with 95% bands; regime and transition plots | `reporting/figures.py` | F3.1, F3.2, F3.3 |
+
+### 5.6 Pseudo-out-of-sample design (Spec §9; Comp §3, §5–§8; M2)
 
 | Requirement | Code | Tests |
 |---|---|---|
-| Rolling windows 240/120; first origin; target alignment | `forecasting/windows.py::rolling_origins()` | `test_rolling_window_boundaries`, `test_forecast_target_alignment`, `test_window_length_constant` |
-| No future data in predictors | `forecasting/rolling.py` takes only `y[:origin]` | property test: mutate all data after the origin → identical forecast |
-| Every-origin re-estimation with spec fixed from the initial window | `forecasting/rolling.py::run_chain(series, model, spec)` | `test_params_refit_each_origin`, `test_spec_not_researched` |
-| Iterated multi-step from one fit for h∈{1,3,6,12}/{1,2,4} | `forecasting/iterate.py` (AR/ARMA/VAR analytic; MSAR exact; STAR per M2) | iterated vs closed-form AR(1); MSAR exact vs simulation |
-| Warm starts, cache, checkpoints, resume | `core/cache.py`, `core/checkpoints.py` | `test_cache_key_deterministic`, `test_cache_key_changes_with_each_element`, `test_resume_does_not_refit`, `test_warm_chain_invalidation` |
-| Parallelism without shared writes; reproducible child seeds | `core/parallel.py`, `core/seeds.py` | `test_parallel_equals_serial`, `test_seed_independent_of_schedule` |
-| Failure handling | `core/schemas.py::FailureEvent`, `reporting/failure_registry.py` | `test_failed_model_emits_record_and_others_continue` |
-| Runtime summary | `core/runtime.py` (wall, CPU, fits attempted/cached/failed, peak memory) | schema test |
+| Rolling 240/120; origins; target alignment | `forecasting/windows.py` | window boundaries; target alignment; constant window length |
+| No future data in predictors | `forecasting/rolling.py` sees only `y[:origin]` | property test: mutate everything after the origin → identical forecast |
+| Every-origin re-estimation, discrete spec fixed from the initial window | `forecasting/rolling.py::run_chain` | params refit each origin; spec never re-searched |
+| Iterated multi-step from one fit. AR/ARMA/VAR analytic; **MSAR exact recursion**; **STAR residual-bootstrap conditional mean, 5,000 paths, deterministic child seeds, h=1 analytic, skeleton only as a labelled diagnostic** (M2) | `forecasting/iterate.py`, `forecasting/simulate.py` | AR(1) closed form; MSAR exact vs simulation; STAR bootstrap convergence and seed determinism; path count recorded |
+| Warm starts, cache, checkpoints, resume | `core/cache.py`, `core/checkpoints.py` | key determinism; key changes with each element; resume refits nothing valid; warm-chain invalidation |
+| Parallelism without shared writes; schedule-independent seeds | `core/parallel.py`, `core/seeds.py` | parallel equals serial; seeds independent of schedule |
+| Failure and data-gap handling | `core/schemas.py`, `reporting/failure_registry.py` | failed fit emits a record and other models continue; `DataGapEvent` never counted as model failure |
+| Runtime reporting | `core/runtime.py` | wall/CPU time, fits attempted, cache reuse, failures, peak memory |
 
-Outputs: `output/forecasts/forecasts_<series>_<model>.parquet` (origin, target date, horizon, forecast, actual, status, reason codes, provenance), `output/models/fits/…`, `output/logs/runtime_summary.csv`, `output/logs/fit_log.parquet`.
+### 5.7 Forecast evaluation (Spec §10; M1, M7, D10–D12)
 
-### 5.7 Forecast evaluation (Spec §10)
+| Requirement | Code | Outputs |
+|---|---|---|
+| RMSE, MAE, OOS R² vs AR; attempted/valid/failed origins; `T_common` and observations removed by alignment (M7) | `evaluation/metrics.py`, `evaluation/alignment.py` | T3.3 |
+| **HLZ** squared and absolute loss, five pairs, every tuning choice recorded — implemented strictly from the article and supplement (M3) | `evaluation/hlz.py` | T3.3 columns, T3.3A |
+| **DM-HLN** secondary, Newey–West/Bartlett truncation h−1 (D10), kept separate from HLZ | `evaluation/dm_hln.py` | T3.3B incl. agreement flag |
+| **MCS** method `R`, stationary bootstrap, 5,000 reps, block length `ceil(sqrt(T_common))`, fixed seed, both losses, 90% and 95%; intersection of finite-loss dates across included models; **"unavailable" when undefined**; ARMA-GARCH excluded (D11, M7, M9) | `evaluation/mcs.py` | T3.4 |
+| State RMSE/MAE/mean loss difference for expansion, recession, turning window, outside | `evaluation/states.py` | T3.5 |
+| **Ex-post state-dependent forecast-loss regression** (M1): α, β_rec, β_turn, individual p-values, joint Wald over all three, separate state-dependence Wald over the two slopes, HAC rule, state cell N, descriptive state RMSE/MAE, availability flag per **M12** | `evaluation/state_loss_regression.py` | T3.5 |
+| Peak vs trough at h=1 under the baseline window | `evaluation/states.py::peak_trough_split` | T3.6 |
+| Turning masks monthly ±1/±3/±6 and quarterly 0/±1/±2; unions; boundary clipping; overlap across categories permitted (M11); baseline never replaced | `evaluation/states.py::turning_masks` | T4.TP1 |
+| Sensitivity classification `unchanged`/`weakened`/`reversed`/`unavailable` plus `support_change` (M13) | `evaluation/tp_sensitivity.py` | T4.TP1 |
 
-| Requirement | Code | Tests | Outputs |
-|---|---|---|---|
-| RMSE, MAE, OOS R² vs AR; N valid/failed | `evaluation/metrics.py` | hand-computed examples; R² identity | T3.3 |
-| **HLZ (2025)** squared and absolute loss, five pairs, every tuning choice recorded | `evaluation/hlz.py` — **blocked on M3** | loss-differential construction (both losses); local demeaning and long-run variance matched to the paper; deterministic recording of bandwidth/smoothing; size/power Monte Carlo; paper worked example if one exists | T3.3 (columns), T3.3A |
-| **DM-HLN** secondary, same pairs/losses, horizon-appropriate LRV, truncation recorded; kept separate | `evaluation/dm_hln.py` | known DM numbers; HLN factor; `test_dm_does_not_overwrite_hlz` | T3.3B (agreement flag vs HLZ) |
-| **MCS** 90%/95%, both losses, common-date admissible loss matrix, elimination order | `evaluation/mcs.py` (wraps `arch.bootstrap.MCS`, D11) | `test_mcs_matrix_only_admissible_common_dates`; known-case MCS; seed determinism | T3.4 |
-| States (expansion, recession, turning window, outside), per-state N/RMSE/MAE/mean loss diff | `evaluation/states.py`, `evaluation/metrics.py::by_state()` | mask tests below | T3.5 |
-| **Giacomini–White** regression, HAC by horizon, coefficients/p-values, joint test, sign convention, availability flag (M1, M12, D10, D12) | `evaluation/gw.py` | `test_gw_conditioning_aligned_to_target_date`; HAC vs reference implementation; size under null | T3.5 |
-| Peak vs trough detail, h=1, baseline window | `evaluation/states.py::peak_trough_split()` | N checks | T3.6 |
-| Turning-window masks: monthly ±1/±3/±6, quarterly 0/±1/±2; union; baseline vs sensitivity separate | `evaluation/states.py::turning_masks()` | `test_monthly_masks_reproducible`, `test_quarterly_masks`, `test_overlap_union_counted_once`, `test_baseline_table_uses_pm3_pm1q` | T4.TP1 |
-| TP-sensitivity classification (M13) | `evaluation/tp_sensitivity.py` | table-driven | T4.TP1 |
+### 5.8 Robustness (Spec §11) — written only under `output/robustness/`
 
-### 5.8 Robustness (Spec §11; Outputs §8) — all written under `output/robustness/`, never to baseline paths
+| Threat | Code | Design |
+|---|---|---|
+| UNRATE/FEDFUNDS transformation | `robustness/transformation.py` | alternative transformation through the full chain; modeled-target inference plus common-scale level errors (M6); no break-dummy model (M5) |
+| CPI AR-lag benchmark | `robustness/cpi_lags.py` | **AR only** at p = 1, 3, 6, 12; ARMA/MSAR/STAR at approved baseline specs and caps; nonlinear models compared against each alternative AR benchmark on common dates (T1) |
+| Two regimes imposed | `robustness/k3.py` | K=3 for all six targets, every origin (M8); §11.1 retention rule encoded |
+| Horizon | `robustness/horizons.py` | monthly 1/3/6/12, quarterly 1/2/4 from stored forecasts |
+| Omitted macro information | `robustness/var_compare.py` | per M10 |
+| Conditional variance | `robustness/garch_diag.py` | per M9 |
+| Failure misleads figures | `reporting/figures.py` | failure panels, no clipping (D19) |
+| Turning-window width | `evaluation/tp_sensitivity.py` | per §5.7 |
+| Window length, U.S. sample | not implemented by design | Part 5 states these are documented design assumptions; note strings carry the statement |
 
-| Threat | Code | Procedure | Output |
-|---|---|---|---|
-| UNRATE/FEDFUNDS transformation | `robustness/transformation.py` | re-run specification stage (initial window) + OOS chain on the non-baseline transformation; compare on modeled target and on common level-error (M6) | T4.1 |
-| CPI lag | `robustness/cpi_lags.py` | AR p=1,3,6,12 under a common evaluation set; MSAR/STAR per T1 | T4.2 |
-| Two regimes imposed | `robustness/k3.py` | K=3 MSAR, same structure/lag; BIC, convergence, occupancy, transitions, forecast metrics, retention decision encoded from the §11.1 rule (retain K=2 if empty/unstable/worse BIC/no OOS gain/indistinct third state) | T4.3 |
-| h=1 only | `robustness/horizons.py` | tabulate stored multi-horizon forecasts through the same metric/test code | T4.4 |
-| Omitted macro information | `robustness/var_compare.py` (M10) | VAR OOS vs AR on the common sample, difference from univariate ranking | T4.5 |
-| Conditional variance | `robustness/garch_diag.py` (M9) | ARCH-LM trigger → ARMA-GARCH diagnostic | T4.6 |
-| Failure misleads figures | `reporting/figures.py` (D19) | failure panels, no clipping | F3.4 |
-| Turning window width | `evaluation/tp_sensitivity.py` | see §5.7 | T4.TP1 |
-| Window length, U.S. sample | none implemented, by design | the spec states these are documented design assumptions; output notes carry the statement | note strings |
+### 5.9 Failure registry (Outputs §9)
 
-### 5.9 Failure registry (Spec §7.5, §8; Outputs §9)
+`reporting/failure_registry.py` builds T4.7 from `FitRecord` flags: series, model, refit date, horizon, category, reason code from the fixed list (`NONCONVERGENCE, NONFINITE, SINGULAR_COV, UNSTABLE_AR, EMPTY_REGIME, TRANSITION_BOUNDARY, STAR_GAMMA_BOUND, STAR_THRESHOLD_EXTREME, RESIDUAL_AUTOCORR, EXTREME_FORECAST`), raw diagnostic, whether the forecast was retained, whether the figure was separated. Data gaps are recorded separately and are not model failures.
 
-`reporting/failure_registry.py` builds T4.7 from `FitRecord` flags: one row per event with series, model, refit date, horizon, category, reason code (`NONCONVERGENCE, NONFINITE, SINGULAR_COV, UNSTABLE_AR, EMPTY_REGIME, TRANSITION_BOUNDARY, STAR_GAMMA_BOUND, STAR_THRESHOLD_EXTREME, RESIDUAL_AUTOCORR, EXTREME_FORECAST`), raw diagnostic, whether the forecast was retained, whether the figure was separated. Tests: one synthetic trigger per code; all-codes-present schema test.
+### 5.10 Figures, tables, provenance, logs
 
-### 5.10 Figures and tables rules (Spec §13)
+Figure helper enforces unit labels, sample dates, model labels, NBER shading, no multi-series squeeze, separate failure panels, no clipping, 95% ACF bands. Tables carry numeric p-values plus a stars column at 10/5/1% (D20). No cross-correlation figure is produced. `core/provenance.py` appends run ID, data-snapshot hash, code commit SHA, config hash and creation timestamp to every table, with sidecar provenance JSON for figures; `output/manifests/run_manifest.json` ties the run to the 2026-10-05 vintage, manifest hash, commit SHA and dirty flag, config and environment. Thesis-facing runs refuse to proceed with a dirty tree (D14).
 
-Figure helper enforces: unit labels, sample dates, model labels, NBER shading, no multi-series squeeze, failure panel separate, no clipping, ACF with 95% bands, significance convention in tables (`stars` column). `test_no_axis_clip`, `test_failure_panel_created`, `test_stars_thresholds`. Formats: PNG (300 dpi) + PDF with an embedded/sidecar provenance record.
+## 6. Implementation confirmations
 
-### 5.11 Provenance, logs, reproducibility (CLAUDE.md §8–9; Outputs §1; Comp §9, §15)
+As in the approved plan, with these decision-driven changes: the state regression is an **ex-post state-dependent forecast-loss regression**, not a Giacomini–White conditional predictive-ability test (M1); **STAR h > 1 uses residual-bootstrap simulation** (M2); **MSAR h-step uses the exact recursion**; **HLZ comes strictly from the article and supplement** (M3); **ARMA-GARCH runs the full rolling chain but stays out of the horse race and MCS** (M9); **MCS uses method R, stationary bootstrap, `ceil(sqrt(T_common))`** (D11); **CPI lag robustness varies the AR benchmark only** (T1); **no invented eligibility percentage, no invented small-cell cutoff, no invented SE or near-unit-root thresholds** (M7, M12, D8).
 
-`core/provenance.py` appends `run_id, data_snapshot_hash, code_commit_sha, config_hash, created_utc` (+ series/model/horizon where relevant) to every table; figures and non-tabular files get a sidecar `*.provenance.json`; `output/manifests/run_manifest.json` ties run ID to data cutoff 2026-10-05, vintage, manifest hash, commit SHA (and dirty flag), config, environment (`output/logs/environment.json`), timestamps. Logs: `output/logs/pipeline.jsonl` (structured stage events), `fit_log.parquet`, `runtime_summary.csv`, `warnings.log`.
+## 7. Required outputs → generating code
 
-## 6. Explicit implementation confirmations (your item 5)
-
-- **AR:** OLS with intercept, p chosen on the initial window by BIC on a common sample then the first Ljung–Box-clean candidate; fixed order, parameters refit every origin; stability-checked; failures recorded.
-- **ARMA:** Gaussian ML, grid 0–4 monthly / 0–2 quarterly minus (0,0), stationarity and invertibility required, BIC + whiteness, order fixed after the initial window. Pure-AR/pure-MA selections are allowed and flagged (M4).
-- **MSAR:** Hamilton mean-switching with common AR and variance, K=2, lag = AR lag capped at 4; own filter, regimes ordered by mean, exact h-step means, all §5.5/§8.1 diagnostics and flags; no fallback parameterization.
-- **STAR:** LSTAR/ESTAR from the Teräsvirta sequence on the initial window, delay from the specification stage, lag cap 4/2, conditional NLS with warm starts, all §5.6/§8.2 diagnostics and flags.
-- **K=3 MSAR:** identical structure/lag, reported regardless of outcome, retention rule of §11.1 encoded (scope M8).
-- **VAR:** five monthly variables with baseline transformations, 1959M1 start, p∈{1,2,3} by BIC, stability required, design per M10; a robustness model only.
-- **Conditional ARMA-GARCH diagnostics:** ARCH-LM trigger → custom ARMA-GARCH(1,1); persistence and standardized-residual diagnostics; not in the horse race (M9).
-- **Stationarity tests:** ADF, KPSS, Zivot–Andrews exactly as §3.2–3.4, initial-window decision, full-sample check, mandatory alternative-transformation robustness.
-- **Nonlinearity tests:** Tsay + LST/Teräsvirta sequence; no MS LR test.
-- **Pseudo-out-of-sample forecasting:** rolling 240/120, spec fixed once, parameters refit at every origin, iterated horizons from one fit per origin.
-- **HLZ:** implemented only from the published paper/supplement (M3); every tuning choice stored in the output row. **Not started until M3 is settled.**
-- **DM-HLN:** separate secondary test, same pairs/losses, never replaces HLZ.
-- **Giacomini–White:** HAC regression on `REC_t`, `TURN_t` aligned to the target date, joint test, availability flag (M1, M12).
-- **Model Confidence Set:** 90/95%, both losses, common-date admissible loss matrix (M7, D11).
-- **Horizon robustness:** monthly 1/3/6/12, quarterly 1/2/4, from the same fits.
-- **Turning-point-window robustness:** ±1/±3/±6 months, 0/±1/±2 quarters, union masks, baseline never replaced.
-- **Failure handling:** structured `FailureEvent`, reason codes, other models continue, no silent fallback, failures visible in tables and figures.
-- **Frozen-data provenance:** hash-verified frozen CSVs + manifest, no network in the default run, refresh to a dated separate namespace, provenance on every artifact.
-
-## 7. Required outputs → generating code (your item 6)
-
-All paths are under `output/` unless stated. "CSV" tables also get a Parquet twin when large.
-
-| ID | Content | Generator | File(s) |
-|---|---|---|---|
-| T2.0 | Concept-to-series incl. exclusions | `reporting/tables.py::concept_to_series` | `data_audit/T2.0_concept_series.csv` |
-| T2.0A | Frozen-data manifest + hash status | `data/manifest.py` + `reporting/tables.py` | `manifests/frozen_manifest.csv` |
-| F2.0 | Sample-coverage timeline | `reporting/figures.py::sample_timeline` | `figures/F2.0_sample_timeline.{png,pdf}` |
-| T2.1 | Data dictionary / sample audit | `data/samples.py` | `data_audit/T2.1_data_dictionary.csv` |
-| T2.2 | Stationarity and decision table | `diagnostics/stationarity.py`, `decision_rule.py` | `diagnostics/T2.2_stationarity.csv` |
-| F2.1 | Raw/transformed overview per target (NBER shading, ZA break) | `reporting/figures.py::series_overview` | `figures/F2.1_<target>.*` |
-| T2.3 | Tsay | `diagnostics/nonlinearity.py` | `diagnostics/T2.3_tsay.csv` |
-| T2.4 | LST by delay + selection + type | `diagnostics/nonlinearity.py` | `diagnostics/T2.4_star_linearity.csv` |
-| T2.5 | Selected AR/ARMA specs | `specification/*` | `diagnostics/T2.5_selected_specs.csv` |
-| T3.1 | Adequacy by series/model/refit | `diagnostics/residual_tests.py`, `models/status.py` | `diagnostics/T3.1_adequacy.csv` (+ per-refit Parquet in `models/`) |
-| T3.2 | MSAR/STAR credibility | `models/flags.py` | `diagnostics/T3.2_credibility.csv` |
-| T3.2-FF | Policy-rate diagnostic (provisional ID) | `reporting/tables.py::policy_rate_diagnostic` | `diagnostics/T3.2-FF_policy_rate.csv` |
-| T-DIAG | Standardized test table (provisional ID) | `reporting/test_registry.py` | `diagnostics/T-DIAG_tests.csv` |
-| F3.1–F3.3 | Fitted vs observed; residual ACF; regime/STAR plots | `reporting/figures.py` | `figures/F3.{1,2,3}_*` |
-| T3.3 | Main h=1 table (with HLZ columns) | `evaluation/metrics.py`, `hlz.py` | `tables/T3.3_main_h1.csv` |
-| T3.3A | Full HLZ pairwise | `evaluation/hlz.py` | `forecast_tests/T3.3A_hlz.csv` |
-| T3.3B | DM-HLN + agreement | `evaluation/dm_hln.py` | `forecast_tests/T3.3B_dm_hln.csv` |
-| T3.4 | MCS | `evaluation/mcs.py` | `forecast_tests/T3.4_mcs.csv` |
-| F3.4 | Actual vs forecast (failure-aware) | `reporting/figures.py` | `figures/F3.4_<target>.*` |
-| F3.5 | Cumulative squared-loss difference | `reporting/figures.py` | `figures/F3.5_<target>.*` |
-| T3.5 | State performance + GW | `evaluation/states.py`, `gw.py` | `forecast_tests/T3.5_state_gw.csv` |
-| T3.6 | Peak vs trough (h=1, baseline window) | `evaluation/states.py` | `tables/T3.6_peak_trough.csv` |
-| T4.TP1 | Turning-window sensitivity | `evaluation/tp_sensitivity.py` | `robustness/T4.TP1_turning_sensitivity.csv` |
-| F3.6 | State-conditioned RMSE/MAE differences (descriptive) | `reporting/figures.py` | `figures/F3.6_*` |
-| T4.1 | Transformation robustness | `robustness/transformation.py` | `robustness/T4.1_*.csv` |
-| T4.2 | CPI lag robustness | `robustness/cpi_lags.py` | `robustness/T4.2_*.csv` |
-| T4.3 | K=2 vs K=3 | `robustness/k3.py` | `robustness/T4.3_*.csv` |
-| T4.4 | Horizon robustness | `robustness/horizons.py` | `robustness/T4.4_*.csv` |
-| T4.5 | VAR comparison | `robustness/var_compare.py` | `robustness/T4.5_*.csv` |
-| T4.6 | ARMA-GARCH diagnostic | `robustness/garch_diag.py` | `robustness/T4.6_*.csv` |
-| T4.7 | Failure/fragility registry | `reporting/failure_registry.py` | `diagnostics/T4.7_failure_registry.csv` |
-| Claim matrix | `claim_evidence_matrix.csv` (Part 8) | `reporting/claim_matrix_schema.py` (schema + validator only in Part 6, D18) | `manifests/claim_evidence_matrix.csv` (empty template) |
-| Logs | runtime, fits, pipeline | `core/runtime.py`, `logging_utils.py` | `logs/runtime_summary.csv`, `logs/fit_log.parquet`, `logs/pipeline.jsonl`, `logs/environment.json` |
+Unchanged from the approved plan, with T3.5's regression relabelled per M1 and T4.2 relabelled "CPI AR-lag benchmark robustness" per T1. Every ID in `part5_required_outputs_specification.md` (T2.0, T2.0A, F2.0, T2.1, T2.2, F2.1, T2.3, T2.4, T2.5, T3.1, T3.2, F3.1–F3.3, T3.3, T3.3A, T3.3B, T3.4, F3.4, F3.5, T3.5, T3.6, T4.TP1, F3.6, T4.1–T4.7, claim matrix, logs) plus provisional `T3.2-FF` and `T-DIAG` has a named generator and output path.
 
 ## 8. Reproducibility tests (Comp §15) → test modules
 
-| Spec §15 item | Test module |
-|---|---|
-| frozen hash verification; vintage = 2026-10-05; endpoints; no manual/silent substitution | `tests/unit/test_data_frozen.py` |
-| transformations; annualization factors | `tests/unit/test_transforms.py` |
-| lag construction; rolling boundaries; no future data; target alignment | `tests/unit/test_windows_alignment.py` |
-| USREC used only for evaluation | `tests/unit/test_usrec_isolation.py` |
-| every-origin re-estimation alignment | `tests/integration/test_rolling_reestimation.py` |
-| deterministic cache key | `tests/unit/test_cache_keys.py` |
-| level reconstruction from differences | `tests/unit/test_level_reconstruction.py` |
-| HLZ loss differential, local demeaning, LRV vs paper, recorded bandwidths | `tests/validation/test_hlz.py` (blocked on M3) |
-| DM-HLN separate from HLZ | `tests/unit/test_dm_hln.py` |
-| GW conditioning variables aligned to target date | `tests/unit/test_gw.py` |
-| turning masks ±1/±3/±6 and quarterly; union; baseline vs sensitivity separation | `tests/unit/test_turning_masks.py` |
-| MCS loss matrix contains only admissible common-date forecasts | `tests/unit/test_mcs_inputs.py` |
+Unchanged from the approved plan: `test_data_frozen.py`, `test_transforms.py`, `test_windows_alignment.py`, `test_usrec_isolation.py`, `test_rolling_reestimation.py`, `test_cache_keys.py`, `test_level_reconstruction.py`, `test_hlz.py` (blocked on M3 retrieval), `test_dm_hln.py`, `test_state_loss_regression.py`, `test_turning_masks.py`, `test_mcs_inputs.py`. Scientific validation uses seeded simulations with known truth for AR, ARMA, MS-AR (K=2,3), LSTAR/ESTAR, GARCH(1,1) and VAR, cross-checks against statsmodels where an equivalent exists, the R `TSA::Tsay.test` reference comparison (D3), and test-size checks under simulated nulls.
 
-**Scientific validation (my addition to guard model code, not a methodology change):** seeded simulations with known truth for AR, ARMA, MS-AR (K=2,3), LSTAR/ESTAR, GARCH(1,1), VAR; cross-checks of log-likelihood/estimates against statsmodels where an equivalent exists; test-size checks for Tsay, LST, DM, HLZ, GW under simulated nulls.
+## 9. Build order
 
-## 9. Build order and acceptance (all within Part 6)
+| Step | Content | Gate | State |
+|---|---|---|---|
+| 0 | Environment, lock file, package skeleton, config/provenance/seeds/cache/checkpoints core | core unit tests | in progress |
+| 1 | Data layer: FRED client, frozen init/verify, manifest, samples, transforms | data tests on mocked and seeded data | not blocked except CPI/UNRATE sample rules (N1) |
+| 2 | Diagnostics: ADF/KPSS/ZA, decision rule, residual tests, Tsay, LST | validation simulations plus the R reference comparison | not blocked |
+| 3 | Specification: AR, ARMA, STAR delay/type, VAR lag | selection-rule tests | not blocked |
+| 4 | Models: AR, ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH; status/flags | recovery and cross-check tests; early runtime benchmark | not blocked |
+| 5 | Forecasting engine: windows, chains, warm starts, cache, checkpoints, parallel, STAR bootstrap | alignment, no-look-ahead, resume, seed tests | not blocked |
+| 6 | Evaluation: metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS; **HLZ when M3 resolves** | evaluation tests | HLZ pending |
+| 7 | Robustness modules | integration tests | CPI-lag date set pending N1 |
+| 8 | Reporting: tables, figures, registries, provenance, logs, full CLI | schema and provenance tests | not blocked |
+| 9 | Smoke test on **INDPRO** (monthly, complete) and **GDPC1** (quarterly, complete) | all stages run; outputs only in `smoke_output/`; every artifact carries provenance; reviewed for completeness only, never for ranking (R8) | needs frozen data |
 
-| Step | Content | Gate |
-|---|---|---|
-| 0 | Environment, lock file, package skeleton, config/provenance/seed/cache core | core unit tests green |
-| 1 | Data layer: FRED client (mocked), frozen init/verify, samples, transforms | data tests green. **Real initialization needs your key + approval (R1).** |
-| 2 | Diagnostics: stationarity, decision rule, residual tests, Tsay, LST | validation sims green |
-| 3 | Specification stage: AR, ARMA, STAR delay/type, VAR lag | selection-rule tests green |
-| 4 | Models: AR, ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH; status/flags | recovery + cross-check tests green; **early runtime benchmark** |
-| 5 | Forecasting engine: windows, chains, warm starts, cache, checkpoints, parallel | alignment/no-lookahead/resume tests green |
-| 6 | Evaluation: metrics, states/masks, DM-HLN, GW, MCS; **HLZ once M3 is settled** | evaluation tests green |
-| 7 | Robustness modules | integration tests green |
-| 8 | Reporting: all tables/figures/registry, provenance, logs, `run_all.py` CLI incl. `--smoke-test` | schema + provenance tests green |
-| 9 | Smoke test (one monthly + one quarterly target, short OOS block, all stages; the monthly VAR block needs all five monthly series loaded, only the target subset is forecast) | smoke run completes, outputs in `smoke_output/` only, every artifact has provenance; reviewed for completeness only (R8) |
+**Smoke-test target choice:** Comp §10 requires one monthly and one quarterly target. INDPRO and GDPC1 are used because both are complete, so the smoke test neither depends on nor prejudges the N1 decision. The monthly VAR block loads all five monthly series but forecasts only the smoke subset.
 
-**Part 6 is complete when:** all unit/integration/validation tests pass; every output ID in §7 has a generator that runs in the smoke test (HLZ included, if M3 is resolved — otherwise Part 6 is reported as *incomplete on HLZ*, not substituted); no full thesis-baseline run has been made. Then I stop and wait for your approval before Part 7.
+**Part 6 is complete when** all unit, integration and validation tests pass; every output ID has a generator exercised by the smoke test; the N1 decision is implemented; and HLZ is implemented from the article (or Part 6 is reported as incomplete on HLZ). No full thesis-baseline run is performed in Part 6. Then I stop for approval before Part 7.
 
 ## 10. What I will not do
 
-Change variables, transforms, windows, lags, regimes, horizons, tests or robustness specs; add MSSTAR, Clark–West/McCracken, Amisano–Giacomini, polynomial models, or a nowcasting model; substitute a generic HAC estimator for HLZ; fall back silently after a failed fit; run the full baseline or any Part 7/8 task; choose anything because it improves results. Each change to an item above that I think is needed will come to you first with options.
+Change variables, transformations, windows, lags, regimes, horizons, tests or robustness specifications; add MSSTAR, Clark–West/Clark–McCracken, Amisano–Giacomini, polynomial models or nowcasting; substitute a generic HAC estimator for HLZ; label the ex-post state regression as Giacomini–White; fall back silently after a failed fit; interpolate or backfill the 2025-10 hole; invent an eligibility percentage, small-cell cutoff or threshold that the register rejected; run the full baseline or any Part 7/8 task; choose anything because it improves a result. Any further change I judge necessary comes to you first with options.
