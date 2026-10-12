@@ -797,6 +797,21 @@ These exact lengths are an ex ante design compromise, not values claimed to be t
 
 The methodology therefore treats window length as a documented design assumption. The literature justification file records the bias-variance and structural-break rationale.
 
+### Mandatory estimation-window-length sensitivity (Chapter 4; user-approved amendment of 12 October 2026)
+
+To test whether the central linear-versus-nonlinear forecast conclusions depend on the fixed rolling-window length, run the following **predeclared** window-length robustness exercise:
+
+- **Monthly targets (all five):** 180, **240 (baseline)**, and 300 consecutive monthly observations (15, 20, and 25 years).
+- **Quarterly GDP:** 90, **120 (baseline)**, and 150 consecutive quarterly observations (22.5, 30, and 37.5 years).
+- The two alternatives are 25% shorter and 25% longer than the baseline. These numbers are sensitivity scenarios, **not estimated optimal window sizes**.
+- Run the four core model families, **AR, ARMA, MSAR(2), and STAR**, at each length for the **primary h=1 forecast** for every target. Other predeclared robustness exercises (alternative transformations, CPI AR-lag choices, K=3, horizons, VAR, and GARCH diagnostics) remain separate; no mandatory full factorial cross-product is implied.
+- Hold the frozen data, transformations, sample endpoints, model parameterizations, forecast-loss definitions, and selection rules fixed. **Keep the discrete AR/ARMA lag orders, STAR type/delay, and other baseline discrete specification decisions chosen from the original baseline initial window**; do not re-search these choices separately for 180/300 months or 90/150 quarters, and do not reselect specifications from ex-post forecasting performance.
+- At each forecast origin and each candidate window length, **re-estimate the model parameters** using that origin's corresponding trailing chronological window. Preserve actual calendar spacing and all established missing-data, admissibility, convergence, and failure rules. A shorter/longer window must not alter the approved baseline or overwrite its forecasts.
+- Determine a **common eligible OOS calendar** for comparison, beginning only when the longest candidate window is available for that target. On that calendar, calculate model-specific forecast metrics with their N clearly reported; use shared finite target dates for each pairwise loss comparison and the intersection of valid model losses for each MCS, as mandated by the approved common-date rule. Report missing/failed origin counts and the number of discarded comparison dates.
+- Report RMSE, MAE, out-of-sample R² relative to AR, model ranks, and the relative loss differential (competitor minus AR). Apply the **same primary HLZ test, secondary DM-HLN test, and MCS procedures and conventions** as in the baseline to assess whether evidence changes with window length; record when inference is unavailable. Report adequacy/fragility/failure incidence because short nonlinear estimation windows may be less stable.
+- Classify conclusions for each alternative versus the 240/120 baseline as **unchanged, weakened, reversed, or unavailable**, with a separate notes/support-change field for strengthened evidence. The result should be interpreted as *sensitivity to the three prespecified window lengths*, not universal window-length invariance.
+- Publish the complete results (including failed or unfavorable scenarios) in **T4.8/F4.8** and linked machine-readable files specified in `part5_required_outputs_specification.md`. Never select a preferred length after seeing its result.
+
 ---
 
 # 10. Forecast evaluation
@@ -934,7 +949,7 @@ Each robustness exercise has a named threat.
 | Classical benchmark too weak | ARMA in main horse race | Test whether nonlinear gain survives stronger linear dynamics |
 | Conditional variance ignored | ARMA-GARCH(1,1) diagnostic when ARCH-LM rejects | Separate mean forecast from variance dynamics |
 | Model failure creates misleading figures | Failure-aware plotting rules | Protect interpretation |
-| Estimation-window choice affects ranking | Document 240-month / 120-quarter rolling-window rationale; interpret as a design assumption rather than an optimal window | Prevent overclaiming robustness to window choice |
+| Estimation-window choice affects ranking | Mandatory h=1 AR/ARMA/MSAR(2)/STAR window-length sensitivity: monthly 180/240/300 observations; quarterly 90/120/150, with fixed baseline discrete specifications, matched OOS dates, predictive tests, MCS, and failure disclosure (T4.8/F4.8) | Determine whether substantive linear-versus-nonlinear rankings and their inferential support are sensitive to the predeclared estimation history |
 | Turning-point result depends on the arbitrary window width | Monthly ±1 / ±3 / ±6 months; quarterly 0 / ±1 / ±2 quarters | Confirm, qualify, or reject any claim that nonlinear gains are concentrated around peaks/troughs |
 | U.S. sample drives general claim | No false external-validity claim; common-sample/state reporting | Delimit, not “fix,” P-06 |
 
