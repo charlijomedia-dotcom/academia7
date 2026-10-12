@@ -372,6 +372,35 @@ For CPI, INDPRO, UNRATE, FEDFUNDS, M2 on common sample:
 - standardized-residual diagnostics;
 - note on whether mean forecast changed.
 
+## T4.8 Mandatory estimation-window-length robustness
+
+For **every target** and the four main forecast families **AR, ARMA, MSAR(2), and STAR**, compare the primary **h=1** forecasting results at the predeclared rolling-window lengths:
+
+- monthly: 180, **240 baseline**, 300 observations;
+- quarterly GDP: 90, **120 baseline**, 150 observations.
+
+These are **alternative estimation-window lengths**, not a lag-order or forecast-horizon search. Do not reselect the discrete baseline model specification for each alternative window.
+
+Produce at minimum:
+
+- series, frequency, model, forecast horizon, window length, role (baseline/shorter/longer), baseline specification identifier;
+- first/last eligible common OOS target date, attempted/valid/failed forecast-origin counts, each model's N, pairwise intersection N, and MCS common-loss N;
+- RMSE, MAE, OOS R² vs AR, ranks, and mean loss differential under squared and absolute error (competitor minus AR);
+- primary HLZ and secondary DM-HLN results under the approved conventions, with p-values/inference availability and aligned dates, and MCS membership at the predeclared loss functions and confidence levels;
+- counts/rates of adequate, fragile, and failed models by window, including explanatory reason codes;
+- a conclusion-comparison field (unchanged/weakened/reversed/unavailable relative to baseline), plus `support_change` or `notes` for strengthened evidence and qualifications;
+- the exact configuration, deterministic seeds, matched-date rule, and complete adverse/unavailable results.
+
+Store machine-readable generators and outputs under:
+
+- `output/robustness/window_length_comparison.csv`
+- `output/robustness/window_length_predictive_tests.csv`
+- `output/robustness/window_length_origin_audit.csv`
+
+**F4.8 Estimation-window-length sensitivity figure:** Show relative h=1 forecast accuracy (versus AR) across the three window lengths, with separate readable panels for targets or model families as appropriate. Identify the baseline length, include valid N, and do not clip or hide extreme/failure cases; follow the approved failure-aware plotting convention.
+
+This mandatory sensitivity exercise is separate from the baseline result and from the other Chapter 4 robustness dimensions. Report findings on a common eligible evaluation calendar; do not choose the length because it favors any model.
+
 # 9. Failure registry
 
 ## T4.7 Model failure and fragility registry
