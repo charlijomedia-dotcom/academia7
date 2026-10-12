@@ -4,6 +4,8 @@
 **Status:** APPROVED AND FROZEN
 **Purpose:** Record the main methodological choices, why they were made, and what from the previous thesis is not carried forward automatically.
 
+**User-approved amendment — 12 October 2026:** Mandatory estimation-window-length robustness has been added (monthly 180/240/300, quarterly 90/120/150). The 240-month / 120-quarter baseline and all unrelated frozen Part 5 choices remain unchanged. Results must not be used to select a new baseline window.
+
 | Decision | Part 5 choice | Why |
 |---|---|---|
 | Core targets | Retain GDP, CPI, unemployment, industrial production, FEDFUNDS, M2; use USREC only for ex post state classification | Minimum non-redundant coverage of Part 4's prices, real activity, labour, monetary policy, money, and business-cycle concepts |
@@ -42,7 +44,8 @@
 | Amisano-Giacomini | Not baseline | Thesis evaluates point forecasts, not a common validated set of predictive densities |
 | Baseline horizon | h=1 | Preserves main question and direct interpretation |
 | Horizon robustness | monthly h=3,6,12; quarterly h=2,4 | Direct P-05 response |
-| Rolling windows | 240 monthly; 120 quarterly | Ex ante bias-variance compromise under instability; literature supports rolling windows but does not uniquely dictate these exact lengths, so the thesis will state them as design assumptions rather than optimal values |
+| Rolling windows | Baseline 240 monthly; 120 quarterly | Ex ante bias-variance compromise under instability; literature supports rolling windows but does not uniquely dictate these exact lengths, so the thesis will state them as design assumptions rather than optimal values |
+| Estimation-window-length robustness (user-approved 12 October 2026) | Monthly 180/240/300; quarterly 90/120/150, all main AR/ARMA/MSAR(2)/STAR families at h=1, fixed baseline discrete specifications, every-origin refitting, common eligible evaluation calendar and baseline predictive tests/MCS | Predeclared ±25% sensitivity to window dimension; test whether linear-versus-nonlinear ranking, inference and model fragility change without choosing a favorable baseline ex post |
 | Model specification search | Initial estimation window only | Prevents repeated search and reduces computational waste |
 | Parameter refit | Every forecast origin on the rolling window | Standard pseudo-out-of-sample logic; runtime is controlled by fixed specifications, simpler models, warm starts, caching, checkpointing, and parallelization rather than by holding parameters fixed |
 | Silent fallback after nonlinear failure | Prohibited | Failure is evidence and must remain visible |
