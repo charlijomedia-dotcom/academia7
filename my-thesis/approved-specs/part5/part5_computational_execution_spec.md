@@ -217,6 +217,12 @@ Robustness outputs must be stored separately from baseline outputs.
 
 A robustness model may not overwrite or silently become the baseline because it performs better.
 
+### Estimation-window-length robustness (user-approved amendment, 12 October 2026)
+
+Implement T4.8/F4.8 using monthly windows 180/240/300 and quarterly windows 90/120/150 for every core AR, ARMA, MSAR(2), and STAR h=1 comparison. Keep discrete model specifications selected from the baseline initial window, then re-estimate parameters for every alternative window at every eligible forecast origin.
+
+Use separate robustness run identifiers/cache keys including window length; avoid duplication of baseline fitting artifacts where dependency hashes verify equivalence. Align OOS evaluation on the eligible common calendar determined by the longest window, with pairwise/MCS intersections of valid dates and explicit N/failure reporting. Never overwrite baseline parameters, forecasts, tables or figures. Generate the exact T4.8/F4.8 output files defined in the required-outputs specification; no full factorial cross-product with other robustness analyses is mandated.
+
 # 14. Failure behavior
 
 A failed nonlinear model must:
@@ -242,6 +248,10 @@ At minimum implement tests for:
 - forecast target alignment;
 - USREC used only for evaluation;
 - every-origin rolling re-estimation alignment;
+- predeclared 180/240/300 monthly and 90/120/150 quarterly window boundaries, with 240/120 baseline unchanged;
+- fixed initial baseline discrete model selections reused across the window-length sensitivity variants;
+- h=1 matched OOS dates across shorter/baseline/longer windows; correct valid-date intersections for pairwise inference and MCS;
+- T4.8/F4.8 generation, output namespaces, effective N, failure/fragility accounting, and no baseline overwrite;
 - deterministic cache key;
 - reconstructed level forecast when a rate is modeled in differences;
 - Harvey-Leybourne-Zu loss-differential construction for squared and absolute loss;
