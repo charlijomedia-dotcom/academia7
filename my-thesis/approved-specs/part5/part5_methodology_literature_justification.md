@@ -485,9 +485,16 @@ The rationale is:
 
 **Logic-supported convention informed by strong window-selection literature.**
 
-### Important limitation
+### User-approved window-length robustness amendment (12 October 2026)
 
-If the jury specifically asks whether the ranking is robust to window size, the current design does not claim to answer that question. The thesis must say so rather than imply robustness that was not tested.
+The baseline remains 240 monthly and 120 quarterly observations. Chapter 4 now **requires** shorter/longer-window sensitivity checks:
+
+- monthly: **180 / 240 / 300** observations, corresponding to 15 / 20 / 25 years;
+- quarterly GDP: **90 / 120 / 150** observations, corresponding to 22.5 / 30 / 37.5 years.
+
+This symmetric ±25% sensitivity design operationalizes the warning in Rossi and Inoue (2012) that inference can depend on the estimation-window dimension, while retaining the bias-variance rationale of Pesaran and Timmermann (2007). The numerical alternatives are **user-predeclared design choices**, not sizes optimized or uniquely recommended by those authors. Discrete model specifications remain fixed from the original baseline initial window and parameters are re-estimated at every eligible forecast origin.
+
+The robustness exercise compares all four principal model families at h=1 using matched feasible OOS target dates, identical loss functions, the approved predictive tests/MCS, and transparent model fragility/failure counts. The claim of robustness to window length is permitted **only to the extent that the reported evidence supports it**; it does not establish robustness to every possible window length.
 
 ---
 
@@ -1109,8 +1116,8 @@ They are retained only because they are transparent, predeclared, and logically 
 
 | Choice | Why it is retained | What must NOT be claimed |
 |---|---|---|
-| 240 monthly rolling observations | 20-year adaptive window with enough observations for nonlinear estimation | Not “the optimal window” |
-| 120 quarterly rolling observations | Quarterly models need a larger calendar span to supply enough observations | Not “the optimal quarterly window” |
+| 240 monthly rolling observations | 20-year adaptive window with enough observations for nonlinear estimation; test 180/300-month sensitivity | Not “the optimal window” |
+| 120 quarterly rolling observations | Quarterly models need a larger calendar span to supply enough observations; test 90/150-quarter sensitivity | Not “the optimal quarterly window” |
 | Monthly AR maximum lag 12 | Covers up to one year of monthly dynamics and directly permits the CPI p=12 challenge | Not “the theoretically correct maximum” |
 | Quarterly AR maximum lag 4 | Covers up to one year of quarterly own-history dynamics | Not “the theoretically correct maximum” |
 | ARMA finite grid | Keeps specification search bounded and reproducible | Not “the unique ARMA search space” |
@@ -1203,7 +1210,7 @@ Because the thesis is about instability. Pesaran and Timmermann (2007) show the 
 
 ## “Why exactly 20 years monthly?”
 
-There is no universally optimal length. It is a predeclared compromise between adaptation and enough observations for nonlinear estimation. The literature itself shows that window choice is an empirical trade-off. We therefore do not claim 240 months is theoretically optimal.
+There is no universally optimal length. The 240-month baseline is a predeclared compromise between adaptation and enough observations for nonlinear estimation. The literature shows that window choice is an empirical trade-off; we therefore do not claim that 240 is optimal. We now also test the prespecified alternatives of 180 and 300 months (and 90/150 quarters around the 120-quarter baseline) on matched forecast dates. Whether the conclusions survive these changes must be established empirically, not assumed.
 
 ## “Why re-estimate every period if it is computationally expensive?”
 
