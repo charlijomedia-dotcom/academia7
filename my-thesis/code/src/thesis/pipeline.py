@@ -512,6 +512,9 @@ class Pipeline:
                         })
                         continue
 
+                    # Same canonical identity rule as the registry: the specification
+                    # names the model in every table, not the estimator.
+                    fit.record.model = model
                     residuals = np.asarray(residuals, dtype=float)
                     if residuals[np.isfinite(residuals)].size < 2:
                         # A failed fit leaves no residuals. That is recorded, not patched
@@ -762,12 +765,29 @@ class Pipeline:
                     for model, frame in frames.items():
                         chain = self.chain_results[series_id][model]
                         row = accuracy[accuracy["model"] == model].iloc[0].to_dict()
+                        counts = {status.value: 0 for status in Status}
+                        for record in chain.fit_records:
+                            counts[record.status.value] += 1
+                        total = max(sum(counts.values()), 1)
                         row.update({
                             "attempted_origins": chain.attempted, "valid_origins": chain.valid,
                             "failed_origins": chain.failed,
-                            "n_fragile_events": sum(
+                            "n_adequate": counts[Status.ADEQUATE.value],
+                            "n_fragile": counts[Status.FRAGILE.value],
+                            "n_failed": counts[Status.FAILED.value],
+                            "rate_fragile_or_failed": (
+                                counts[Status.FRAGILE.value] + counts[Status.FAILED.value]) / total,
+                            # Outputs T3.3 asks for model status: the adequate / fragile /
+                            # failed classification of §7.5, summarized over the origins,
+                            # not the model's role in the comparison.
+                            "model_status": (
+                                f"adequate {counts[Status.ADEQUATE.value]}/{total}; "
+                                f"fragile {counts[Status.FRAGILE.value]}; "
+                                f"failed {counts[Status.FAILED.value]}"),
+                            "dominant_status": max(counts, key=lambda k: counts[k]),
+                            "n_fragility_events": sum(
                                 1 for e in chain.failures if e.category is Status.FRAGILE),
-                            "model_status": ("benchmark" if model == benchmark else "competitor"),
+                            "role": "benchmark" if model == benchmark else "competitor",
                         })
                         if model != benchmark:
                             errors = alignment.aligned_errors(

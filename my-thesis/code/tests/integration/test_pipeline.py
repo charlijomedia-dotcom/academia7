@@ -333,6 +333,34 @@ class TestMethodologicalGuarantees:
         assert validate_claim_matrix(frame) == []
         assert frame.empty, "Part 6 must not adjudicate claims (result-blind rule)"
 
+    def test_model_labels_are_consistent_across_every_table(self, completed_run):
+        # The specification names a model, not the estimator. If an estimator labelled
+        # itself differently (MSAR2 for the K=2 baseline, say), MSAR and MSAR2 would
+        # appear as two models and Part 8's cross-table joins would silently split.
+        _, _, layout = completed_run
+        approved = {"AR", "ARMA", "MSAR", "MSAR3", "STAR", "VAR", "ARMA-GARCH",
+                    "ARMA-GARCH-std"}
+        seen: set[str] = set()
+        for path in layout.root.rglob("*.csv"):
+            frame = pd.read_csv(path)
+            if "model" not in frame.columns or frame.empty:
+                continue
+            labels = {str(v) for v in frame["model"].dropna()}
+            # Some tables key on a pair ("MSAR vs AR") or a lag variant ("AR(p=3)").
+            labels = {v for v in labels if " vs " not in v and "(" not in v and v}
+            seen |= labels
+        unexpected = seen - approved
+        assert not unexpected, f"unapproved model labels in the outputs: {sorted(unexpected)}"
+        assert "MSAR" in seen
+
+    def test_main_table_reports_the_adequacy_classification_as_model_status(self, completed_run):
+        _, _, layout = completed_run
+        frame = pd.read_csv(layout.forecast_tests / "T3.3_main_forecast_table.csv")
+        assert frame["model_status"].str.startswith("adequate ").all()
+        assert set(frame["dominant_status"]) <= {"adequate", "fragile", "failed"}
+        assert set(frame["role"]) == {"benchmark", "competitor"}
+        assert (frame["n_adequate"] + frame["n_fragile"] + frame["n_failed"] > 0).all()
+
     def test_output_inventory_hashes_every_file_it_lists(self, completed_run):
         _, _, layout = completed_run
         inventory = pd.read_csv(layout.manifests / "output_inventory.csv")

@@ -279,7 +279,7 @@ def fit_msar(
     states = _expanded_states(k_regimes, order)
     record = FitRecord(
         series=series or (y.name or ""),
-        model=f"MSAR{k_regimes}",
+        model="MSAR",
         spec_label=f"p={order},K={k_regimes}",
         spec_hash=spec_hash,
         window_start=str(pd.DatetimeIndex(y.index)[0].date()),

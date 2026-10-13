@@ -154,6 +154,12 @@ def fit_and_forecast(
     else:
         raise ValueError(f"unknown model {spec.model!r}")
 
+    # The specification is the single source of a model's identity across every table.
+    # An estimator that labelled itself differently (MSAR2 for the K=2 baseline, say)
+    # would make MSAR and MSAR2 appear as two models in the registries and break the
+    # cross-table joins Part 8 depends on. The regime count is carried by spec_label.
+    outcome.record.model = spec.model
+
     # An extreme but finite forecast is a warning for the figures and registry; it is
     # never deleted and never turns the fit into a failure (decision D8).
     for horizon, value in outcome.forecasts.items():
