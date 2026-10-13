@@ -393,17 +393,6 @@ For CPI, INDPRO, UNRATE, FEDFUNDS, M2 on common sample:
 - standardized-residual diagnostics;
 - note on whether mean forecast changed.
 
-## T4.9 October 2025 LOCF influence and forecast-exposure diagnostic
-
-Publish `output/data_audit/locf_forecast_exposure.csv` and a clear accompanying narrative, identifying per series/model/horizon/forecast origin:
-
-- whether the **realized evaluation target** was imputed or its transformation includes the imputed predecessor;
-- whether the **predictor lag vector** directly contains an imputed or derived transformation observation;
-- whether the **rolling estimation window** contains such observations, including residual/state-history exposures where relevant;
-- model-specific forecast valid/failed status and numerical loss, with accurate date and period alignment.
-
-Provide descriptive baseline accuracy/ranking summaries on **(a) the full approved imputed-sample evaluation dates** and **(b) the available unaffected pre-gap comparison dates**, reporting N and date ranges. For the latter, do not imply that dropping a few realized target dates removes all indirect imputation exposure. Maintain headline full-sample inference unchanged; any repeated significance testing on the shorter diagnostic subsample must explicitly document feasibility and statistical power limitations. This audit is **not** permission to select a different baseline endpoint or change the LOCF assumption after seeing results.
-
 ## T4.8 Mandatory estimation-window-length robustness
 
 For **every target** and the four main forecast families **AR, ARMA, MSAR(2), and STAR**, compare the primary **h=1** forecasting results at the predeclared rolling-window lengths:
@@ -432,6 +421,17 @@ Store machine-readable generators and outputs under:
 **F4.8 Estimation-window-length sensitivity figure:** Show relative h=1 forecast accuracy (versus AR) across the three window lengths, with separate readable panels for targets or model families as appropriate. Identify the baseline length, include valid N, and do not clip or hide extreme/failure cases; follow the approved failure-aware plotting convention.
 
 This mandatory sensitivity exercise is separate from the baseline result and from the other Chapter 4 robustness dimensions. Report findings on a common eligible evaluation calendar; do not choose the length because it favors any model.
+
+## T4.9 October 2025 LOCF influence and forecast-exposure diagnostic
+
+Publish `output/data_audit/locf_forecast_exposure.csv` and a clear accompanying narrative, identifying per series/model/horizon/forecast origin:
+
+- whether the **realized evaluation target** was imputed or its transformation includes the imputed predecessor;
+- whether the **predictor lag vector** directly contains an imputed or derived transformation observation;
+- whether the **rolling estimation window** contains such observations, including residual/state-history exposures where relevant;
+- model-specific forecast valid/failed status and numerical loss, with accurate date and period alignment.
+
+Provide descriptive baseline accuracy/ranking summaries on **(a) the full approved imputed-sample evaluation dates** and **(b) the available unaffected pre-gap comparison dates**, reporting N and date ranges. For the latter, do not imply that dropping a few realized target dates removes all indirect imputation exposure. Maintain headline full-sample inference unchanged; any repeated significance testing on the shorter diagnostic subsample must explicitly document feasibility and statistical power limitations. This audit is **not** permission to select a different baseline endpoint or change the LOCF assumption after seeing results.
 
 # 9. Failure registry
 
