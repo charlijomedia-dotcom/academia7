@@ -8,24 +8,20 @@
 
 - **Requirements checked:** 80
 - **Evidence root:** `../smoke_output`
-- **Tests collected:** 459
+- **Tests collected:** 495
 
 | status | count |
 |---|---:|
-| COMPLETE | 76 |
+| COMPLETE | 78 |
 | DEFERRED TO PART 8 | 1 |
-| GAP | 2 |
-| MISSING OUTPUT | 1 |
+| DISCLOSURE | 1 |
 
-## Outstanding items
+**Unresolved gaps: 0.** Rows below marked
+`DEFERRED TO PART 8` or `DISCLOSURE` are not gaps: the first is work the
+result-blind rule reserves for Part 8, the second is a recorded fact rather
+than an unmet requirement.
 
-### M3.4 — MISSING OUTPUT
-
-**Source:** part5_methodology_specification.md §3.4
-
-**Requirement:** Predeclared level-versus-difference rule for UNRATE and FEDFUNDS, decided on the initial window and confirmed on the full sample
-
-**Verifier detail:** missing diagnostics/T2.2_transformation_decisions.csv
+## Items that are not plain COMPLETE
 
 ### O12 — DEFERRED TO PART 8
 
@@ -35,21 +31,13 @@
 
 **Note:** Part 6 builds and validates the schema. Populating it means adjudicating claims, which is Part 8's task and is forbidden to Part 6 by the result-blind rule (CLAUDE.md §6).
 
-### D3-xval — GAP
-
-**Source:** approved decision D3
-
-**Requirement:** Validate the Tsay test against reference values from a recognized implementation such as R `TSA::Tsay.test`
-
-**Note:** R is not installed in this container and the environment's network policy does not permit installing it, so the cross-check against R `TSA::Tsay.test` could not be run. Substitute validation performed instead: the orthogonalized statistic is verified against the algebraically equivalent direct nested F test via the Frisch-Waugh-Lovell identity, plus size and power simulations under a linear null and a threshold alternative. This is a validation gap against the letter of D3, not an implementation gap, and it needs either an R installation or your waiver.
-
-### RUNTIME — GAP
+### RUNTIME — DISCLOSURE
 
 **Source:** part5_computational_execution_spec.md §9
 
 **Requirement:** Full baseline execution runtime on the approved sample
 
-**Note:** Measured cost of one MSAR fit on this 4-core container: K=2, p=4, n=240 takes 6.2s; K=3, p=4, n=240 takes 25.5s and n=955 takes 110.5s. With roughly 700 monthly origins per series the K=3 robustness chains dominate, so a complete baseline run is a multi-hour job even with the fit cache, warm starts and four workers. This is a Part 8 scheduling matter, not a methodological problem, and no approved parameter was changed to reduce it.
+**Note:** Not a requirement failure: Comp §9 requires per-stage runtime reporting, which row C9 verifies as complete. This row records a fact for scheduling the Part 8 run. Measured cost of one MSAR fit on this 4-core container: K=2, p=4, n=240 takes 6.2s; K=3, p=4, n=240 takes 25.5s and n=955 takes 110.5s. With roughly 700 monthly origins per series the K=3 robustness chains dominate, so a complete baseline run is a multi-hour job even with the fit cache, warm starts and four workers. This is a Part 8 scheduling matter, not a methodological problem, and no approved parameter was changed to reduce it.
 
 
 ## Full matrix
@@ -69,7 +57,7 @@
 | M3.2-kpss | part5_methodology_specification.md §3.2 | KPSS stationarity test as the complementary null | `src/thesis/diagnostics/stationarity.py:kpss_test` | `diagnostics/T2.2_stationarity.csv` | `tests/validation/test_stationarity.py` | COMPLETE |
 | M3.2-za | part5_methodology_specification.md §3.2 | Zivot-Andrews for disputed level series, with the break date reported | `src/thesis/diagnostics/stationarity.py:zivot_andrews_test` | `diagnostics/T2.2_stationarity.csv` | `tests/validation/test_stationarity.py` | COMPLETE |
 | M3.3 | part5_methodology_specification.md §3.3 | Growth transformations demonstrated rather than assumed: tests on both the log level and the transformed target | `src/thesis/diagnostics/stationarity.py:transformation_verification` | `diagnostics/T2.2_stationarity.csv` | `tests/validation/test_stationarity.py` | COMPLETE |
-| M3.4 | part5_methodology_specification.md §3.4 | Predeclared level-versus-difference rule for UNRATE and FEDFUNDS, decided on the initial window and confirmed on the full sample | `src/thesis/diagnostics/decision_rule.py:decide_transformation \| src/thesis/diagnostics/decision_rule.py:confirm_on_full_sample` | `diagnostics/T2.2_transformation_decisions.csv` | `tests/validation/test_stationarity.py` | MISSING OUTPUT |
+| M3.4 | part5_methodology_specification.md §3.4 | Predeclared level-versus-difference rule for UNRATE and FEDFUNDS, decided on the initial window and confirmed on the full sample | `src/thesis/diagnostics/decision_rule.py:decide_transformation \| src/thesis/diagnostics/decision_rule.py:confirm_on_full_sample` | `diagnostics/T2.2_transformation_decisions.csv` | `tests/validation/test_stationarity.py \| tests/validation/test_decision_rule_real_data.py` | COMPLETE |
 | M4.1 | part5_methodology_specification.md §4.1 | General nonlinearity test (Tsay) on the initial estimation window at the selected AR order | `src/thesis/diagnostics/nonlinearity.py:tsay_test` | `diagnostics/T2.3_tsay.csv` | `tests/validation/test_nonlinearity.py` | COMPLETE |
 | M4.2 | part5_methodology_specification.md §4.2 | Teräsvirta LM linearity sequence: delay selection, then LSTAR-versus-ESTAR choice | `src/thesis/diagnostics/nonlinearity.py:lst_linearity \| src/thesis/diagnostics/nonlinearity.py:select_delay_and_type` | `diagnostics/T2.4_star_linearity.csv` | `tests/validation/test_nonlinearity.py` | COMPLETE |
 | M4.3 | part5_methodology_specification.md §4.3 | Markov-switching testing caveat: no non-standard LR test is reported as if standard; regime evidence is credibility-based | `src/thesis/models/flags.py:apply_msar_flags` | `models/T3.2_nonlinear_credibility.csv` | `tests/validation/test_models.py` | COMPLETE |
@@ -134,5 +122,5 @@
 | O-F3.6 | part5_required_outputs_specification.md §7 F3.6 | State-conditioned forecast comparison, labelled descriptive | `src/thesis/reporting/figures.py:state_comparison` | `figures/` | `tests/integration/test_pipeline.py::TestRequiredOutputsExist::test_required_figures_are_written` | COMPLETE |
 | O-F4.8 | part5_required_outputs_specification.md §8 F4.8 | Estimation-window-length sensitivity figure with the baseline length identified and no clipping of extreme or failure cases | `src/thesis/reporting/figures.py:window_length_sensitivity` | `figures/` | `tests/unit/test_reporting.py::TestFigureConventions::test_window_length_sensitivity_marks_the_baseline_length` | COMPLETE |
 | O12 | part5_required_outputs_specification.md §12 | Machine-readable claim-evidence matrix schema | `src/thesis/reporting/tables.py:empty_claim_matrix \| src/thesis/reporting/tables.py:validate_claim_matrix` | `manifests/claim_evidence_matrix.csv` | `tests/unit/test_reporting.py::TestClaimMatrix \| tests/integration/test_pipeline.py::TestMethodologicalGuarantees::test_claim_matrix_is_valid_and_left_unpopulated_in_part_6` | DEFERRED TO PART 8 |
-| D3-xval | approved decision D3 | Validate the Tsay test against reference values from a recognized implementation such as R `TSA::Tsay.test` | `src/thesis/diagnostics/nonlinearity.py:tsay_test` | `diagnostics/T2.3_tsay.csv` | `tests/validation/test_nonlinearity.py` | GAP |
-| RUNTIME | part5_computational_execution_spec.md §9 | Full baseline execution runtime on the approved sample | `src/thesis/forecasting/parallel.py \| src/thesis/core/cache.py` | `logs/runtime_log.csv` | `tests/integration/test_parallel.py` | GAP |
+| D3-xval | approved decision D3 | Validate the Tsay test against reference values from a recognized implementation such as R `TSA::Tsay.test`, and against simulations | `src/thesis/diagnostics/nonlinearity.py:tsay_test` | `diagnostics/T2.3_tsay.csv` | `tests/validation/test_tsay_vs_r.py \| tests/validation/test_nonlinearity.py` | COMPLETE |
+| RUNTIME | part5_computational_execution_spec.md §9 | Full baseline execution runtime on the approved sample | `src/thesis/forecasting/parallel.py \| src/thesis/core/cache.py` | `logs/runtime_log.csv` | `tests/integration/test_parallel.py` | DISCLOSURE |

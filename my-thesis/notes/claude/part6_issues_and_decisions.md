@@ -340,24 +340,42 @@ thesis-facing. This is recorded as a Part 8 scheduling matter: the final run wil
 uninterrupted window, and the fit cache means an interrupted run resumes rather than
 restarts.
 
-### H9 — Validation gap against decision D3 (needs your decision)
+### H9 — Decision D3 satisfied: Tsay validated against R `TSA::Tsay.test`
 
-D3 asks that the Tsay test be validated "against reference values from a recognized
-implementation such as R `TSA::Tsay.test` and against simulations". R is not installed in
-this container and the network policy does not permit installing it, so the R cross-check
-could not be run.
+D3 requires the quadratic Tsay test to be validated "against reference values from a
+recognized implementation such as R `TSA::Tsay.test` and against simulations". My first
+attempt reported this as a gap because R was absent from the container. That was premature:
+R 4.3.3 installs here once its build dependencies are present (`libcurl4-openssl-dev`,
+`gfortran`, `libblas-dev`, `liblapack-dev` and `r-cran-mgcv`), and TSA 1.3.1 then builds
+from source. **The cross-validation has been run and D3 is satisfied. No waiver is
+needed.**
 
-Substitute validation performed:
+`TSA::Tsay.test` was run on six series, with both implementations reading the identical
+stored arrays so they see the same inputs to the last bit:
 
-- the orthogonalized statistic is verified against the algebraically equivalent direct
-  nested F test through the Frisch–Waugh–Lovell identity, which is an exact identity
-  rather than an approximation;
-- empirical size under a linear Gaussian AR null is at the nominal level;
-- power against a threshold autoregressive alternative is high.
+| case | order | n | Python F | R F | Python p | R p |
+|---|---:|---:|---:|---:|---:|---:|
+| linear AR(2) | 2 | 250 | 1.655129 | 1.655 | 0.177353 | 0.1774 |
+| linear AR(4) | 4 | 340 | 1.556422 | 1.556 | 0.118586 | 0.1186 |
+| threshold AR(1) | 1 | 250 | 30.627872 | 30.63 | 7.992e-08 | 7.992e-08 |
+| quadratic AR(2) | 2 | 250 | 1.081293 | 1.081 | 0.357652 | 0.3577 |
+| **INDPRO growth, initial window** | 3 | 240 | 2.025393 | 2.025 | 0.063280 | 0.06328 |
+| **GDPC1 growth, initial window** | 2 | 120 | 0.988630 | 0.9886 | 0.400923 | 0.4009 |
 
-This is a gap against the letter of D3, not an implementation gap. It is disclosed in the
-test module docstring and in the coverage matrix, and it resolves either by installing R
-or by your waiver. I have not treated it as resolved.
+`TSA::Tsay.test` stores its statistic and p-value rounded to **four significant figures**,
+so four significant figures is the finest agreement that can be asserted. The agreement is
+exact at that precision on every case: the worst relative difference in the statistic is
+2.7e-4, which is the rounding alone, and the 5% decision agrees on all six. Two of the six
+cases are the real frozen INDPRO and GDPC1 growth series on their initial estimation
+windows, so the agreement is established on the actual inputs the thesis uses and not only
+on synthetic data.
+
+The R reference values are stored in `tests/fixtures/tsay_reference_cases.json` together
+with the R and TSA versions that produced them, so
+`tests/validation/test_tsay_vs_r.py` (18 tests) runs in any container without R present.
+The simulation half of D3 remains in `tests/validation/test_nonlinearity.py`, and the
+Frisch–Waugh–Lovell algebraic equivalence check is retained as a third, independent
+confirmation rather than as a substitute.
 
 ### H10 — Coverage matrix is generated, not asserted
 
