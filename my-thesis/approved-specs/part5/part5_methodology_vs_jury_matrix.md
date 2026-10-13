@@ -1,7 +1,7 @@
 # Part 5: Methodology versus jury matrix
 
 **Date:** 5 October 2026  
-**Status:** APPROVED AND FROZEN
+**Status:** APPROVED baseline, with user-approved 12 October 2026 rolling-window and 13 October 2026 imputation/reproducibility amendments.
 
 | Jury ID | Part 5 methodological response | Required evidence/output |
 |---|---|---|
@@ -10,7 +10,7 @@
 | R1-09 | “Better” defined by RMSE/MAE/OOS R² plus formal predictive tests | Main forecast table + test table |
 | R1-10 | Discrete MS state dependence separated from smooth STAR state dependence | Chapter 2 taxonomy + model equations |
 | R1-11 | First-order Markov chain, transition matrix, occupancy, duration, persistence explicitly reported | Transition/regime table |
-| R1-12 | Concept-to-series selection rationale, official source/ID, machine-retrieval rule, exact dates, transformations, and frozen-vintage manifest | Data selection table + data audit + frozen manifest |
+| R1-12 | Concept-to-series selection rationale, official source/ID, machine-retrieval rule, exact dates, transformations, frozen official-source manifest, and **separately disclosed author-processed canonical input CSV** | Data selection table + unchanged raw source audit + canonical input CSV/manifest + T2.0B October LOCF provenance |
 | R1-13 | Every diagnostic table states H0, statistic, distribution/bootstrap, p-value, rule | Standardized diagnostics table |
 | R1-14 | Harvey-Leybourne-Zu (2025) as primary instability-robust pairwise test + Giacomini-White conditional predictive ability + Model Confidence Set; DM-HLN retained secondarily; explicit explanation for not mechanically using Clark-McCracken/Clark-West or Amisano-Giacomini | Forecast-comparison section + pairwise/state/MCS output tables |
 | R1-15 | BIC lag selection + CPI p=1/3/6/12 robustness | CPI lag-robustness table/plot |
@@ -18,7 +18,7 @@
 | R1-18 | Tsay general nonlinearity test + LST/Teräsvirta STAR specification tests before nonlinear interpretation; no naive MS chi-square LR | Nonlinearity table + explicit MS testing caveat |
 | R1-19 | Monthly five-variable VAR robustness | VAR forecast comparison on common sample |
 | R1-20 | Nowcasting explicitly outside core; no claim that native-frequency forecasting is nowcasting | Scope subsection |
-| R1-22 | Entire empirical set regenerated from frozen data, with all failures visible | Part 8 audit |
+| R1-22 | Entire empirical set regenerated from a checksum-validated, locally loaded, author-processed canonical data CSV, with unchanged original official files archived; all failures and imputation exposure visible | Part 8 audit + CSV-first reproducibility tests + T4.9 imputation exposure diagnostic |
 | R1-23 | M2SL exact raw/transformed dates printed from the 2026-10-05 frozen vintage; M2 retained for explicit monetary-aggregate rationale | Data audit; M2 note; frozen manifest |
 | P-01 | Single-equation identification limit + VAR alternative-explanation check | VAR results + explicit limitation |
 | P-02 | ADF + KPSS + Zivot-Andrews decision rule for UNRATE/FEDFUNDS | Stationarity table + break plot |
@@ -41,7 +41,7 @@
 - P1-03: each method has a stated problem it solves.
 - P1-07: each test/model links to a research subquestion.
 - P1-09: adverse and failed results stay visible.
-- P1-10: each robustness exercise is tied to a named threat.
+- P1-10: each robustness exercise is tied to a named threat. This includes T4.8 window-length sensitivity and T4.9 documented effects of October 2025 LOCF on forecasting inputs and results.
 - P1-11: decisive evidence stays in main text, repetitive detail moves to appendices.
 - P1-17: every numerical claim must trace to a reproduced output.
 
