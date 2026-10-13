@@ -1,7 +1,7 @@
 # Part 5: Computational execution specification
 
 **Date:** 5 October 2026  
-**Status:** APPROVED AND FROZEN
+**Status:** APPROVED baseline with explicit user amendments (12 October 2026 window-length robustness; 13 October 2026 canonical CSV and CPI/UNRATE LOCF).
 **Purpose:** Implement the approved methodology from scratch without reproducing the unnecessary computational burden of the previous thesis pipeline.
 
 # 1. Clean build
@@ -14,13 +14,13 @@ Scientific validity has priority over runtime, but the code must not repeat work
 
 # 2. Frozen-data initialization and default no-internet rule
 
-The thesis baseline must be generated from a historical FRED/ALFRED vintage dated **2026-10-05**.
+The thesis baseline must be generated from a historical FRED/ALFRED vintage dated **2026-10-05**. The **only** authorized model-input repairs are last-observation-carried-forward values for CPIAUCSL and UNRATE at **2025-10-01**, equal to their respective 2025-09-01 raw values, in a **derived CSV**. Archived official raw observations remain untouched.
 
 Provide an initialization command, for example:
 
 `python code/run_all.py --initialize-frozen`
 
-The exact CLI name may differ, but the behavior is fixed:
+The exact CLI name may differ; a completely empty local store may also trigger equivalent automatic first-run initialization. The behavior is fixed:
 
 - read `FRED_API_KEY` from the environment;
 - retrieve only the approved FRED series IDs;
@@ -29,7 +29,11 @@ The exact CLI name may differ, but the behavior is fixed:
 - save each series under `data/frozen/fred_vintage_2026-10-05/`;
 - save metadata, query parameters, row counts, and SHA-256 hashes;
 - create one immutable manifest;
-- verify expected start/end dates;
+- verify expected start/end dates and the precise two officially missing October 2025 CPIAUCSL/UNRATE cells;
+- retain original raw CSVs and their missing-value markers without modification;
+- build **one canonical long-format research-input CSV** at `data/frozen/thesis_input_2026-10-05.csv` over the approved study dates (monthly through August 2026, GDP through 2026Q2), containing the full seven-series study input with the two **raw-level** LOCF adjustments, and row-level observed/imputed flags;
+- create a two-row imputation register, machine-readable data dictionary, researcher README and companion metadata with explicit non-official-imputation disclosure;
+- freeze the canonical CSV checksum and link it to the unmodified raw-data hashes in the master manifest;
 - stop on any unexplained discrepancy.
 
 After frozen initialization, the normal thesis command must not contact the internet.
@@ -38,10 +42,16 @@ After frozen initialization, the normal thesis command must not contact the inte
 
 must:
 
-- verify frozen hashes;
-- read the local frozen files;
-- transform locally;
-- reproduce all baseline outputs.
+- verify the original-source manifest and the canonical CSV/metadata hashes;
+- **load the canonical `thesis_input_2026-10-05.csv` first as a new pandas DataFrame** using an explicit schema, preserving dates and observation-status flags;
+- convert that DataFrame into correctly dated monthly and quarterly in-memory panels (never interpolate quarterly GDP);
+- perform transformations, diagnostics, estimation, forecasts, robustness, plots and all outputs **only from these in-memory panels**;
+- reproduce all baseline outputs from the same checksum, configuration, pinned scientific environment, and deterministic seeds;
+- **never download again** if the validated input exists.
+
+If **all** frozen input artifacts are absent, the first normal run may initialize by requesting the approved historical vintage using `FRED_API_KEY`, atomically saving the raw files, canonical CSV, and manifest. If **any** frozen input files or manifest already exist but the dataset is incomplete, missing its canonical CSV, corrupted or has a hash mismatch, the run **must fail** and must **not** redownload or overwrite. `--initialize-frozen` remains a supported explicit initialization command. Secrets must never be written to the repository, CSV, manifest or logs.
+
+The official raw data snapshot and the author-processed canonical modeling input are **distinct immutable datasets**. Users sharing only the canonical file must share the data dictionary/metadata and state that the two October cells are imputed, not official statistical observations.
 
 A separate optional command may reconstruct the same 2026-10-05 vintage from ALFRED for audit purposes. A current-data refresh must write to a different dated namespace and may never overwrite the thesis baseline.
 
@@ -240,6 +250,14 @@ At minimum implement tests for:
 - historical-vintage date equals 2026-10-05;
 - expected raw and common sample endpoints;
 - no manual or silent data substitution;
+- first-run download only when the entire store is absent, followed by atomic creation of untouched raw source, canonical CSV, metadata and manifest;
+- later runs loading the canonical CSV into a new pandas DataFrame without making any FRED call, including when the FRED key is unavailable;
+- failure on incomplete/corrupt/mismatched frozen data, with no automatic overwrite, reset, or fallback download;
+- canonical CSV row count, dates/frequencies, seven approved series, stable output bytes, required schema, and SHA-256 hash;
+- confirmation that **exactly CPIAUCSL and UNRATE at 2025-10-01** are `IMPUTED_LOCF`, copied from their respective September levels with preserved official `source_value` missing; untouched official raw files must still contain the missing observations;
+- unchanged all other official observations, no October interpolation, no other imputation, and no fake quarterly-to-monthly observations;
+- validation of the computed artificial October zero monthly CPI inflation and, if chosen, zero October unemployment first difference, with correct November date alignment;
+- T2.0B two-cell imputation audit and T4.9 imputation-exposure report for estimation windows, predictors, and realized forecast targets;
 - transformations;
 - annualization factors;
 - lag construction;
