@@ -113,8 +113,8 @@ After each stage, save a deterministic checkpoint.
 
 Minimum checkpoints:
 
-1. frozen raw data;
-2. processed targets;
+1. frozen **official raw source files**, canonical author-processed seven-series CSV and imputation manifest (produced only at first initialization);
+2. hash-verified **canonical CSV ingestion as a DataFrame**, then locally processed targets;
 3. stationarity decisions;
 4. selected specifications;
 5. nonlinear diagnostic results;
@@ -130,7 +130,7 @@ If a later stage fails, rerunning the project must not repeat valid earlier work
 
 Model-fit cache key must include:
 
-- data snapshot hash;
+- **canonical frozen input CSV hash**, and its parent official-source manifest hash;
 - series;
 - transformation;
 - model;
@@ -207,7 +207,7 @@ must use:
 - every-origin rolling re-estimation;
 - all required outputs.
 
-No internet retrieval in the default run.
+No internet retrieval in any **subsequent default run once the verified frozen dataset exists**. The one permitted first-run exception is initialization of an entirely absent store under §2; no partial/silent refresh is allowed.
 
 # 12. Refresh run
 
