@@ -22,6 +22,11 @@ VINTAGE_DIRNAME = "fred_vintage_2026-10-05"
 FROZEN_VINTAGE_DIR = FROZEN_DIR / VINTAGE_DIRNAME
 MANIFEST_NAME = "MANIFEST.json"
 
+# Part 5 §2.2A places the canonical author-processed input directly under data/frozen/,
+# one level above the official raw snapshot, which keeps the two datasets visibly
+# distinct: data/frozen/thesis_input_2026-10-05.csv beside data/frozen/<vintage>/.
+CANONICAL_DIR = FROZEN_DIR
+
 NOTES_DIR = PROJECT_ROOT / "notes" / "claude"
 SOURCE_MATERIALS_DIR = PROJECT_ROOT / "source-materials"
 

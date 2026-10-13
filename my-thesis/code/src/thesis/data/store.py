@@ -24,7 +24,7 @@ import pandas as pd
 
 from ..core.config import Config
 from ..core.hashing import sha256_file, sha256_obj
-from ..core.paths import FROZEN_VINTAGE_DIR, MANIFEST_NAME
+from ..core.paths import CANONICAL_DIR, FROZEN_DIR, MANIFEST_NAME, VINTAGE_DIRNAME
 from .canonical import (
     CANONICAL_COLUMNS,
     ImputationHalt,
@@ -64,22 +64,34 @@ class CanonicalBundle:
         return self.source_manifest.snapshot_hash
 
 
-def _paths(directory: str | Path, config: Config) -> dict[str, Path]:
-    base = Path(directory)
+def vintage_dir(frozen_root: str | Path) -> Path:
+    """The official raw snapshot lives in its own vintage subdirectory."""
+    return Path(frozen_root) / VINTAGE_DIRNAME
+
+
+def _paths(frozen_root: str | Path, config: Config) -> dict[str, Path]:
+    """Resolve every store artifact.
+
+    The canonical input sits directly under the frozen root, as Part 5 §2.2A specifies,
+    while the untouched official raw files and their manifest stay in the vintage
+    subdirectory. Keeping them apart on disk mirrors the fact that they are two distinct
+    immutable datasets.
+    """
+    base = Path(frozen_root)
     return {
         "csv": base / config.get("canonical_input.csv"),
         "metadata": base / config.get("canonical_input.metadata"),
         "readme": base / config.get("canonical_input.readme"),
         "manifest": base / config.get("canonical_input.manifest"),
-        "source_manifest": base / MANIFEST_NAME,
+        "source_manifest": vintage_dir(base) / MANIFEST_NAME,
     }
 
 
-def detect_state(directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | None = None) -> StoreState:
+def detect_state(frozen_root: str | Path = FROZEN_DIR, config: Config | None = None) -> StoreState:
     """Classify the local store without modifying anything."""
     if config is None:
         raise ValueError("a configuration is required to locate the canonical artifacts")
-    paths = _paths(directory, config)
+    paths = _paths(frozen_root, config)
     source_exists = paths["source_manifest"].exists()
     canonical_files = {k: paths[k].exists() for k in ("csv", "metadata", "readme", "manifest")}
 
@@ -91,7 +103,7 @@ def detect_state(directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | No
         return StoreState.UNUSABLE
 
     try:
-        manifest, _ = verify_frozen(directory)
+        manifest, _ = verify_frozen(vintage_dir(frozen_root))
     except FrozenDataError:
         return StoreState.UNUSABLE
 
@@ -101,24 +113,24 @@ def detect_state(directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | No
         # A canonical input was registered at some point but is now incomplete.
         return StoreState.UNUSABLE
     try:
-        verify_canonical(directory, config)
+        verify_canonical(frozen_root, config)
     except FrozenDataError:
         return StoreState.UNUSABLE
     return StoreState.COMPLETE
 
 
 def verify_canonical(
-    directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | None = None
+    frozen_root: str | Path = FROZEN_DIR, config: Config | None = None
 ) -> dict[str, Any]:
     """Check every canonical artifact against the recorded hashes in its manifest."""
     if config is None:
         raise ValueError("a configuration is required to verify the canonical input")
-    paths = _paths(directory, config)
+    paths = _paths(frozen_root, config)
     if not paths["manifest"].exists():
         raise FrozenDataError(f"no canonical input manifest at {paths['manifest']}")
     manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
     for label, entry in manifest["files"].items():
-        path = Path(directory) / entry["file_name"]
+        path = Path(frozen_root) / entry["file_name"]
         if not path.exists():
             raise FrozenDataError(
                 f"canonical artifact {entry['file_name']} is registered but missing. The "
@@ -137,7 +149,7 @@ def verify_canonical(
 def _write_bundle(
     raw_strings: dict[str, pd.DataFrame],
     source_manifest: FrozenManifest,
-    directory: Path,
+    frozen_root: Path,
     config: Config,
 ) -> tuple[list[ImputationRecord], dict[str, Path]]:
     """Construct and write the canonical CSV, metadata, README and linked manifest.
@@ -148,7 +160,7 @@ def _write_bundle(
     registered one.
     """
     frame, records = build_canonical_frame(raw_strings, config)
-    paths = _paths(directory, config)
+    paths = _paths(frozen_root, config)
     temporary = {label: path.with_suffix(path.suffix + ".tmp") for label, path in paths.items()
                  if label != "source_manifest"}
     written: list[Path] = []
@@ -190,7 +202,7 @@ def _write_bundle(
 
 
 def build_canonical_from_raw(
-    directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | None = None
+    frozen_root: str | Path = FROZEN_DIR, config: Config | None = None
 ) -> CanonicalBundle:
     """Build the canonical input once from an existing verified raw-only snapshot.
 
@@ -199,21 +211,22 @@ def build_canonical_from_raw(
     """
     if config is None:
         raise ValueError("a configuration is required")
-    directory = Path(directory)
-    source_manifest, _ = verify_frozen(directory)
+    frozen_root = Path(frozen_root)
+    vintage = vintage_dir(frozen_root)
+    source_manifest, _ = verify_frozen(vintage)
     raw_strings = {
-        entry.series_id: read_raw_strings(directory / entry.file_name)
+        entry.series_id: read_raw_strings(vintage / entry.file_name)
         for entry in source_manifest.entries
     }
-    _write_bundle(raw_strings, source_manifest, directory, config)
-    return load_bundle(directory, config)
+    _write_bundle(raw_strings, source_manifest, frozen_root, config)
+    return load_bundle(frozen_root, config)
 
 
 def initialize_store(
     client: FredClient,
     specs: Sequence[SeriesSpec],
     *,
-    directory: str | Path = FROZEN_VINTAGE_DIR,
+    frozen_root: str | Path = FROZEN_DIR,
     config: Config,
     vintage_date: str | None = None,
 ) -> CanonicalBundle:
@@ -222,30 +235,31 @@ def initialize_store(
     Retrieves the approved historical vintage, saves the untouched official raw files and
     their manifest, then builds the canonical input from those same local files.
     """
-    directory = Path(directory)
-    vintage = vintage_date or config.get("run.vintage_date")
+    frozen_root = Path(frozen_root)
+    vintage = vintage_dir(frozen_root)
+    stamp = vintage_date or config.get("run.vintage_date")
     source_manifest = initialize_frozen(
-        client, specs, vintage_date=vintage, directory=directory
+        client, specs, vintage_date=stamp, directory=vintage
     )
     raw_strings = {
-        entry.series_id: read_raw_strings(directory / entry.file_name)
+        entry.series_id: read_raw_strings(vintage / entry.file_name)
         for entry in source_manifest.entries
     }
-    _write_bundle(raw_strings, source_manifest, directory, config)
-    return load_bundle(directory, config)
+    _write_bundle(raw_strings, source_manifest, frozen_root, config)
+    return load_bundle(frozen_root, config)
 
 
 def load_bundle(
-    directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | None = None
+    frozen_root: str | Path = FROZEN_DIR, config: Config | None = None
 ) -> CanonicalBundle:
     """Verify and load the canonical input. This is the start of every normal run."""
     if config is None:
         raise ValueError("a configuration is required")
-    directory = Path(directory)
-    input_manifest = verify_canonical(directory, config)
-    source_manifest, _ = verify_frozen(directory)
-    paths = _paths(directory, config)
-    frame = load_canonical(directory, config)
+    frozen_root = Path(frozen_root)
+    input_manifest = verify_canonical(frozen_root, config)
+    source_manifest, _ = verify_frozen(vintage_dir(frozen_root))
+    paths = _paths(frozen_root, config)
+    frame = load_canonical(frozen_root, config)
     metadata = json.loads(paths["metadata"].read_text(encoding="utf-8"))
     return CanonicalBundle(
         frame=frame,

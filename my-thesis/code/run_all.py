@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 from thesis.core.config import load_config  # noqa: E402
 from thesis.core.paths import (  # noqa: E402
     CONFIG_DIR,
-    FROZEN_VINTAGE_DIR,
+    FROZEN_DIR,
     Namespace,
     output_layout,
 )
@@ -57,19 +57,19 @@ def build_client(config) -> FredClient:
     )
 
 
-def ensure_input(config, *, allow_network: bool, directory=FROZEN_VINTAGE_DIR):
+def ensure_input(config, *, allow_network: bool, frozen_root=FROZEN_DIR):
     """Resolve the store to a verified canonical bundle, per the Comp §2 rules."""
-    state = detect_state(directory, config)
+    state = detect_state(frozen_root, config)
     print(f"data store state: {state.value}")
 
     if state is StoreState.COMPLETE:
-        return load_bundle(directory, config)
+        return load_bundle(frozen_root, config)
 
     if state is StoreState.RAW_ONLY:
         # A verified raw-only snapshot predating the amendment: build the canonical input
         # once, locally, with no network request and no change to the raw manifest.
         print("building the canonical input once from the verified raw snapshot (no network)")
-        return build_canonical_from_raw(directory, config)
+        return build_canonical_from_raw(frozen_root, config)
 
     if state is StoreState.ABSENT:
         if not allow_network:
@@ -79,7 +79,7 @@ def ensure_input(config, *, allow_network: bool, directory=FROZEN_VINTAGE_DIR):
             )
         print(f"empty store: retrieving the approved {config.get('run.vintage_date')} vintage")
         return initialize_store(
-            build_client(config), series_specs(config), directory=directory, config=config
+            build_client(config), series_specs(config), frozen_root=frozen_root, config=config
         )
 
     raise FrozenDataError(

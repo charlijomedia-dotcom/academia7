@@ -33,7 +33,7 @@ import pandas as pd
 
 from ..core.config import Config
 from ..core.hashing import sha256_file, sha256_obj
-from ..core.paths import FROZEN_VINTAGE_DIR, MANIFEST_NAME
+from ..core.paths import FROZEN_DIR, MANIFEST_NAME
 from .manifest import FrozenDataError, FrozenManifest
 
 CANONICAL_COLUMNS = (
@@ -263,7 +263,7 @@ def write_canonical_csv(frame: pd.DataFrame, path: str | Path) -> Path:
 
 
 def load_canonical(
-    directory: str | Path = FROZEN_VINTAGE_DIR, config: Config | None = None
+    directory: str | Path = FROZEN_DIR, config: Config | None = None
 ) -> pd.DataFrame:
     """Load the canonical CSV into a fresh DataFrame with an explicit schema.
 

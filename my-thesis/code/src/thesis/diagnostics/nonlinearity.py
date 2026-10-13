@@ -1,0 +1,246 @@
+"""Pre-estimation nonlinearity evidence (Part 5 §4).
+
+Nonlinearity is treated as an empirical hypothesis, not a label attached after a nonlinear
+model happens to fit. Two established procedures are used:
+
+* **Tsay (1986)** quadratic nonlinearity test, a general check for departure from linear
+  autoregressive dynamics (decision D3: all unique quadratic lag terms, orthogonalized
+  against the linear design, assessed by the nested F test);
+* the **Luukkonen-Saikkonen-Teräsvirta / Teräsvirta (1994)** sequence, which tests
+  linearity against STAR alternatives, selects the delay, and chooses LSTAR versus ESTAR
+  (decision D4).
+
+Part 5 §4.4 is explicit that these results affect *interpretation* only. A failure to
+reject linearity does not remove STAR or MSAR from the predeclared forecast comparison; it
+limits what a later transition can be claimed to prove.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+from ..core.config import Config
+from ..core.schemas import TestResult
+
+SIGNIFICANCE = 0.05
+
+
+def _ar_design(y: np.ndarray, order: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    rows = np.arange(order, y.size)
+    X = np.column_stack([np.ones(rows.size)] + [y[rows - j] for j in range(1, order + 1)])
+    return y[rows], X, rows
+
+
+def _ols_residuals(y: np.ndarray, X: np.ndarray) -> np.ndarray:
+    coefficients, *_ = np.linalg.lstsq(X, y, rcond=None)
+    return y - X @ coefficients
+
+
+def tsay_test(y: pd.Series, order: int, *, series: str = "") -> TestResult:
+    """Tsay (1986) test for quadratic nonlinearity. H0: linear autoregression.
+
+    The m = p(p+1)/2 unique cross-products of the lagged values are regressed on the
+    linear design and their residuals retained, so the added regressors are orthogonal to
+    the linear part. The nested F statistic then compares the residual sums of squares.
+    """
+    values = y.to_numpy(dtype=float)
+    dependent, X, rows = _ar_design(values, order)
+    n = dependent.size
+
+    # All unique quadratic terms y_{t-i} * y_{t-j}, 1 <= i <= j <= p.
+    quadratic = []
+    for i in range(1, order + 1):
+        for j in range(i, order + 1):
+            quadratic.append(values[rows - i] * values[rows - j])
+    Z = np.column_stack(quadratic)
+    m = Z.shape[1]
+
+    residual = _ols_residuals(dependent, X)                       # AR residuals
+    orthogonal = np.column_stack([_ols_residuals(Z[:, c], X) for c in range(m)])
+
+    ssr0 = float(residual @ residual)
+    second_stage = _ols_residuals(residual, orthogonal)
+    ssr1 = float(second_stage @ second_stage)
+    df_denominator = n - m - order - 1
+    if df_denominator <= 0 or ssr1 <= 0:
+        return TestResult(
+            name="Tsay (1986) nonlinearity", null_hypothesis="linear autoregression",
+            statistic=None, p_value=None, reference=f"F({m}, {df_denominator})",
+            decision_5pct="unavailable", implication="too few observations for the test",
+            series=series, available=False,
+            unavailable_reason=f"denominator degrees of freedom = {df_denominator}",
+            tuning={"order": order, "n_quadratic_terms": m},
+        )
+
+    statistic = ((ssr0 - ssr1) / m) / (ssr1 / df_denominator)
+    p_value = float(stats.f.sf(statistic, m, df_denominator))
+    reject = p_value < SIGNIFICANCE
+    return TestResult(
+        name="Tsay (1986) nonlinearity",
+        null_hypothesis="the series follows a linear autoregression",
+        statistic=float(statistic),
+        p_value=p_value,
+        reference=f"F({m}, {df_denominator})",
+        decision_5pct="reject" if reject else "do not reject",
+        implication=(
+            "evidence against linear autoregressive dynamics"
+            if reject
+            else "no general evidence against linear autoregressive dynamics"
+        ),
+        series=series,
+        tuning={
+            "order": order,
+            "n_quadratic_terms": m,
+            "n_obs": n,
+            "significance": SIGNIFICANCE,
+            "variant": "quadratic, orthogonalized nested F",
+        },
+    )
+
+
+def _lst_auxiliary(y: np.ndarray, order: int, delay: int):
+    """Dependent variable, linear design and the three Taylor-expansion blocks."""
+    start = max(order, delay)
+    rows = np.arange(start, y.size)
+    X = np.column_stack([np.ones(rows.size)] + [y[rows - j] for j in range(1, order + 1)])
+    z = y[rows - delay]
+    blocks = [X * (z**power)[:, None] for power in (1, 2, 3)]
+    return y[rows], X, blocks
+
+
+def _f_test(dependent: np.ndarray, restricted: np.ndarray, unrestricted: np.ndarray):
+    e0 = _ols_residuals(dependent, restricted)
+    e1 = _ols_residuals(dependent, unrestricted)
+    ssr0, ssr1 = float(e0 @ e0), float(e1 @ e1)
+    q = unrestricted.shape[1] - restricted.shape[1]
+    df = dependent.size - unrestricted.shape[1]
+    if q <= 0 or df <= 0 or ssr1 <= 0:
+        return np.nan, np.nan, q, df
+    statistic = ((ssr0 - ssr1) / q) / (ssr1 / df)
+    return float(statistic), float(stats.f.sf(statistic, q, df)), q, df
+
+
+def lst_linearity(y: pd.Series, order: int, delay: int, *, series: str = "") -> TestResult:
+    """LST joint linearity test against a STAR alternative, for one delay."""
+    values = y.to_numpy(dtype=float)
+    dependent, X, blocks = _lst_auxiliary(values, order, delay)
+    unrestricted = np.column_stack([X] + blocks)
+    statistic, p_value, q, df = _f_test(dependent, X, unrestricted)
+    available = np.isfinite(statistic)
+    reject = available and p_value < SIGNIFICANCE
+    return TestResult(
+        name=f"LST linearity (d={delay})",
+        null_hypothesis="linearity against a smooth-transition autoregressive alternative",
+        statistic=statistic if available else None,
+        p_value=p_value if available else None,
+        reference=f"F({q}, {df})",
+        decision_5pct=("reject" if reject else "do not reject") if available else "unavailable",
+        implication=(
+            "evidence of smooth-transition nonlinearity at this delay"
+            if reject
+            else "linearity is not rejected at this delay"
+        ),
+        series=series,
+        available=bool(available),
+        tuning={"order": order, "delay": delay, "variant": "third-order Taylor, F form",
+                "significance": SIGNIFICANCE},
+    )
+
+
+@dataclass
+class STARSpecification:
+    """Selected delay and transition type from the Teräsvirta (1994) sequence."""
+
+    series: str
+    order: int
+    delay: int
+    kind: str
+    delay_results: list[TestResult] = field(default_factory=list)
+    sequence_results: list[TestResult] = field(default_factory=list)
+    linearity_rejected: bool = False
+    tie_break_used: bool = False
+
+    def to_row(self) -> dict:
+        return {
+            "series_id": self.series,
+            "order": self.order,
+            "selected_delay": self.delay,
+            "transition_type": self.kind,
+            "linearity_rejected_at_selected_delay": self.linearity_rejected,
+            "tie_break_used": self.tie_break_used,
+            "delay_p_values": ";".join(
+                f"d={r.tuning['delay']}:{r.p_value:.6g}" if r.p_value is not None else
+                f"d={r.tuning['delay']}:na" for r in self.delay_results
+            ),
+            "sequence_p_values": ";".join(
+                f"{r.name}:{r.p_value:.6g}" if r.p_value is not None else f"{r.name}:na"
+                for r in self.sequence_results
+            ),
+        }
+
+
+def select_delay_and_type(
+    y: pd.Series, order: int, frequency: str, config: Config, *, series: str = ""
+) -> STARSpecification:
+    """The Teräsvirta (1994) specification sequence (decision D4).
+
+    The delay minimizing the joint linearity p-value is selected, ties broken toward the
+    smaller delay so the choice is deterministic. The transition type then follows the
+    nested sequence H04, H03, H02: ESTAR when H03 has the smallest p-value, otherwise
+    LSTAR.
+    """
+    delays = config.get(f"nonlinearity.lst.delays.{frequency}")
+    values = y.to_numpy(dtype=float)
+
+    delay_results = [lst_linearity(y, order, int(d), series=series) for d in delays]
+    usable = [r for r in delay_results if r.p_value is not None]
+    if not usable:
+        return STARSpecification(series, order, int(delays[0]), "LSTAR", delay_results, [])
+
+    best = min(usable, key=lambda r: (r.p_value, r.tuning["delay"]))
+    chosen = int(best.tuning["delay"])
+    ties = [r for r in usable if r.p_value == best.p_value]
+
+    dependent, X, blocks = _lst_auxiliary(values, order, chosen)
+    first, second, third = blocks
+    full = np.column_stack([X, first, second, third])
+    # H04: third-order terms are zero.
+    s4, p4, q4, df4 = _f_test(dependent, np.column_stack([X, first, second]), full)
+    # H03: second-order terms are zero, given the third-order terms are.
+    s3, p3, q3, df3 = _f_test(dependent, np.column_stack([X, first]),
+                              np.column_stack([X, first, second]))
+    # H02: first-order terms are zero, given the higher-order terms are.
+    s2, p2, q2, df2 = _f_test(dependent, X, np.column_stack([X, first]))
+
+    def result(name, statistic, p_value, q, df, hypothesis):
+        finite = np.isfinite(statistic)
+        return TestResult(
+            name=name, null_hypothesis=hypothesis,
+            statistic=float(statistic) if finite else None,
+            p_value=float(p_value) if finite else None,
+            reference=f"F({q}, {df})",
+            decision_5pct=("reject" if finite and p_value < SIGNIFICANCE else "do not reject")
+            if finite else "unavailable",
+            implication="part of the Teräsvirta (1994) LSTAR/ESTAR selection sequence",
+            series=series, available=bool(finite),
+            tuning={"order": order, "delay": chosen, "significance": SIGNIFICANCE},
+        )
+
+    sequence = [
+        result("H04", s4, p4, q4, df4, "coefficients on the third-order terms are zero"),
+        result("H03", s3, p3, q3, df3, "coefficients on the second-order terms are zero"),
+        result("H02", s2, p2, q2, df2, "coefficients on the first-order terms are zero"),
+    ]
+    p_values = {r.name: (r.p_value if r.p_value is not None else np.inf) for r in sequence}
+    kind = "ESTAR" if p_values["H03"] < min(p_values["H04"], p_values["H02"]) else "LSTAR"
+
+    return STARSpecification(
+        series=series, order=order, delay=chosen, kind=kind,
+        delay_results=delay_results, sequence_results=sequence,
+        linearity_rejected=bool(best.p_value < SIGNIFICANCE),
+        tie_break_used=len(ties) > 1,
+    )

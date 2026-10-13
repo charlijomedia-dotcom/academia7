@@ -13,7 +13,7 @@ import pandas as pd
 import pytest
 
 from thesis.core.config import load_config
-from thesis.core.paths import CONFIG_DIR, FROZEN_VINTAGE_DIR
+from thesis.core.paths import CONFIG_DIR, FROZEN_DIR, FROZEN_VINTAGE_DIR
 from thesis.core.schemas import Status
 from thesis.data.canonical import to_panels
 from thesis.data.store import load_bundle
@@ -36,7 +36,7 @@ def config():
 @pytest.fixture(scope="module")
 def targets(config):
     """Transformed modelling targets built from the canonical input, as the pipeline does."""
-    panels = to_panels(load_bundle(FROZEN_VINTAGE_DIR, config).frame)
+    panels = to_panels(load_bundle(FROZEN_DIR, config).frame)
     return {
         "CPIAUCSL": annualized_logdiff(panels["M"]["CPIAUCSL"], 1200.0).dropna(),
         "INDPRO": annualized_logdiff(panels["M"]["INDPRO"], 1200.0).dropna(),

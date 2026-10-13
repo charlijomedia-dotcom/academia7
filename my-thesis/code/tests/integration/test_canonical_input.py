@@ -17,7 +17,7 @@ import pytest
 
 from thesis.core.config import load_config
 from thesis.core.hashing import sha256_file
-from thesis.core.paths import CONFIG_DIR, FROZEN_VINTAGE_DIR, PROJECT_ROOT
+from thesis.core.paths import CONFIG_DIR, FROZEN_DIR, FROZEN_VINTAGE_DIR, PROJECT_ROOT
 from thesis.data.canonical import (
     CANONICAL_COLUMNS,
     STATUS_IMPUTED,
@@ -51,13 +51,13 @@ def config():
 
 @pytest.fixture(scope="module")
 def bundle(config):
-    return load_bundle(FROZEN_VINTAGE_DIR, config)
+    return load_bundle(FROZEN_DIR, config)
 
 
 class TestDataIntegrity:
     def test_store_is_complete_and_verifies(self, config):
-        assert detect_state(FROZEN_VINTAGE_DIR, config) is StoreState.COMPLETE
-        verify_canonical(FROZEN_VINTAGE_DIR, config)
+        assert detect_state(FROZEN_DIR, config) is StoreState.COMPLETE
+        verify_canonical(FROZEN_DIR, config)
         verify_frozen(FROZEN_VINTAGE_DIR)
 
     def test_canonical_schema_and_column_order(self, bundle):
@@ -112,7 +112,7 @@ class TestDataIntegrity:
         assert bundle.metadata["not_an_official_fred_release"] is True
 
     def test_readme_discloses_the_imputation(self, config):
-        readme = (FROZEN_VINTAGE_DIR / config.get("canonical_input.readme")).read_text(encoding="utf-8")
+        readme = (FROZEN_DIR / config.get("canonical_input.readme")).read_text(encoding="utf-8")
         assert "NOT an unmodified official FRED extract" in readme
         assert "IMPUTED_LOCF" in readme
         assert "2025-10-01" in readme
@@ -230,14 +230,14 @@ class TestReproducibleLoading:
 
         monkeypatch.setattr(socket, "socket", forbidden)
         try:
-            frame = load_canonical(FROZEN_VINTAGE_DIR, config)
+            frame = load_canonical(FROZEN_DIR, config)
         finally:
             monkeypatch.setattr(socket, "socket", original)
         assert len(frame) > 0
 
     def test_loading_works_without_a_fred_key(self, config, monkeypatch):
         monkeypatch.delenv("FRED_API_KEY", raising=False)
-        assert len(load_bundle(FROZEN_VINTAGE_DIR, config).frame) > 0
+        assert len(load_bundle(FROZEN_DIR, config).frame) > 0
 
     def test_rebuilding_reproduces_identical_bytes(self, config, tmp_path):
         source_manifest, _ = verify_frozen(FROZEN_VINTAGE_DIR)
@@ -247,12 +247,12 @@ class TestReproducibleLoading:
         }
         frame, _ = build_canonical_frame(raw, config)
         rebuilt = write_canonical_csv(frame, tmp_path / "rebuilt.csv")
-        original = FROZEN_VINTAGE_DIR / config.get("canonical_input.csv")
+        original = FROZEN_DIR / config.get("canonical_input.csv")
         assert sha256_file(rebuilt) == sha256_file(original)
 
     def test_two_loads_give_identical_frames(self, config):
-        a = load_canonical(FROZEN_VINTAGE_DIR, config)
-        b = load_canonical(FROZEN_VINTAGE_DIR, config)
+        a = load_canonical(FROZEN_DIR, config)
+        b = load_canonical(FROZEN_DIR, config)
         pd.testing.assert_frame_equal(a, b)
 
     def test_panels_derived_in_memory_have_the_expected_shape(self, bundle):
@@ -268,8 +268,8 @@ class TestReproducibleLoading:
         # and does not repair or re-download anything.
         import shutil
 
-        store = tmp_path / "store"
-        shutil.copytree(FROZEN_VINTAGE_DIR, store)
+        store = tmp_path / "frozen"
+        shutil.copytree(FROZEN_DIR, store)
         target = store / config.get("canonical_input.csv")
         before = target.read_text(encoding="utf-8")
         target.write_text(before.replace("OBSERVED", "OBSERVED ", 1), encoding="utf-8")
@@ -280,12 +280,34 @@ class TestReproducibleLoading:
     def test_registered_but_missing_canonical_file_fails(self, config, tmp_path):
         import shutil
 
-        store = tmp_path / "store"
-        shutil.copytree(FROZEN_VINTAGE_DIR, store)
+        store = tmp_path / "frozen"
+        shutil.copytree(FROZEN_DIR, store)
         (store / config.get("canonical_input.csv")).unlink()
         assert detect_state(store, config) is StoreState.UNUSABLE
         with pytest.raises(FrozenDataError):
             verify_canonical(store, config)
+
+
+class TestCanonicalLayout:
+    """Part 5 §2.2A fixes the canonical input at data/frozen/thesis_input_2026-10-05.csv."""
+
+    def test_canonical_input_sits_directly_under_the_frozen_root(self, config):
+        expected = FROZEN_DIR / "thesis_input_2026-10-05.csv"
+        assert expected.exists()
+        assert config.get("canonical_input.csv") == "thesis_input_2026-10-05.csv"
+
+    def test_companions_sit_beside_it(self, config):
+        for key in ("metadata", "readme", "manifest"):
+            assert (FROZEN_DIR / config.get(f"canonical_input.{key}")).exists()
+
+    def test_vintage_directory_holds_only_official_raw_files(self):
+        names = {p.name for p in FROZEN_VINTAGE_DIR.iterdir()}
+        assert not any(name.startswith("thesis_input") for name in names)
+        assert "MANIFEST.json" in names
+
+    def test_bundle_resolves_the_spec_path(self, bundle):
+        assert bundle.csv_path.parent == FROZEN_DIR
+        assert bundle.csv_path.name == "thesis_input_2026-10-05.csv"
 
 
 class TestStoreStateRules:
@@ -293,28 +315,30 @@ class TestStoreStateRules:
         assert detect_state(tmp_path / "nothing", config) is StoreState.ABSENT
 
     def test_raw_only_store_builds_canonical_locally(self, config, tmp_path):
+        # A verified raw-only snapshot, as it looked before the canonical amendment.
         import shutil
 
-        store = tmp_path / "store"
-        store.mkdir()
-        for path in FROZEN_VINTAGE_DIR.iterdir():
-            if not path.name.startswith("thesis_input"):
-                shutil.copy2(path, store / path.name)
+        store = tmp_path / "frozen"
+        shutil.copytree(FROZEN_VINTAGE_DIR, store / FROZEN_VINTAGE_DIR.name)
         assert detect_state(store, config) is StoreState.RAW_ONLY
 
-        original_manifest = (store / "MANIFEST.json").read_bytes()
+        manifest_path = store / FROZEN_VINTAGE_DIR.name / "MANIFEST.json"
+        original_manifest = manifest_path.read_bytes()
         bundle = build_canonical_from_raw(store, config)
         assert detect_state(store, config) is StoreState.COMPLETE
         # The original raw manifest must not be altered (Comp §2).
-        assert (store / "MANIFEST.json").read_bytes() == original_manifest
-        assert bundle.csv_sha256 == sha256_file(FROZEN_VINTAGE_DIR / config.get("canonical_input.csv"))
+        assert manifest_path.read_bytes() == original_manifest
+        # The canonical input lands beside the vintage directory, not inside it.
+        assert (store / config.get("canonical_input.csv")).exists()
+        assert not (store / FROZEN_VINTAGE_DIR.name / config.get("canonical_input.csv")).exists()
+        assert bundle.csv_sha256 == sha256_file(FROZEN_DIR / config.get("canonical_input.csv"))
 
     def test_canonical_without_its_raw_parent_is_unusable(self, config, tmp_path):
         import shutil
 
-        store = tmp_path / "store"
+        store = tmp_path / "frozen"
         store.mkdir()
         for name in ("csv", "metadata", "readme", "manifest"):
-            source = FROZEN_VINTAGE_DIR / config.get(f"canonical_input.{name}")
+            source = FROZEN_DIR / config.get(f"canonical_input.{name}")
             shutil.copy2(source, store / source.name)
         assert detect_state(store, config) is StoreState.UNUSABLE
