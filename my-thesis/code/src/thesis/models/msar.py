@@ -194,6 +194,30 @@ class MSARFit:
     def theta(self) -> np.ndarray:
         return _pack(self.mu, self.phi, self.sigma, self.P)
 
+    def one_step_residuals(self) -> np.ndarray:
+        """In-sample one-step prediction errors, for the §7.3 residual battery.
+
+        The prediction at t uses the state probabilities implied by information through
+        t-1, so these are genuine one-step-ahead errors rather than smoothed fitted
+        values. Length is n - p, aligned on y[p:].
+        """
+        order, y = self.order, self._y
+        T = _expanded_transition(self.P, self.states)
+        constants = _state_constants(np.asarray(self.mu, float),
+                                     np.asarray(self.phi, float), self.states)
+        probabilities = _stationary(T)
+        out = np.empty(y.size - order)
+        for position, t in enumerate(range(order, y.size)):
+            ar_term = float(self.phi @ y[t - order : t][::-1]) if order else 0.0
+            predicted_states = probabilities @ T
+            out[position] = y[t] - float(predicted_states @ (constants + ar_term))
+            probabilities = self.filtered[position]
+        return out
+
+    def fitted_values(self) -> np.ndarray:
+        """One-step-ahead conditional means, aligned on y[p:]."""
+        return self._y[self.order:] - self.one_step_residuals()
+
     def forecast(self, horizon: int = 1) -> np.ndarray:
         """Exact h-step conditional means via the state-probability recursion.
 

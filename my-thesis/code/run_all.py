@@ -11,11 +11,19 @@ Comp §2 and §11 define the execution contract:
   builds the canonical input from those local files.
 * a store that is partial, corrupt or hash-mismatched is a **failure**, never a reason to
   re-download or overwrite.
+
+Once the input is verified, this script runs **every stage of the approved Part 5
+methodology** through `thesis.pipeline.Pipeline`: transformation and stationarity
+decisions, nonlinearity diagnostics, specification selection, in-sample adequacy, the
+pseudo-out-of-sample rolling forecasts, the forecast-evaluation tests, the mandatory
+robustness exercises, and all required tables, figures and logs. `--data-only` stops
+after the data check for a quick provenance verification.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -29,6 +37,7 @@ from thesis.core.paths import (  # noqa: E402
     output_layout,
 )
 from thesis.core.provenance import RunContext  # noqa: E402
+from thesis.pipeline import Pipeline  # noqa: E402
 from thesis.data.canonical import StoreState, to_panels  # noqa: E402
 from thesis.data.fred_client import FredClient, api_key_from_env  # noqa: E402
 from thesis.data.frozen import SeriesSpec  # noqa: E402
@@ -98,12 +107,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--smoke-test", action="store_true", help="fast validation run on a target subset"
     )
+    parser.add_argument(
+        "--data-only",
+        action="store_true",
+        help="verify and summarize the frozen input without running the analysis",
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="ignore the fit cache and re-estimate every rolling window",
+    )
     args = parser.parse_args(argv)
 
     names = ("baseline", "series_catalog", "thresholds")
     if args.smoke_test:
         names = names + ("smoke",)
     config = load_config(names=names, config_dir=CONFIG_DIR)
+    if args.no_cache:
+        config = config.with_overrides({"execution": {"cache": False}}, "--no-cache")
 
     namespace = Namespace.SMOKE if args.smoke_test else Namespace.BASELINE
     layout = output_layout(namespace)
@@ -133,6 +154,28 @@ def main(argv: list[str] | None = None) -> int:
             f"{panel.index.min():%Y-%m-%d} to {panel.index.max():%Y-%m-%d}"
         )
     print(f"run id: {context.run_id}")
+
+    if args.data_only:
+        print("--data-only: stopping after the frozen-input verification")
+        return 0
+
+    pipeline = Pipeline(config, context, layout, bundle, smoke=args.smoke_test)
+    summary = pipeline.run()
+
+    print("\n--- pipeline complete ---")
+    print(f"stages:          {', '.join(summary['stages'])}")
+    print(f"files written:   {summary['n_files']}")
+    print(f"model fits:      {summary['n_fit_records']}")
+    print(f"failure events:  {summary['n_failure_events']}")
+    print(f"data-gap events: {summary['n_data_gap_events']}")
+    print(f"test results:    {summary['n_test_results']}")
+    for timing in summary["runtime"]:
+        print(f"  {timing['stage']:<14} {timing['wall_seconds']:>9.2f}s  {timing['notes']}")
+    print(f"output root:     {layout.root}")
+    manifest = layout.manifests / "run_summary.json"
+    manifest.write_text(json.dumps(summary, indent=2, sort_keys=True, default=str),
+                        encoding="utf-8")
+    print(f"run summary:     {manifest}")
     return 0
 
 

@@ -24,7 +24,9 @@ evaluation:
   mcs:
     replications: 200   # reduced from 5000
   hlz:
-    critical_value_replications: null   # still unset; HLZ cannot run until M3 resolves
+    # Reduced from the article's 50,000 so the smoke run is fast. Smoke critical values
+    # are approximate by construction and are never thesis-facing ([D16]).
+    critical_value_replications: 2000
 
 execution:
   parallel_workers: 2
