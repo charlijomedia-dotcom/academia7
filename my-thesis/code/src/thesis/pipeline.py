@@ -1510,8 +1510,10 @@ class Pipeline:
             arma = fit_arma(initial, (spec.order, spec.ma_order), series=series_id,
                             refit_date=str(initial.index[-1].date()))
             arch_lag = int(self.config.get(f"diagnostics.arch_lm_lags.{frequency}"))
+            # The canonical model label, not an ad-hoc one: the order is reported in the
+            # trigger table's own `arma_order` column.
             screen = residual_tests.arch_lm(arma.residuals, arch_lag, series=series_id,
-                                            model=f"ARMA{spec.order},{spec.ma_order}")
+                                            model=ARMA)
             self.all_tests.append(screen)
             triggered = screen.decision_5pct == "reject"
             trigger_rows.append({
