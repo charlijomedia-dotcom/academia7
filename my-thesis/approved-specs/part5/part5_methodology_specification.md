@@ -2,7 +2,7 @@
 
 **Project:** *Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications*  
 **Date:** 5 October 2026  
-**Status:** APPROVED AND FROZEN
+**Status:** APPROVED baseline with explicit user amendments (12 October 2026 window-length robustness; 13 October 2026 CPI/UNRATE carry-forward and canonical CSV). All other specifications remain frozen.
 **Inputs:** Parts 1–4, Part 2 jury registry, Prof. Verne requirements recorded in Part 4, and external econometric literature used only to choose appropriate procedures  
 **Purpose:** Freeze the empirical methodology that Claude Code must implement in Parts 6–8.
 
@@ -76,7 +76,7 @@ A series is retained in the core thesis only if it satisfies all of the followin
 3. **Official measurement:** the underlying source is an official U.S. statistical authority or the Federal Reserve.
 4. **Machine accessibility:** observations can be retrieved automatically from FRED/ALFRED using a stable series ID and Python code. No manual spreadsheet construction is permitted.
 5. **Sufficient history:** the series has enough postwar observations for the approved rolling forecast design and for recurrent recession/expansion episodes.
-6. **Frequency compatibility:** the series is monthly or quarterly and can be used without artificial interpolation.
+6. **Frequency compatibility:** the series is monthly or quarterly with its true calendar spacing retained. No routine interpolation is permitted; the only approved exception is the explicitly disclosed October 2025 one-month last-observation-carried-forward (LOCF) imputation for CPIAUCSL and UNRATE in §2.2A.
 7. **Parsimony:** a second series measuring the same concept is not added to the core unless it answers a distinct methodological question.
 
 This rule makes the data set a consequence of the thesis argument rather than an arbitrary collection of variables.
@@ -130,9 +130,36 @@ For every raw series, save:
 
 Also save a master manifest containing the hash of every frozen file.
 
-All transformations must be calculated locally from the frozen raw levels. Do not rely on a remotely transformed series for the baseline. This guarantees that rerunning the same code on the same frozen files reproduces the same transformed observations and model inputs.
+### 2.2A User-approved October 2025 imputation and public research-input CSV (13 October 2026)
 
-The normal `python code/run_all.py` command must not contact the internet. It must first verify the frozen-file hashes and then reproduce the thesis outputs from those local files.
+Retain the 2026-10-05 historical FRED/ALFRED vintage and the originally approved empirical endpoints: **2026M8 for the five monthly targets and USREC**, and **2026Q2 for quarterly GDPC1**. Preserve each official raw series **unchanged** in the archived source snapshot, including its missing-value markers and any raw observations later than the usable study endpoint. Never describe the imputed values as official observations.
+
+**Only two specified input cells may be changed in the derived empirical input:**
+
+- **CPIAUCSL, 2025-10-01:** if and only if the official raw October observation is missing, copy the **2025-09-01 CPIAUCSL level** unchanged.
+- **UNRATE, 2025-10-01:** if and only if the official raw October observation is missing, copy the **2025-09-01 UNRATE level** unchanged.
+
+This is **last observation carried forward (LOCF) at the raw LEVEL stage**, performed **once before** any differences, log changes, transformations, lag construction, or model estimation. It is an explicitly authorized, non-observed replacement—not an official BLS observation, a real-time estimate, a claim of economic constancy, or a generally approved license to forward-fill. No other missing data may be imputed. Unexpected missing values, missing source predecessor, non-missing October official values, duplicate dates, or inconsistent vintage values require a documented stop and investigation, not silent substitution. All calendar months remain distinct and correctly spaced.
+
+The consequences must be stated in the thesis: carrying September CPI forward makes computed **October 2025 monthly inflation equal to zero** under the approved log-difference transformation; the observed November index change is then assigned to the November one-month growth transformation rather than distributed over two months. If UNRATE is differenced, its October change is likewise exactly zero by construction. These are **modeling artifacts**, not observed economic outcomes, and may affect rolling estimates, state identification, realized forecast losses, and inferential conclusions.
+
+After raw-vintage retrieval/verification, generate **one canonical, shareable, immutable input file**:
+
+`data/frozen/thesis_input_2026-10-05.csv`
+
+Use **long/tidy format** so genuinely quarterly GDP is not falsely made monthly. Each row represents one official series and one observation date; mandatory columns:
+
+`series_id,date,frequency,value,source_value,observation_status,imputation_method,imputation_source_date`
+
+Dates are ISO `YYYY-MM-DD`, maintaining the provider's period-date convention; frequency is `M` or `Q`. `value` is the raw-level modeling input; `source_value` is the actual downloaded official raw value (blank for genuinely unreported October); `observation_status` is `OBSERVED` or `IMPUTED_LOCF`; and the method/source date are populated **only** for the two imputed cells. Include all six forecast-target series and **USREC** over their approved usable date ranges. Preserve original numerical precision and a stable row order (e.g., series ID then date), stable column order, fixed date/NA/number formatting, and deterministic UTF-8 CSV bytes. Do **not** append transformed growth rates, forecasts, or future data to this input file.
+
+Save and checksum a companion **metadata JSON, data dictionary/README, original-raw manifest and explicit two-row imputation audit** explaining the official gap, historical vintage, inclusion dates, rules and exact before/after values. Attribute FRED/ALFRED and the underlying statistical agencies, respect source redistribution terms, and identify the CSV explicitly as an **author-processed research dataset** suitable for external replication—not an unmodified official FRED extract. Do not include any FRED API key or personal secret. An accompanying optional wide monthly/quarterly CSV may be generated for convenience, but the **single canonical long-format CSV** is authoritative.
+
+**CSV-first execution contract:** on a normal repeat run, verify the canonical CSV, source manifest, metadata, and expected SHA-256 hashes, then load that exact CSV **first** as a new pandas DataFrame. Derive correctly indexed monthly and quarterly DataFrames **in memory** from its series IDs and frequencies; only then apply the approved transformations, stationarity/nonlinearity tests, lags, rolling fits, forecasts, robustness, plots, and reporting. Do **not** make FRED/ALFRED requests during a validated repeat run. If no frozen snapshot or canonical CSV exists at all, a first-run initialization may call FRED using `FRED_API_KEY` and the **same 2026-10-05 vintage**, save the raw and canonical frozen artifacts atomically, and proceed. If **some** frozen artifacts already exist but the canonical CSV/manifest is absent, corrupt, mismatched, or incomplete, stop with an explicit error rather than silently downloading or overwriting a new dataset. A separately authorized data refresh remains in a separate namespace and cannot replace the baseline.
+
+The published input CSV and its hash must be the **data input identity** for all Part 6 results; libraries/versions, configuration, model seeds, and code commits must also be recorded. This approved input-data amendment supersedes earlier proposed **N1 Option A / no-carry-forward messages that were not sent to Claude**. It does not change the approved model families, estimation windows, tests, target transformations, or other robustness specifications.
+
+All transformations must be calculated locally from the verified **canonical imputed raw-level CSV**. Do not rely on remotely transformed series. Repeat runs must produce the same transformed observations and research outputs under the pinned environment and deterministic seeds.
 
 ## 2.3 Core target series and why these variables are selected
 
@@ -220,11 +247,11 @@ Thus the endpoint is determined by the information set, not by an economic event
 
 The monthly VAR begins in **1959M1**, because M2 is the latest-starting variable in the five-variable monthly system. The VAR ends in 2026M8, the common monthly endpoint.
 
-No missing earlier observations are backfilled and quarterly GDP is not interpolated.
+No missing earlier observations are backfilled and quarterly GDP is not interpolated. The **sole exceptional replacement** is the user-approved October 2025 CPIAUCSL and UNRATE LOCF in §2.2A, performed after preserving the untouched official raw series and before constructing the common monthly study panel.
 
 ### Reproducibility check
 
-The frozen-data initialization must verify these expected ranges against the 2026-10-05 vintage. If the historical-vintage API returns a different start or terminal observation, Claude must stop, save the discrepancy, and request approval rather than silently alter the sample.
+The frozen-data initialization must verify these expected ranges against the 2026-10-05 vintage. The documented October 2025 missing-value markers for CPIAUCSL/UNRATE are expected and are processed **only** by §2.2A in the canonical research CSV; they are not permission to change an endpoint. If the historical-vintage API returns a different start or terminal observation, or an unexpected missing-value pattern, Claude must stop, save the discrepancy, and request approval rather than silently alter the sample.
 
 ## 2.5 Business-cycle chronology
 
@@ -950,6 +977,7 @@ Each robustness exercise has a named threat.
 | Conditional variance ignored | ARMA-GARCH(1,1) diagnostic when ARCH-LM rejects | Separate mean forecast from variance dynamics |
 | Model failure creates misleading figures | Failure-aware plotting rules | Protect interpretation |
 | Estimation-window choice affects ranking | Mandatory h=1 AR/ARMA/MSAR(2)/STAR window-length sensitivity: monthly 180/240/300 observations; quarterly 90/120/150, with fixed baseline discrete specifications, matched OOS dates, predictive tests, MCS, and failure disclosure (T4.8/F4.8) | Determine whether substantive linear-versus-nonlinear rankings and their inferential support are sensitive to the predeclared estimation history |
+| Carry-forward October 2025 values distort forecast interpretation | Preserve unchanged official raw data plus traceable LOCF-derived canonical CSV; report direct imputed target-month effects and exposure of later forecasts through lags/estimation windows (T2.0B, T4.9) | Make the sensitivity and limits of the user-approved LOCF assumption visible rather than treating artificial October 2025 stability as observed evidence |
 | Turning-point result depends on the arbitrary window width | Monthly ±1 / ±3 / ±6 months; quarterly 0 / ±1 / ±2 quarters | Confirm, qualify, or reject any claim that nonlinear gains are concentrated around peaks/troughs |
 | U.S. sample drives general claim | No false external-validity claim; common-sample/state reporting | Delimit, not “fix,” P-06 |
 
