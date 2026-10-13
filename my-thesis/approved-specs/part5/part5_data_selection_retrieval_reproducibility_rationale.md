@@ -204,7 +204,7 @@ The underlying sources remain the official agencies:
 
 ## 5.2 Python retrieval
 
-No manual CSV editing is permitted.
+No manual CSV editing is permitted. The canonical CSV is **generated automatically from preserved, official raw files**, with exactly the two declared October 2025 LOCF adjustments and complete provenance. The user-approved CSV is a derived data artifact, not a manually edited substitute for retrieval.
 
 The first frozen initialization must use Python `requests`, `fredapi`, or an equivalent simple FRED client with the official FRED API.
 
@@ -229,6 +229,23 @@ The FRED/ALFRED documentation explicitly distinguishes current FRED data from hi
 Therefore the baseline can be reconstructed later from the web even if FRED's current historical values have changed.
 
 The saved local frozen files remain the primary reproducibility source. The historical-vintage API is an independent reconstruction route.
+
+## 5.4 Author-processed, shareable, canonical research CSV (user amendment, 13 October 2026)
+
+Keep the **original 2026-10-05 raw FRED/ALFRED observations** and hashes unchanged, including the official missing October 2025 values. On the derived research-input copy only, use **last observation carried forward (LOCF)** for the following two missing October 2025 raw-level cells:
+
+| Series | Observation date | Official raw value | Derived model-input value | Imputation source |
+|---|---|---|---|---|
+| CPIAUCSL | 2025-10-01 | Missing (unreported) | Exactly September 2025's CPIAUCSL raw index | 2025-09-01 |
+| UNRATE | 2025-10-01 | Missing (unreported) | Exactly September 2025's UNRATE raw rate | 2025-09-01 |
+
+The Federal shutdown caused these official October 2025 data gaps. **LOCF does not recover an official release or establish unchanged economic conditions.** No other observations may be filled; if the official expected gap is different or the September predecessor unavailable, stop for audit. This user-approved exception concerns two values in the **derivative input**, not the archived official raw series, not quarterly GDP, and not a general permission to interpolate.
+
+The first successful initialization must generate and freeze the single distribution-ready `data/frozen/thesis_input_2026-10-05.csv`, with long-format columns `series_id,date,frequency,value,source_value,observation_status,imputation_method,imputation_source_date`. Include the six study targets and USREC, respecting each series' genuine monthly or quarterly frequency and the **August 2026 / 2026Q2** study endpoints. All observed rows carry the exact raw-level value and `OBSERVED` marker; only the two repaired rows carry `IMPUTED_LOCF`, their authentic missing `source_value`, and source-month metadata. Include a machine-readable two-row imputation register, dictionary/README, FRED IDs, units, start/end dates, historical vintage, original-source attribution, hashes, and licensing/reuse notices; never present the derived CSV as an official FRED release.
+
+This produces **two distinct reproducibility layers**: (i) archived unmodified source data for audit and future independent methodological work; (ii) an immutable author-processed **canonical model-input CSV** for exact reproduction of this thesis. The downstream code loads the canonical CSV into a fresh DataFrame, then constructs per-frequency matrices and transformations in memory. It does not retrieve data again once a valid canonical file and manifests exist. A missing complete snapshot can trigger a first-time initialization from FRED/ALFRED; a partial/corrupt/mismatched snapshot is an error rather than an excuse for replacement.
+
+Consequences and limitations are substantive: CPI's October growth becomes an artificial zero, November's measured September-to-November gap is assigned to a single transformed month, and differenced UNRATE has an artificial October zero. The thesis must flag affected forecast-origin inputs, model estimation histories, and target-date losses, and include the explicit T2.0B/T4.9 audit. This decision is transparent but **not justified by any claim that LOCF is statistically unbiased or optimal**.
 
 # 7. Sample-period justification
 
@@ -339,18 +356,18 @@ Exact future reproduction requires more than remembering the series IDs.
 
 The baseline workflow is:
 
-1. retrieve the 2026-10-05 ALFRED/FRED vintage programmatically;
-2. save the raw untransformed observations;
-3. save metadata and exact API parameters;
-4. hash every file;
-5. save one master manifest;
-6. calculate all transformations locally;
-7. make the normal pipeline read only the frozen files;
-8. verify hashes before estimation;
-9. block any silent internet refresh;
-10. store future refreshes under a different dated directory.
+1. retrieve the 2026-10-05 ALFRED/FRED vintage programmatically once;
+2. save the **unmodified raw source series**, preserving the official missing October CPI/UNRATE cells;
+3. save original metadata and exact API parameters;
+4. construct the **author-processed canonical long-format CSV** after the two explicitly authorized raw-level October 2025 LOCF replacements;
+5. save the imputation audit, researcher README/dictionary, raw-file hashes, canonical-CSV hash and immutable master manifest;
+6. on every later normal run, validate the manifest and load `thesis_input_2026-10-05.csv` directly as a new pandas DataFrame (no web call);
+7. construct correctly spaced monthly and quarterly matrices **in memory**, then compute all transformations and tests;
+8. pin software versions, model seeds and configurations and store their provenance with outputs;
+9. reject any partial, corrupt or hash-mismatched frozen input rather than silently replacing it;
+10. store explicit data refreshes under a different dated directory, without overwriting the baseline.
 
-Therefore a rerun years later does not depend on whatever FRED happens to report at that future date.
+Therefore a rerun years later does not depend on whatever FRED happens to report at that future date. A researcher can use the canonical CSV plus its dictionary/manifest to reproduce the approved model inputs, while the unmodified FRED files make the **two non-official October imputations** independently auditable.
 
 # 11. Defense-ready answers
 
@@ -373,7 +390,7 @@ That would throw away valid univariate history solely because M2 begins later. T
 It is the latest month jointly available across all monthly core targets as of the frozen 5 October 2026 information set.
 
 **Why freeze a vintage?**  
-Because macroeconomic data are revised. A frozen local snapshot plus an ALFRED historical-vintage reconstruction route ensures the thesis remains exactly reproducible.
+Because macroeconomic data are revised. We freeze the **official raw snapshot and distinct author-processed CSV**, together with checksums and complete imputation disclosure; an ALFRED historical-vintage retrieval remains an independent reconstruction route.
 
 **Why transform locally rather than request FRED growth rates?**  
 Because local transformations make the exact formula auditable and guarantee that the same raw frozen values always generate the same model inputs.
