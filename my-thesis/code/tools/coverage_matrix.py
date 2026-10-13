@@ -176,7 +176,13 @@ REGISTER: list[Requirement] = [
         ("src/thesis/diagnostics/decision_rule.py:decide_transformation",
          "src/thesis/diagnostics/decision_rule.py:confirm_on_full_sample"),
         ("diagnostics/T2.2_transformation_decisions.csv",),
-        ("tests/validation/test_stationarity.py",)),
+        ("tests/validation/test_stationarity.py",
+         "tests/validation/test_decision_rule_real_data.py"),
+        note="The decision table is written on every run even when no target in that run "
+             "uses the rule, so a reader can tell 'the rule applied to nothing here' from "
+             "'the rule was never run'. The rule is exercised on the real frozen UNRATE "
+             "and FEDFUNDS by test_decision_rule_real_data.py, which the smoke run's two "
+             "growth targets cannot do."),
 
     # ---- Section 4: nonlinearity -----------------------------------------
     Requirement(

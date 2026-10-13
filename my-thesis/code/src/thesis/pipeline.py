@@ -318,9 +318,12 @@ class Pipeline:
 
             frame = stationarity.results_to_frame(results)
             self._write(frame, self.layout.diagnostics, "T2.2_stationarity.csv", stage)
-            if decision_rows:
-                self._write(pd.DataFrame(decision_rows), self.layout.diagnostics,
-                            "T2.2_transformation_decisions.csv", stage)
+            # Written even when no target in this run uses the §3.4 rule, so the
+            # artifact is always present and a reader can tell "the rule applied to
+            # nothing here" from "the rule was never run". A smoke run on two growth
+            # targets legitimately produces no rows.
+            self._write(pd.DataFrame(decision_rows), self.layout.diagnostics,
+                        "T2.2_transformation_decisions.csv", stage)
             self.all_tests.extend(results)
 
             # F2.1 per-target overview
