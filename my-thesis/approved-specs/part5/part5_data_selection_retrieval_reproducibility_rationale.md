@@ -110,7 +110,7 @@ FRED satisfies the retrieval criterion because it distributes official series fr
 
 This produces an annualized continuously compounded quarter-over-quarter real-growth rate.
 
-**Expected frozen range:** 1947Q1 to 2026Q2 in raw levels, subject to vintage verification.
+**Expected usable study range:** 1947Q1 to 2026Q2 in raw levels, subject to historical-vintage verification; the untouched provider response is archived separately.
 
 ## 4.2 CPI, CPIAUCSL
 
@@ -123,7 +123,7 @@ This produces an annualized continuously compounded quarter-over-quarter real-gr
 
 This converts the price index into annualized one-month continuously compounded inflation.
 
-**Expected frozen range:** 1947M1 to 2026M8 in raw levels.
+**Expected usable study range:** 1947M1 to 2026M8 in raw levels, with the explicitly imputed October 2025 entry marked only in the canonical modeling CSV.
 
 ## 4.3 Unemployment, UNRATE
 
@@ -133,7 +133,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Transformation:** level or first difference according to the predeclared ADF/KPSS/Zivot-Andrews rule.
 
-**Expected frozen range:** 1948M1 to 2026M8 for the common monthly endpoint.
+**Expected usable study range:** 1948M1 to 2026M8 for the common monthly endpoint; any later raw provider observations (e.g., September 2026) remain in the untouched source archive but are excluded from the canonical study CSV.
 
 ## 4.4 Industrial production, INDPRO
 
@@ -154,7 +154,7 @@ This converts the price index into annualized one-month continuously compounded 
 
 **Transformation:** level or first difference according to the stationarity/break rule.
 
-**Expected frozen range:** 1954M7 to 2026M8.
+**Expected usable study range:** 1954M7 to 2026M8.
 
 ## 4.6 M2 monetary aggregate, M2SL
 
@@ -165,7 +165,7 @@ This converts the price index into annualized one-month continuously compounded 
 **Transformation:**  
 `1200 × Δln(M2SL)`
 
-**Expected frozen range:** 1959M1 to 2026M8.
+**Expected usable study range:** 1959M1 to 2026M8.
 
 ## 4.7 USREC
 
