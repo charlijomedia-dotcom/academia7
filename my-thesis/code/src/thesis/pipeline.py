@@ -39,7 +39,8 @@ from .evaluation.hlz import HLZSettings, hlz_test
 from .evaluation.losses import ABSOLUTE, SIGN_CONVENTION, SQUARED, loss_differential
 from .evaluation.mcs import model_confidence_set
 from .evaluation.state_loss_regression import state_loss_regression
-from .forecasting.rolling import DataIdentity, run_chain
+from .forecasting.parallel import ChainJob, run_chains
+from .forecasting.rolling import DataIdentity
 from .forecasting.windows import common_calendar, describe_coverage, rolling_origins
 from .models import flags
 from .models.ar import fit_ar
@@ -51,6 +52,20 @@ from .models.star import fit_star
 from .models.var import fit_var
 from .reporting import figures, tables
 from .transforms.growth import annualized_logdiff
+
+def _supported(result) -> bool:
+    """Whether a state-loss regression gives 5% support for state dependence.
+
+    Support means the regression could be estimated and the turning-window coefficient
+    is significant at 5%. This is the reading used to classify a T4.TP1 alternative
+    window as unchanged, weakened or reversed relative to the baseline width; it is a
+    reporting rule for the sensitivity table, not a new inferential procedure.
+    """
+    if not getattr(result, "available", False):
+        return False
+    p_value = result.p_values.get("beta_turn")
+    return bool(p_value is not None and np.isfinite(p_value) and p_value < 0.05)
+
 
 PAIRS = (("AR", "ARMA"), ("AR", "MSAR"), ("AR", "STAR"), ("ARMA", "MSAR"), ("ARMA", "STAR"))
 
@@ -114,6 +129,33 @@ class Pipeline:
         written = figures.save(fig, directory / name, self.context, extra)
         stage.files.extend(str(p.relative_to(self.layout.root)) for p in written)
 
+    def _chains(self, jobs: Sequence[ChainJob]) -> list[tuple[Any, Any]]:
+        """Run a batch of independent chains, recording everything each one produced."""
+        results = run_chains(jobs, self.config, self.identity, self.cache)
+        for _, chain in results:
+            self.all_fit_records.extend(chain.fit_records)
+            self.all_failures.extend(chain.failures)
+            self.all_gaps.extend(chain.data_gaps)
+        return results
+
+    def _job(self, series_id: str, model_or_spec, horizons: Sequence[int],
+             window_length: int, *, tag=None, transformation: str | None = None,
+             series: pd.Series | None = None) -> ChainJob:
+        spec = (model_or_spec if isinstance(model_or_spec, ModelSpec)
+                else self.specs[series_id][model_or_spec])
+        frequency = self.frequency[series_id]
+        return ChainJob(
+            tag=tag if tag is not None else spec.model,
+            series_name=series_id,
+            y=self.targets[series_id] if series is None else series,
+            spec=spec,
+            horizons=tuple(int(h) for h in horizons),
+            window_length=int(window_length),
+            frequency=frequency,
+            transformation=(self._units(series_id) if transformation is None
+                            else transformation),
+            max_origins=self._max_origins())
+
     def _selected_targets(self) -> list[str]:
         catalog = [row["series_id"] for row in self.config.get("catalog")
                    if row.get("retained") and row["series_id"] != "USREC"]
@@ -131,7 +173,16 @@ class Pipeline:
         return int(self.config.get(f"forecasting.windows.{frequency}"))
 
     def _max_origins(self) -> int | None:
-        return int(self.config.get("smoke.max_origins")) if self.smoke else None
+        """The short out-of-sample block of a smoke run (Comp §10), else no cap.
+
+        The key is optional: a smoke run whose configuration does not set one simply uses
+        every origin. A baseline run never consults it, so the approved design can never
+        be silently truncated.
+        """
+        if not self.smoke:
+            return None
+        cap = self.config.get("smoke.max_origins", None)
+        return None if cap is None else int(cap)
 
     # -- stage 1: data ----------------------------------------------------
 
@@ -622,18 +673,12 @@ class Pipeline:
                 self.forecasts[series_id] = {}
                 self.chain_results[series_id] = {}
 
-                for model in (AR, ARMA, MSAR, STAR, MSAR3):
+                jobs = [self._job(series_id, model, horizons, window_length, tag=model)
+                        for model in (AR, ARMA, MSAR, STAR, MSAR3)]
+                for model, chain in self._chains(jobs):
                     spec = self.specs[series_id][model]
-                    chain = run_chain(
-                        series_id, target, spec, horizons, window_length, self.config,
-                        frequency=frequency, transformation=self._units(series_id),
-                        identity=self.identity, cache=self.cache,
-                        max_origins=self._max_origins())
                     self.forecasts[series_id][model] = chain.forecasts
                     self.chain_results[series_id][model] = chain
-                    self.all_fit_records.extend(chain.fit_records)
-                    self.all_failures.extend(chain.failures)
-                    self.all_gaps.extend(chain.data_gaps)
                     audit_rows.append({
                         "series": series_id, "model": model, "spec_label": spec.label,
                         "window_length": window_length, "role": "baseline",
@@ -695,7 +740,6 @@ class Pipeline:
 
         main_rows, hlz_rows, dm_rows, mcs_rows = [], [], [], []
         state_rows, slr_rows, peak_rows, tp_rows = [], [], [], []
-        hlz_results: dict[tuple, Any] = {}
         usrec = self.panels["M"]["USREC"].dropna()
 
         with self.runtime.stage("evaluation"):
@@ -755,8 +799,6 @@ class Pipeline:
                             dm_result = dm_hln_test(
                                 errors[model_a], errors[model_b], horizon, loss_kind,
                                 series=series_id, model_a=model_a, model_b=model_b)
-                            hlz_results[(series_id, horizon, loss_kind, model_a, model_b)] = (
-                                numeric, hlz_result)
                             common = {
                                 "series": series_id, "horizon": horizon, "loss": loss_kind,
                                 "model_a": model_a, "model_b": model_b,
@@ -808,6 +850,9 @@ class Pipeline:
                     # --- T3.5 / T3.6 / T4.TP1 state-conditioned -------------
                     state_table = states.state_frame(chronology, baseline_width)
                     per_state_losses: dict[str, dict[str, float]] = {}
+                    # Baseline-width inferential support, so T4.TP1 can report
+                    # "weakened" rather than only a change of sign.
+                    baseline_support: dict[str, tuple[bool, str]] = {}
                     for model, frame in frames.items():
                         attached = states.attach_states(frame, state_table)
                         subsets = states.state_subsets(attached)
@@ -868,7 +913,10 @@ class Pipeline:
                             row = result.to_row()
                             row["turning_window_width"] = baseline_width
                             row["loss"] = SQUARED
+                            row["state_dependence_supported_5pct"] = _supported(result)
                             slr_rows.append(row)
+                            baseline_support[model] = (_supported(result),
+                                                       result.unavailable_reason)
                             for wald in (result.joint_wald, result.slopes_wald):
                                 if wald is not None:
                                     self.all_tests.append(wald)
@@ -920,10 +968,16 @@ class Pipeline:
                                         regression.unavailable_reason)
                                     baseline_mean = per_state_losses.get(model, {}).get(
                                         "turning_window", float("nan"))
+                                    supported_base, base_reason = baseline_support.get(
+                                        model, (False, "baseline-width regression not run"))
+                                    row["baseline_support_5pct"] = supported_base
+                                    row["alternative_support_5pct"] = _supported(regression)
                                     verdict = tp_sensitivity.classify(
-                                        baseline_mean, True, mean_d, True,
-                                        baseline_available=np.isfinite(baseline_mean),
-                                        alternative_available=np.isfinite(mean_d))
+                                        baseline_mean, supported_base,
+                                        mean_d, _supported(regression),
+                                        baseline_available=(np.isfinite(baseline_mean)
+                                                            and not base_reason),
+                                        alternative_available=regression.available)
                                     row.update(verdict.to_row())
                                 tp_rows.append(row)
 
@@ -990,7 +1044,6 @@ class Pipeline:
                         "T3.6_peak_trough_detail.csv", stage)
             self._write(pd.DataFrame(tp_rows), self.layout.robustness,
                         "T4.TP1_turning_window_sensitivity.csv", stage)
-        self.hlz_results = hlz_results
         self.checkpoints.record("evaluation", {"targets": sorted(self.targets)},
                                 {"n_pairwise_tests": len(hlz_rows)})
         self.stage_outputs.append(stage)
@@ -1083,18 +1136,12 @@ class Pipeline:
             horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
             window_length = self._window(frequency)
 
-            frames = {}
-            for model in (AR, ARMA, MSAR, STAR):
-                spec = self.specs[series_id][model]
-                chain = run_chain(series_id, alternative, spec, [horizon], window_length,
-                                  self.config, frequency=frequency,
-                                  transformation=f"alternative:{alternative_kind}",
-                                  identity=self.identity, cache=self.cache,
-                                  max_origins=self._max_origins())
-                frames[model] = chain.forecasts[chain.forecasts["horizon"] == horizon]
-                self.all_fit_records.extend(chain.fit_records)
-                self.all_failures.extend(chain.failures)
-                self.all_gaps.extend(chain.data_gaps)
+            jobs = [self._job(series_id, model, [horizon], window_length, tag=model,
+                              series=alternative,
+                              transformation=f"alternative:{alternative_kind}")
+                    for model in (AR, ARMA, MSAR, STAR)]
+            frames = {model: chain.forecasts[chain.forecasts["horizon"] == horizon]
+                      for model, chain in self._chains(jobs)}
 
             baseline_frames = self._horse_race(series_id, horizon)
             extra_common = {"series_frequency": frequency, "baseline_transformation": baseline_kind,
@@ -1152,19 +1199,14 @@ class Pipeline:
             target = self.targets[series_id]
             horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
             window_length = self._window(frequency)
+            jobs = [self._job(series_id, ModelSpec(AR, order=int(order)), [horizon],
+                              window_length, tag=f"AR(p={int(order)})")
+                    for order in settings["ar_orders"]]
             frames = {}
-            for order in [int(p) for p in settings["ar_orders"]]:
-                spec = ModelSpec(AR, order=order)
-                chain = run_chain(series_id, target, spec, [horizon], window_length, self.config,
-                                  frequency=frequency, transformation=self._units(series_id),
-                                  identity=self.identity, cache=self.cache,
-                                  max_origins=self._max_origins())
+            for name, chain in self._chains(jobs):
                 frame = chain.forecasts[chain.forecasts["horizon"] == horizon].copy()
-                frame["model"] = f"AR(p={order})"
-                frames[f"AR(p={order})"] = frame
-                self.all_fit_records.extend(chain.fit_records)
-                self.all_failures.extend(chain.failures)
-                self.all_gaps.extend(chain.data_gaps)
+                frame["model"] = name
+                frames[name] = frame
 
             # Common forecast dates across all four lag variants, as the exercise requires.
             aligned = alignment.across_models(frames)
@@ -1577,24 +1619,21 @@ class Pipeline:
             calendar = common_calendar(index, usable, horizon)
             coverage = describe_coverage(index, usable, horizon)
 
+            jobs = [self._job(series_id, model, [horizon], length, tag=(length, model))
+                    for length in usable for model in models]
+            chains = dict(self._chains(jobs))
+
             per_length: dict[int, dict[str, pd.DataFrame]] = {}
             for length in usable:
                 frames: dict[str, pd.DataFrame] = {}
                 for model in models:
                     spec = self.specs[series_id][model]
-                    chain = run_chain(series_id, target, spec, [horizon], length, self.config,
-                                      frequency=frequency,
-                                      transformation=self._units(series_id),
-                                      identity=self.identity, cache=self.cache,
-                                      max_origins=self._max_origins())
+                    chain = chains[(length, model)]
                     frame = chain.forecasts
                     frame = frame[frame["horizon"] == horizon] if not frame.empty else frame
                     restricted = (alignment.restrict(frame, calendar)
                                   if not frame.empty else frame)
                     frames[model] = restricted
-                    self.all_fit_records.extend(chain.fit_records)
-                    self.all_failures.extend(chain.failures)
-                    self.all_gaps.extend(chain.data_gaps)
                     status_counts = {status.value: 0 for status in Status}
                     for record in chain.fit_records:
                         status_counts[record.status.value] += 1
@@ -1637,9 +1676,14 @@ class Pipeline:
                     })
                 per_length[length] = frames
 
-            # Scoring, ranks and inference per length.
+            # Scoring, ranks and inference per length. The baseline length is scored
+            # first so every other length has a reference to be compared against; the
+            # shorter window would otherwise be classified "unavailable" purely because
+            # of the order of the list.
             baseline_support: dict[tuple[str, str], tuple[float, bool]] = {}
-            for length in usable:
+            ordered = ([baseline_length] if baseline_length in usable else []) + \
+                [length for length in usable if length != baseline_length]
+            for length in ordered:
                 frames = {m: f for m, f in per_length[length].items() if not f.empty}
                 if benchmark not in frames:
                     continue

@@ -237,17 +237,33 @@ Unchanged from the approved plan: `test_data_frozen.py`, `test_transforms.py`, `
 | Step | Content | State |
 |---|---|---|
 | 0 | Core: hashing, config, paths, seeds, provenance, schemas | **done** |
-| 1 | Data layer: FRED client, frozen raw snapshot, manifest, **canonical CSV + store lifecycle**, samples, transforms | **done**; frozen store initialized and canonical input built |
-| 2 | Diagnostics: ADF/KPSS/ZA, decision rule, residual tests, Tsay, LST | not started |
-| 3 | Specification: AR order, ARMA order, STAR delay/type, VAR lag | not started |
-| 4 | Models: **AR done**; ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH, status/flags | partial |
-| 5 | Forecasting engine: **windows/origins/common calendar done**; chains, warm starts, cache, checkpoints, parallel, STAR bootstrap | partial |
-| 6 | Evaluation: **HLZ done (39 tests)**; metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS | partial |
-| 7 | Robustness: transformation, CPI lags, K=3, horizons, VAR, GARCH, **T4.8 window lengths**, **T4.9 LOCF exposure** | not started |
-| 8 | Reporting: tables incl. **T2.0B**, figures incl. **F4.8**, registries, provenance, logs, full CLI | partial (`run_all.py` init and default paths done) |
-| 9 | Smoke test on INDPRO and GDPC1 | not started |
+| 1 | Data layer: FRED client, frozen raw snapshot, manifest, canonical CSV + store lifecycle, samples, transforms | **done**; frozen store initialized, canonical input built and relocated to the §2.2A path with its hash unchanged |
+| 2 | Diagnostics: ADF/KPSS/ZA, decision rule, residual tests, Tsay, LST | **done** |
+| 3 | Specification: AR order, ARMA order, STAR delay/type, VAR lag | **done** |
+| 4 | Models: AR, ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH, status/flags | **done**; MSAR gained one-step residuals so the regime models face the same §7.3 battery |
+| 5 | Forecasting engine: windows/origins/common calendar, chains, warm starts, cache, checkpoints, parallel, STAR bootstrap | **done**; parallelism asserted bit-identical to serial |
+| 6 | Evaluation: HLZ, metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS | **done** |
+| 7 | Robustness: transformation, CPI lags, K=3, horizons, VAR, GARCH, T4.8 window lengths, T4.9 LOCF exposure | **done** |
+| 8 | Reporting: tables incl. T2.0B, figures incl. F4.8, registries, provenance, logs, full CLI | **done**; `run_all.py` runs every stage |
+| 9 | Smoke test on INDPRO and GDPC1, plus a fast end-to-end integration run | **done** |
+| 10 | Coverage matrix verifying every requirement against code and outputs | **done** (`code/tools/coverage_matrix.py`) |
 
-**Part 6 is complete when** all unit, integration and validation tests pass and every output ID has a generator exercised by the smoke test, including the amended T2.0B, T4.8/F4.8 and T4.9. No full thesis-baseline run is performed in Part 6. Then I stop for approval before Part 7.
+### 9.1 Pipeline stage map
+
+`thesis.pipeline.Pipeline.run()` executes these in order, each writing a checkpoint:
+
+| Stage | Method | Outputs |
+|---|---|---|
+| canonical input | `prepare_data` | T2.0, T2.0A, T2.0B audit, T2.1, F2.0 |
+| stationarity | `stationarity_stage` | T2.2, T2.2 decision table, F2.1 |
+| specification (probe) | `specification_stage(final=False)` | AR/ARMA orders for the nonlinearity probe |
+| nonlinearity | `nonlinearity_stage` | T2.3, T2.4 |
+| specification | `specification_stage` | T2.5 |
+| in-sample adequacy | `adequacy_stage` | T3.1, T3.2, residual tests, F3.1–F3.3 |
+| rolling forecasts | `forecasting_stage` | per-series forecasts, origin audit |
+| evaluation | `evaluation_stage` | T3.3, T3.3A, T3.3B, T3.4, T3.5, T3.6, T4.TP1, F3.4–F3.6 |
+| robustness | `robustness_stage` | T4.1–T4.6, T4.8 + F4.8, T4.9 |
+| finalize | `finalize` | T4.7, data-gap register, fit records, claim-matrix schema, runtime log, checkpoint summary, output inventory, run manifest |
 
 ## 10. What I will not do
 

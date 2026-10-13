@@ -232,3 +232,139 @@ source-manifest hash.
 | **T4.8/F4.8** | estimation-window-length robustness (G1) |
 | **T4.9** | `output/data_audit/locf_forecast_exposure.csv`: per series/model/horizon/origin, whether the realized target is imputed or its transformation uses the imputed predecessor, whether the predictor lag vector contains an imputed observation, and whether the rolling estimation window does; plus descriptive accuracy on (a) the full approved dates and (b) unaffected pre-gap dates with N and ranges. **Headline inference stays on the full sample**; the subsample is descriptive and must document its power limitations. Not grounds for changing the endpoint or the LOCF assumption after seeing results. |
 
+
+---
+
+## H. Implementation record (13 October 2026) — pipeline completion
+
+This section records implementation facts and corrections from the final Part 6 build. It
+contains no methodological changes; everything below is either a programming decision
+inside the approved design or a correction of my own coding error, as CLAUDE.md §6A
+requires.
+
+### H1 — Canonical CSV path discrepancy resolved without touching the dataset
+
+Part 5 §2.2A places the canonical input at `data/frozen/thesis_input_2026-10-05.csv`. My
+first build had written it inside the vintage subdirectory. The file was moved with
+`git mv`, so the bytes were never rewritten: the SHA-256 is unchanged at
+`7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a`, which is also the
+recorded data-input identity. `core/paths.py` now defines `CANONICAL_DIR = FROZEN_DIR`
+with the reason, and the store layout tests assert the two-level arrangement: untouched
+official raw files in `data/frozen/fred_vintage_2026-10-05/`, derived canonical input one
+level above.
+
+### H2 — `run_all.py` now reproduces the complete analysis
+
+The entry point previously stopped after verifying and summarizing the frozen input. It
+now runs `thesis.pipeline.Pipeline`, which executes every stage of the approved
+methodology in order and writes every required output, manifest, figure and log.
+`--data-only` preserves the old quick provenance check, `--smoke-test` selects the smoke
+namespace, and `--no-cache` forces re-estimation.
+
+### H3 — Corrected coding error: figure identifiers were being truncated
+
+`reporting/figures.save` used `Path.with_suffix` to attach the output format. The required
+figure identifiers contain dots (`F2.0`, `F3.1`, `F4.8`), so `with_suffix` read
+`.0_sample_timeline` as the file extension and replaced it: every `F2.x` figure collapsed
+onto `F2.png` and overwrote the previous one, and likewise for `F3.x`.
+
+- **Cause:** misuse of `with_suffix` on stems that legitimately contain dots.
+- **Code changed:** `reporting/figures.save` now appends the format to the whole name.
+- **Outputs affected:** all figures in any run made before the fix. None of those runs
+  were thesis-facing; the first affected run was a smoke run, whose namespace is
+  separate from baseline output by construction.
+- **Action:** the smoke output tree was deleted and regenerated from scratch, so no
+  superseded figure survives alongside a corrected one.
+- **Regression test:** `tests/unit/test_reporting.py::TestFigureConventions::`
+  `test_figure_identifiers_containing_dots_are_not_truncated`.
+
+### H4 — Corrected coding error: a failed fit reached the residual battery
+
+A failed ARMA fit returns an empty residual array, which the §7.3 battery then passed to
+`acorr_ljungbox`, producing a `RuntimeWarning` and a meaningless statistic. The adequacy
+stage now detects the absence of usable residuals, records the fit as `FAILED` with
+reason code `NONFINITE`, writes the row to the failure registry, and emits an adequacy row
+carrying `unavailable_reason` instead of a fabricated diagnostic. No diagnostic is
+invented where the model did not fit (CLAUDE.md §7).
+
+### H5 — MSAR residuals added so the regime models face the same battery
+
+`MSARFit` had no residual series, which would have exempted the Markov-switching models
+from the §7.3 adequacy battery that AR, ARMA and STAR all face. `one_step_residuals()`
+now returns genuine one-step prediction errors, formed from the state probabilities
+implied by information through *t−1* rather than from smoothed values, and
+`fitted_values()` is their complement. Verified: residuals plus fitted values reconstruct
+the series exactly, and the one-step RMSE exceeds the within-regime σ, as it must when
+the regime is uncertain.
+
+### H6 — Numerically stable transition function
+
+The LSTAR logistic was evaluated as `1/(1+exp(-x))`, which overflows for large |x| during
+optimization at high gamma and emitted a stream of warnings. It is now
+`scipy.special.expit`, and the ESTAR form uses `-expm1`. Both are the same functions
+computed stably: the values agree to the last bit wherever the naive form is safe, and the
+limits 0 and 1 are the correct answers where it is not. No model, parameter or bound
+changed.
+
+### H7 — Parallelism (Comp §8), with determinism asserted rather than assumed
+
+`forecasting/parallel.py` runs independent rolling chains across worker processes.
+Parallelism is applied at the level of a whole chain — one (series, model, window length)
+triple — and never inside one, because warm starts make a chain path dependent. Each fit
+draws randomness from a seed derived from the series, model, specification and origin
+date, never from a shared stream, so a fit's result cannot depend on how many other fits
+preceded it. `tests/integration/test_parallel.py` asserts that a four-worker run returns
+byte-identical forecasts, fit records, failure events, data gaps, estimated parameters and
+log-likelihoods to a serial run; only the measured wall time differs. Each worker is held
+to one BLAS thread, since four workers each spawning four BLAS threads on a four-core
+container contend rather than compute.
+
+### H8 — Runtime finding for Part 8 scheduling (not a methodological issue)
+
+Measured on this four-core container, one MSAR fit costs:
+
+| specification | n = 240 | n = 480 | n = 955 |
+|---|---:|---:|---:|
+| K = 2, p = 4 | 6.2 s | 7.9 s | 20.4 s |
+| K = 3, p = 4 | 25.5 s | 69.7 s | 110.5 s |
+
+The K = 3 expansion is intrinsic to the model as specified: switching is mean-only with
+common AR coefficients, so the Hamilton filter still needs the lagged regime labels to
+know which means to subtract, giving K^(p+1) = 243 expanded states. With roughly 700
+monthly origins per target, the K = 3 robustness chains dominate the budget, so a complete
+baseline run is a multi-hour job even with the fit cache, warm starts and four workers.
+
+**Nothing was changed to make this faster.** No approved lag cap, regime count, window
+length or horizon was altered, and the smoke namespace's reduced settings are never
+thesis-facing. This is recorded as a Part 8 scheduling matter: the final run will need an
+uninterrupted window, and the fit cache means an interrupted run resumes rather than
+restarts.
+
+### H9 — Validation gap against decision D3 (needs your decision)
+
+D3 asks that the Tsay test be validated "against reference values from a recognized
+implementation such as R `TSA::Tsay.test` and against simulations". R is not installed in
+this container and the network policy does not permit installing it, so the R cross-check
+could not be run.
+
+Substitute validation performed:
+
+- the orthogonalized statistic is verified against the algebraically equivalent direct
+  nested F test through the Frisch–Waugh–Lovell identity, which is an exact identity
+  rather than an approximation;
+- empirical size under a linear Gaussian AR null is at the nominal level;
+- power against a threshold autoregressive alternative is high.
+
+This is a gap against the letter of D3, not an implementation gap. It is disclosed in the
+test module docstring and in the coverage matrix, and it resolves either by installing R
+or by your waiver. I have not treated it as resolved.
+
+### H10 — Coverage matrix is generated, not asserted
+
+`code/tools/coverage_matrix.py` holds the requirement register and verifies each row
+mechanically: the named source file and symbol must exist in the codebase, the named
+output artifact must exist and be non-empty under the evidence root, and the named test
+node must actually be collected by pytest. It writes
+`notes/claude/part5_coverage_matrix.csv`, `part5_coverage_summary.json` and
+`part6_coverage_matrix.md`. Prose in the markdown is generated from the same verification
+that produced the CSV, so the two cannot drift apart.

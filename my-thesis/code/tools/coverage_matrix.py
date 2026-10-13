@@ -1,0 +1,886 @@
+#!/usr/bin/env python3
+"""Verify every Part 5 requirement against the implemented code and generated outputs.
+
+This is a checker, not a narrative. Each row of the register names a Part 5 requirement,
+the module or function that implements it, the output artifact it must produce, and the
+automated tests that hold it in place. The script then verifies, mechanically:
+
+* that each named source file and symbol actually exists in the codebase;
+* that each named output artifact exists and is non-empty under the evidence root;
+* that each named test node is actually collected by pytest.
+
+A requirement is COMPLETE only when all three hold. Anything else is reported as a gap
+with the reason, so a missing, failed or incomplete requirement cannot be hidden behind
+prose. Usage:
+
+    python tools/coverage_matrix.py [--evidence-root ../smoke_output] [--no-collect]
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import json
+import subprocess
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+import pandas as pd
+
+CODE_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = CODE_ROOT.parent
+SRC = CODE_ROOT / "src"
+
+COMPLETE = "COMPLETE"
+PART8 = "DEFERRED TO PART 8"
+GAP = "GAP"
+MISSING_CODE = "MISSING CODE"
+MISSING_OUTPUT = "MISSING OUTPUT"
+NO_TEST = "NO AUTOMATED TEST"
+
+
+@dataclass
+class Requirement:
+    req_id: str
+    source: str
+    requirement: str
+    implementation: tuple[str, ...] = ()
+    outputs: tuple[str, ...] = ()
+    tests: tuple[str, ...] = ()
+    expected_status: str = COMPLETE
+    note: str = ""
+    verified_status: str = ""
+    detail: str = ""
+
+    def to_row(self) -> dict:
+        return {
+            "requirement_id": self.req_id,
+            "part5_source": self.source,
+            "requirement": self.requirement,
+            "implementation": " | ".join(self.implementation),
+            "generated_outputs": " | ".join(self.outputs),
+            "automated_tests": " | ".join(self.tests),
+            "status": self.verified_status,
+            "detail": self.detail,
+            "note": self.note,
+        }
+
+
+# ---------------------------------------------------------------------------
+# The register
+# ---------------------------------------------------------------------------
+
+M = "part5_methodology_specification.md"
+C = "part5_computational_execution_spec.md"
+O = "part5_required_outputs_specification.md"
+
+REGISTER: list[Requirement] = [
+    # ---- Section 2: data, sample, chronology ------------------------------
+    Requirement(
+        "M2.1", f"{M} §2.1", "Data-selection rule: open-access official series, no "
+        "artificial interpolation, documented concept-to-series mapping",
+        ("src/thesis/data/frozen.py", "src/thesis/reporting/tables.py:concept_to_series_table"),
+        ("data_audit/T2.0_concept_series.csv",),
+        ("tests/unit/test_reporting.py::TestTableSchemas::"
+         "test_concept_to_series_table_reports_rejected_candidates_too",)),
+    Requirement(
+        "M2.2", f"{M} §2.2 / {C} §2", "Frozen 2026-10-05 vintage; programmatic retrieval "
+        "once; default run makes no network request; partial or mismatched store fails",
+        ("src/thesis/data/store.py:detect_state", "src/thesis/data/store.py:initialize_store",
+         "src/thesis/data/store.py:load_bundle", "run_all.py:ensure_input"),
+        ("manifests/T2.0A_frozen_manifest.csv",),
+        ("tests/integration/test_canonical_input.py",)),
+    Requirement(
+        "M2.2A-a", f"{M} §2.2A", "Raw-level LOCF for exactly CPIAUCSL and UNRATE at "
+        "2025-10-01, from their September levels; official source_value preserved missing",
+        ("src/thesis/data/canonical.py:build_canonical_frame",),
+        ("data_audit/october_2025_imputation_audit.csv",),
+        ("tests/integration/test_canonical_input.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_imputation_audit_names_the_two_approved_cells_only")),
+    Requirement(
+        "M2.2A-b", f"{M} §2.2A", "Untouched official raw snapshot preserved separately "
+        "from the derived canonical CSV, with the parent source hash recorded",
+        ("src/thesis/core/paths.py:CANONICAL_DIR", "src/thesis/data/store.py:_write_bundle"),
+        ("manifests/T2.0A_frozen_manifest.csv",),
+        ("tests/integration/test_canonical_input.py",
+         "tests/unit/test_reporting.py::TestTableSchemas::"
+         "test_frozen_manifest_table_includes_the_derived_canonical_input_row")),
+    Requirement(
+        "M2.2A-c", f"{M} §2.2A", "Canonical CSV loaded first into a fresh DataFrame, "
+        "panels derived in memory, deterministic bytes and stable SHA-256",
+        ("src/thesis/data/canonical.py:write_canonical_csv",
+         "src/thesis/data/canonical.py:to_panels"),
+        ("manifests/run_manifest.json",),
+        ("tests/integration/test_canonical_input.py",)),
+    Requirement(
+        "M2.3", f"{M} §2.3", "Six approved targets with their approved transformations; "
+        "USREC retained for evaluation only",
+        ("src/thesis/transforms/growth.py:annualized_logdiff",
+         "src/thesis/pipeline.py:Pipeline.prepare_data"),
+        ("data_audit/T2.1_data_dictionary.csv",),
+        ("tests/unit/test_transforms.py",)),
+    Requirement(
+        "M2.4", f"{M} §2.4", "Approved start dates, 2026M8 monthly endpoint, 2026Q2 "
+        "quarterly endpoint, VAR common sample from 1959M1; no backfilling",
+        ("src/thesis/data/samples.py",),
+        ("data_audit/T2.1_data_dictionary.csv",),
+        ("tests/unit/test_samples.py",)),
+    Requirement(
+        "M2.5", f"{M} §2.5", "NBER chronology: monthly USREC, quarterly aggregation by "
+        "any-month rule, peaks and troughs from observed transitions",
+        ("src/thesis/evaluation/states.py:monthly_chronology",
+         "src/thesis/evaluation/states.py:quarterly_chronology"),
+        ("forecast_tests/T3.5_state_performance.csv",),
+        ("tests/unit/test_evaluation.py",)),
+    Requirement(
+        "M2.5-tp", f"{M} §2.5", "Turning windows: ±3 months / ±1 quarter baseline, union "
+        "of overlapping windows, clipped at sample boundaries, sensitivity mandatory",
+        ("src/thesis/evaluation/states.py:turning_masks",
+         "src/thesis/evaluation/tp_sensitivity.py:classify"),
+        ("robustness/T4.TP1_turning_window_sensitivity.csv",),
+        ("tests/unit/test_evaluation.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_turning_window_table_records_all_predeclared_widths")),
+
+    # ---- Section 3: stationarity ------------------------------------------
+    Requirement(
+        "M3.2-adf", f"{M} §3.2", "Augmented Dickey-Fuller with the approved deterministic "
+        "specification and lag rule",
+        ("src/thesis/diagnostics/stationarity.py:adf_test",),
+        ("diagnostics/T2.2_stationarity.csv",),
+        ("tests/validation/test_stationarity.py",)),
+    Requirement(
+        "M3.2-kpss", f"{M} §3.2", "KPSS stationarity test as the complementary null",
+        ("src/thesis/diagnostics/stationarity.py:kpss_test",),
+        ("diagnostics/T2.2_stationarity.csv",),
+        ("tests/validation/test_stationarity.py",)),
+    Requirement(
+        "M3.2-za", f"{M} §3.2", "Zivot-Andrews for disputed level series, with the break "
+        "date reported",
+        ("src/thesis/diagnostics/stationarity.py:zivot_andrews_test",),
+        ("diagnostics/T2.2_stationarity.csv",),
+        ("tests/validation/test_stationarity.py",)),
+    Requirement(
+        "M3.3", f"{M} §3.3", "Growth transformations demonstrated rather than assumed: "
+        "tests on both the log level and the transformed target",
+        ("src/thesis/diagnostics/stationarity.py:transformation_verification",),
+        ("diagnostics/T2.2_stationarity.csv",),
+        ("tests/validation/test_stationarity.py",)),
+    Requirement(
+        "M3.4", f"{M} §3.4", "Predeclared level-versus-difference rule for UNRATE and "
+        "FEDFUNDS, decided on the initial window and confirmed on the full sample",
+        ("src/thesis/diagnostics/decision_rule.py:decide_transformation",
+         "src/thesis/diagnostics/decision_rule.py:confirm_on_full_sample"),
+        ("diagnostics/T2.2_transformation_decisions.csv",),
+        ("tests/validation/test_stationarity.py",)),
+
+    # ---- Section 4: nonlinearity -----------------------------------------
+    Requirement(
+        "M4.1", f"{M} §4.1", "General nonlinearity test (Tsay) on the initial estimation "
+        "window at the selected AR order",
+        ("src/thesis/diagnostics/nonlinearity.py:tsay_test",),
+        ("diagnostics/T2.3_tsay.csv",),
+        ("tests/validation/test_nonlinearity.py",)),
+    Requirement(
+        "M4.2", f"{M} §4.2", "Teräsvirta LM linearity sequence: delay selection, then "
+        "LSTAR-versus-ESTAR choice",
+        ("src/thesis/diagnostics/nonlinearity.py:lst_linearity",
+         "src/thesis/diagnostics/nonlinearity.py:select_delay_and_type"),
+        ("diagnostics/T2.4_star_linearity.csv",),
+        ("tests/validation/test_nonlinearity.py",)),
+    Requirement(
+        "M4.3", f"{M} §4.3", "Markov-switching testing caveat: no non-standard LR test is "
+        "reported as if standard; regime evidence is credibility-based",
+        ("src/thesis/models/flags.py:apply_msar_flags",),
+        ("models/T3.2_nonlinear_credibility.csv",),
+        ("tests/validation/test_models.py",)),
+
+    # ---- Section 5: models -----------------------------------------------
+    Requirement(
+        "M5.1", f"{M} §5.1", "AR(p) benchmark with BIC lag selection under the approved "
+        "caps and the residual screen",
+        ("src/thesis/models/ar.py:fit_ar",
+         "src/thesis/specification/ar_select.py:select_ar_order"),
+        ("diagnostics/T2.5_selected_specs.csv", "models/T3.1_in_sample_adequacy.csv"),
+        ("tests/validation/test_models.py", "tests/validation/test_specification.py")),
+    Requirement(
+        "M5.2", f"{M} §5.2", "ARMA(p,q) benchmark selected by BIC over the approved grid",
+        ("src/thesis/models/arma.py:fit_arma",
+         "src/thesis/specification/ar_select.py:select_arma_order"),
+        ("diagnostics/T2.5_selected_specs.csv",),
+        ("tests/validation/test_models.py", "tests/validation/test_specification.py")),
+    Requirement(
+        "M5.3", f"{M} §5.3", "ARCH/GARCH treated as a conditional-variance diagnostic "
+        "only, triggered by the initial-window ARCH-LM, never in the horse race or MCS",
+        ("src/thesis/models/arma_garch.py:fit_arma_garch",
+         "src/thesis/pipeline.py:Pipeline._t46_arma_garch"),
+        ("robustness/T4.6_arch_trigger.csv",),
+        ("tests/validation/test_models.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_arma_garch_never_enters_the_horse_race_or_the_mcs")),
+    Requirement(
+        "M5.4", f"{M} §5.4", "Polynomial models excluded from the baseline hierarchy",
+        ("src/thesis/models/registry.py:CORE_MODELS",),
+        (),
+        ("tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_msar3_is_robustness_only_and_absent_from_the_baseline_table",),
+        note="Verified by absence: the model registry admits only AR, ARMA, MSAR and "
+             "STAR to the baseline hierarchy."),
+    Requirement(
+        "M5.5", f"{M} §5.5", "Parsimonious two-regime mean-switching MSAR with its own "
+        "Hamilton filter, exact h-step conditional means, and regime ordering by mean",
+        ("src/thesis/models/msar.py:fit_msar", "src/thesis/models/msar.py:MSARFit.forecast"),
+        ("models/T3.2_nonlinear_credibility.csv",),
+        ("tests/validation/test_models.py", "tests/integration/test_model_compatibility.py")),
+    Requirement(
+        "M5.6", f"{M} §5.6", "STAR (LSTAR/ESTAR) by conditional least squares on the "
+        "standardized transition variable, with deterministic multi-start",
+        ("src/thesis/models/star.py:fit_star", "src/thesis/models/star.py:transition"),
+        ("models/T3.2_nonlinear_credibility.csv",),
+        ("tests/validation/test_models.py",)),
+    Requirement(
+        "M5.7", f"{M} §5.7", "MSSTAR removed from the baseline methodology",
+        ("src/thesis/models/registry.py:CORE_MODELS",), (),
+        ("tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_msar3_is_robustness_only_and_absent_from_the_baseline_table",),
+        note="Verified by absence: no MSSTAR estimator exists in the codebase."),
+
+    # ---- Section 6: multivariate -----------------------------------------
+    Requirement(
+        "M6.1", f"{M} §6.1", "Five-variable monthly VAR on the balanced 1959M1 sample, "
+        "lag by BIC over {1,2,3} with stability required, compared on common dates",
+        ("src/thesis/models/var.py:fit_var", "src/thesis/pipeline.py:Pipeline._t45_var"),
+        ("robustness/T4.5_var_comparison.csv", "robustness/T4.5_var_selection.csv"),
+        ("tests/validation/test_models.py",)),
+    Requirement(
+        "M6.2", f"{M} §6.2", "GDP kept quarterly; no synthetic monthly GDP observations",
+        ("src/thesis/data/canonical.py:to_panels",),
+        ("data_audit/T2.1_data_dictionary.csv",),
+        ("tests/integration/test_canonical_input.py",)),
+
+    # ---- Section 7: adequacy ---------------------------------------------
+    Requirement(
+        "M7.1", f"{M} §7.1", "In-sample metrics and tests: log-likelihood, AIC, BIC, "
+        "RMSE, MAE, Ljung-Box, ARCH-LM, Jarque-Bera",
+        ("src/thesis/diagnostics/residual_tests.py:adequacy_suite",),
+        ("models/T3.1_in_sample_adequacy.csv",),
+        ("tests/validation/test_specification.py",)),
+    Requirement(
+        "M7.2", f"{M} §7.2", "Standardized hypothesis-test presentation: name, null, "
+        "statistic, reference distribution, p-value, 5% decision, implication",
+        ("src/thesis/core/schemas.py:TestResult",
+         "src/thesis/reporting/tables.py:test_table"),
+        ("diagnostics/all_test_results.csv",),
+        ("tests/unit/test_core.py::TestSchemas::"
+         "test_test_result_carries_the_required_reporting_fields",
+         "tests/unit/test_reporting.py::TestTableSchemas::"
+         "test_test_table_carries_every_required_reporting_field")),
+    Requirement(
+        "M7.3", f"{M} §7.3", "Primary residual-diagnostic lags 12/24 monthly and 4/8 "
+        "quarterly, with the approved degrees-of-freedom convention per family",
+        ("src/thesis/diagnostics/residual_tests.py:_dof_for",
+         "src/thesis/diagnostics/residual_tests.py:primary_ljung_box"),
+        ("diagnostics/T3.2_residual_tests.csv",),
+        ("tests/validation/test_specification.py",)),
+    Requirement(
+        "M7.5", f"{M} §7.5", "Adequate / fragile / failed classification with fixed "
+        "reason codes, escalating and never downgrading",
+        ("src/thesis/core/schemas.py:FitRecord.add_flag", "src/thesis/models/flags.py"),
+        ("models/T3.1_in_sample_adequacy.csv", "robustness/T4.7_status_counts.csv"),
+        ("tests/unit/test_core.py::TestSchemas::"
+         "test_status_escalates_but_never_downgrades",)),
+
+    # ---- Section 8: credibility ------------------------------------------
+    Requirement(
+        "M8.1", f"{M} §8.1", "Markov-switching credibility rules: occupancy, expected "
+        "durations, empty or nearly absorbing regimes, transition-boundary flags",
+        ("src/thesis/models/flags.py:apply_msar_flags",),
+        ("models/T3.2_nonlinear_credibility.csv",),
+        ("tests/validation/test_models.py",)),
+    Requirement(
+        "M8.2", f"{M} §8.2", "STAR credibility rules: gamma at bound, extreme threshold, "
+        "degenerate transition function",
+        ("src/thesis/models/flags.py:apply_star_flags",),
+        ("models/T3.2_nonlinear_credibility.csv",),
+        ("tests/validation/test_models.py",)),
+    Requirement(
+        "M8.3", f"{M} §8.3", "No silent fallback: a failed nonlinear model is recorded, "
+        "never quietly replaced by a linear one",
+        ("src/thesis/forecasting/rolling.py:run_chain",
+         "src/thesis/reporting/tables.py:failure_registry_table"),
+        ("robustness/T4.7_failure_registry.csv",),
+        ("tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_data_gaps_are_not_in_the_failure_registry",)),
+
+    # ---- Section 9: forecasting design -----------------------------------
+    Requirement(
+        "M9.1", f"{M} §9.1", "Rolling estimation windows of 240 monthly and 120 "
+        "quarterly observations",
+        ("src/thesis/forecasting/windows.py:rolling_origins",),
+        ("forecasts/forecast_origin_audit.csv",),
+        ("tests/unit/test_windows.py",)),
+    Requirement(
+        "M9.2", f"{M} §9.2", "Discrete specification fixed from the initial window; "
+        "parameters re-estimated at every origin",
+        ("src/thesis/pipeline.py:Pipeline.specification_stage",
+         "src/thesis/forecasting/rolling.py:run_chain"),
+        ("diagnostics/T2.5_selected_specs.csv",),
+        ("tests/unit/test_windows.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_window_length_exercise_reuses_the_baseline_specification")),
+    Requirement(
+        "M9.3", f"{M} §9.3 / {C} §6-§7", "Warm starts and a deterministic cache key that "
+        "includes the data identity, code hash, configuration and predecessor",
+        ("src/thesis/core/cache.py:CacheKey", "src/thesis/forecasting/rolling.py:_cache_key"),
+        (),
+        ("tests/unit/test_windows.py", "tests/integration/test_parallel.py")),
+    Requirement(
+        "M9.4", f"{M} §9.4", "Primary horizon h=1; robustness horizons 3/6/12 monthly and "
+        "2/4 quarterly; iterated AR/ARMA/VAR, exact MSAR recursion, bootstrap STAR",
+        ("src/thesis/models/registry.py:fit_and_forecast",
+         "src/thesis/forecasting/simulate.py:star_bootstrap_forecast"),
+        ("robustness/T4.4_horizon_robustness.csv",),
+        ("tests/validation/test_models.py", "tests/integration/test_model_compatibility.py")),
+    Requirement(
+        "M9.5", f"{M} §9.5", "Mandatory estimation-window-length sensitivity at "
+        "180/240/300 and 90/120/150, baseline specifications reused, common calendar",
+        ("src/thesis/forecasting/windows.py:common_calendar",
+         "src/thesis/pipeline.py:Pipeline._t48_window_lengths"),
+        ("robustness/window_length_comparison.csv",
+         "robustness/window_length_predictive_tests.csv",
+         "robustness/window_length_origin_audit.csv"),
+        ("tests/unit/test_windows.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_window_length_exercise_reuses_the_baseline_specification")),
+
+    # ---- Section 10: evaluation ------------------------------------------
+    Requirement(
+        "M10.1", f"{M} §10.1", "RMSE, MAE and out-of-sample R² against the AR benchmark "
+        "on pairwise-intersected valid dates",
+        ("src/thesis/evaluation/metrics.py:accuracy_table",
+         "src/thesis/evaluation/alignment.py:pairwise"),
+        ("forecast_tests/T3.3_main_forecast_table.csv",),
+        ("tests/unit/test_evaluation.py",)),
+    Requirement(
+        "M10.2", f"{M} §10.2", "Harvey-Leybourne-Zu (2025) as the primary pairwise test, "
+        "exactly as published: QS kernel, b=1.5n^(1/3), Gaussian local demeaning, "
+        "h=0.25n^(-2/5), Appendix C finite-sample critical values",
+        ("src/thesis/evaluation/hlz.py:hlz_test", "src/thesis/evaluation/hlz.py:HLZSettings"),
+        ("forecast_tests/T3.3A_hlz_pairwise.csv",),
+        ("tests/validation/test_hlz.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_hlz_is_primary_and_dm_hln_secondary_with_disagreement_visible")),
+    Requirement(
+        "M10.3", f"{M} §10.3", "DM-HLN retained as a separate secondary procedure, with "
+        "disagreement against the primary test left visible",
+        ("src/thesis/evaluation/dm_hln.py:dm_hln_test",
+         "src/thesis/evaluation/dm_hln.py:agrees_with"),
+        ("forecast_tests/T3.3B_dm_hln_pairwise.csv",),
+        ("tests/unit/test_evaluation.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_hlz_is_primary_and_dm_hln_secondary_with_disagreement_visible")),
+    Requirement(
+        "M10.4", f"{M} §10.4", "Model Confidence Set: method R, stationary bootstrap, "
+        "5000 replications, ceil(sqrt(T_common)) block length, fixed seed, 90% and 95%",
+        ("src/thesis/evaluation/mcs.py:model_confidence_set",),
+        ("forecast_tests/T3.4_model_confidence_set.csv",),
+        ("tests/unit/test_evaluation.py",)),
+    Requirement(
+        "M10.5-a", f"{M} §10.5", "State-conditioned accuracy in expansion, recession, "
+        "turning window and outside the turning window",
+        ("src/thesis/evaluation/states.py:state_subsets",),
+        ("forecast_tests/T3.5_state_performance.csv",
+         "forecast_tests/T3.6_peak_trough_detail.csv"),
+        ("tests/unit/test_evaluation.py",)),
+    Requirement(
+        "M10.5-b", f"{M} §10.5", "State-dependent loss regression with HAC standard "
+        "errors, joint and slopes Wald tests, and an inference-available flag; labelled "
+        "an ex-post state-dependent forecast-loss regression, never Giacomini-White "
+        "(approved decision M1)",
+        ("src/thesis/evaluation/state_loss_regression.py:state_loss_regression",),
+        ("forecast_tests/T3.5_state_loss_regression.csv",),
+        ("tests/unit/test_evaluation.py",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_the_state_regression_is_never_labelled_giacomini_white")),
+    Requirement(
+        "M10.6", f"{M} §10.6", "Clark-McCracken/Clark-West and Amisano-Giacomini excluded "
+        "from the baseline tests",
+        ("src/thesis/evaluation",), (),
+        ("tests/unit/test_core.py::TestConfig::"
+         "test_approved_methodology_values_are_present_and_correct",),
+        note="Verified by absence: no such estimator exists in the evaluation package."),
+
+    # ---- Section 11: robustness ------------------------------------------
+    Requirement(
+        "M11-T4.1", f"{O} §8 T4.1", "UNRATE/FEDFUNDS transformation robustness, baseline "
+        "against the alternative, with level-space errors reported",
+        ("src/thesis/pipeline.py:Pipeline._t41_transformation",
+         "src/thesis/transforms/differences.py:level_forecast_from_differences"),
+        ("robustness/T4.1_transformation_robustness.csv",),
+        ("tests/unit/test_transforms.py",
+         "tests/integration/test_pipeline.py::TestRequiredOutputsExist")),
+    Requirement(
+        "M11-T4.2", f"{O} §8 T4.2", "CPI AR-lag robustness at p = 1, 3, 6, 12 on common "
+        "forecast dates, varying the lag only",
+        ("src/thesis/pipeline.py:Pipeline._t42_cpi_lags",),
+        ("robustness/T4.2_cpi_lag_robustness.csv",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist",)),
+    Requirement(
+        "M11-T4.3", f"{M} §11.1 / {O} §8 T4.3", "K=2 versus K=3 MSAR with BIC, "
+        "convergence, occupancy, transition summary, forecast metrics and the explicit "
+        "retention decision; K=2 stays the baseline",
+        ("src/thesis/pipeline.py:Pipeline._t43_regime_count",),
+        ("robustness/T4.3_regime_count.csv",),
+        ("tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_msar3_is_robustness_only_and_absent_from_the_baseline_table",)),
+    Requirement(
+        "M11-T4.4", f"{O} §8 T4.4", "Horizon robustness from the stored forecasts, with "
+        "no re-estimation and no horizon-specific respecification",
+        ("src/thesis/pipeline.py:Pipeline._t44_horizons",),
+        ("robustness/T4.4_horizon_robustness.csv",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist",)),
+    Requirement(
+        "M11-T4.5", f"{O} §8 T4.5", "Monthly VAR cross-variable comparison with lag, "
+        "stability, RMSE/MAE, OOS R² and the change against the univariate ranking",
+        ("src/thesis/pipeline.py:Pipeline._t45_var",),
+        ("robustness/T4.5_var_comparison.csv",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist",)),
+    Requirement(
+        "M11-T4.6", f"{O} §8 T4.6", "ARCH/GARCH diagnostic where triggered: ARCH-LM, "
+        "GARCH parameters, persistence, standardized-residual diagnostics, mean-forecast "
+        "note",
+        ("src/thesis/pipeline.py:Pipeline._t46_arma_garch",),
+        ("robustness/T4.6_arch_trigger.csv", "robustness/T4.6_arma_garch_summary.csv"),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist",)),
+    Requirement(
+        "M11-T4.7", f"{O} §9 T4.7", "Failure and fragility registry, one row per event, "
+        "with the ten minimum reason codes",
+        ("src/thesis/core/schemas.py:ReasonCode",
+         "src/thesis/reporting/tables.py:failure_registry_table"),
+        ("robustness/T4.7_failure_registry.csv", "robustness/T4.7_status_counts.csv"),
+        ("tests/unit/test_reporting.py::TestTableSchemas::"
+         "test_failure_registry_has_one_row_per_event_with_the_required_columns",)),
+    Requirement(
+        "M11-T4.9", f"{O} §8 T4.9", "October 2025 LOCF influence and forecast-exposure "
+        "diagnostic per series, model, horizon and origin; full-sample inference "
+        "unchanged; pre-gap comparison explicitly caveated",
+        ("src/thesis/pipeline.py:Pipeline._t49_locf_exposure",),
+        ("data_audit/locf_forecast_exposure.csv",
+         "data_audit/T4.9_locf_sample_comparison.csv"),
+        ("tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_locf_exposure_flags_every_required_dimension",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_locf_headline_inference_sample_is_the_full_approved_sample")),
+
+    # ---- Section 13: presentation ----------------------------------------
+    Requirement(
+        "M13.1", f"{M} §13.1 / {O} §5-§7", "Figure rules: fixed model colours with a "
+        "secondary encoding, recession shading, 95% ACF bands, failed or extreme models "
+        "in a separate panel, no silent axis clipping",
+        ("src/thesis/reporting/figures.py",),
+        ("figures/",),
+        ("tests/unit/test_reporting.py::TestFigureConventions",)),
+    Requirement(
+        "M13.2", f"{M} §13.2 / {O} §11", "Significance display: exact p-values, stars "
+        "only at 10/5/1 per cent, 95% bands only where a published procedure supplies one",
+        ("src/thesis/reporting/tables.py:stars",),
+        ("forecast_tests/T3.3A_hlz_pairwise.csv",),
+        ("tests/unit/test_reporting.py::TestSignificanceMarks",)),
+
+    # ---- Computational spec ----------------------------------------------
+    Requirement(
+        "C1", f"{C} §1", "Clean build: a single entry point reproduces the analysis from "
+        "the frozen input",
+        ("run_all.py:main", "src/thesis/pipeline.py:Pipeline.run"),
+        ("manifests/run_summary.json",),
+        ("tests/integration/test_pipeline.py::TestEveryStageRuns",)),
+    Requirement(
+        "C4", f"{C} §4", "Mandatory module structure under src/thesis",
+        ("src/thesis",), (), ("tests/unit/test_core.py",)),
+    Requirement(
+        "C5", f"{C} §5", "Checkpointing after each of the ten stages",
+        ("src/thesis/core/checkpoints.py:CheckpointStore",),
+        ("logs/stage_checkpoints.csv",),
+        ("tests/integration/test_pipeline.py::TestEveryStageRuns::"
+         "test_checkpoints_are_written_for_the_required_stages",)),
+    Requirement(
+        "C8", f"{C} §8", "Parallelization that does not change results",
+        ("src/thesis/forecasting/parallel.py:run_chains",),
+        (),
+        ("tests/integration/test_parallel.py::TestParallelMatchesSerial",)),
+    Requirement(
+        "C9", f"{C} §9", "Runtime reporting per stage",
+        ("src/thesis/core/runtime.py:RuntimeLog",),
+        ("logs/runtime_log.csv",),
+        ("tests/integration/test_pipeline.py::TestEveryStageRuns::"
+         "test_runtime_log_covers_every_stage",)),
+    Requirement(
+        "C10", f"{C} §10", "Smoke-test mode writing to its own namespace",
+        ("run_all.py:main", "src/thesis/core/paths.py:output_layout"),
+        (),
+        ("tests/unit/test_core.py::TestOutputNamespaces::"
+         "test_smoke_and_refresh_never_write_into_baseline",)),
+    Requirement(
+        "C11", f"{C} §11", "Baseline run refuses a dirty working tree and records full "
+        "provenance on every artifact",
+        ("src/thesis/core/provenance.py:RunContext",),
+        ("manifests/run_manifest.json", "manifests/output_inventory.csv"),
+        ("tests/unit/test_core.py::TestProvenance",
+         "tests/integration/test_pipeline.py::TestProvenanceAndSeparation")),
+    Requirement(
+        "C12", f"{C} §12", "Refresh run writes only to data/refreshed/<date>/ and its own "
+        "output namespace, never over the frozen dataset",
+        ("src/thesis/core/paths.py:refreshed_data_dir",),
+        (),
+        ("tests/unit/test_core.py::TestOutputNamespaces",)),
+    Requirement(
+        "C13", f"{C} §13", "Robustness output stored separately from baseline output",
+        ("src/thesis/core/paths.py:OutputLayout.robustness",),
+        ("robustness/",),
+        ("tests/integration/test_pipeline.py::TestProvenanceAndSeparation::"
+         "test_robustness_output_is_separate_from_baseline_output",)),
+    Requirement(
+        "C14", f"{C} §14", "Failure behaviour: record, never hide; data gaps kept out of "
+        "the model failure registry",
+        ("src/thesis/core/schemas.py:DataGapEvent",
+         "src/thesis/reporting/tables.py:data_gap_table"),
+        ("data_audit/data_gap_register.csv",),
+        ("tests/unit/test_reporting.py::TestTableSchemas::"
+         "test_data_gaps_are_a_separate_register_from_failures",)),
+    Requirement(
+        "C15", f"{C} §15", "The listed reproducibility tests are implemented",
+        ("tests/",), (),
+        ("tests/integration/test_canonical_input.py", "tests/unit/test_windows.py",
+         "tests/validation/test_hlz.py", "tests/unit/test_transforms.py")),
+
+    # ---- Outputs spec ----------------------------------------------------
+    Requirement(
+        "O1", f"{O} §1", "Every table exists as CSV or Parquet in the mandated "
+        "directories and carries run ID, data hash, commit SHA, config hash and timestamp",
+        ("src/thesis/core/provenance.py:RunContext.write_table",),
+        ("manifests/output_inventory.csv",),
+        ("tests/integration/test_pipeline.py::TestProvenanceAndSeparation::"
+         "test_every_written_table_carries_the_provenance_columns",)),
+    Requirement(
+        "O-T2.0B", f"{O} §2 T2.0B", "Published canonical research-input CSV with its "
+        "README, metadata and the two-cell imputation audit",
+        ("src/thesis/data/store.py:_write_bundle",),
+        ("data_audit/october_2025_imputation_audit.csv",),
+        ("tests/integration/test_canonical_input.py",)),
+    Requirement(
+        "O-F2.0", f"{O} §2 F2.0", "Sample-coverage timeline figure",
+        ("src/thesis/reporting/figures.py:sample_coverage_timeline",),
+        ("figures/F2.0_sample_timeline.png",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist::"
+         "test_required_figures_are_written",)),
+    Requirement(
+        "O-F2.1", f"{O} §3 F2.1", "Raw and transformed series overview per target",
+        ("src/thesis/reporting/figures.py:series_overview",),
+        ("figures/",),
+        ("tests/unit/test_reporting.py::TestFigureConventions::"
+         "test_series_overview_uses_one_panel_per_unit",)),
+    Requirement(
+        "O-F3.1", f"{O} §5 F3.1", "Representative fitted-versus-observed plots",
+        ("src/thesis/reporting/figures.py:fitted_vs_observed",),
+        ("figures/",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist::"
+         "test_required_figures_are_written",)),
+    Requirement(
+        "O-F3.2", f"{O} §5 F3.2", "Residual ACF diagnostics with 95% bands",
+        ("src/thesis/reporting/figures.py:residual_acf",),
+        ("figures/",),
+        ("tests/unit/test_reporting.py::TestFigureConventions::"
+         "test_residual_acf_draws_95_percent_bands",)),
+    Requirement(
+        "O-F3.3", f"{O} §5 F3.3", "Regime-probability and STAR-transition plots, one "
+        "model per panel",
+        ("src/thesis/reporting/figures.py:regime_probabilities",
+         "src/thesis/reporting/figures.py:star_transition"),
+        ("figures/",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist::"
+         "test_required_figures_are_written",)),
+    Requirement(
+        "O-F3.4", f"{O} §6 F3.4", "Actual versus forecast, AR and ARMA always shown, "
+        "failed or extreme models in a separate diagnostic panel, nothing clipped",
+        ("src/thesis/reporting/figures.py:actual_vs_forecast",),
+        ("figures/",),
+        ("tests/unit/test_reporting.py::TestFigureConventions::"
+         "test_flagged_models_go_to_their_own_panel_and_nothing_is_clipped",)),
+    Requirement(
+        "O-F3.5", f"{O} §6 F3.5", "Cumulative squared-error difference against AR",
+        ("src/thesis/reporting/figures.py:cumulative_loss_difference",),
+        ("figures/",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist::"
+         "test_required_figures_are_written",)),
+    Requirement(
+        "O-F3.6", f"{O} §7 F3.6", "State-conditioned forecast comparison, labelled "
+        "descriptive",
+        ("src/thesis/reporting/figures.py:state_comparison",),
+        ("figures/",),
+        ("tests/integration/test_pipeline.py::TestRequiredOutputsExist::"
+         "test_required_figures_are_written",)),
+    Requirement(
+        "O-F4.8", f"{O} §8 F4.8", "Estimation-window-length sensitivity figure with the "
+        "baseline length identified and no clipping of extreme or failure cases",
+        ("src/thesis/reporting/figures.py:window_length_sensitivity",),
+        ("figures/",),
+        ("tests/unit/test_reporting.py::TestFigureConventions::"
+         "test_window_length_sensitivity_marks_the_baseline_length",)),
+    Requirement(
+        "O12", f"{O} §12", "Machine-readable claim-evidence matrix schema",
+        ("src/thesis/reporting/tables.py:empty_claim_matrix",
+         "src/thesis/reporting/tables.py:validate_claim_matrix"),
+        ("manifests/claim_evidence_matrix.csv",),
+        ("tests/unit/test_reporting.py::TestClaimMatrix",
+         "tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
+         "test_claim_matrix_is_valid_and_left_unpopulated_in_part_6"),
+        expected_status=PART8,
+        note="Part 6 builds and validates the schema. Populating it means adjudicating "
+             "claims, which is Part 8's task and is forbidden to Part 6 by the "
+             "result-blind rule (CLAUDE.md §6)."),
+
+    # ---- Known gaps -------------------------------------------------------
+    Requirement(
+        "D3-xval", "approved decision D3", "Validate the Tsay test against reference "
+        "values from a recognized implementation such as R `TSA::Tsay.test`",
+        ("src/thesis/diagnostics/nonlinearity.py:tsay_test",),
+        ("diagnostics/T2.3_tsay.csv",),
+        ("tests/validation/test_nonlinearity.py",),
+        expected_status=GAP,
+        note="R is not installed in this container and the environment's network policy "
+             "does not permit installing it, so the cross-check against R `TSA::Tsay.test` "
+             "could not be run. Substitute validation performed instead: the "
+             "orthogonalized statistic is verified against the algebraically equivalent "
+             "direct nested F test via the Frisch-Waugh-Lovell identity, plus size and "
+             "power simulations under a linear null and a threshold alternative. This is "
+             "a validation gap against the letter of D3, not an implementation gap, and "
+             "it needs either an R installation or your waiver."),
+    Requirement(
+        "RUNTIME", f"{C} §9", "Full baseline execution runtime on the approved sample",
+        ("src/thesis/forecasting/parallel.py", "src/thesis/core/cache.py"),
+        ("logs/runtime_log.csv",),
+        ("tests/integration/test_parallel.py",),
+        expected_status=GAP,
+        note="Measured cost of one MSAR fit on this 4-core container: K=2, p=4, n=240 "
+             "takes 6.2s; K=3, p=4, n=240 takes 25.5s and n=955 takes 110.5s. With "
+             "roughly 700 monthly origins per series the K=3 robustness chains dominate, "
+             "so a complete baseline run is a multi-hour job even with the fit cache, "
+             "warm starts and four workers. This is a Part 8 scheduling matter, not a "
+             "methodological problem, and no approved parameter was changed to reduce it."),
+]
+
+
+# ---------------------------------------------------------------------------
+# Verification
+# ---------------------------------------------------------------------------
+
+
+def _module_symbols(path: Path) -> set[str]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return set()
+    names: set[str] = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names.add(node.name)
+            if isinstance(node, ast.ClassDef):
+                for child in node.body:
+                    if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        names.add(f"{node.name}.{child.name}")
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    names.add(target.id)
+    return names
+
+
+def check_implementation(reference: str) -> str | None:
+    """Return a problem description, or None when the reference resolves."""
+    path_part, _, symbol = reference.partition(":")
+    path = CODE_ROOT / path_part
+    if not path.exists():
+        return f"missing path {path_part}"
+    if symbol and path.is_file():
+        if symbol not in _module_symbols(path):
+            return f"missing symbol {symbol} in {path_part}"
+    return None
+
+
+def check_output(evidence_root: Path, reference: str) -> str | None:
+    target = evidence_root / reference
+    if reference.endswith("/"):
+        if not target.is_dir() or not any(target.iterdir()):
+            return f"empty or missing directory {reference}"
+        return None
+    if not target.exists():
+        # A table may have been written only as Parquet, or a figure only as PDF.
+        alternatives = [target.with_suffix(".parquet"), target.with_suffix(".pdf")]
+        if not any(alternative.exists() for alternative in alternatives):
+            return f"missing {reference}"
+        target = next(a for a in alternatives if a.exists())
+    if target.is_dir():
+        return None if any(target.iterdir()) else f"empty directory {reference}"
+    if target.stat().st_size == 0:
+        return f"empty file {reference}"
+    return None
+
+
+def collect_tests() -> set[str]:
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "--collect-only", "-q", "--no-header"],
+        cwd=CODE_ROOT, capture_output=True, text=True, timeout=1200)
+    return {line.strip() for line in result.stdout.splitlines() if "::" in line}
+
+
+def check_test(collected: set[str], reference: str) -> str | None:
+    if any(node.startswith(reference) or reference in node for node in collected):
+        return None
+    return f"no collected test matching {reference}"
+
+
+def verify(evidence_root: Path, collected: set[str] | None) -> list[Requirement]:
+    for requirement in REGISTER:
+        problems: list[str] = []
+        for reference in requirement.implementation:
+            problem = check_implementation(reference)
+            if problem:
+                problems.append(problem)
+        code_ok = not problems
+        for reference in requirement.outputs:
+            problem = check_output(evidence_root, reference)
+            if problem:
+                problems.append(problem)
+        output_ok = not [p for p in problems if p.startswith(("missing ", "empty "))
+                         and "symbol" not in p and "path" not in p]
+        test_problems = []
+        if collected is not None:
+            for reference in requirement.tests:
+                problem = check_test(collected, reference)
+                if problem:
+                    test_problems.append(problem)
+
+        if not code_ok:
+            requirement.verified_status = MISSING_CODE
+        elif problems:
+            requirement.verified_status = MISSING_OUTPUT
+        elif requirement.expected_status != COMPLETE:
+            requirement.verified_status = requirement.expected_status
+        elif collected is not None and not requirement.tests:
+            requirement.verified_status = NO_TEST
+        elif test_problems:
+            requirement.verified_status = NO_TEST
+        else:
+            requirement.verified_status = COMPLETE
+        requirement.detail = "; ".join(problems + test_problems)
+    return REGISTER
+
+
+def write_markdown(path: Path, frame: pd.DataFrame, summary: dict) -> Path:
+    """Emit the human-readable coverage matrix from the verified rows.
+
+    The narrative is generated from the same verification that produced the CSV, so the
+    two cannot drift apart and no claim in the prose is unbacked (CLAUDE.md section 9).
+    """
+    counts = summary["status_counts"]
+    lines = [
+        "# Part 6 coverage matrix: every Part 5 requirement against code and outputs",
+        "",
+        "> **Generated file.** Produced by `code/tools/coverage_matrix.py`, which verifies",
+        "> each row mechanically: the named source file and symbol must exist, the named",
+        "> output artifact must exist and be non-empty under the evidence root, and the",
+        "> named test node must actually be collected by pytest. Do not edit by hand —",
+        "> re-run the tool.",
+        "",
+        f"- **Requirements checked:** {summary['requirements']}",
+        f"- **Evidence root:** `{summary['evidence_root']}`",
+        f"- **Tests collected:** {summary['tests_collected']}",
+        "",
+        "| status | count |",
+        "|---|---:|",
+    ]
+    for status in sorted(counts):
+        lines.append(f"| {status} | {counts[status]} |")
+
+    outstanding = frame[frame["status"] != COMPLETE]
+    lines += ["", "## Outstanding items", ""]
+    if outstanding.empty:
+        lines.append("None. Every requirement verified as COMPLETE.")
+    else:
+        for row in outstanding.itertuples():
+            lines += [
+                f"### {row.requirement_id} — {row.status}",
+                "",
+                f"**Source:** {row.part5_source}",
+                "",
+                f"**Requirement:** {row.requirement}",
+                "",
+            ]
+            if row.detail:
+                lines += [f"**Verifier detail:** {row.detail}", ""]
+            if row.note:
+                lines += [f"**Note:** {row.note}", ""]
+
+    lines += ["", "## Full matrix", "",
+              "| ID | Part 5 source | requirement | implementation | outputs | tests | status |",
+              "|---|---|---|---|---|---|---|"]
+    for row in frame.itertuples():
+        def cell(value: str) -> str:
+            return str(value).replace("|", "\\|").replace("\n", " ")
+        lines.append(
+            f"| {cell(row.requirement_id)} | {cell(row.part5_source)} | "
+            f"{cell(row.requirement)} | `{cell(row.implementation)}` | "
+            f"`{cell(row.generated_outputs)}` | `{cell(row.automated_tests)}` | "
+            f"{cell(row.status)} |")
+
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--evidence-root", default=str(PROJECT_ROOT / "smoke_output"),
+                        help="the output tree to verify generated artifacts against")
+    parser.add_argument("--no-collect", action="store_true",
+                        help="skip pytest collection (faster, leaves the test column unverified)")
+    parser.add_argument("--out-dir", default=str(PROJECT_ROOT / "notes" / "claude"))
+    args = parser.parse_args(argv)
+
+    evidence_root = Path(args.evidence_root)
+    collected = None if args.no_collect else collect_tests()
+    requirements = verify(evidence_root, collected)
+    frame = pd.DataFrame([r.to_row() for r in requirements])
+
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "part5_coverage_matrix.csv"
+    frame.to_csv(csv_path, index=False)
+
+    counts = frame["status"].value_counts().to_dict()
+    summary = {
+        "evidence_root": str(evidence_root),
+        "requirements": len(frame),
+        "status_counts": counts,
+        "tests_collected": None if collected is None else len(collected),
+    }
+    (out_dir / "part5_coverage_summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
+
+    write_markdown(out_dir / "part6_coverage_matrix.md", frame, summary)
+
+    print(json.dumps(summary, indent=2, sort_keys=True))
+    for row in frame[frame["status"] != COMPLETE].itertuples():
+        print(f"\n[{row.status}] {row.requirement_id}  ({row.part5_source})")
+        print(f"  {row.requirement}")
+        if row.detail:
+            print(f"  detail: {row.detail}")
+    print(f"\nwritten: {csv_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -10,8 +10,11 @@
 smoke:
   enabled: true
   targets: ["INDPRO", "GDPC1"]
-  # Short out-of-sample block: the last N origins only.
-  max_origins: 24
+  # Short out-of-sample block: the last N origins only (C§10 requires a *fast* mode).
+  # The approved rolling-window lengths are kept unchanged, so the smoke run still
+  # exercises the real 240/120 baseline and the real 180/240/300 and 90/120/150
+  # sensitivity boundaries; only the number of origins is cut.
+  max_origins: 6
   # The monthly VAR block still loads all five monthly series, but forecasts only the
   # smoke subset.
   var_enabled: true

@@ -21,6 +21,7 @@ import time
 from dataclasses import dataclass, field
 
 import numpy as np
+from scipy.special import expit
 import pandas as pd
 from scipy.optimize import minimize
 
@@ -31,12 +32,18 @@ ESTAR = "ESTAR"
 
 
 def transition(z: np.ndarray, gamma: float, c: float, scale: float, kind: str) -> np.ndarray:
-    """Transition function on the standardized distance (z - c) / s_z."""
+    """Transition function on the standardized distance (z - c) / s_z.
+
+    The logistic is evaluated with `scipy.special.expit`, which is the same function
+    computed without the overflow that `1/(1+exp(-x))` hits for large |x|. The limiting
+    values 0 and 1 are the right answers there, so the only thing the naive form adds is
+    a stream of overflow warnings during optimization at large gamma.
+    """
     standardized = (z - c) / scale
     if kind == LSTAR:
-        return 1.0 / (1.0 + np.exp(-gamma * standardized))
+        return expit(gamma * standardized)
     if kind == ESTAR:
-        return 1.0 - np.exp(-gamma * standardized**2)
+        return -np.expm1(-gamma * standardized**2)
     raise ValueError(f"unknown transition type {kind!r}")
 
 

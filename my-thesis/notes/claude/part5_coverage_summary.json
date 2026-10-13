@@ -1,0 +1,10 @@
+{
+  "evidence_root": "../smoke_output",
+  "requirements": 80,
+  "status_counts": {
+    "COMPLETE": 44,
+    "GAP": 1,
+    "MISSING OUTPUT": 35
+  },
+  "tests_collected": null
+}

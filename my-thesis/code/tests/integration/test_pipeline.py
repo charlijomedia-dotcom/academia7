@@ -259,6 +259,40 @@ class TestMethodologicalGuarantees:
         assert set(quarterly["turning_window_width"]) == {0, 1, 2}
         assert frame["is_baseline_width"].any()
 
+    def test_turning_window_verdicts_reflect_actual_inference(self, completed_run):
+        # The verdict must come from the baseline-width and alternative-width regression
+        # results, not from a hard-coded "supported" flag, or the "weakened" category
+        # could never be reached.
+        _, _, layout = completed_run
+        frame = pd.read_csv(layout.robustness / "T4.TP1_turning_window_sensitivity.csv")
+        competitors = frame[frame["conclusion_vs_baseline"].notna()]
+        assert not competitors.empty
+        for column in ("baseline_support_5pct", "alternative_support_5pct",
+                       "inference_available", "support_change"):
+            assert column in competitors.columns
+        assert set(competitors["conclusion_vs_baseline"]) <= {
+            "unchanged", "weakened", "reversed", "unavailable"}
+        assert set(competitors["support_change"].dropna()) <= {
+            "strengthened", "no_change", "support_lost", "support_absent_in_both"}
+        # At the baseline width the alternative *is* the baseline, so the two support
+        # flags must agree there.
+        at_baseline = competitors[competitors["is_baseline_width"]]
+        if not at_baseline.empty:
+            assert (at_baseline["baseline_support_5pct"]
+                    == at_baseline["alternative_support_5pct"]).all()
+
+    def test_window_length_baseline_is_scored_before_the_alternatives(self, completed_run):
+        # The baseline length must not be classified "unavailable" against itself, and a
+        # shorter length must not be either merely because it is listed first.
+        _, _, layout = completed_run
+        tests = pd.read_csv(layout.robustness / "window_length_predictive_tests.csv")
+        baseline = tests[tests["role"] == "baseline"]
+        assert not baseline.empty
+        assert set(baseline["conclusion_vs_baseline"]) == {"unchanged"}
+        shorter = tests[tests["role"] == "shorter"]
+        if not shorter.empty:
+            assert set(shorter["conclusion_vs_baseline"]) != {"unavailable"}
+
     def test_the_baseline_turning_width_is_never_called_a_convention(self, completed_run):
         _, _, layout = completed_run
         frame = pd.read_csv(layout.robustness / "T4.TP1_turning_window_sensitivity.csv")
