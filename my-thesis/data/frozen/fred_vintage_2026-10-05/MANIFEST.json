@@ -1,0 +1,264 @@
+{
+  "created_utc": "2026-10-13T07:32:13Z",
+  "manifest_content_hash": "532a8a5b8e72e3e0fca2dfd22e0b4b9c0841e284cfdaec560d97ce73e0d952b1",
+  "manifest_version": 1,
+  "n_series": 7,
+  "notes": {
+    "vintage_cross_checks": [
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 318,
+        "n_primary": 318,
+        "series_id": "GDPC1"
+      },
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 956,
+        "n_primary": 956,
+        "series_id": "CPIAUCSL"
+      },
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 945,
+        "n_primary": 945,
+        "series_id": "UNRATE"
+      },
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 1292,
+        "n_primary": 1292,
+        "series_id": "INDPRO"
+      },
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 867,
+        "n_primary": 867,
+        "series_id": "FEDFUNDS"
+      },
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 812,
+        "n_primary": 812,
+        "series_id": "M2SL"
+      },
+      {
+        "dates_only_in_audit": [],
+        "dates_only_in_primary": [],
+        "dates_with_different_values": [],
+        "identical": true,
+        "n_audit": 2062,
+        "n_primary": 2062,
+        "series_id": "USREC"
+      }
+    ]
+  },
+  "provider": "FRED/ALFRED",
+  "series": [
+    {
+      "file_name": "GDPC1.csv",
+      "first_observation_date": "1947-01-01",
+      "first_observation_value": "2182.681",
+      "frequency": "Q",
+      "last_observation_date": "2026-04-01",
+      "last_observation_value": "24408.011",
+      "missing_value_dates": [],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "GDPC1",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=GDPC1&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:31:59Z",
+      "row_count": 318,
+      "seasonal_adjustment": "SAAR",
+      "series_id": "GDPC1",
+      "sha256": "e38187fca75eff25bc5d35a874ea50d71bf615c46e08d4a1195f9334b414a965",
+      "source_institution": "U.S. Bureau of Economic Analysis",
+      "title": "Real Gross Domestic Product",
+      "units": "Billions of Chained 2017 Dollars",
+      "vintage_date": "2026-10-05"
+    },
+    {
+      "file_name": "CPIAUCSL.csv",
+      "first_observation_date": "1947-01-01",
+      "first_observation_value": "21.48",
+      "frequency": "M",
+      "last_observation_date": "2026-08-01",
+      "last_observation_value": "334.131",
+      "missing_value_dates": [
+        "2025-10-01"
+      ],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "CPIAUCSL",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:32:02Z",
+      "row_count": 956,
+      "seasonal_adjustment": "SA",
+      "series_id": "CPIAUCSL",
+      "sha256": "5d859cc8dcd6911c07fd13908462f1d0d962ccf47e5aafef5f4c98d47ab1f4c2",
+      "source_institution": "U.S. Bureau of Labor Statistics",
+      "title": "Consumer Price Index for All Urban Consumers: All Items in U.S. City Average",
+      "units": "Index 1982-1984=100",
+      "vintage_date": "2026-10-05"
+    },
+    {
+      "file_name": "UNRATE.csv",
+      "first_observation_date": "1948-01-01",
+      "first_observation_value": "3.4",
+      "frequency": "M",
+      "last_observation_date": "2026-09-01",
+      "last_observation_value": "4.2",
+      "missing_value_dates": [
+        "2025-10-01"
+      ],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "UNRATE",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=UNRATE&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:32:03Z",
+      "row_count": 945,
+      "seasonal_adjustment": "SA",
+      "series_id": "UNRATE",
+      "sha256": "ddb5ba03750954d011fb822e7eaabb80a9d6da648fa9102165d8608b47847c80",
+      "source_institution": "U.S. Bureau of Labor Statistics",
+      "title": "Unemployment Rate",
+      "units": "Percent",
+      "vintage_date": "2026-10-05"
+    },
+    {
+      "file_name": "INDPRO.csv",
+      "first_observation_date": "1919-01-01",
+      "first_observation_value": "4.8739",
+      "frequency": "M",
+      "last_observation_date": "2026-08-01",
+      "last_observation_value": "103.0682",
+      "missing_value_dates": [],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "INDPRO",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=INDPRO&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:32:06Z",
+      "row_count": 1292,
+      "seasonal_adjustment": "SA",
+      "series_id": "INDPRO",
+      "sha256": "c2cd25722d8c92f2485a2958537b103c94b81832b4a95273038ec90e916599f6",
+      "source_institution": "Board of Governors of the Federal Reserve System",
+      "title": "Industrial Production: Total Index",
+      "units": "Index 2017=100",
+      "vintage_date": "2026-10-05"
+    },
+    {
+      "file_name": "FEDFUNDS.csv",
+      "first_observation_date": "1954-07-01",
+      "first_observation_value": "0.80",
+      "frequency": "M",
+      "last_observation_date": "2026-09-01",
+      "last_observation_value": "3.75",
+      "missing_value_dates": [],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "FEDFUNDS",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:32:08Z",
+      "row_count": 867,
+      "seasonal_adjustment": "NSA",
+      "series_id": "FEDFUNDS",
+      "sha256": "6c22bea085167a1969a9f5603b03bd7271998640d21b14dce44db43eab0ff83f",
+      "source_institution": "Board of Governors of the Federal Reserve System",
+      "title": "Federal Funds Effective Rate",
+      "units": "Percent",
+      "vintage_date": "2026-10-05"
+    },
+    {
+      "file_name": "M2SL.csv",
+      "first_observation_date": "1959-01-01",
+      "first_observation_value": "286.6",
+      "frequency": "M",
+      "last_observation_date": "2026-08-01",
+      "last_observation_value": "23342.8",
+      "missing_value_dates": [],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "M2SL",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=M2SL&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:32:09Z",
+      "row_count": 812,
+      "seasonal_adjustment": "SA",
+      "series_id": "M2SL",
+      "sha256": "adfb07b2a82b7172395706cb2faccd3879f84f74e56d30b59d97d42e7ebdbe3a",
+      "source_institution": "Board of Governors of the Federal Reserve System",
+      "title": "M2",
+      "units": "Billions of Dollars",
+      "vintage_date": "2026-10-05"
+    },
+    {
+      "file_name": "USREC.csv",
+      "first_observation_date": "1854-12-01",
+      "first_observation_value": "1",
+      "frequency": "M",
+      "last_observation_date": "2026-09-01",
+      "last_observation_value": "0",
+      "missing_value_dates": [],
+      "request_params": {
+        "api_key": "<redacted>",
+        "file_type": "json",
+        "series_id": "USREC",
+        "units": "lin",
+        "vintage_dates": "2026-10-05"
+      },
+      "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=USREC&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+      "retrieval_timestamp_utc": "2026-10-13T07:32:11Z",
+      "row_count": 2062,
+      "seasonal_adjustment": "NSA",
+      "series_id": "USREC",
+      "sha256": "bf6678880c4954a12425f7832ba5604f55960f52cba83e939c50166807742076",
+      "source_institution": "NBER chronology distributed by the Federal Reserve Bank of St. Louis",
+      "title": "NBER based Recession Indicators for the United States from the Period following the Peak through the Trough",
+      "units": "+1 or 0",
+      "vintage_date": "2026-10-05"
+    }
+  ],
+  "snapshot_hash": "7523966b3fb365c8602aa1b13754b8d823b1609a88b67b975bdf8233a576e994",
+  "vintage_date": "2026-10-05"
+}

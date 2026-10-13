@@ -1,9 +1,20 @@
 # Data discrepancy — permanent missing observation in CPIAUCSL and UNRATE
 
+> **SUPERSEDED — 13 October 2026.** The user amended Part 5 §2.2A and approved a
+> raw-level last-observation-carried-forward repair: the September 2025 CPIAUCSL and
+> UNRATE levels are carried into their missing October 2025 cells, **in the derived
+> canonical model input only**, with the official raw archive preserved untouched. The
+> approved 2026-10-05 vintage, the 2026M8 monthly endpoint and the 2026Q2 GDP endpoint are
+> all unchanged.
+>
+> **Options A–F below are closed and must not be reopened.** This file is retained only as
+> the record of how the problem was found, analysed and escalated. The approved handling is
+> in `part6_issues_and_decisions.md` §G2.
+
 **Raised:** 2026-10-09
 **Raised by:** Claude Code, Part 6 pre-implementation vintage verification
 **Rule invoked:** `part5_methodology_specification.md` §2.4 ("If the historical-vintage API returns a different start or terminal observation, Claude must stop, save the discrepancy, and request approval rather than silently alter the sample") and CLAUDE.md §4 (stop, document, propose, wait).
-**Status:** **OPEN — awaiting user decision.** No handling rule has been chosen. No transformation, sample or model code for CPIAUCSL or UNRATE has been written.
+**Status:** **CLOSED — superseded by the 13 October 2026 amendment.** Originally: No handling rule has been chosen. No transformation, sample or model code for CPIAUCSL or UNRATE has been written.
 
 ---
 

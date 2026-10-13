@@ -3,7 +3,8 @@
 **Status:** DECIDED BY USER on 2026-10-09, before any empirical result existed. These are fixed Part 6 implementation decisions.
 **Authority:** `approved-specs/part5/` remains frozen and unmodified. Nothing here amends it. Where an item resolves an ambiguity, silence or undefined term in frozen Part 5, it is tagged **[UAIC]** — *user-approved implementation clarification* — and must be cited as such in Part 8/Part 9 wording, never as a change of approved methodology.
 **Result-blind rule (CLAUDE.md §6):** every value below was fixed before results were seen and may not be revised because it changes an empirical outcome.
-**Companion:** `part6_implementation_plan.md`. **Open blocker:** see §E (N1) and `data_discrepancy_2026-10-09.md`.
+**Companion:** `part6_implementation_plan.md`.
+**Amendments:** Part 5 was amended by the user on 12 and 13 October 2026 (window-length robustness; October 2025 LOCF and the canonical CSV architecture). Those amendments are recorded in §G below and **supersede** the earlier N1 options. No blocker remains open.
 
 ---
 
@@ -102,11 +103,11 @@
 
 Verified directly against the FRED/ALFRED 2026-10-05 vintage before writing any pipeline code.
 
-### N1 — BLOCKER: October 2025 is permanently missing from CPIAUCSL and UNRATE
+### N1 — October 2025 missing from CPIAUCSL and UNRATE — **RESOLVED by the 13 October 2026 amendment** (see §G2)
 
 The 2026-10-05 vintage returns a **complete monthly grid with no gaps and no duplicates** for every series, but **CPIAUCSL and UNRATE each contain exactly one missing value, both at 2025-10-01**. This is not an API artifact and no later vintage will repair it: during the 2025 federal shutdown the BLS could not collect the October 2025 reference-period data, the October 2025 CPI release was cancelled, and the October 2025 household survey — the source of the unemployment rate — was never collected and **cannot be collected retroactively**.
 
-Frozen Part 5 assumes contiguous monthly series. It forbids backfilling and artificial interpolation (§2.1 criterion 6, §2.4) and it does not define how a permanent interior hole is handled. **The affected analysis is stopped and awaiting your decision** (CLAUDE.md §4). Full impact analysis and the options are in `data_discrepancy_2026-10-09.md`.
+The gap is real and permanent. **Options A–F in `data_discrepancy_2026-10-09.md` are SUPERSEDED and must not be reopened.** The approved resolution is the raw-level LOCF of §G2: September 2025 values are carried forward into the two October cells, in the derived canonical input only, with the official raw archive left untouched.
 
 Unaffected: GDPC1, INDPRO, FEDFUNDS, M2SL, USREC are complete. The **initial estimation window** (1947/1948 onward) is decades away from the hole, so **no locked specification-selection or stationarity decision is affected**. The approved monthly endpoint 2026M8 is unaffected.
 
@@ -138,6 +139,96 @@ All start dates match frozen Part 5. INDPRO's pre-1947 history exists as Part 5 
 
 | ID | Item | Status |
 |---|---|---|
-| **N1** | Handling of the permanent 2025-10 hole in CPIAUCSL and UNRATE | **Awaiting your decision.** Affected analysis stopped. Options in `data_discrepancy_2026-10-09.md`. Unblocked work continues meanwhile. |
+| **N1** | October 2025 handling | **CLOSED 2026-10-13.** Resolved by the approved amendment (§G2). Earlier options A–F superseded. |
 | **M3** | HLZ article + supplementary appendix | **CLOSED 2026-10-09.** Both documents held with checksums; module implemented and validated (39 tests). |
-| **H1** | HLZ two-sided vs one-sided reporting | **Awaiting your confirmation, not blocking.** The article's formal test (Theorems 2, 5, 6) and its size/power simulations are two-sided, but the empirical applications in §6 report one-sided tail p-values. I report the **two-sided p-value as the headline**, matching the formal test and the equality null of Part 5 §10.2, and store both one-sided p-values alongside. Say if you want the one-sided convention of the applications as the headline instead. |
+| **H1** | HLZ two-sided vs one-sided reporting | **Confirmed by the user on 13 October 2026:** two-sided is the primary result, one-sided p-values reported separately. Implemented. |
+
+Nothing is blocking.
+
+## G. Part 5 amendments approved by the user (12 and 13 October 2026)
+
+These were made directly in the seven `approved-specs/part5/` files and pulled into this
+branch. They are approved methodology, not implementation clarifications, so they are
+recorded separately from the register above.
+
+### G1 — Mandatory estimation-window-length robustness (12 October 2026)
+
+**Authority:** `part5_methodology_specification.md` §9.5 amendment; Outputs **T4.8/F4.8**;
+Comp §13; decision log and literature justification §3.18.
+
+| Element | Approved value |
+|---|---|
+| Monthly lengths | **180 / 240 (baseline) / 300** observations (15 / 20 / 25 years) |
+| Quarterly lengths | **90 / 120 (baseline) / 150** observations (22.5 / 30 / 37.5 years) |
+| Models | AR, ARMA, MSAR(2), STAR |
+| Horizon | **h = 1 only** |
+| Targets | all six |
+| Discrete specifications | **reused from the baseline initial window**; never re-searched per length, never reselected on ex-post performance |
+| Parameters | re-estimated at every eligible origin from that origin's trailing window |
+| Evaluation calendar | **common calendar starting when the longest candidate window is available**; pairwise intersections and MCS common-loss dates as per M7 |
+| Inference | same HLZ (primary), DM-HLN (secondary) and MCS conventions as the baseline |
+| Reporting | RMSE, MAE, OOS R² vs AR, ranks, mean loss differential, adequacy/fragility/failure incidence, N and dropped-date counts |
+| Classification | unchanged / weakened / reversed / unavailable, plus a `support_change` field for strengthened evidence |
+| Outputs | `output/robustness/window_length_comparison.csv`, `window_length_predictive_tests.csv`, `window_length_origin_audit.csv`, and figure F4.8 |
+| Constraints | separate run ids and cache keys including window length; **never overwrite baseline artifacts**; no mandatory factorial cross-product with other robustness dimensions; never choose a length after seeing its result |
+
+### G2 — October 2025 LOCF and the canonical CSV architecture (13 October 2026)
+
+**Authority:** `part5_methodology_specification.md` §2.2A; rationale §5.4; Comp §2, §5, §6, §11, §15;
+Outputs **T2.0A/T2.0B/T2.1/T4.9**; decision log; literature justification §3.42.
+
+**The imputation.** Exactly two cells, applied at the **raw level**, once, **before** any
+difference, log change, transformation, lag construction or estimation, and **only** in the
+derived canonical input:
+
+| Series | Date | Official value | Model-input value | Source |
+|---|---|---|---|---|
+| CPIAUCSL | 2025-10-01 | missing (unreported) | September 2025 level | 2025-09-01 |
+| UNRATE | 2025-10-01 | missing (unreported) | September 2025 level | 2025-09-01 |
+
+The official raw archive keeps its missing-value markers and its post-endpoint observations
+(UNRATE and FEDFUNDS 2026M9). The imputed values are **never** described as official
+observations. No other missing value anywhere may be imputed. Halt conditions, each a
+documented stop rather than a silent substitution: an October value that is actually
+present, a missing September predecessor, unexpected missing values elsewhere, duplicate
+dates, or inconsistent vintage values.
+
+**Disclosed artifacts** (must be stated in the thesis): October 2025 CPI inflation is
+**exactly zero** by construction; the observed September-to-November index change loads
+entirely on November; if UNRATE is differenced its October change is **exactly zero** by
+construction. These are modelling artifacts, not observed economic outcomes, and may affect
+rolling estimates, state identification, realized losses and inference.
+
+**Unchanged:** the 2026-10-05 vintage, the 2026M8 monthly endpoint, the 2026Q2 GDP endpoint,
+all start dates, model families, transformations, tests and other robustness specifications.
+
+**The canonical input.** One immutable long-format file
+`data/frozen/thesis_input_2026-10-05.csv` with columns
+`series_id,date,frequency,value,source_value,observation_status,imputation_method,imputation_source_date`,
+covering the six targets plus USREC at their true frequencies over the approved study
+ranges. Deterministic bytes: values written verbatim from source, stable row order
+(series then date), fixed column order, ISO dates, UTF-8, LF. No transformed values,
+forecasts or future data. Companions: metadata JSON, researcher README/data dictionary,
+two-row imputation audit, and a supplemental manifest linked to the untouched raw manifest.
+
+**CSV-first execution contract.** Every normal run verifies hashes, loads the canonical CSV
+**first** into a fresh DataFrame, derives monthly and quarterly panels in memory, and then
+computes everything downstream. **No FRED request on a validated repeat run.** Store rules:
+an entirely absent store may initialize once from FRED at the approved vintage; a complete
+hash-verified **raw-only** snapshot may build the canonical CSV **once, locally, without
+network**, leaving the raw manifest untouched; a registered-but-missing, corrupt,
+hash-mismatched, or partial store is a **failure**, never a re-download or overwrite.
+The canonical CSV hash is the **data input identity** of every Part 6 result and is recorded
+in every run manifest; it also enters the model-fit cache key together with its parent
+source-manifest hash.
+
+### G3 — New required outputs
+
+| ID | Content |
+|---|---|
+| **T2.0B** | canonical CSV, metadata JSON, README/data dictionary, `output/data_audit/october_2025_imputation_audit.csv`, and the cross-referencing master manifest |
+| **T2.0A** | extended with an original-source vs author-processed indicator, parent snapshot hash and imputation-audit hash |
+| **T2.1** | extended with raw/derived provenance and LOCF status for the two October cells |
+| **T4.8/F4.8** | estimation-window-length robustness (G1) |
+| **T4.9** | `output/data_audit/locf_forecast_exposure.csv`: per series/model/horizon/origin, whether the realized target is imputed or its transformation uses the imputed predecessor, whether the predictor lag vector contains an imputed observation, and whether the rolling estimation window does; plus descriptive accuracy on (a) the full approved dates and (b) unaffected pre-gap dates with N and ranges. **Headline inference stays on the full sample**; the subsample is descriptive and must document its power limitations. Not grounds for changing the endpoint or the LOCF assumption after seeing results. |
+

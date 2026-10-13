@@ -62,14 +62,56 @@ samples:
     CPIAUCSL: ["2025-10-01"]
     UNRATE: ["2025-10-01"]
 
-# [N1] OPEN BLOCKER. The 2025-10 observation is permanently missing from CPIAUCSL and
-# UNRATE (2025 shutdown: the October CPI release was cancelled and the October household
-# survey was never collected and cannot be collected retroactively). Part 5 assumes
-# contiguous monthly series, prohibits backfilling and interpolation, and defines no rule
-# for a permanent interior hole. Options are set out in
-# notes/claude/data_discrepancy_2026-10-09.md. Until the user decides, this key stays
-# null and sample construction for the affected series refuses to run.
-missing_data_policy: null
+# [N1 RESOLVED 2026-10-13 by user-approved Part 5 amendment, S section 2.2A]
+# Last observation carried forward at the RAW LEVEL stage, applied once, before any
+# transformation, difference, lag construction or estimation, and ONLY in the derived
+# canonical model-input CSV. The official raw snapshot keeps its missing-value markers.
+# These two cells are the ONLY imputation permitted anywhere in the pipeline.
+missing_data_policy:
+  rule: locf_raw_level
+  authority: "part5_methodology_specification.md section 2.2A (13 October 2026)"
+  applies_only_to:
+    - {series_id: CPIAUCSL, date: "2025-10-01", source_date: "2025-09-01"}
+    - {series_id: UNRATE,   date: "2025-10-01", source_date: "2025-09-01"}
+  observation_status_flag: IMPUTED_LOCF
+  method_label: LOCF
+  # Each is applied if and only if the official raw October value is missing and the
+  # September predecessor exists. Any other pattern is a documented stop, never a
+  # silent substitution.
+  halt_conditions:
+    - official_october_value_present
+    - september_predecessor_missing
+    - unexpected_missing_values_elsewhere
+    - duplicate_dates
+    - inconsistent_vintage_values
+  # Stated consequences that Part 8/9 must disclose (S 2.2A):
+  known_artifacts:
+    - "October 2025 CPI monthly inflation is exactly zero by construction"
+    - "the observed September-to-November index change loads entirely on November"
+    - "if UNRATE is differenced, its October 2025 change is exactly zero by construction"
+
+# Canonical author-processed research input (S section 2.2A; Outputs T2.0B).
+canonical_input:
+  csv: "thesis_input_2026-10-05.csv"
+  metadata: "thesis_input_2026-10-05.metadata.json"
+  readme: "thesis_input_2026-10-05.README.md"
+  manifest: "thesis_input_2026-10-05.manifest.json"
+  format: long
+  columns:
+    - series_id
+    - date
+    - frequency
+    - value
+    - source_value
+    - observation_status
+    - imputation_method
+    - imputation_source_date
+  sort_by: [series_id, date]
+  encoding: utf-8
+  line_terminator: "\n"
+  date_format: "%Y-%m-%d"
+  # No transformed growth rates, forecasts or future data may be appended (S 2.2A).
+  contains_transformations: false
 
 targets:
   GDPC1:
@@ -106,6 +148,9 @@ targets:
   USREC:
     frequency: M
     start: "1854-12-01"
+    # S§2.5 uses USREC only to classify forecast target dates, so the canonical input
+    # carries it over the monthly study span rather than its full 1854 history.
+    canonical_start: "1947-01-01"
     transform: {kind: none}
     role: evaluation_only                             # never a regressor, S§2.5
 
@@ -191,8 +236,10 @@ diagnostics:
     nonlinear: "none_documented"
 
 forecasting:                                           # S§9
-  windows: {M: 240, Q: 120}
-  window_unit: null        # [N1] "available_observations" or "calendar_periods"; blocked
+  windows: {M: 240, Q: 120}            # baseline (S section 9.1)
+  # After the approved LOCF the monthly panel has no interior gaps, so a window of 240
+  # observations and one of 240 calendar months are the same window.
+  window_unit: observations_equal_calendar_periods
   horizons:
     primary: {M: 1, Q: 1}
     robustness: {M: [3, 6, 12], Q: [2, 4]}
@@ -297,6 +344,47 @@ robustness:                                            # S§11
   horizons: {use_stored_forecasts: true}
   var: {compare_on: "identical_common_target_dates"}   # [M10]
   turning_point_windows: {use: "evaluation.states.turning_window_sensitivity"}
+  # Mandatory estimation-window-length sensitivity (S section 9.5 amendment of
+  # 12 October 2026; Outputs T4.8/F4.8). Predeclared +/-25% around the baseline;
+  # sensitivity scenarios, NOT estimated optimal window sizes.
+  window_lengths:
+    label: "estimation-window-length robustness"
+    lengths: {M: [180, 240, 300], Q: [90, 120, 150]}
+    baseline: {M: 240, Q: 120}
+    models: ["AR", "ARMA", "MSAR", "STAR"]
+    horizon: 1                       # primary h=1 only
+    targets: all
+    # Discrete specifications stay exactly as selected on the baseline initial window.
+    reuse_baseline_discrete_specs: true
+    research_specs_per_length: false
+    # Parameters are re-estimated at every origin from that origin's trailing window.
+    refit: every_origin
+    # Comparison calendar starts only when the longest candidate window is available.
+    common_calendar_from: longest_window
+    predictive_tests: ["HLZ", "DM_HLN", "MCS"]
+    conclusion_categories: ["unchanged", "weakened", "reversed", "unavailable"]
+    support_change_field: true
+    never_overwrite_baseline: true
+    outputs:
+      comparison: "window_length_comparison.csv"
+      predictive_tests: "window_length_predictive_tests.csv"
+      origin_audit: "window_length_origin_audit.csv"
+      figure: "F4.8_window_length_sensitivity"
+  # October 2025 LOCF influence and forecast-exposure diagnostic (Outputs T4.9).
+  locf_exposure:
+    label: "October 2025 LOCF influence and forecast-exposure diagnostic"
+    output: "locf_forecast_exposure.csv"
+    flags:
+      - target_imputed
+      - target_transformation_uses_imputed_predecessor
+      - predictor_lag_contains_imputed
+      - estimation_window_contains_imputed
+    # Descriptive comparison on (a) full approved dates and (b) unaffected pre-gap dates.
+    comparison_samples: ["full_approved", "pre_gap_unaffected"]
+    # Headline inference stays on the full sample; the subsample is descriptive only and
+    # must document its power limitations. Never grounds for changing the endpoint or
+    # the LOCF assumption after seeing results.
+    headline_inference_sample: full_approved
 
 reporting:
   significance_stars: {0.10: "*", 0.05: "**", 0.01: "***"}   # S§13.2

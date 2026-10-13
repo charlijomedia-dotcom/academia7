@@ -1,0 +1,35 @@
+{
+  "created_utc": "2026-10-13T07:36:27Z",
+  "files": {
+    "csv": {
+      "file_name": "thesis_input_2026-10-05.csv",
+      "sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a"
+    },
+    "metadata": {
+      "file_name": "thesis_input_2026-10-05.metadata.json",
+      "sha256": "afa08e4378eddff8397464851c21649eb453548a3a66d7e2e70f0f81a7ce72d1"
+    },
+    "readme": {
+      "file_name": "thesis_input_2026-10-05.README.md",
+      "sha256": "315c8cf6ed9af500744607e20d5da06ff3a51b9ad192647fc79d21f74cc31b5c"
+    }
+  },
+  "imputed_cells": [
+    {
+      "date": "2025-10-01",
+      "method": "LOCF",
+      "series_id": "CPIAUCSL"
+    },
+    {
+      "date": "2025-10-01",
+      "method": "LOCF",
+      "series_id": "UNRATE"
+    }
+  ],
+  "is_original_source": false,
+  "manifest_content_hash": "b90cf1f8cb2e9dcea15934fefad3c5e9e1f53b52f6acf57c19b5cf4c6e47d0d5",
+  "manifest_kind": "author_processed_canonical_input",
+  "parent_source_manifest_sha256": "532a8a5b8e72e3e0fca2dfd22e0b4b9c0841e284cfdaec560d97ce73e0d952b1",
+  "parent_source_snapshot_hash": "7523966b3fb365c8602aa1b13754b8d823b1609a88b67b975bdf8233a576e994",
+  "vintage_date": "2026-10-05"
+}

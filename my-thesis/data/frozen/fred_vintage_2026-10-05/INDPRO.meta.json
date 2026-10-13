@@ -1,0 +1,47 @@
+{
+  "first_observation_date": "1919-01-01",
+  "last_observation_date": "2026-08-01",
+  "missing_value_dates": [],
+  "provider_metadata": {
+    "frequency": "Monthly",
+    "frequency_short": "M",
+    "id": "INDPRO",
+    "last_updated": "2026-09-18 08:20:08-05",
+    "notes": "explanatory notes (https://www.federalreserve.gov/releases/g17/About.htm) issued by the Board of Governors. For recent updates, see the  announcements (https://www.federalreserve.gov/feeds/g17.html) issued by the Board of Governors.</p>",
+    "observation_end": "2026-08-01",
+    "observation_start": "1919-01-01",
+    "popularity": 80,
+    "realtime_end": "2026-09-22",
+    "realtime_start": "2026-09-22",
+    "seasonal_adjustment": "Seasonally Adjusted",
+    "seasonal_adjustment_short": "SA",
+    "title": "Industrial Production: Total Index",
+    "units": "Index 2017=100",
+    "units_short": "Index 2017=100"
+  },
+  "request_params": {
+    "api_key": "<redacted>",
+    "file_type": "json",
+    "series_id": "INDPRO",
+    "units": "lin",
+    "vintage_dates": "2026-10-05"
+  },
+  "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=INDPRO&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+  "response_metadata": {
+    "count": 1292,
+    "file_type": "json",
+    "limit": 100000,
+    "observation_end": "9999-12-31",
+    "observation_start": "1600-01-01",
+    "offset": 0,
+    "order_by": "observation_date",
+    "output_type": 1,
+    "realtime_end": "2026-10-05",
+    "realtime_start": "2026-10-05",
+    "sort_order": "asc",
+    "units": "lin"
+  },
+  "retrieved_utc": "2026-10-13T07:32:06Z",
+  "row_count": 1292,
+  "series_id": "INDPRO"
+}

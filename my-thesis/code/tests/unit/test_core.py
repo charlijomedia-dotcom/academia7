@@ -47,11 +47,18 @@ class TestConfig:
         assert config.get("forecasting.windows.W", 99) == 99
 
     def test_require_rejects_unset_value(self, config):
-        # `missing_data_policy` is present but null while the N1 decision is open, and
-        # must not be usable until the user supplies a rule.
-        assert config.get("missing_data_policy") is None
+        # `require` must refuse a key that is present but null, so a methodological
+        # parameter can never be silently defaulted.
+        altered = config.with_overrides({"missing_data_policy": None}, "unset")
+        assert altered.get("missing_data_policy") is None
         with pytest.raises(KeyError):
-            config.require("missing_data_policy")
+            altered.require("missing_data_policy")
+
+    def test_approved_locf_policy_is_configured(self, config):
+        # N1 resolved by the Part 5 amendment of 13 October 2026.
+        policy = config.require("missing_data_policy")
+        assert policy["rule"] == "locf_raw_level"
+        assert len(policy["applies_only_to"]) == 2
 
     def test_hlz_tuning_choices_come_from_the_article(self, config):
         # M3: these may only be the authors' own values, never defaults of mine.

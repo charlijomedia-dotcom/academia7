@@ -1,0 +1,47 @@
+{
+  "first_observation_date": "1947-01-01",
+  "last_observation_date": "2026-04-01",
+  "missing_value_dates": [],
+  "provider_metadata": {
+    "frequency": "Quarterly",
+    "frequency_short": "Q",
+    "id": "GDPC1",
+    "last_updated": "2026-09-30 07:53:55-05",
+    "notes": "BEA Account Code: A191RX\n\nReal gross domestic product is the inflation adjusted value of the goods and services produced by labor and property located in the United States.For more information see the Guide to the National Income and Product Accounts of the United States (NIPA). For more information, please visit the Bureau of Economic Analysis (http://www.bea.gov/national/pdf/nipaguid.pdf).",
+    "observation_end": "2026-04-01",
+    "observation_start": "1947-01-01",
+    "popularity": 91,
+    "realtime_end": "2026-10-01",
+    "realtime_start": "2026-10-01",
+    "seasonal_adjustment": "Seasonally Adjusted Annual Rate",
+    "seasonal_adjustment_short": "SAAR",
+    "title": "Real Gross Domestic Product",
+    "units": "Billions of Chained 2017 Dollars",
+    "units_short": "Bil. of Chn. 2017 $"
+  },
+  "request_params": {
+    "api_key": "<redacted>",
+    "file_type": "json",
+    "series_id": "GDPC1",
+    "units": "lin",
+    "vintage_dates": "2026-10-05"
+  },
+  "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=GDPC1&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+  "response_metadata": {
+    "count": 318,
+    "file_type": "json",
+    "limit": 100000,
+    "observation_end": "9999-12-31",
+    "observation_start": "1600-01-01",
+    "offset": 0,
+    "order_by": "observation_date",
+    "output_type": 1,
+    "realtime_end": "2026-10-05",
+    "realtime_start": "2026-10-05",
+    "sort_order": "asc",
+    "units": "lin"
+  },
+  "retrieved_utc": "2026-10-13T07:31:59Z",
+  "row_count": 318,
+  "series_id": "GDPC1"
+}

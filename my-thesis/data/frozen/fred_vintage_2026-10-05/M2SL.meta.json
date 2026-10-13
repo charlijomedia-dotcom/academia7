@@ -1,0 +1,47 @@
+{
+  "first_observation_date": "1959-01-01",
+  "last_observation_date": "2026-08-01",
+  "missing_value_dates": [],
+  "provider_metadata": {
+    "frequency": "Monthly",
+    "frequency_short": "M",
+    "id": "M2SL",
+    "last_updated": "2026-09-22 12:01:30-05",
+    "notes": "announcements (https://www.federalreserve.gov/feeds/h6.html) and Technical Q&As (https://www.federalreserve.gov/releases/h6/h6_technical_qa.htm) posted on December 17, 2020.\n\nFor questions on the data, please contact the data source (https://www.federalreserve.gov/apps/ContactUs/feedback.aspx?refurl=/releases/h6/%). For questions on FRED functionality, please contact us here (https://fred.stlouisfed.org/contactus/).</p>",
+    "observation_end": "2026-08-01",
+    "observation_start": "1959-01-01",
+    "popularity": 95,
+    "realtime_end": "2026-09-22",
+    "realtime_start": "2026-09-22",
+    "seasonal_adjustment": "Seasonally Adjusted",
+    "seasonal_adjustment_short": "SA",
+    "title": "M2",
+    "units": "Billions of Dollars",
+    "units_short": "Bil. of $"
+  },
+  "request_params": {
+    "api_key": "<redacted>",
+    "file_type": "json",
+    "series_id": "M2SL",
+    "units": "lin",
+    "vintage_dates": "2026-10-05"
+  },
+  "request_url_redacted": "https://api.stlouisfed.org/fred/series/observations?series_id=M2SL&api_key=%3Credacted%3E&file_type=json&units=lin&vintage_dates=2026-10-05",
+  "response_metadata": {
+    "count": 812,
+    "file_type": "json",
+    "limit": 100000,
+    "observation_end": "9999-12-31",
+    "observation_start": "1600-01-01",
+    "offset": 0,
+    "order_by": "observation_date",
+    "output_type": 1,
+    "realtime_end": "2026-10-05",
+    "realtime_start": "2026-10-05",
+    "sort_order": "asc",
+    "units": "lin"
+  },
+  "retrieved_utc": "2026-10-13T07:32:09Z",
+  "row_count": 812,
+  "series_id": "M2SL"
+}

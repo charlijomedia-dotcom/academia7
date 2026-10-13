@@ -1,6 +1,6 @@
 # Part 6 — Implementation plan
 
-**Status:** **APPROVED by the user on 2026-10-09**, subject to the decisions recorded in `part6_issues_and_decisions.md`. Coding has begun on all components not blocked by §3.1.
+**Status:** **APPROVED**, and amended by the user's Part 5 amendments of 12 and 13 October 2026 (window-length robustness; October 2025 LOCF and the canonical CSV architecture), recorded in `part6_issues_and_decisions.md` §G. **No blocker is open.**
 **Scope:** Part 6 only (build + validate). Part 7 (reproducibility demonstration) and Part 8 (final execution and analysis) are **not** started. When Part 6 is complete I stop and wait for approval (CLAUDE.md §13).
 **Companions:** `part6_issues_and_decisions.md` (all approved decisions; IDs T1–T7, M1–M13, D1–D20, R1–R10, N1–N4) and `data_discrepancy_2026-10-09.md` (open blocker).
 **Paths:** project root is `my-thesis/`; paths below are relative to it.
@@ -40,12 +40,16 @@ Direct read-only probes of the 2026-10-05 vintage (details and the full table in
 
 All seven tensions (T1–T7), thirteen methodological issues (M1–M13), twenty implementation details (D1–D20) and ten risks (R1–R10) are now decided; see the register. No contradiction between two authoritative files was found that would require the CLAUDE.md §3 stop.
 
-### 3.1 Open blocker (work stopped on the affected components)
+### 3.1 N1 resolved by amendment (13 October 2026)
 
-**N1 — October 2025 permanently missing from CPIAUCSL and UNRATE** (2025 shutdown; BLS cancelled the October CPI and never collected the October household survey, which cannot be collected retroactively). Frozen Part 5 assumes contiguous monthly series and prohibits backfilling and interpolation, but defines no rule for a permanent interior hole. Impact, options A–F and the four questions are in `data_discrepancy_2026-10-09.md`.
+The permanent October 2025 gap in CPIAUCSL and UNRATE is handled by the approved raw-level
+LOCF of Part 5 §2.2A: the September 2025 levels are carried into the two October cells, in
+the **derived canonical input only**, with the official raw archive preserved untouched and
+every row flagged. The earlier options A–F are superseded. Nothing is blocked.
 
-**Blocked until decided:** transformation and sample construction for CPI and UNRATE; their full-sample KPSS/ZA; the balanced monthly VAR sample; the CPI AR-lag robustness date set; anything consuming those.
-**Not blocked:** everything else, because GDPC1, INDPRO, FEDFUNDS, M2SL and USREC are complete and the initial estimation window predates the hole by ~60 years, so no locked specification or stationarity decision is affected.
+The disclosed artifacts (October CPI inflation exactly zero; the September-to-November
+change loading on November; a zero October UNRATE difference if differenced) are verified
+numerically by tests and must be stated in Parts 8 and 9.
 
 ### 3.2 Closed dependency
 
@@ -62,12 +66,13 @@ code/
   src/thesis/
     core/           config.py  paths.py  provenance.py  seeds.py  schemas.py  cache.py
                     checkpoints.py  parallel.py  runtime.py  logging_utils.py
-    data/           fred_client.py  frozen.py  manifest.py  loaders.py  vintage_audit.py  samples.py
+    data/           fred_client.py  frozen.py  manifest.py  canonical.py  store.py
+                    vintage_audit.py  samples.py
     transforms/     growth.py  differences.py  level_reconstruction.py  lags.py
     diagnostics/    stationarity.py  decision_rule.py  nonlinearity.py  residual_tests.py  garch_diag.py
     specification/  ar_select.py  arma_select.py  star_spec.py  var_select.py  spec_registry.py
     models/         base.py  ar.py  arma.py  msar.py  star.py  var.py  arma_garch.py  status.py  flags.py
-    forecasting/    windows.py  rolling.py  iterate.py  simulate.py  store.py
+    forecasting/    windows.py  rolling.py  iterate.py  simulate.py  forecast_store.py
     evaluation/     losses.py  metrics.py  states.py  alignment.py  hlz.py  dm_hln.py
                     state_loss_regression.py  mcs.py  tp_sensitivity.py
     robustness/     transformation.py  cpi_lags.py  k3.py  horizons.py  var_compare.py  garch_diag.py
@@ -98,6 +103,30 @@ Note `evaluation/state_loss_regression.py`, not `gw.py`: per **M1** the module a
 | Concept→series incl. exclusions | `reporting/tables.py::concept_to_series` from `configs/series_catalog.yaml` | catalog covers every Part 5 exclusion | T2.0 |
 | USREC evaluation-only | import boundary: `models/`, `forecasting/`, `specification/` may not import `evaluation.states` or load USREC | static import test; perturbing USREC leaves forecasts byte-identical | — |
 | Audit reconstruction; refresh namespace (D16) | `data/vintage_audit.py`; `run_all.py --refresh-data` | audit writes to `data/audit/<date>/`; refresh never touches frozen or `output/` | `output/manifests/vintage_audit.csv` |
+
+### 5.1A Canonical CSV-first data layer (S §2.2A; Comp §2; Outputs T2.0B)
+
+| Requirement | Code | Tests |
+|---|---|---|
+| Store-state rules: absent / verified raw-only / complete / unusable | `data/store.py::detect_state` | all four states, incl. canonical without its raw parent |
+| First-run init from the approved vintage, atomically saving raw + canonical + manifests | `store.py::initialize_store` | staged writes removed on failure, so a crash leaves no half-registered dataset |
+| Build the canonical CSV **once, locally, no network**, from a verified raw-only snapshot | `store.py::build_canonical_from_raw` | built with sockets blocked and no API key; raw manifest byte-identical afterwards |
+| Registered-but-missing / corrupt / hash-mismatched store fails, never re-downloads | `store.py::verify_canonical` | corrupt and deleted-file cases both raise and leave the store untouched |
+| Exactly two LOCF cells at the raw level, with halt conditions | `canonical.py::build_canonical_frame` | only the approved cells; unexpected gap, missing predecessor, present-October and duplicate-date cases all halt |
+| Deterministic long-format CSV | `canonical.py::write_canonical_csv` | rebuild reproduces identical bytes and the same SHA-256 |
+| CSV-first load into a fresh DataFrame, panels derived in memory | `canonical.py::load_canonical`, `::to_panels` | loads with sockets blocked and with no FRED key; GDP never expanded to monthly |
+| Metadata, README/data dictionary, imputation audit, linked manifest | `canonical.py::build_metadata`, `::build_readme`, `store.py::write_imputation_audit` | schema, hash linkage, two-row audit, disclosure text present |
+| Disclosed transformation artifacts | verified against the real data | October CPI inflation exactly 0; November carries the Sept-to-Nov change; differenced UNRATE October exactly 0 |
+
+### 5.6A Estimation-window-length robustness (S §9.5 amendment; Outputs T4.8/F4.8)
+
+| Requirement | Code | Tests |
+|---|---|---|
+| Predeclared lengths 180/240/300 monthly and 90/120/150 quarterly | `configs/baseline.yaml` → `robustness.window_lengths` | values are exactly ±25% of the baseline |
+| Rolling origins per length, window never reaching past its origin | `forecasting/windows.py::rolling_origins` | boundaries, constant length, no look-ahead, horizon shifts only the target |
+| Common calendar from the longest window | `windows.py::common_calendar`, `::restrict_to_calendar` | every length yields identical target dates; dropped-date counts audited |
+| Discrete specifications reused from the baseline initial window | `windows.py::initial_window` + spec registry (step 3) | config asserts `reuse_baseline_discrete_specs` and `research_specs_per_length: false` |
+| Origin audit, N and failure accounting | `windows.py::describe_coverage` → `window_length_origin_audit.csv` | coverage counts verified on real and synthetic indices |
 
 ### 5.2 Stationarity and transformation decision (Spec §3; T2, T7, D9)
 
@@ -205,23 +234,21 @@ Unchanged from the approved plan: `test_data_frozen.py`, `test_transforms.py`, `
 
 ## 9. Build order
 
-| Step | Content | Gate | State |
-|---|---|---|---|
-| 0 | Environment, lock file, package skeleton, config/provenance/seeds/cache/checkpoints core | core unit tests | in progress |
-| 1 | Data layer: FRED client, frozen init/verify, manifest, samples, transforms | data tests on mocked and seeded data | not blocked except CPI/UNRATE sample rules (N1) |
-| 2 | Diagnostics: ADF/KPSS/ZA, decision rule, residual tests, Tsay, LST | validation simulations plus the R reference comparison | not blocked |
-| 3 | Specification: AR, ARMA, STAR delay/type, VAR lag | selection-rule tests | not blocked |
-| 4 | Models: AR, ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH; status/flags | recovery and cross-check tests; early runtime benchmark | not blocked |
-| 5 | Forecasting engine: windows, chains, warm starts, cache, checkpoints, parallel, STAR bootstrap | alignment, no-look-ahead, resume, seed tests | not blocked |
-| 6 | Evaluation: metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS; **HLZ done** | evaluation tests | HLZ complete (39 tests); rest not started |
-| 7 | Robustness modules | integration tests | CPI-lag date set pending N1 |
-| 8 | Reporting: tables, figures, registries, provenance, logs, full CLI | schema and provenance tests | not blocked |
-| 9 | Smoke test on **INDPRO** (monthly, complete) and **GDPC1** (quarterly, complete) | all stages run; outputs only in `smoke_output/`; every artifact carries provenance; reviewed for completeness only, never for ranking (R8) | needs frozen data |
+| Step | Content | State |
+|---|---|---|
+| 0 | Core: hashing, config, paths, seeds, provenance, schemas | **done** |
+| 1 | Data layer: FRED client, frozen raw snapshot, manifest, **canonical CSV + store lifecycle**, samples, transforms | **done**; frozen store initialized and canonical input built |
+| 2 | Diagnostics: ADF/KPSS/ZA, decision rule, residual tests, Tsay, LST | not started |
+| 3 | Specification: AR order, ARMA order, STAR delay/type, VAR lag | not started |
+| 4 | Models: **AR done**; ARMA, MSAR (K=2,3), STAR, VAR, ARMA-GARCH, status/flags | partial |
+| 5 | Forecasting engine: **windows/origins/common calendar done**; chains, warm starts, cache, checkpoints, parallel, STAR bootstrap | partial |
+| 6 | Evaluation: **HLZ done (39 tests)**; metrics, alignment, states/masks, DM-HLN, state-loss regression, MCS | partial |
+| 7 | Robustness: transformation, CPI lags, K=3, horizons, VAR, GARCH, **T4.8 window lengths**, **T4.9 LOCF exposure** | not started |
+| 8 | Reporting: tables incl. **T2.0B**, figures incl. **F4.8**, registries, provenance, logs, full CLI | partial (`run_all.py` init and default paths done) |
+| 9 | Smoke test on INDPRO and GDPC1 | not started |
 
-**Smoke-test target choice:** Comp §10 requires one monthly and one quarterly target. INDPRO and GDPC1 are used because both are complete, so the smoke test neither depends on nor prejudges the N1 decision. The monthly VAR block loads all five monthly series but forecasts only the smoke subset.
-
-**Part 6 is complete when** all unit, integration and validation tests pass; every output ID has a generator exercised by the smoke test; and the N1 decision is implemented. HLZ is done. No full thesis-baseline run is performed in Part 6. Then I stop for approval before Part 7.
+**Part 6 is complete when** all unit, integration and validation tests pass and every output ID has a generator exercised by the smoke test, including the amended T2.0B, T4.8/F4.8 and T4.9. No full thesis-baseline run is performed in Part 6. Then I stop for approval before Part 7.
 
 ## 10. What I will not do
 
-Change variables, transformations, windows, lags, regimes, horizons, tests or robustness specifications; add MSSTAR, Clark–West/Clark–McCracken, Amisano–Giacomini, polynomial models or nowcasting; substitute a generic HAC estimator for HLZ; label the ex-post state regression as Giacomini–White; fall back silently after a failed fit; interpolate or backfill the 2025-10 hole; invent an eligibility percentage, small-cell cutoff or threshold that the register rejected; run the full baseline or any Part 7/8 task; choose anything because it improves a result. Any further change I judge necessary comes to you first with options.
+Change variables, transformations, windows, lags, regimes, horizons, tests or robustness specifications; add MSSTAR, Clark–West/Clark–McCracken, Amisano–Giacomini, polynomial models or nowcasting; substitute a generic HAC estimator for HLZ; label the ex-post state regression as Giacomini–White; fall back silently after a failed fit; impute any value other than the two approved October 2025 cells; alter the official raw archive; re-download or overwrite a registered canonical input; re-search discrete specifications per window length; overwrite baseline artifacts with robustness results; invent an eligibility percentage, small-cell cutoff or threshold that the register rejected; run the full baseline or any Part 7/8 task; choose anything because it improves a result. Any further change I judge necessary comes to you first with options.

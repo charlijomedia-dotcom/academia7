@@ -91,46 +91,58 @@ class TestTargetConstruction:
             apply_decided_transform("FEDFUNDS", raw, "logdiff", config)
 
 
-class TestOpenDecisionBlocker:
-    """The permanent 2025-10 gap must stop work on the affected series, not be guessed.
-
-    CLAUDE.md §4 requires the affected analysis to stop until the user decides. The two
-    series with a known gap therefore refuse to produce a modelling target while
-    `missing_data_policy` is unset, and the four complete series are unaffected.
+class TestApprovedImputationPolicy:
+    """N1 is resolved: the approved raw-level LOCF is applied upstream, in the canonical
+    input. Sample construction therefore requires complete data and stops on any gap that
+    the approved rule does not cover.
     """
 
-    def test_known_missing_recorded_for_the_affected_series(self, config):
+    def test_policy_is_the_approved_locf_rule(self, config):
+        policy = config.get("missing_data_policy")
+        assert policy["rule"] == "locf_raw_level"
+        cells = {(c["series_id"], c["date"], c["source_date"]) for c in policy["applies_only_to"]}
+        assert cells == {
+            ("CPIAUCSL", "2025-10-01", "2025-09-01"),
+            ("UNRATE", "2025-10-01", "2025-09-01"),
+        }
+
+    def test_known_missing_still_recorded_for_the_affected_series(self, config):
         assert known_missing("CPIAUCSL", config) == ["2025-10-01"]
         assert known_missing("UNRATE", config) == ["2025-10-01"]
         assert known_missing("INDPRO", config) == []
         assert known_missing("GDPC1", config) == []
 
-    def test_policy_is_unset_so_cpi_is_blocked(self, config):
-        assert config.get("missing_data_policy") is None
+    def test_complete_series_builds_normally(self, config):
         index = pd.date_range("1947-01-01", periods=12, freq="MS")
         raw = pd.Series(np.arange(12, dtype=float) + 100.0, index=index)
-        with pytest.raises(OpenDecisionError, match="N1"):
+        assert len(build_target("CPIAUCSL", raw, config)) == 11
+
+    def test_a_remaining_gap_is_a_documented_stop(self, config):
+        # Data reaching this layer must already be complete; an unimputed gap means the
+        # canonical input was bypassed, which is a stop rather than a local repair.
+        index = pd.date_range("1947-01-01", periods=12, freq="MS")
+        values = np.arange(12, dtype=float) + 100.0
+        values[5] = np.nan
+        raw = pd.Series(values, index=index)
+        with pytest.raises(OpenDecisionError, match="still has missing observations"):
             build_target("CPIAUCSL", raw, config)
 
-    def test_unrate_is_blocked_too(self, config):
+    def test_rate_series_gap_also_stops(self, config):
         index = pd.date_range("1948-01-01", periods=12, freq="MS")
-        raw = pd.Series(np.linspace(4.0, 5.0, 12), index=index)
+        values = np.linspace(4.0, 5.0, 12)
+        values[3] = np.nan
+        raw = pd.Series(values, index=index)
         with pytest.raises(OpenDecisionError):
             apply_decided_transform("UNRATE", raw, "level", config)
 
-    def test_complete_series_are_not_blocked(self, config):
-        index = pd.date_range("1947-01-01", periods=12, freq="MS")
-        raw = pd.Series(100.0 * np.exp(np.arange(12) * 0.005), index=index)
-        build_target("INDPRO", raw, config)  # must not raise
-
-    def test_setting_a_policy_unblocks(self, config):
-        decided = config.with_overrides(
-            {"missing_data_policy": {"rule": "complete_case"}}, "test-decision"
+    def test_an_unapproved_policy_refuses_to_build(self, config):
+        altered = config.with_overrides(
+            {"missing_data_policy": {"rule": "linear_interpolation"}}, "unapproved"
         )
         index = pd.date_range("1947-01-01", periods=12, freq="MS")
         raw = pd.Series(np.arange(12, dtype=float) + 100.0, index=index)
-        target = build_target("CPIAUCSL", raw, decided)
-        assert len(target) == 11
+        with pytest.raises(OpenDecisionError, match="not the approved"):
+            build_target("CPIAUCSL", raw, altered)
 
 
 class TestVarSample:

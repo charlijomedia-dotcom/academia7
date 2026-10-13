@@ -31,6 +31,8 @@ class OpenDecisionError(RuntimeError):
     """Raised when work would require a methodological decision the user has not made.
 
     CLAUDE.md §4: stop the affected analysis, document, propose, and wait for approval.
+    The original N1 instance (October 2025 handling) was resolved by the approved
+    amendment of 13 October 2026; the guard remains for any future unapproved gap.
     """
 
 
@@ -148,27 +150,33 @@ def known_missing(series_id: str, config: Config) -> list[str]:
     return list((config.get("samples.known_missing", {}) or {}).get(series_id, []))
 
 
-def _require_missing_data_policy(series_id: str, config: Config) -> None:
-    """Enforce the open N1 decision.
+def _require_usable_series(series_id: str, series: pd.Series, config: Config) -> None:
+    """Refuse to build a modelling target from data that still contains gaps.
 
-    CPIAUCSL and UNRATE are permanently missing 2025-10 in the approved vintage. Part 5
-    assumes contiguous monthly series, forbids backfilling and interpolation, and defines
-    no rule for a permanent interior hole, so no sample may be built for these series
-    until the user chooses a rule.
+    The October 2025 gap is resolved upstream: Part 5 §2.2A applies the approved raw-level
+    LOCF once, in the canonical input CSV, before anything here runs. By the time a series
+    reaches sample construction it must therefore be complete over its usable range. A
+    remaining gap means either the canonical input was bypassed or an unapproved gap
+    exists, and both are stops rather than something to work around.
     """
-    gaps = known_missing(series_id, config)
-    if not gaps:
-        return
     policy = config.get("missing_data_policy", None)
-    if policy:
-        return
-    raise OpenDecisionError(
-        f"{series_id} has a permanent interior data gap at {', '.join(gaps)} and "
-        f"`missing_data_policy` is unset. The approved methodology assumes contiguous "
-        f"monthly series and forbids backfilling and interpolation, so the handling rule "
-        f"is a user decision. See notes/claude/data_discrepancy_2026-10-09.md (issue N1). "
-        f"Work on unaffected series continues; this one is stopped."
-    )
+    if not policy or policy.get("rule") != "locf_raw_level":
+        raise OpenDecisionError(
+            f"{series_id}: `missing_data_policy` is not the approved raw-level LOCF rule, "
+            f"so no modelling target may be constructed."
+        )
+    values = series.to_numpy(dtype=float)
+    if not np.isfinite(values).all():
+        gaps = [
+            d.strftime("%Y-%m-%d")
+            for d in pd.DatetimeIndex(series.index)[~np.isfinite(values)]
+        ]
+        raise OpenDecisionError(
+            f"{series_id}: still has missing observations at {gaps} after the approved "
+            f"imputation. Only the two October 2025 cells in Part 5 §2.2A may be filled, "
+            f"and they are filled when the canonical input is built. This is a documented "
+            f"stop, not something to impute here."
+        )
 
 
 def build_target(series_id: str, raw: pd.Series, config: Config) -> pd.Series:
@@ -178,11 +186,11 @@ def build_target(series_id: str, raw: pd.Series, config: Config) -> pd.Series:
     the predeclared §3.4 stationarity rule, so this function requires the decision to be
     supplied by the caller through `apply_decided_transform`.
     """
-    _require_missing_data_policy(series_id, config)
     spec = config.get(f"targets.{series_id}")
     transform = spec["transform"]
     kind = transform["kind"]
     clipped = clip_to_approved_range(raw, series_id, config)
+    _require_usable_series(series_id, clipped, config)
 
     if kind == "none":
         return clipped
@@ -201,8 +209,8 @@ def apply_decided_transform(
     series_id: str, raw: pd.Series, decision: str, config: Config
 ) -> pd.Series:
     """Apply the level-or-difference decision produced by the §3.4 rule."""
-    _require_missing_data_policy(series_id, config)
     clipped = clip_to_approved_range(raw, series_id, config)
+    _require_usable_series(series_id, clipped, config)
     if decision == "level":
         return clipped.dropna() if clipped.isna().any() else clipped
     if decision == "difference":

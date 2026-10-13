@@ -1,0 +1,203 @@
+{
+  "approved_endpoints": {
+    "monthly": "2026-08-01",
+    "quarterly": "2026-04-01"
+  },
+  "attribution": "Federal Reserve Economic Data (FRED) / ALFRED, Federal Reserve Bank of St. Louis, and the underlying official agencies: U.S. Bureau of Economic Analysis (GDPC1), U.S. Bureau of Labor Statistics (CPIAUCSL, UNRATE), Board of Governors of the Federal Reserve System (INDPRO, FEDFUNDS, M2SL), and the NBER business-cycle chronology distributed by FRED (USREC).",
+  "created_utc": "2026-10-13T07:36:27Z",
+  "csv_file": "thesis_input_2026-10-05.csv",
+  "csv_sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "dataset": "author-processed canonical research input",
+  "model_input_construction_rules": {
+    "imputation_authority": "part5_methodology_specification.md section 2.2A (13 October 2026)",
+    "imputation_rule": "raw-level LOCF, Part 5 section 2.2A",
+    "imputed_cells": [
+      {
+        "date": "2025-10-01",
+        "derived_value": "324.245",
+        "imputation_method": "LOCF",
+        "is_official_observation": false,
+        "observation_status": "IMPUTED_LOCF",
+        "official_value_missing": true,
+        "previous_observed_date": "2025-09-01",
+        "previous_observed_value": "324.245",
+        "reason": "official October 2025 release cancelled during the 2025 federal shutdown; user-approved raw-level LOCF under Part 5 section 2.2A",
+        "series_id": "CPIAUCSL",
+        "source_value": ""
+      },
+      {
+        "date": "2025-10-01",
+        "derived_value": "4.4",
+        "imputation_method": "LOCF",
+        "is_official_observation": false,
+        "observation_status": "IMPUTED_LOCF",
+        "official_value_missing": true,
+        "previous_observed_date": "2025-09-01",
+        "previous_observed_value": "4.4",
+        "reason": "official October 2025 release cancelled during the 2025 federal shutdown; user-approved raw-level LOCF under Part 5 section 2.2A",
+        "series_id": "UNRATE",
+        "source_value": ""
+      }
+    ],
+    "transformations_applied": "none; all transformations are computed in code after loading"
+  },
+  "not_an_official_fred_release": true,
+  "parent_source_manifest_sha256": "532a8a5b8e72e3e0fca2dfd22e0b4b9c0841e284cfdaec560d97ce73e0d952b1",
+  "parent_source_snapshot_hash": "7523966b3fb365c8602aa1b13754b8d823b1609a88b67b975bdf8233a576e994",
+  "provider": "FRED/ALFRED",
+  "redistribution_note": "Derived dataset for research replication, subject to the original providers' terms. Two cells are author-imputed and are not official statistics.",
+  "row_count": 5808,
+  "schema": [
+    "series_id",
+    "date",
+    "frequency",
+    "value",
+    "source_value",
+    "observation_status",
+    "imputation_method",
+    "imputation_source_date"
+  ],
+  "serialization": {
+    "date_format": "%Y-%m-%d",
+    "encoding": "utf-8",
+    "line_terminator": "\\n",
+    "sort_by": [
+      "series_id",
+      "date"
+    ],
+    "values_written_verbatim_from_source": true
+  },
+  "series": [
+    {
+      "frequency": "M",
+      "n_imputed": 1,
+      "n_observed": 955,
+      "raw_first_date": "1947-01-01",
+      "raw_last_date": "2026-08-01",
+      "raw_missing_dates": [
+        "2025-10-01"
+      ],
+      "raw_row_count": 956,
+      "raw_source_sha256": "5d859cc8dcd6911c07fd13908462f1d0d962ccf47e5aafef5f4c98d47ab1f4c2",
+      "row_count": 956,
+      "seasonal_adjustment": "SA",
+      "series_id": "CPIAUCSL",
+      "source_institution": "U.S. Bureau of Labor Statistics",
+      "title": "Consumer Price Index for All Urban Consumers: All Items in U.S. City Average",
+      "units": "Index 1982-1984=100",
+      "usable_first_date": "1947-01-01",
+      "usable_last_date": "2026-08-01"
+    },
+    {
+      "frequency": "M",
+      "n_imputed": 0,
+      "n_observed": 866,
+      "raw_first_date": "1954-07-01",
+      "raw_last_date": "2026-09-01",
+      "raw_missing_dates": [],
+      "raw_row_count": 867,
+      "raw_source_sha256": "6c22bea085167a1969a9f5603b03bd7271998640d21b14dce44db43eab0ff83f",
+      "row_count": 866,
+      "seasonal_adjustment": "NSA",
+      "series_id": "FEDFUNDS",
+      "source_institution": "Board of Governors of the Federal Reserve System",
+      "title": "Federal Funds Effective Rate",
+      "units": "Percent",
+      "usable_first_date": "1954-07-01",
+      "usable_last_date": "2026-08-01"
+    },
+    {
+      "frequency": "Q",
+      "n_imputed": 0,
+      "n_observed": 318,
+      "raw_first_date": "1947-01-01",
+      "raw_last_date": "2026-04-01",
+      "raw_missing_dates": [],
+      "raw_row_count": 318,
+      "raw_source_sha256": "e38187fca75eff25bc5d35a874ea50d71bf615c46e08d4a1195f9334b414a965",
+      "row_count": 318,
+      "seasonal_adjustment": "SAAR",
+      "series_id": "GDPC1",
+      "source_institution": "U.S. Bureau of Economic Analysis",
+      "title": "Real Gross Domestic Product",
+      "units": "Billions of Chained 2017 Dollars",
+      "usable_first_date": "1947-01-01",
+      "usable_last_date": "2026-04-01"
+    },
+    {
+      "frequency": "M",
+      "n_imputed": 0,
+      "n_observed": 956,
+      "raw_first_date": "1919-01-01",
+      "raw_last_date": "2026-08-01",
+      "raw_missing_dates": [],
+      "raw_row_count": 1292,
+      "raw_source_sha256": "c2cd25722d8c92f2485a2958537b103c94b81832b4a95273038ec90e916599f6",
+      "row_count": 956,
+      "seasonal_adjustment": "SA",
+      "series_id": "INDPRO",
+      "source_institution": "Board of Governors of the Federal Reserve System",
+      "title": "Industrial Production: Total Index",
+      "units": "Index 2017=100",
+      "usable_first_date": "1947-01-01",
+      "usable_last_date": "2026-08-01"
+    },
+    {
+      "frequency": "M",
+      "n_imputed": 0,
+      "n_observed": 812,
+      "raw_first_date": "1959-01-01",
+      "raw_last_date": "2026-08-01",
+      "raw_missing_dates": [],
+      "raw_row_count": 812,
+      "raw_source_sha256": "adfb07b2a82b7172395706cb2faccd3879f84f74e56d30b59d97d42e7ebdbe3a",
+      "row_count": 812,
+      "seasonal_adjustment": "SA",
+      "series_id": "M2SL",
+      "source_institution": "Board of Governors of the Federal Reserve System",
+      "title": "M2",
+      "units": "Billions of Dollars",
+      "usable_first_date": "1959-01-01",
+      "usable_last_date": "2026-08-01"
+    },
+    {
+      "frequency": "M",
+      "n_imputed": 1,
+      "n_observed": 943,
+      "raw_first_date": "1948-01-01",
+      "raw_last_date": "2026-09-01",
+      "raw_missing_dates": [
+        "2025-10-01"
+      ],
+      "raw_row_count": 945,
+      "raw_source_sha256": "ddb5ba03750954d011fb822e7eaabb80a9d6da648fa9102165d8608b47847c80",
+      "row_count": 944,
+      "seasonal_adjustment": "SA",
+      "series_id": "UNRATE",
+      "source_institution": "U.S. Bureau of Labor Statistics",
+      "title": "Unemployment Rate",
+      "units": "Percent",
+      "usable_first_date": "1948-01-01",
+      "usable_last_date": "2026-08-01"
+    },
+    {
+      "frequency": "M",
+      "n_imputed": 0,
+      "n_observed": 956,
+      "raw_first_date": "1854-12-01",
+      "raw_last_date": "2026-09-01",
+      "raw_missing_dates": [],
+      "raw_row_count": 2062,
+      "raw_source_sha256": "bf6678880c4954a12425f7832ba5604f55960f52cba83e939c50166807742076",
+      "row_count": 956,
+      "seasonal_adjustment": "NSA",
+      "series_id": "USREC",
+      "source_institution": "NBER chronology distributed by the Federal Reserve Bank of St. Louis",
+      "title": "NBER based Recession Indicators for the United States from the Period following the Peak through the Trough",
+      "units": "+1 or 0",
+      "usable_first_date": "1947-01-01",
+      "usable_last_date": "2026-08-01"
+    }
+  ],
+  "vintage_date": "2026-10-05"
+}
