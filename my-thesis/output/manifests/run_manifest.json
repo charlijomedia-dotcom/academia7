@@ -1,0 +1,28 @@
+{
+  "code_commit_sha": "3e7c32cbc9bb16588f650c6c5b45c7c16784c5bd",
+  "code_tree_dirty": false,
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "data_cutoff": "2026-08-01",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "environment": {
+    "packages": {
+      "arch": "8.0.0",
+      "matplotlib": "3.11.2",
+      "numpy": "2.4.6",
+      "pandas": "3.0.6",
+      "pyarrow": "26.0.0",
+      "scipy": "1.17.1",
+      "statsmodels": "0.15.0",
+      "yaml": "6.0.1"
+    },
+    "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+    "python": "3.11.15"
+  },
+  "namespace": "baseline",
+  "notes": {
+    "parent_source_snapshot_hash": "7523966b3fb365c8602aa1b13754b8d823b1609a88b67b975bdf8233a576e994"
+  },
+  "run_id": "baseline-20261013T074048-949fcd76",
+  "started_utc": "2026-10-13T07:40:48Z",
+  "vintage_date": "2026-10-05"
+}
