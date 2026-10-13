@@ -1068,7 +1068,7 @@ Real GDP for 2026Q2 was available, while the next quarterly release was schedule
 
 ### Methodological choice
 
-Build one immutable thesis snapshot corresponding to 2026-10-05, save raw files and hashes, and make normal reruns read only those files.
+Build one immutable thesis snapshot corresponding to 2026-10-05, save untouched official source files and hashes, generate a **separately hashed, author-processed seven-series CSV containing the disclosed October 2025 LOCF replacements**, and make normal reruns read **only that canonical CSV** for model input.
 
 ### Official support
 
@@ -1078,7 +1078,7 @@ This matters because GDP, industrial production, monetary aggregates, and price 
 
 ### Defense sentence
 
-> A dissertation result must not change simply because the statistical agency revises history after submission. We therefore freeze the exact vintage used for the thesis and keep ALFRED as an independent web-based reconstruction route.
+> A dissertation result must not change simply because the statistical agency revises history after submission. We freeze the official historical-vintage source observations and the documented, immutable modeling-input CSV separately. All thesis calculations load the latter; ALFRED remains an independent reconstruction route for the original official values.
 
 ### Status
 
@@ -1090,21 +1090,45 @@ This matters because GDP, industrial production, monetary aggregates, and price 
 
 ### Methodological choice
 
-Download raw official series values, freeze them, and compute every transformation in the thesis code.
+Download raw official series values and freeze them unchanged. Build and hash a **separate derived long-format CSV** with the two explicitly approved October 2025 raw-level LOCF replacements; load that canonical file into a DataFrame and compute every model-target transformation in thesis code.
 
 ### Logical basis
 
 If the remote provider performs transformations, a future change in provider defaults, aggregation conventions, or historical values can make the transformation harder to audit.
 
-Local transformation gives one explicit formula and one immutable input.
+Local transformation gives one explicit formula and one immutable canonical input, whose deviations from raw official data are traceable to a two-row imputation audit.
 
 ### Defense sentence
 
-> We separate data acquisition from statistical transformation. The raw official observations are frozen first, then every growth rate and difference is produced transparently by the thesis code.
+> We separate data acquisition from econometric transformation. Official source observations are frozen unchanged, the two approved October values are marked as imputed in a separately hashed model-input CSV, and every growth rate and difference is produced transparently by code after reloading that CSV.
 
 ### Status
 
 **Strong reproducibility logic.**
+
+---
+
+## 3.42 User-approved October 2025 LOCF and reproducible data dissemination (13 October 2026)
+
+### Methodological choice
+
+Retain the official October 5, 2026 historical-vintage observations unchanged as a source archive. For the **distinct canonical author-processed input only**, replace the unreported October 2025 CPIAUCSL and UNRATE **raw-level** observations with the immediately preceding September 2025 level from the **same** series. Freeze and publish the seven-series CSV, with observed-versus-LOCF indicators, the original missingness, complete metadata, and hashes. All later statistical transformations, estimation and forecast comparisons begin by loading that already frozen CSV, rather than downloading live FRED history.
+
+### Academic rationale and limitation
+
+**The direct rationale is continuity of the user-approved fixed-window comparison with the approved August 2026 endpoint**, not a claim that economic activity was unchanged in October or that LOCF is optimal. A single identified and completely documented imputation makes the estimation inputs deterministic and identical across AR, ARMA, MSAR and STAR, rather than introducing distinct missing-data estimators across model families. It does not establish that the imputed values are unbiased or fully observed.
+
+The cost must be documented in the dissertation. By construction, October 2025 CPI inflation computed from the LOCF index is **zero** under the approved 1200×log-difference transform, and the subsequent November log change captures the available September-to-November change over an adjacent monthly pair after imputation. If unemployment is analyzed in first differences, the October 2025 rate change is also constructed to equal zero. These numerical observations are **artificial**, can propagate into lag histories and re-estimations, and should not be interpreted as measurements of the economic process. The main-horse-race inferences remain **conditional on this explicitly disclosed LOCF data convention**.
+
+The source archive is retained so another researcher can inspect the genuine missing values or choose another method. The machine-readable T2.0B two-row imputation provenance audit, and T4.9 direct/indirect forecast-exposure report, reduce the risk that the LOCF assumption is hidden or mistaken for an official statistical release. The canonical dataset is **author-processed secondary data**, to be cited together with FRED/ALFRED and the underlying official agencies, and distributed in accordance with the data-provider terms.
+
+### Defense sentence
+
+> The US federal shutdown created official October 2025 CPI and unemployment data gaps. To preserve the approved August 2026 endpoint and a common fixed-rolling-window forecast experiment, we carry the previous observed raw level forward **for these two observations only**. We retain all original official raw files and document each replacement in the published dataset, so the imputation is fully auditable rather than disguised as an official value. Forecast inferences involving the resulting series are conditional on this transparent assumption; the study does not claim LOCF recovers the unobserved economic outcome.
+
+### Status
+
+**Explicit, user-approved research-design assumption; not a universally validated imputation method.** The scientific effect of imputation on nonlinear inference is a limitation requiring clear discussion, not a property proved by the cited rolling-window forecasting literature.
 
 ---
 
