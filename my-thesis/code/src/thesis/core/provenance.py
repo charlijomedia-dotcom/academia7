@@ -19,8 +19,8 @@ from typing import Any
 
 import pandas as pd
 
-from .hashing import sha256_obj
-from .paths import PROJECT_ROOT, Namespace, OutputLayout
+from .hashing import sha256_file, sha256_obj
+from .paths import CODE_ROOT, PROJECT_ROOT, Namespace, OutputLayout
 
 PROVENANCE_COLUMNS = (
     "run_id",
@@ -72,17 +72,25 @@ def environment_record() -> dict[str, Any]:
         "arch",
         "matplotlib",
         "pyarrow",
+        "psutil",
+        "joblib",
         "yaml",
+        "tabulate",
     ):
         try:
             module = __import__(name)
             versions[name] = getattr(module, "__version__", "unknown")
         except ImportError:
             versions[name] = "not installed"
+    lock = CODE_ROOT / "requirements.lock.txt"
     return {
         "python": platform.python_version(),
         "platform": platform.platform(),
         "packages": versions,
+        # Approved decision R2: the pinned set is part of the provenance of a result,
+        # so the lock file's hash is recorded beside the versions actually loaded. A
+        # mismatch between the two is then visible rather than silent.
+        "requirements_lock_sha256": sha256_file(lock) if lock.exists() else "absent",
     }
 
 

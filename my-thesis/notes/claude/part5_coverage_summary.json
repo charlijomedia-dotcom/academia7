@@ -1,10 +1,10 @@
 {
   "evidence_root": "../smoke_output",
-  "requirements": 80,
+  "requirements": 81,
   "status_counts": {
-    "COMPLETE": 78,
+    "COMPLETE": 79,
     "DEFERRED TO PART 8": 1,
     "DISCLOSURE": 1
   },
-  "tests_collected": 495
+  "tests_collected": 513
 }

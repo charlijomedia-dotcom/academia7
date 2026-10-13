@@ -506,6 +506,12 @@ REGISTER: list[Requirement] = [
         ("manifests/run_summary.json",),
         ("tests/integration/test_pipeline.py::TestEveryStageRuns",)),
     Requirement(
+        "R2", "approved decision R2 / " + f"{C} §1", "Install and pin the dependency set, "
+        "so every empirical result is traceable to the library versions behind it",
+        ("requirements.lock.txt", "src/thesis/core/provenance.py:environment_record"),
+        ("logs/environment.json",),
+        ("tests/unit/test_dependencies.py",)),
+    Requirement(
         "C4", f"{C} §4", "Mandatory module structure under src/thesis",
         ("src/thesis",), (), ("tests/unit/test_core.py",)),
     Requirement(

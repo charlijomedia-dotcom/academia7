@@ -1,0 +1,39 @@
+# Pinned dependency versions for the Part 6-8 pipeline (approved decision R2).
+#
+# These are the exact versions every empirical result in this repository was
+# produced with. The run manifest records them again per run, so an output can
+# always be traced to the library versions behind it.
+#
+# Captured: 2026-10-13T11:29:35Z
+# Python:   3.11.15
+# Platform: Linux-6.18.44-fc-v114-x86_64-with-glibc2.39
+#
+# Install with:  pip install -r requirements.lock.txt
+
+# --- runtime ---
+numpy==2.4.6
+scipy==1.17.1
+pandas==3.0.6
+statsmodels==0.15.0
+arch==8.0.0
+matplotlib==3.11.2
+pyarrow==26.0.0
+psutil==7.2.2
+joblib==1.6.0
+PyYAML==6.0.1
+tabulate==0.10.0
+
+# --- development and testing ---
+pytest==9.1.1
+pytest-cov==7.1.0
+
+# --- external, not installable via pip ---
+# R and the TSA package are needed only to regenerate the Tsay reference values in
+# tests/fixtures/tsay_reference_cases.json (approved decision D3). The test that
+# uses them reads the stored values and needs neither. To regenerate on Debian or
+# Ubuntu:
+#
+#   apt-get install -y r-base-core r-cran-mgcv libcurl4-openssl-dev \
+#                      gfortran libblas-dev liblapack-dev
+#   Rscript -e 'install.packages(c("TSA","jsonlite"), repos="https://cloud.r-project.org")'
+#

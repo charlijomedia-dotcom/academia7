@@ -386,3 +386,28 @@ node must actually be collected by pytest. It writes
 `notes/claude/part5_coverage_matrix.csv`, `part5_coverage_summary.json` and
 `part6_coverage_matrix.md`. Prose in the markdown is generated from the same verification
 that produced the CSV, so the two cannot drift apart.
+
+### H11 — Dependencies pinned (approved decision R2)
+
+R2 approved "install and pin". `pyproject.toml` declared the dependencies but pinned
+none of them, which leaves a recorded result untraceable to the library versions that
+produced it. `code/requirements.lock.txt` now pins the exact set the Part 6 results were
+produced with:
+
+```
+numpy 2.4.6        scipy 1.17.1       pandas 3.0.6
+statsmodels 0.15.0 arch 8.0.0         matplotlib 3.11.2
+pyarrow 26.0.0     psutil 7.2.2       joblib 1.6.0
+PyYAML 6.0.1       tabulate 0.10.0    pytest 9.1.1
+```
+
+on Python 3.11.15. `environment_record()` now also records the lock file's SHA-256 beside
+the versions actually loaded, so a drift between the pinned set and the running
+environment appears in every run manifest instead of passing silently.
+`tests/unit/test_dependencies.py` (18 tests) asserts the lock file exists, pins concrete
+versions, covers every declared runtime dependency, and still matches what is installed.
+
+R and TSA are recorded in the lock file as external and are needed only to regenerate the
+Tsay reference values; the test that consumes them reads the stored fixture and needs
+neither. The apt and CRAN commands to reproduce that environment are in the lock file.
+
