@@ -14,7 +14,11 @@ smoke:
   # The approved rolling-window lengths are kept unchanged, so the smoke run still
   # exercises the real 240/120 baseline and the real 180/240/300 and 90/120/150
   # sensitivity boundaries; only the number of origins is cut.
-  max_origins: 6
+  # Must exceed the longest approved horizon (12 monthly, 4 quarterly), or the final
+  # origins cannot realize an h=12 target and the longest horizon gets no rows at all —
+  # leaving a whole code path unexercised. 18 gives every approved horizon real output
+  # while keeping the run short.
+  max_origins: 18
   # The monthly VAR block still loads all five monthly series, but forecasts only the
   # smoke subset.
   var_enabled: true
