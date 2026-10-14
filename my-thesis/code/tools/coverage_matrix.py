@@ -353,6 +353,24 @@ REGISTER: list[Requirement] = [
         ("robustness/T4.4_horizon_robustness.csv",),
         ("tests/validation/test_models.py", "tests/integration/test_model_compatibility.py")),
     Requirement(
+        "M9.4-reach", f"{M} §9.4", "Each forecast horizon is evaluated on every eligible "
+        "target date through the approved sample endpoint; requesting a longer horizon "
+        "never truncates a shorter one",
+        ("src/thesis/forecasting/windows.py:estimation_origins",
+         "src/thesis/forecasting/windows.py:targets_for",
+         "src/thesis/forecasting/windows.py:horizon_coverage",
+         "src/thesis/forecasting/rolling.py:run_chain"),
+        ("forecasts/forecast_horizon_coverage.csv",),
+        ("tests/integration/test_horizon_coverage.py",
+         "tests/integration/test_locf_exposure_reach.py")),
+    Requirement(
+        "M9.3-cache", f"{M} §9.3 / {C} §6", "A cached fit is reused across horizon sets "
+        "only when it covers every requested horizon, and reuse changes no number",
+        ("src/thesis/forecasting/rolling.py:_covers",
+         "src/thesis/core/cache.py:CacheKey"),
+        (),
+        ("tests/integration/test_cache_horizons.py",)),
+    Requirement(
         "M9.5", f"{M} §9.5", "Mandatory estimation-window-length sensitivity at "
         "180/240/300 and 90/120/150, baseline specifications reused, common calendar",
         ("src/thesis/forecasting/windows.py:common_calendar",

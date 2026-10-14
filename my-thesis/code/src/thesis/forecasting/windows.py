@@ -76,6 +76,75 @@ def rolling_origins(
     return origins
 
 
+def estimation_origins(
+    index: pd.DatetimeIndex,
+    window_length: int,
+    horizons: Sequence[int],
+    *,
+    max_origins: int | None = None,
+) -> list[Origin]:
+    """Every origin with a full estimation window and at least one realizable target.
+
+    One fitted model serves all requested horizons, so the origin set must not be
+    restricted by the **longest** horizon: doing so throws away the late-sample origins
+    at which a shorter horizon still has a realized target. Part 5 §9.4 makes h=1 the
+    primary exercise and the longer horizons separate robustness analyses, so h=1 must
+    run to the approved sample endpoint whether or not h=12 was also requested.
+
+    The origin set is therefore bounded by the **shortest** requested horizon, and each
+    horizon's targets are taken only where they fall inside the sample. The returned
+    `Origin` carries the shortest horizon as its anchor; the per-horizon target dates are
+    resolved by `targets_for`.
+    """
+    horizons = sorted({int(h) for h in horizons})
+    if not horizons:
+        raise ValueError("at least one horizon is required")
+    return rolling_origins(index, window_length, horizon=min(horizons),
+                           max_origins=max_origins)
+
+
+def targets_for(
+    origin: Origin, horizons: Sequence[int], index: pd.DatetimeIndex
+) -> list[tuple[int, int, pd.Timestamp]]:
+    """The (horizon, target position, target date) triples realizable from one origin.
+
+    A horizon whose target would fall past the end of the sample is omitted rather than
+    producing a forecast with no realized value to score it against.
+    """
+    index = pd.DatetimeIndex(index)
+    out = []
+    for horizon in sorted({int(h) for h in horizons}):
+        target_position = origin.position + horizon
+        if 0 <= target_position < len(index):
+            out.append((horizon, target_position, index[target_position]))
+    return out
+
+
+def horizon_coverage(
+    index: pd.DatetimeIndex,
+    window_length: int,
+    horizons: Sequence[int],
+    *,
+    max_origins: int | None = None,
+) -> dict[int, dict]:
+    """Per-horizon origin and target coverage, for the forecast-origin audit."""
+    origins = estimation_origins(index, window_length, horizons, max_origins=max_origins)
+    index = pd.DatetimeIndex(index)
+    summary: dict[int, dict] = {}
+    for horizon in sorted({int(h) for h in horizons}):
+        realizable = [o for o in origins if o.position + horizon < len(index)]
+        summary[horizon] = {
+            "n_origins": len(realizable),
+            "first_origin": realizable[0].origin_date if realizable else None,
+            "last_origin": realizable[-1].origin_date if realizable else None,
+            "first_target": (index[realizable[0].position + horizon]
+                             if realizable else None),
+            "last_target": (index[realizable[-1].position + horizon]
+                            if realizable else None),
+        }
+    return summary
+
+
 def initial_window(index: pd.DatetimeIndex, window_length: int) -> pd.DatetimeIndex:
     """The initial estimation window: the first `window_length` observations.
 

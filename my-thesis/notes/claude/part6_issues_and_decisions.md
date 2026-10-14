@@ -411,3 +411,78 @@ R and TSA are recorded in the lock file as external and are needed only to regen
 Tsay reference values; the test that consumes them reads the stored fixture and needs
 neither. The apt and CRAN commands to reproduce that environment are in the lock file.
 
+### H12 — Corrected methodological implementation error: horizon-dependent origin truncation
+
+**Found by the user in independent review of the pushed Part 6 code, 14 October 2026.**
+This was the most consequential defect in Part 6 and it was mine, not a specification
+ambiguity.
+
+**The defect.** `forecasting/rolling.run_chain` built its origin set with
+`rolling_origins(index, window_length, horizon=max(horizons))`. One fitted model serves
+every requested horizon, so bounding the origin set by the **longest** horizon discarded
+the late-sample origins at which a **shorter** horizon still had a realized target. With
+the approved monthly horizons [1,3,6,12] and quarterly [1,2,4], every horizon inherited
+the longest horizon's last origin.
+
+**Verified impact on the approved sample**, measured directly from the frozen data:
+
+| target | freq | h | last h-step target, before | after | forecasts lost |
+|---|---|---:|---|---|---:|
+| CPIAUCSL, UNRATE, INDPRO, FEDFUNDS, M2SL | M | 1 | 2025-09 | **2026-08** | 11 each |
+| the same five | M | 3 | 2025-11 | 2026-08 | 9 each |
+| the same five | M | 6 | 2026-02 | 2026-08 | 6 each |
+| the same five | M | 12 | 2026-08 | 2026-08 | 0 |
+| GDPC1 | Q | 1 | 2025Q3 | **2026Q2** | 3 |
+| GDPC1 | Q | 2 | 2025Q4 | 2026Q2 | 2 |
+| GDPC1 | Q | 4 | 2026Q2 | 2026Q2 | 0 |
+
+**135 h-step forecasts were lost in total, 58 of them at the primary horizon.** This
+contradicted Part 5 §9.4, which makes h=1 the primary exercise and the longer horizons
+separate robustness analyses, and it silently undid the approved decision to retain the
+2026M8 and 2026Q2 endpoints.
+
+**Worst consequence: T4.9 was vacuous at the primary horizon.** The amendment created
+T4.9 to quantify exposure to the two approved October 2025 LOCF cells. The CPI growth
+observations that depend on the imputed October level are 2025-10 and 2025-11. Monthly
+h=1 stopped at 2025-09, one month short, so **every target-side exposure flag was
+necessarily false**: the diagnostic reported zero affected realized targets where the
+correct answer is two. Verified numerically before and after.
+
+**The fix.** `windows.estimation_origins` bounds the origin set by the **shortest**
+requested horizon; `windows.targets_for` resolves each horizon's target, omitting only
+those past the sample end; `windows.horizon_coverage` reports each horizon's own reach.
+`run_chain` uses these, and `ChainResult.coverage_rows()` feeds a new per-horizon audit,
+`output/forecasts/forecast_horizon_coverage.csv`, so a truncation at any horizon is
+visible in the output rather than having to be inferred.
+
+**Preserved, and asserted by test, not assumed:** rolling-window boundaries
+(`window_end == origin_date`, `window_start` exactly `window_length-1` observations
+earlier); no look-ahead; warm starts and their predecessor-hash cache keys; deterministic
+STAR seeds keyed on series, model, specification and origin date; and horizon-specific
+alignment (`target_position == origin_position + horizon`, with the actual value read from
+that target date).
+
+**Cache correctness, which the user also flagged.** The cache key identifies a fit by
+data, specification, window and warm-start predecessor — deliberately not by the horizon
+set, so decision T4's superset reuse works. But a payload written for a narrower horizon
+set was being read for a wider request, and the missing horizon became a silent NaN. The
+payload now records the horizons it covers and `_covers` refits when coverage is
+insufficient; `cache_horizon_misses` is reported in the origin audit. Superset reuse is
+numerically sound because a forecast at horizon h does not depend on which other horizons
+were requested beside it: AR, ARMA and MSAR iterate or recurse deterministically, and the
+STAR residual bootstrap draws one block of shocks per step from a seeded stream, so its
+first h means are identical whether 3 or 12 steps were simulated. That prefix stability is
+asserted directly, and a further test checks that a reused forecast equals a freshly
+computed one to zero tolerance for all four model families.
+
+**Other downstream effects.** T3.3, T3.3A (HLZ), T3.3B (DM-HLN), T3.4 (MCS), T3.5, T3.6,
+T4.TP1 and T4.3 are all computed from the forecast rows, so they gain the recovered dates
+automatically; no logic in them needed changing. T4.1, T4.2, T4.5, T4.6 and T4.8 each
+request a single horizon, so they were never affected. T4.4 now records each horizon's own
+evaluation span with an explicit note, because the horizons genuinely end on different
+dates and a reader must not take the comparison for a common-sample one. T3.3 rows carry
+their own first and last target date for the same reason.
+
+**Regression tests added:** `test_horizon_coverage.py` (19),
+`test_cache_horizons.py` (11), `test_locf_exposure_reach.py` (11).
+

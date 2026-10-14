@@ -26,7 +26,7 @@ from ..core.cache import CacheKey, FitCache
 from ..core.config import Config
 from ..core.schemas import DataGapEvent, FailureEvent, FitRecord, ReasonCode, Status
 from ..models.registry import FitOutcome, ModelSpec, fit_and_forecast
-from .windows import Origin, rolling_origins
+from .windows import Origin, estimation_origins, horizon_coverage, targets_for
 
 
 @dataclass
@@ -52,6 +52,8 @@ class ChainResult:
     valid: int = 0
     failed: int = 0
     from_cache: int = 0
+    cache_horizon_misses: int = 0
+    coverage: dict[int, dict] = field(default_factory=dict)
 
     def counts(self) -> dict[str, int]:
         return {
@@ -59,7 +61,30 @@ class ChainResult:
             "valid_origins": self.valid,
             "failed_origins": self.failed,
             "origins_from_cache": self.from_cache,
+            "cache_horizon_misses": self.cache_horizon_misses,
         }
+
+    def coverage_rows(self) -> list[dict[str, Any]]:
+        """One row per horizon, so the audit shows each horizon's own reach."""
+        rows = []
+        for horizon in sorted(self.coverage):
+            entry = self.coverage[horizon]
+            realized = (self.forecasts[self.forecasts["horizon"] == horizon]
+                        if not self.forecasts.empty else self.forecasts)
+            rows.append({
+                "series": self.series, "model": self.spec.model,
+                "spec_label": self.spec.label, "window_length": self.window_length,
+                "horizon": horizon,
+                "n_eligible_origins": entry["n_origins"],
+                "first_origin": entry["first_origin"],
+                "last_origin": entry["last_origin"],
+                "first_target": entry["first_target"],
+                "last_target": entry["last_target"],
+                "n_rows_emitted": len(realized),
+                "n_finite_forecasts": (
+                    int(realized["forecast"].notna().sum()) if len(realized) else 0),
+            })
+        return rows
 
 
 def _cache_key(
@@ -86,8 +111,12 @@ def _cache_key(
     )
 
 
-def _payload(outcome: FitOutcome) -> dict[str, Any]:
+def _payload(outcome: FitOutcome, horizons: Sequence[int]) -> dict[str, Any]:
     return {
+        # The horizons this payload was produced for. A later run asking for a horizon
+        # the payload does not carry must refit rather than silently read a missing
+        # forecast as NaN; `_covers` enforces that on the way in.
+        "horizons": sorted(int(h) for h in horizons),
         "forecasts": {str(h): v for h, v in outcome.forecasts.items()},
         "skeleton": {str(h): v for h, v in outcome.skeleton_forecasts.items()},
         "status": outcome.record.status.value,
@@ -105,6 +134,24 @@ def _payload(outcome: FitOutcome) -> dict[str, Any]:
             if outcome.warm_payload is not None else None
         ),
     }
+
+
+def _covers(payload: dict, horizons: Sequence[int]) -> bool:
+    """Whether a cached payload can serve every requested horizon.
+
+    Reuse across horizon sets is sound because a forecast at horizon h does not depend on
+    which other horizons were requested alongside it: AR, ARMA and MSAR iterate or
+    recurse deterministically, and the STAR residual bootstrap draws one block of shocks
+    per step from a seeded stream, so its first h means are identical whether 3 or 12
+    steps were simulated. That prefix stability is asserted by a test rather than assumed.
+
+    A payload written before this field existed carries no horizon list and is treated as
+    not covering anything, so it is refitted instead of trusted.
+    """
+    stored = payload.get("horizons")
+    if not isinstance(stored, list):
+        return False
+    return set(int(h) for h in horizons) <= set(int(h) for h in stored)
 
 
 def _record_from_payload(payload: dict, spec: ModelSpec, series: str, origin: Origin) -> FitRecord:
@@ -141,8 +188,10 @@ def run_chain(
     """Run every forecast origin for one model on one window length."""
     horizons = sorted(set(int(h) for h in horizons))
     index = pd.DatetimeIndex(y.index)
-    origins = rolling_origins(index, window_length, horizon=max(horizons),
-                              max_origins=max_origins)
+    # Bounded by the SHORTEST horizon, not the longest: one fit serves every horizon, so
+    # requesting h=12 alongside h=1 must not discard the late origins at which h=1 still
+    # has a realized target (Part 5 §9.4 makes h=1 the primary exercise).
+    origins = estimation_origins(index, window_length, horizons, max_origins=max_origins)
     use_warm = config.get("forecasting.warm_starts", True) if warm_starts is None else warm_starts
 
     rows: list[dict[str, Any]] = []
@@ -173,6 +222,11 @@ def run_chain(
         if cache is not None and identity is not None:
             key = _cache_key(identity, series_name, transformation, spec, origin, predecessor_hash)
             payload = cache.get(key)
+            if payload is not None and not _covers(payload, horizons):
+                # The cached fit is for this window but was produced for a narrower set
+                # of horizons. Refit rather than report a missing horizon as NaN.
+                payload = None
+                result.cache_horizon_misses += 1
 
         if payload is not None:
             record = _record_from_payload(payload, spec, series_name, origin)
@@ -195,7 +249,7 @@ def run_chain(
             if outcome.usable and outcome.warm_payload is not None:
                 warm_payload = outcome.warm_payload
             if key is not None and cache is not None:
-                cache.put(key, _payload(outcome))
+                cache.put(key, _payload(outcome, horizons))
 
         records.append(record)
         if record.status is Status.FAILED:
@@ -227,10 +281,7 @@ def run_chain(
         if use_warm and warm_payload is not None:
             predecessor_hash = f"{np.round(np.asarray(warm_payload, float).ravel(), 10).tolist()}"
 
-        for horizon in horizons:
-            target_position = origin.position + horizon
-            if target_position >= len(index):
-                continue
+        for horizon, target_position, _ in targets_for(origin, horizons, index):
             actual = float(y.iloc[target_position])
             forecast = forecasts.get(horizon, np.nan)
             rows.append({
@@ -250,6 +301,8 @@ def run_chain(
             })
 
     result.forecasts = pd.DataFrame(rows)
+    result.coverage = horizon_coverage(index, window_length, horizons,
+                                       max_origins=max_origins)
     result.fit_records = records
     result.failures = failures
     result.data_gaps = gaps

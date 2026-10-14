@@ -668,7 +668,8 @@ class Pipeline:
 
     def forecasting_stage(self) -> StageOutputs:
         stage = StageOutputs("forecasts")
-        audit_rows = []
+        audit_rows: list[dict[str, Any]] = []
+        coverage_rows: list[dict[str, Any]] = []
         self.chain_results: dict[str, dict[str, Any]] = {}
         with self.runtime.stage("forecasting") as timing:
             for series_id in self._selected_targets():
@@ -697,6 +698,10 @@ class Pipeline:
                                         if not chain.forecasts.empty else None),
                     })
 
+                for _, chain in [(m, self.chain_results[series_id][m])
+                                 for m in self.chain_results[series_id]]:
+                    coverage_rows.extend(chain.coverage_rows())
+
                 combined = pd.concat([f for f in self.forecasts[series_id].values() if not f.empty],
                                      ignore_index=True) if self.forecasts[series_id] else pd.DataFrame()
                 self._write(combined, self.layout.forecasts, f"forecasts_{series_id}.csv",
@@ -704,6 +709,10 @@ class Pipeline:
 
             self._write(pd.DataFrame(audit_rows), self.layout.forecasts,
                         "forecast_origin_audit.csv", stage)
+            # Each horizon's own reach, so a truncation at any horizon is visible in the
+            # output rather than having to be inferred from the forecast files.
+            self._write(pd.DataFrame(coverage_rows), self.layout.forecasts,
+                        "forecast_horizon_coverage.csv", stage)
             timing.notes = f"{len(audit_rows)} rolling chains"
         self.checkpoints.record("forecasts", {"targets": sorted(self.targets)},
                                 {"chains": len(audit_rows)})
@@ -768,6 +777,10 @@ class Pipeline:
                     for model, frame in frames.items():
                         chain = self.chain_results[series_id][model]
                         row = accuracy[accuracy["model"] == model].iloc[0].to_dict()
+                        span = frame[np.isfinite(frame["forecast"])
+                                     & np.isfinite(frame["actual"])]["target_date"]
+                        row["first_target"] = span.min() if len(span) else None
+                        row["last_target"] = span.max() if len(span) else None
                         counts = {status.value: 0 for status in Status}
                         for record in chain.fit_records:
                             counts[record.status.value] += 1
@@ -1327,9 +1340,22 @@ class Pipeline:
             primary = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
             for horizon in self._horizons(frequency):
                 frames = self._horse_race(series_id, horizon)
+                # Each horizon reaches the sample endpoint from its own last eligible
+                # origin, so the evaluation spans differ by horizon by construction. The
+                # span is recorded on every row so a cross-horizon comparison is never
+                # read as being on one common sample.
+                spans = [f[np.isfinite(f["forecast"]) & np.isfinite(f["actual"])]["target_date"]
+                         for f in frames.values()]
+                spans = [sp for sp in spans if len(sp)]
                 extra = {"exercise": "T4.4 horizon robustness", "frequency": frequency,
                          "role": "baseline" if horizon == primary else "robustness",
-                         "source": "stored baseline forecasts, no re-estimation"}
+                         "source": "stored baseline forecasts, no re-estimation",
+                         "first_target": min(sp.min() for sp in spans) if spans else None,
+                         "last_target": max(sp.max() for sp in spans) if spans else None,
+                         "evaluation_span_note": (
+                             "horizons are scored on their own eligible target dates, "
+                             "which differ by horizon; this is not a common-sample "
+                             "comparison across horizons")}
                 rows.extend(self._accuracy_rows(frames, benchmark, series_id, horizon, extra))
                 tests.extend(self._predictive_rows(frames, benchmark, series_id, horizon, extra))
         self._write(pd.DataFrame(rows), self.layout.robustness, "T4.4_horizon_robustness.csv", stage)
@@ -1418,6 +1444,7 @@ class Pipeline:
             note["selected"] = note["candidate_lag"] == best_order
         selection_rows.extend(candidate_notes)
 
+        # One horizon only, so the origin set reaches the sample endpoint by construction.
         origins = rolling_origins(pd.DatetimeIndex(panel.index), window_length, horizon,
                                   max_origins=self._max_origins())
         records: list[dict[str, Any]] = []
@@ -1533,6 +1560,7 @@ class Pipeline:
                 continue
 
             horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
+            # One horizon only, as above.
             origins = rolling_origins(pd.DatetimeIndex(target.index), window_length, horizon,
                                       max_origins=self._max_origins())
             garch_records, mean_records = [], []
