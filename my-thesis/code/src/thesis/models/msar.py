@@ -71,6 +71,26 @@ def _stationary(T: np.ndarray, iterations: int = 2000) -> np.ndarray:
     return probabilities
 
 
+def _covariance_status(covariance, reason: str, config, computed: bool) -> str:
+    """One status string that cannot contradict the credibility flags.
+
+    Reporting only invertibility would print "ok" for a covariance that is invertible but
+    so ill-conditioned that it is flagged, which is a self-contradictory row in a
+    thesis-facing table. The status is therefore taken from the same classification the
+    flags use.
+    """
+    if not computed or config is None:
+        return "not computed"
+    if reason:
+        return reason
+    condition, detail = flags_module.covariance_condition(covariance, config)
+    if condition == flags_module.ILL_CONDITIONED:
+        return f"ill-conditioned: {detail}"
+    if condition == flags_module.UNUSABLE:
+        return detail
+    return "ok"
+
+
 def _unpack(theta: np.ndarray, k_regimes: int, order: int):
     mu = theta[:k_regimes]
     phi = theta[k_regimes : k_regimes + order]
@@ -422,10 +442,9 @@ def fit_msar(
                      + [f"p{i+1}{j+1}" for i in range(k_regimes) for j in range(k_regimes)])
             natural_se = {name: float(value) for name, value in zip(names, errors)}
         flags_module.apply_covariance_flags(record, covariance, config)
-        if covariance_reason:
-            record.diagnostics["covariance_unreliable_reason"] = covariance_reason
     record.std_errors = natural_se
-    record.diagnostics["covariance_status"] = covariance_reason or "ok"
+    record.diagnostics["covariance_status"] = _covariance_status(
+        covariance, covariance_reason, config, compute_covariance)
     record.converged = bool(best.converged)
     record.optimizer_message = str(best.message)[:200]
     record.start_used = best_label

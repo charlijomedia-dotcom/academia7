@@ -178,6 +178,18 @@ class TestFullSampleMsarCredibilityDiagnostics:
         if not usable.empty:
             assert usable["parameter_std_errors"].astype(str).str.contains("=").all()
 
+    def test_the_covariance_status_never_contradicts_the_flag(self, adequacy_run):
+        # A row saying "ok" while also flagging a singular or ill-conditioned covariance
+        # is self-contradictory. The status and the flag come from one classification.
+        _, layout = adequacy_run
+        frame = pd.read_csv(layout.models / "T3.2_nonlinear_credibility.csv")
+        for row in frame.itertuples():
+            status = str(row.covariance_status)
+            if bool(row.singular_covariance_flag):
+                assert status != "ok", f"{row.series} {row.model}: flagged but status ok"
+            else:
+                assert status == "ok", f"{row.series} {row.model}: unflagged but {status}"
+
     def test_the_singular_flag_agrees_with_the_reason_codes(self, adequacy_run):
         _, layout = adequacy_run
         frame = pd.read_csv(layout.models / "T3.2_nonlinear_credibility.csv")

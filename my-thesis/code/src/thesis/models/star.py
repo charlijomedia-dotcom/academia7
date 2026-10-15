@@ -26,7 +26,8 @@ import pandas as pd
 from scipy.optimize import minimize
 
 from ..core.schemas import FitRecord, ReasonCode, Status
-from .flags import apply_covariance_flags
+from .flags import (ILL_CONDITIONED, USABLE, apply_covariance_flags,
+                    covariance_condition)
 from .optimize import (StartAttempt, covariance_from_hessian,
                        numerical_jacobian, select_best, standard_errors)
 
@@ -242,8 +243,12 @@ def fit_star(
             errors = standard_errors(covariance)
             record.std_errors = {name: float(value)
                                  for name, value in zip(names, errors)}
-            record.diagnostics["covariance_status"] = "ok"
             apply_covariance_flags(record, covariance, config)
+            condition, condition_detail = covariance_condition(covariance, config)
+            record.diagnostics["covariance_status"] = (
+                "ok" if condition == USABLE
+                else f"ill-conditioned: {condition_detail}" if condition == ILL_CONDITIONED
+                else condition_detail)
     else:
         record.diagnostics["covariance_status"] = (
             f"only {n} observations for {n_params_full} parameters")
