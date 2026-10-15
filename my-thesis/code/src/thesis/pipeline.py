@@ -603,6 +603,18 @@ class Pipeline:
                             "transition_boundary_flag": any(
                                 c.value in ("TRANSITION_BOUNDARY", "EMPTY_REGIME")
                                 for c in fit.record.reason_codes),
+                            # Decision D8 replaced the rejected "SE > 10x series SD"
+                            # rule with reporting parameter uncertainty directly, so the
+                            # credibility summary carries the standard errors and the
+                            # status of the observed-information matrix they come from.
+                            "covariance_status": fit.record.diagnostics.get(
+                                "covariance_status", "not computed"),
+                            "singular_covariance_flag": any(
+                                c.value in ("SINGULAR_COV", "ILL_CONDITIONED_COV")
+                                for c in fit.record.reason_codes),
+                            "parameter_std_errors": "; ".join(
+                                f"{k}={v:.6g}" for k, v in sorted(
+                                    fit.record.std_errors.items())),
                             "status": fit.record.status.value,
                             "reason_codes": ";".join(c.value for c in fit.record.reason_codes),
                         })
@@ -620,6 +632,14 @@ class Pipeline:
                             "parameter_boundary_flag": any(
                                 c.value in ("STAR_GAMMA_BOUND", "STAR_THRESHOLD_EXTREME")
                                 for c in fit.record.reason_codes),
+                            "covariance_status": fit.record.diagnostics.get(
+                                "covariance_status", "not computed"),
+                            "singular_covariance_flag": any(
+                                c.value in ("SINGULAR_COV", "ILL_CONDITIONED_COV")
+                                for c in fit.record.reason_codes),
+                            "parameter_std_errors": "; ".join(
+                                f"{k}={v:.6g}" for k, v in sorted(
+                                    fit.record.std_errors.items())),
                             "status": fit.record.status.value,
                             "reason_codes": ";".join(c.value for c in fit.record.reason_codes),
                         })

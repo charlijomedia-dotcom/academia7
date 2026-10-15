@@ -159,6 +159,33 @@ class TestFullSampleMsarCredibilityDiagnostics:
         assert not msar_rows.empty
         assert msar_rows["status"].notna().all()
 
+    def test_the_credibility_table_carries_the_covariance_status(self, adequacy_run):
+        _, layout = adequacy_run
+        frame = pd.read_csv(layout.models / "T3.2_nonlinear_credibility.csv")
+        for column in ("covariance_status", "singular_covariance_flag",
+                       "parameter_std_errors"):
+            assert column in frame.columns, column
+        assert (frame["covariance_status"] != "not computed").all(), (
+            "every nonlinear fit in the credibility table must have had its "
+            "observed-information matrix evaluated")
+
+    def test_parameter_uncertainty_appears_in_the_credibility_table(self, adequacy_run):
+        # Decision D8 replaced the rejected magnitude rule with reporting parameter
+        # uncertainty directly, so a usable covariance must surface its standard errors.
+        _, layout = adequacy_run
+        frame = pd.read_csv(layout.models / "T3.2_nonlinear_credibility.csv")
+        usable = frame[frame["covariance_status"] == "ok"]
+        if not usable.empty:
+            assert usable["parameter_std_errors"].astype(str).str.contains("=").all()
+
+    def test_the_singular_flag_agrees_with_the_reason_codes(self, adequacy_run):
+        _, layout = adequacy_run
+        frame = pd.read_csv(layout.models / "T3.2_nonlinear_credibility.csv")
+        for row in frame.itertuples():
+            codes = str(row.reason_codes)
+            expected = ("SINGULAR_COV" in codes) or ("ILL_CONDITIONED_COV" in codes)
+            assert bool(row.singular_covariance_flag) == expected, row.series
+
 
 class TestStarTransitionFigureAlignment:
     @pytest.mark.parametrize("order,delay", [(1, 1), (2, 1), (1, 3), (2, 4), (4, 2),
