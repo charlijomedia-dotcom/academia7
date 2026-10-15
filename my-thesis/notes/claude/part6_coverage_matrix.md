@@ -6,13 +6,13 @@
 > named test node must actually be collected by pytest. Do not edit by hand —
 > re-run the tool.
 
-- **Requirements checked:** 83
+- **Requirements checked:** 87
 - **Evidence root:** `../smoke_output`
-- **Tests collected:** 554
+- **Tests collected:** 631
 
 | status | count |
 |---|---:|
-| COMPLETE | 81 |
+| COMPLETE | 85 |
 | DEFERRED TO PART 8 | 1 |
 | DISCLOSURE | 1 |
 
@@ -125,5 +125,9 @@ than an unmet requirement.
 | O-F3.6 | part5_required_outputs_specification.md §7 F3.6 | State-conditioned forecast comparison, labelled descriptive | `src/thesis/reporting/figures.py:state_comparison` | `figures/` | `tests/integration/test_pipeline.py::TestRequiredOutputsExist::test_required_figures_are_written` | COMPLETE |
 | O-F4.8 | part5_required_outputs_specification.md §8 F4.8 | Estimation-window-length sensitivity figure with the baseline length identified and no clipping of extreme or failure cases | `src/thesis/reporting/figures.py:window_length_sensitivity` | `figures/` | `tests/unit/test_reporting.py::TestFigureConventions::test_window_length_sensitivity_marks_the_baseline_length` | COMPLETE |
 | O12 | part5_required_outputs_specification.md §12 | Machine-readable claim-evidence matrix schema | `src/thesis/reporting/tables.py:empty_claim_matrix \| src/thesis/reporting/tables.py:validate_claim_matrix` | `manifests/claim_evidence_matrix.csv` | `tests/unit/test_reporting.py::TestClaimMatrix \| tests/integration/test_pipeline.py::TestMethodologicalGuarantees::test_claim_matrix_is_valid_and_left_unpopulated_in_part_6` | DEFERRED TO PART 8 |
+| LIT-H1989 | Hamilton (1989) §4, Table I, fn. 7 | Expanded-state Hamilton filter, ergodic initialization, marginal log likelihood, smoothing, mean-ordered regime identification, expected durations (1-p_ii)^-1, and asymptotic standard errors from a numerical observed Hessian | `src/thesis/models/msar.py:_filter \| src/thesis/models/msar.py:_stationary \| src/thesis/models/msar.py:fit_msar \| src/thesis/models/optimize.py:numerical_hessian` | `models/T3.2_nonlinear_credibility.csv` | `tests/validation/test_literature_compliance.py \| tests/validation/test_models.py` | COMPLETE |
+| LIT-LST1988 | Luukkonen, Saikkonen & Teräsvirta (1988) §2.5 | Tsay-type general linearity test: the p(p+1)/2 unique quadratic lag products, chi-squared with that many degrees of freedom, F as the finite-sample approximation, and no reading of non-rejection as evidence of linearity | `src/thesis/diagnostics/nonlinearity.py:tsay_test` | `diagnostics/T2.3_tsay.csv` | `tests/validation/test_literature_compliance.py \| tests/validation/test_tsay_vs_r.py` | COMPLETE |
+| LIT-T1994 | Teräsvirta (1994) §3.1 eq. (3.10)-(3.12), §4.2-§4.3, §5 | STAR specification sequence: the auxiliary regression on w_t with 3p restrictions, delay by minimum p-value, the nested F tests and the LSTAR/ESTAR rule, concentrated conditional least squares, and the standardized transition functions | `src/thesis/diagnostics/nonlinearity.py:_lst_auxiliary \| src/thesis/diagnostics/nonlinearity.py:_f_test \| src/thesis/diagnostics/nonlinearity.py:select_delay_and_type \| src/thesis/models/star.py:fit_star \| src/thesis/models/star.py:transition` | `diagnostics/T2.4_star_linearity.csv` | `tests/validation/test_literature_compliance.py` | COMPLETE |
+| LIT-CRED | Hamilton (1989) §4.2 / Teräsvirta (1994) §5 / Part 5 §8.1-§8.2 | Nonlinear credibility: multistart prefers a converged solution and preserves every attempt; parameter covariance is computed and classified; a singular covariance is fragility, and an empty regime is failure only in conjunction with corroborating evidence of non-identification | `src/thesis/models/optimize.py:select_best \| src/thesis/models/flags.py:covariance_condition \| src/thesis/models/flags.py:apply_covariance_flags \| src/thesis/models/flags.py:_non_identification_evidence` | `robustness/T4.7_failure_registry.csv` | `tests/validation/test_literature_compliance.py \| tests/validation/test_models.py` | COMPLETE |
 | D3-xval | approved decision D3 | Validate the Tsay test against reference values from a recognized implementation such as R `TSA::Tsay.test`, and against simulations | `src/thesis/diagnostics/nonlinearity.py:tsay_test` | `diagnostics/T2.3_tsay.csv` | `tests/validation/test_tsay_vs_r.py \| tests/validation/test_nonlinearity.py` | COMPLETE |
 | RUNTIME | part5_computational_execution_spec.md §9 | Full baseline execution runtime on the approved sample | `src/thesis/forecasting/parallel.py \| src/thesis/core/cache.py` | `logs/runtime_log.csv` | `tests/integration/test_parallel.py` | DISCLOSURE |

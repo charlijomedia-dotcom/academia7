@@ -674,6 +674,55 @@ REGISTER: list[Requirement] = [
              "claims, which is Part 8's task and is forbidden to Part 6 by the "
              "result-blind rule (CLAUDE.md §6)."),
 
+    # ---- Source-literature compliance (audit of 15 October 2026) ----------
+    Requirement(
+        "LIT-H1989", "Hamilton (1989) §4, Table I, fn. 7",
+        "Expanded-state Hamilton filter, ergodic initialization, marginal log "
+        "likelihood, smoothing, mean-ordered regime identification, expected durations "
+        "(1-p_ii)^-1, and asymptotic standard errors from a numerical observed Hessian",
+        ("src/thesis/models/msar.py:_filter",
+         "src/thesis/models/msar.py:_stationary",
+         "src/thesis/models/msar.py:fit_msar",
+         "src/thesis/models/optimize.py:numerical_hessian"),
+        ("models/T3.2_nonlinear_credibility.csv",),
+        ("tests/validation/test_literature_compliance.py",
+         "tests/validation/test_models.py")),
+    Requirement(
+        "LIT-LST1988", "Luukkonen, Saikkonen & Teräsvirta (1988) §2.5",
+        "Tsay-type general linearity test: the p(p+1)/2 unique quadratic lag products, "
+        "chi-squared with that many degrees of freedom, F as the finite-sample "
+        "approximation, and no reading of non-rejection as evidence of linearity",
+        ("src/thesis/diagnostics/nonlinearity.py:tsay_test",),
+        ("diagnostics/T2.3_tsay.csv",),
+        ("tests/validation/test_literature_compliance.py",
+         "tests/validation/test_tsay_vs_r.py")),
+    Requirement(
+        "LIT-T1994", "Teräsvirta (1994) §3.1 eq. (3.10)-(3.12), §4.2-§4.3, §5",
+        "STAR specification sequence: the auxiliary regression on w_t with 3p "
+        "restrictions, delay by minimum p-value, the nested F tests and the LSTAR/ESTAR "
+        "rule, concentrated conditional least squares, and the standardized transition "
+        "functions",
+        ("src/thesis/diagnostics/nonlinearity.py:_lst_auxiliary",
+         "src/thesis/diagnostics/nonlinearity.py:_f_test",
+         "src/thesis/diagnostics/nonlinearity.py:select_delay_and_type",
+         "src/thesis/models/star.py:fit_star",
+         "src/thesis/models/star.py:transition"),
+        ("diagnostics/T2.4_star_linearity.csv",),
+        ("tests/validation/test_literature_compliance.py",)),
+    Requirement(
+        "LIT-CRED", "Hamilton (1989) §4.2 / Teräsvirta (1994) §5 / Part 5 §8.1-§8.2",
+        "Nonlinear credibility: multistart prefers a converged solution and preserves "
+        "every attempt; parameter covariance is computed and classified; a singular "
+        "covariance is fragility, and an empty regime is failure only in conjunction "
+        "with corroborating evidence of non-identification",
+        ("src/thesis/models/optimize.py:select_best",
+         "src/thesis/models/flags.py:covariance_condition",
+         "src/thesis/models/flags.py:apply_covariance_flags",
+         "src/thesis/models/flags.py:_non_identification_evidence"),
+        ("robustness/T4.7_failure_registry.csv",),
+        ("tests/validation/test_literature_compliance.py",
+         "tests/validation/test_models.py")),
+
     # ---- Known gaps -------------------------------------------------------
     Requirement(
         "D3-xval", "approved decision D3", "Validate the Tsay test against reference "
