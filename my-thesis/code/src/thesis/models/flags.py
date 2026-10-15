@@ -65,8 +65,20 @@ def apply_star_flags(record: FitRecord, fit, config: Config) -> FitRecord:
         record.add_flag(ReasonCode.STAR_GAMMA_BOUND, Status.FRAGILE, detail=float(fit.gamma))
 
     if fit.G.size:
-        low = np.percentile(fit.y, thresholds["threshold_percentile_low"]) if fit.y.size else np.nan
-        high = np.percentile(fit.y, thresholds["threshold_percentile_high"]) if fit.y.size else np.nan
+        # Part 5 §8.2 compares the estimated threshold with the 5th-95th percentile of the
+        # **transition variable** y_{t-d} on the estimation rows, which is the scale c
+        # lives on. Using the dependent variable instead compares c against a different
+        # series whenever the delay is non-zero, and against a different sample in any
+        # case. Teräsvirta (1994) §5 makes the same point in words: a threshold "far
+        # outside the observed range" of the transition variable means the fitted model is
+        # not satisfactory.
+        transition_values = getattr(fit, "z", None)
+        if transition_values is None or not np.size(transition_values):
+            transition_values = fit.y
+        low = (np.percentile(transition_values, thresholds["threshold_percentile_low"])
+               if np.size(transition_values) else np.nan)
+        high = (np.percentile(transition_values, thresholds["threshold_percentile_high"])
+                if np.size(transition_values) else np.nan)
         if np.isfinite(low) and np.isfinite(high) and not (low <= fit.c <= high):
             record.add_flag(
                 ReasonCode.STAR_THRESHOLD_EXTREME, Status.FRAGILE,

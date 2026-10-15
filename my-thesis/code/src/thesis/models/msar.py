@@ -32,6 +32,10 @@ import pandas as pd
 from scipy.optimize import minimize
 
 from ..core.schemas import FitRecord, ReasonCode, Status
+from . import flags as flags_module
+from .optimize import (StartAttempt, covariance_from_hessian, delta_method,
+                       numerical_hessian, numerical_jacobian, select_best,
+                       standard_errors)
 
 _LOG_2PI = float(np.log(2.0 * np.pi))
 
@@ -117,14 +121,37 @@ def _state_constants(mu: np.ndarray, phi: np.ndarray, states: list[tuple[int, ..
 
 
 def _filter(y: np.ndarray, mu, phi, sigma, P, states, T):
-    """Hamilton filter over the expanded state. Returns (loglik, filtered probabilities)."""
+    """Hamilton (1989) §4.2 filter over the expanded state.
+
+    Steps 1-5 of the paper: the predicted state distribution is the filtered one carried
+    through the transition matrix (Step 1), multiplied by the conditional Gaussian
+    density of y_t given the expanded state (Step 2), summed to the conditional
+    likelihood of y_t (Step 3), and renormalized to the updated filtered distribution
+    (Steps 4-5). The sample log likelihood is the accumulated log of Step 3.
+
+    The density is formed in the **log domain and rescaled by its maximum** before
+    exponentiation. Computing exp(-(y-m)²/2σ²) directly underflows to exactly zero when
+    an observation is far from every state's conditional mean relative to sigma — which
+    happens for an outlying observation, or for any trial sigma the optimizer proposes
+    that is too small. The whole row then sums to zero, the likelihood is reported as
+    -inf, and a perfectly admissible region of the parameter space is thrown away. Here
+    the maximum log density is factored out, so the largest term is exactly 1, and the
+    factor is added back to the log likelihood:
+
+        log sum_i pred_i * d_i = log sum_i pred_i * exp(log d_i - m) + m,   m = max_i log d_i
+
+    which is the same number, computed without underflow. The predicted probabilities
+    stay in the linear domain because they are renormalized every step and so cannot
+    underflow, which keeps the K^(p+1) x K^(p+1) transition product a single BLAS matmul
+    rather than a log-sum-exp over the whole matrix.
+    """
     order = len(phi)
     n = y.size
     filtered = np.zeros((n - order, len(states)))
     probabilities = _stationary(T)
     loglik = 0.0
     variance = sigma**2
-    normalizer = np.sqrt(2 * np.pi * variance)
+    log_normalizer = 0.5 * np.log(2 * np.pi * variance)
 
     mu_array = np.asarray(mu, float)
     constants = _state_constants(mu_array, np.asarray(phi, float), states)
@@ -133,12 +160,15 @@ def _filter(y: np.ndarray, mu, phi, sigma, P, states, T):
         ar_term = float(phi @ y[t - order : t][::-1]) if order else 0.0
         means = constants + ar_term
         predicted = probabilities @ T
-        density = np.exp(-0.5 * ((y[t] - means) ** 2) / variance) / normalizer
-        joint = predicted * density
+        log_density = -0.5 * ((y[t] - means) ** 2) / variance - log_normalizer
+        offset = float(np.max(log_density))
+        if not np.isfinite(offset):
+            return -np.inf, filtered, None
+        joint = predicted * np.exp(log_density - offset)
         total = joint.sum()
         if not np.isfinite(total) or total <= 0:
             return -np.inf, filtered, None
-        loglik += float(np.log(total))
+        loglik += float(np.log(total)) + offset
         probabilities = joint / total
         filtered[position] = probabilities
     return loglik, filtered, None
@@ -187,6 +217,7 @@ class MSARFit:
     occupancy: np.ndarray
     expected_duration: np.ndarray
     record: FitRecord
+    covariance: np.ndarray = field(default_factory=lambda: np.empty((0, 0)))
     states: list[tuple[int, ...]] = field(default_factory=list)
     _y: np.ndarray = field(default_factory=lambda: np.empty(0))
 
@@ -262,6 +293,8 @@ def fit_msar(
     order: int,
     k_regimes: int,
     *,
+    config=None,
+    compute_covariance: bool = True,
     series: str = "",
     refit_date: str = "",
     spec_hash: str = "",
@@ -309,20 +342,26 @@ def fit_msar(
         np.fill_diagonal(P0, diagonal)
         starts.append((f"deterministic_p{diagonal}", _pack(mu0, phi0, sigma0, P0)))
 
-    best, best_label = None, ""
+    attempts: list[StartAttempt] = []
     for label, theta0 in starts:
         try:
             result = minimize(
                 _negative_loglik, theta0, args=(values, k_regimes, order, states),
                 method="L-BFGS-B", options={"maxiter": maxiter},
             )
-        except Exception:
+        except Exception as exc:
+            attempts.append(StartAttempt(label, float("inf"), False, repr(exc)[:200], None))
             continue
-        if not np.isfinite(result.fun):
-            continue
-        if best is None or result.fun < best.fun:
-            best, best_label = result, label
+        attempts.append(StartAttempt(
+            label, float(result.fun), bool(result.success), str(result.message), result.x))
 
+    # The best **converged** admissible start, not merely the lowest objective: a start
+    # that stopped early can end lower than one that genuinely converged, and reporting
+    # it would pass a non-converged point off as the estimate (Part 5 §8.3).
+    outcome = select_best(attempts)
+    record.diagnostics.update(outcome.summary())
+    best = outcome.chosen
+    best_label = best.label if best is not None else ""
     if best is None:
         record.add_flag(ReasonCode.NONCONVERGENCE, Status.FAILED, detail="no start converged")
         record.wall_seconds = time.perf_counter() - started
@@ -351,7 +390,43 @@ def fit_msar(
 
     n_params = k_regimes + order + 1 + k_regimes * (k_regimes - 1)
     n_obs = values.size - order
-    record.converged = bool(best.success)
+
+    # Hamilton (1989) Table I and footnote 7: asymptotic standard errors from numerical
+    # second derivatives of the log likelihood. The Hessian is taken at the mean-ordered
+    # parameter vector, which is the same maximum (the likelihood is invariant to regime
+    # relabelling) and makes each standard error correspond to the parameter as reported.
+    # Estimation is unconstrained in theta = (mu, phi, log sigma, transition logits), so
+    # the observed information is well defined there; the standard errors of sigma and of
+    # the transition probabilities, which are what Hamilton tabulates, follow by the delta
+    # method through that reparameterization.
+    theta_hat = _pack(mu, phi, sigma, P)
+    covariance = np.full((n_params, n_params), np.nan)
+    natural_se: dict[str, float] = {}
+    covariance_reason = "not computed"
+    if compute_covariance and config is not None:
+        hessian = numerical_hessian(
+            lambda theta: _negative_loglik(theta, values, k_regimes, order, states),
+            theta_hat)
+        covariance, covariance_reason = covariance_from_hessian(hessian)
+        if not covariance_reason:
+            def _natural(theta: np.ndarray) -> np.ndarray:
+                m, f, sg, pm = _unpack(theta, k_regimes, order)
+                return np.concatenate([m, f, [sg], pm.ravel()])
+
+            jacobian = numerical_jacobian(_natural, theta_hat)
+            natural_cov = delta_method(jacobian, covariance)
+            errors = standard_errors(natural_cov)
+            names = ([f"mu{k+1}" for k in range(k_regimes)]
+                     + [f"phi{j+1}" for j in range(order)]
+                     + ["sigma"]
+                     + [f"p{i+1}{j+1}" for i in range(k_regimes) for j in range(k_regimes)])
+            natural_se = {name: float(value) for name, value in zip(names, errors)}
+        flags_module.apply_covariance_flags(record, covariance, config)
+        if covariance_reason:
+            record.diagnostics["covariance_unreliable_reason"] = covariance_reason
+    record.std_errors = natural_se
+    record.diagnostics["covariance_status"] = covariance_reason or "ok"
+    record.converged = bool(best.converged)
     record.optimizer_message = str(best.message)[:200]
     record.start_used = best_label
     record.loglik = float(loglik)
@@ -372,7 +447,7 @@ def fit_msar(
         }
     )
     record.wall_seconds = time.perf_counter() - started
-    if not best.success:
+    if not best.converged:
         record.add_flag(ReasonCode.NONCONVERGENCE, Status.FAILED, detail=str(best.message)[:120])
     if not np.isfinite(loglik):
         record.add_flag(ReasonCode.NONFINITE, Status.FAILED)
@@ -381,5 +456,6 @@ def fit_msar(
         k_regimes=k_regimes, order=order, mu=mu, phi=phi, sigma=sigma, P=P,
         loglik=float(loglik), aic=record.aic, bic=record.bic, n_obs=n_obs,
         filtered=filtered, smoothed_regime=regime_smoothed, occupancy=occupancy,
-        expected_duration=duration, record=record, states=states, _y=values,
+        expected_duration=duration, record=record, covariance=covariance,
+        states=states, _y=values,
     )

@@ -113,7 +113,7 @@ def fit_and_forecast(
             outcome = FitOutcome(spec, fit.record, {h: float(path[h - 1]) for h in horizons}, fit=fit)
 
     elif spec.model in (MSAR, MSAR3):
-        fit = fit_msar(window, spec.order, spec.k_regimes, series=series,
+        fit = fit_msar(window, spec.order, spec.k_regimes, config=config, series=series,
                        refit_date=refit_date, warm_start=warm_start)
         flags.apply_msar_flags(fit.record, fit, config)
         if fit.record.status is Status.FAILED:

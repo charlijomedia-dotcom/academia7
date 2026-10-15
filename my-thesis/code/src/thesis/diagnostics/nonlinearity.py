@@ -103,21 +103,52 @@ def tsay_test(y: pd.Series, order: int, *, series: str = "") -> TestResult:
 
 
 def _lst_auxiliary(y: np.ndarray, order: int, delay: int):
-    """Dependent variable, linear design and the three Taylor-expansion blocks."""
+    """The Teräsvirta (1994) auxiliary regression, equations (3.10) and (3.12).
+
+    The artificial model (3.12) is
+
+        y_t = g_0 + g_1' w_t + g_2'(w_t y_{t-d}) + g_3'(w_t y²_{t-d})
+                  + g_4'(w_t y³_{t-d}) + v_t,
+
+    where w_t = (y_{t-1}, ..., y_{t-p})'. The cross-product blocks multiply **w_t**, not
+    the full design (1, w_t)': each g_j is a p-vector, and the null (3.11) is
+    g_2 = g_3 = g_4 = 0, which is 3p restrictions — the χ²(3p) of the paper.
+
+    Multiplying the intercept column as well would add the standalone terms y^k_{t-d}.
+    When d ≤ p those are exactly collinear with existing columns (y_{t-d} is already in
+    w_t, y²_{t-d} is the j=d element of the first block, y³_{t-d} the j=d element of the
+    second), so they inflate the column count without adding a restriction. That is the
+    defect this construction removes; see `_f_test` for the matching degrees of freedom.
+    """
     start = max(order, delay)
     rows = np.arange(start, y.size)
-    X = np.column_stack([np.ones(rows.size)] + [y[rows - j] for j in range(1, order + 1)])
-    z = y[rows - delay]
-    blocks = [X * (z**power)[:, None] for power in (1, 2, 3)]
+    lags = [y[rows - j] for j in range(1, order + 1)]          # w_t
+    intercept = np.ones(rows.size)
+    X = np.column_stack([intercept] + lags)                     # (1, w_t)'
+    W = np.column_stack(lags)                                   # w_t, no intercept
+    z = y[rows - delay]                                         # y_{t-d}
+    blocks = [W * (z**power)[:, None] for power in (1, 2, 3)]
     return y[rows], X, blocks
 
 
 def _f_test(dependent: np.ndarray, restricted: np.ndarray, unrestricted: np.ndarray):
+    """Nested F test with degrees of freedom taken from the ranks, not the column counts.
+
+    The number of restrictions is the number of **linearly independent** ones,
+    rank(unrestricted) − rank(restricted), and the denominator degrees of freedom are
+    n − rank(unrestricted). For the auxiliary regressions of Teräsvirta (1994) these
+    coincide with the paper's 3p and p, because the design above is generically of full
+    column rank. Using the rank rather than the shape keeps the test exact if a
+    particular sample does turn out to be collinear, instead of silently reporting an F
+    against the wrong reference distribution.
+    """
     e0 = _ols_residuals(dependent, restricted)
     e1 = _ols_residuals(dependent, unrestricted)
     ssr0, ssr1 = float(e0 @ e0), float(e1 @ e1)
-    q = unrestricted.shape[1] - restricted.shape[1]
-    df = dependent.size - unrestricted.shape[1]
+    rank_restricted = int(np.linalg.matrix_rank(restricted))
+    rank_unrestricted = int(np.linalg.matrix_rank(unrestricted))
+    q = rank_unrestricted - rank_restricted
+    df = dependent.size - rank_unrestricted
     if q <= 0 or df <= 0 or ssr1 <= 0:
         return np.nan, np.nan, q, df
     statistic = ((ssr0 - ssr1) / q) / (ssr1 / df)

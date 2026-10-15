@@ -26,6 +26,9 @@ import pandas as pd
 from scipy.optimize import minimize
 
 from ..core.schemas import FitRecord, ReasonCode, Status
+from .flags import apply_covariance_flags
+from .optimize import (StartAttempt, covariance_from_hessian,
+                       numerical_jacobian, select_best, standard_errors)
 
 LSTAR = "LSTAR"
 ESTAR = "ESTAR"
@@ -68,6 +71,10 @@ class STARFit:
     record: FitRecord
     design: np.ndarray = field(default_factory=lambda: np.empty((0, 0)))
     y: np.ndarray = field(default_factory=lambda: np.empty(0))
+    #: The transition variable y_{t-d} on exactly the estimation rows. The threshold c
+    #: lives on this scale, so the §8.2 range check must use it and not the raw series.
+    z: np.ndarray = field(default_factory=lambda: np.empty(0))
+    covariance: np.ndarray = field(default_factory=lambda: np.empty((0, 0)))
 
     def forecast_one(self, history: np.ndarray) -> float:
         """One-step forecast given history ending at the forecast origin."""
@@ -140,8 +147,9 @@ def fit_star(
         for quantile in (0.25, 0.5, 0.75):
             starts.append((gamma0, float(np.quantile(z, quantile))))
 
-    best = None
+    attempts: list[StartAttempt] = []
     for start in starts:
+        label = f"gamma0={start[0]},c0={start[1]:.6g}"
         try:
             result = minimize(
                 lambda params: _sse(params, dep, X, z, scale, kind)[0],
@@ -149,20 +157,29 @@ def fit_star(
                 method="L-BFGS-B",
                 bounds=[bounds_gamma, (c_low, c_high)],
             )
-        except Exception:
+        except Exception as exc:
+            attempts.append(StartAttempt(label, float("inf"), False, repr(exc)[:200], None))
             continue
-        if not np.isfinite(result.fun):
-            continue
-        if best is None or result.fun < best.fun:
-            best = result
-            record.start_used = f"gamma0={start[0]},c0={start[1]:.6g}"
+        attempts.append(StartAttempt(
+            label, float(result.fun), bool(result.success), str(result.message), result.x))
+
+    # Teräsvirta (1994) §5 treats non-convergence as a reason to change the estimation
+    # strategy, not as licence to adopt the lowest point reached. So the selection prefers
+    # the best start that actually converged, and every attempt is kept for the audit.
+    outcome = select_best(attempts)
+    record.diagnostics.update(outcome.summary())
+    best = outcome.chosen
+    if best is not None:
+        record.start_used = best.label
 
     if best is None:
         record.add_flag(ReasonCode.NONCONVERGENCE, Status.FAILED, detail="no start converged")
         record.wall_seconds = time.perf_counter() - started
-        return STARFit(kind, order, delay, np.nan, np.nan, scale, np.empty(0), np.empty(0),
-                       np.empty(0), np.empty(0), np.empty(0), 0, np.nan, np.nan, np.nan,
-                       np.nan, record)
+        return STARFit(kind=kind, order=order, delay=delay, gamma=np.nan, c=np.nan,
+                       scale=scale, linear=np.empty(0), nonlinear=np.empty(0),
+                       residuals=np.empty(0), fitted=np.empty(0), G=np.empty(0),
+                       n_obs=0, sigma2=np.nan, loglik=np.nan, aic=np.nan, bic=np.nan,
+                       record=record, z=z)
 
     gamma, c = float(best.x[0]), float(best.x[1])
     sse, coef, g = _sse(best.x, dep, X, z, scale, kind)
@@ -172,7 +189,7 @@ def fit_star(
     sigma2 = float(sse / n)
     loglik = float(-0.5 * n * (np.log(2 * np.pi) + np.log(sigma2) + 1.0))
 
-    record.converged = bool(best.success)
+    record.converged = bool(best.converged)
     record.optimizer_message = str(best.message)[:200]
     record.loglik = loglik
     record.aic = float(-2 * loglik + 2 * (k + 2))
@@ -189,13 +206,52 @@ def fit_star(
         {"G_min": float(g.min()), "G_max": float(g.max()), "G_sd": float(g.std()),
          "transition_scale": scale}
     )
-    if not best.success:
+    if not best.converged:
         record.add_flag(ReasonCode.NONCONVERGENCE, Status.FAILED, detail=str(best.message)[:120])
+
+    # Parameter uncertainty for the conditional least-squares estimator. Teräsvirta
+    # (1994) §5 reads the estimated standard deviations as a credibility signal —
+    # "excessively large standard deviation estimates for coefficient estimators (other
+    # than gamma) suggest that the model contains redundant parameters" — and Part 5 §8.2
+    # requires singular or ill-conditioned nonlinear covariance matrices to be flagged.
+    # The covariance is the Gauss-Newton form sigma^2 (J'J)^-1 over the **full** parameter
+    # vector (gamma, c, and the concentrated linear coefficients), because concentrating
+    # the linear part out is an estimation device, not a claim that it is known.
+    covariance = np.empty((0, 0))
+    full_theta = np.concatenate([[gamma, c], coef])
+    n_params_full = full_theta.size
+
+    def _residual_vector(theta: np.ndarray) -> np.ndarray:
+        g_local = transition(z, float(theta[0]), float(theta[1]), scale, kind)
+        design = np.column_stack([X, X * g_local[:, None]])
+        return dep - design @ theta[2:]
+
+    if n > n_params_full:
+        jacobian = numerical_jacobian(_residual_vector, full_theta)
+        gram = jacobian.T @ jacobian
+        residual_variance = float(sse / (n - n_params_full))
+        inverse, reason = covariance_from_hessian(gram)
+        if reason:
+            record.diagnostics["covariance_status"] = reason
+            record.add_flag(ReasonCode.SINGULAR_COV, Status.FRAGILE, detail=reason)
+        else:
+            covariance = residual_variance * inverse
+            names = (["gamma", "c"]
+                     + [f"phi{i}" for i in range(X.shape[1])]
+                     + [f"theta{i}" for i in range(X.shape[1])])
+            errors = standard_errors(covariance)
+            record.std_errors = {name: float(value)
+                                 for name, value in zip(names, errors)}
+            record.diagnostics["covariance_status"] = "ok"
+            apply_covariance_flags(record, covariance, config)
+    else:
+        record.diagnostics["covariance_status"] = (
+            f"only {n} observations for {n_params_full} parameters")
 
     return STARFit(
         kind=kind, order=order, delay=delay, gamma=gamma, c=c, scale=scale,
         linear=coef[: X.shape[1]], nonlinear=coef[X.shape[1]:],
         residuals=residuals, fitted=dep - residuals, G=g, n_obs=n, sigma2=sigma2,
         loglik=loglik, aic=record.aic, bic=record.bic, record=record,
-        design=X, y=dep,
+        design=X, y=dep, z=z, covariance=covariance,
     )
