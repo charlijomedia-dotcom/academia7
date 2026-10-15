@@ -599,3 +599,70 @@ respectively; concentrated conditional least squares; regime ordering by mean; t
 filter initialisation; expected durations as `(1−p_ii)⁻¹`; and the horizon-correct
 forecasting engine from the previous round, which this audit did not touch.
 
+---
+
+## I. Part 6 approved — 15 October 2026
+
+**Approved by the user at commit `249aa54`**, on the final validation report and an
+independent GitHub review.
+
+State at approval:
+
+| Item | Value |
+|---|---|
+| Complete test suite | 662 passed, 0 failed, 0 skipped, 0 errors |
+| Coverage matrix | 87 requirements, 85 COMPLETE, 0 unresolved gaps |
+| Non-COMPLETE rows | `O12` deferred to Part 8 by the result-blind rule; `RUNTIME` a scheduling disclosure |
+| Smoke evidence | regenerated on this code version: 114 files, 640 fits |
+| Canonical input | `7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a`, unchanged since `b3ade2a` |
+
+Three rounds of independent review shaped the final state, and each found something the
+automated tests did not:
+
+1. **Horizon-dependent origin truncation** — every horizon inherited the longest horizon's
+   last origin, costing 135 forecasts, 58 at the primary horizon, and leaving T4.9 vacuous
+   at h=1. Fixed; §H12.
+2. **Academic methodology audit** against Hamilton (1989), Luukkonen–Saikkonen–Teräsvirta
+   (1988) and Teräsvirta (1994) — the STAR auxiliary regression and its degrees of
+   freedom, the MSAR likelihood's numerical stability, parameter covariance, optimizer
+   selection, and the fragility-versus-failure classification. Fixed; §H13 and
+   `part6_literature_compliance_matrix.md`.
+3. **Two adequacy-stage integration defects** — the full-sample MSAR fits skipped their
+   credibility diagnostics, and the F3.3 figure plotted the transition function against a
+   misaligned variable. Fixed; §H14 below.
+
+### H14 — Adequacy-stage integration defects (15 October 2026)
+
+Both estimators were correct in isolation; the wiring was not, which is why their own
+tests passed throughout.
+
+- `adequacy_stage` called `fit_msar` without `config`, and the observed-information
+  Hessian, the standard errors and the covariance flags are all conditional on one. The
+  §8.1 diagnostics ran on the rolling fits but not on the full-sample fits that feed T3.2.
+  Four of six full-sample nonlinear fits turned out to carry undetected non-identification;
+  two are clean. All remain fragile; none became failed.
+- The F3.3 figure rebuilt the transition variable as `fit.y[max(p,d) − d:]`, indexing the
+  dependent array with an offset meant for the raw series. At p=1,d=1 and p=2,d=4 the
+  lengths coincide but the values are wrong by up to 3.70 and 4.69; at p=2,d=1 and p=4,d=2
+  the lengths differ and `np.argsort` paired mismatched arrays silently. Now uses `fit.z`,
+  and `star_transition` raises on a shape mismatch.
+
+Two further defects surfaced while verifying those: parameter uncertainty reached
+`fit_records.csv` but not T3.2 (decision D8 requires reporting it directly), and the
+`covariance_status` column reported only invertibility, so an ill-conditioned matrix
+printed as "ok" beside a flag saying otherwise. Both corrected; T3.2 now has zero
+contradictory rows.
+
+### Carried into Part 8
+
+- **Pervasive nonlinear fragility.** Low occupancy, boundary transition probabilities and
+  non-identified covariances across the MSAR and STAR families. A result of the approved
+  design, not a defect, and material to what Part 8 may conclude.
+- **Runtime.** The full baseline run is a multi-hour job dominated by the K=3 chains. The
+  fit cache means an interrupted run resumes rather than restarts.
+
+### Next step
+
+Part 7 (reproducibility) has **not** been started. CLAUDE.md §13 requires explicit user
+approval before it begins; approval of Part 6 is not approval of Part 7.
+
