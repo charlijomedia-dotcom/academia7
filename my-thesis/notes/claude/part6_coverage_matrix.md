@@ -8,7 +8,7 @@
 
 - **Requirements checked:** 87
 - **Evidence root:** `../smoke_output`
-- **Tests collected:** 631
+- **Tests collected:** 662
 
 | status | count |
 |---|---:|
