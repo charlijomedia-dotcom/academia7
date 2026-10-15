@@ -656,7 +656,11 @@ class TestStarCredibilityDiagnostics:
         np.testing.assert_allclose(covariance, covariance.T, atol=1e-8)
         assert np.linalg.eigvalsh((covariance + covariance.T) / 2).min() > 0
 
-    def test_a_singular_covariance_is_flagged_rather_than_ignored(self, config):
+    def test_a_singular_covariance_makes_the_model_fragile(self, config):
+        # Teräsvirta (1994) §5 reads implausible parameter uncertainty as a sign the model
+        # "contains redundant parameters", and Part 5 §8.2 classifies a singular or
+        # unstable nonlinear Hessian/covariance as fragile. The estimates stand; the
+        # asymptotic inference is what cannot be relied on.
         from thesis.core.schemas import FitRecord
 
         record = FitRecord(series="s", model="STAR", spec_label="x", spec_hash="",
@@ -664,4 +668,33 @@ class TestStarCredibilityDiagnostics:
                            refit_date="2010-01-01", converged=True)
         flags.apply_covariance_flags(record, np.array([[1.0, 1.0], [1.0, 1.0]]), config)
         assert ReasonCode.SINGULAR_COV in record.reason_codes
+        assert record.status is Status.FRAGILE
+
+    def test_an_empty_regime_needs_corroborating_evidence_to_be_a_failure(self, config):
+        # D8: failure requires numerically zero posterior occupancy **together with**
+        # independent evidence of non-identification. Zero occupancy alone is fragility.
+        from types import SimpleNamespace
+
+        from thesis.core.schemas import FitRecord
+
+        def _record():
+            return FitRecord(series="s", model="MSAR", spec_label="x", spec_hash="",
+                             window_start="2000-01-01", window_end="2010-01-01",
+                             refit_date="2010-01-01", converged=True)
+
+        healthy = SimpleNamespace(
+            occupancy=np.array([0.0, 1.0]), smoothed_regime=np.ones((100, 2)),
+            P=np.array([[0.5, 0.5], [0.5, 0.5]]), covariance=np.eye(2),
+            loglik=-100.0, mu=np.array([0.0, 1.0]), phi=np.array([0.3]))
+        record = flags.apply_msar_flags(_record(), healthy, config)
+        assert ReasonCode.EMPTY_REGIME not in record.reason_codes
+        assert record.status is Status.FRAGILE
+
+        unidentified = SimpleNamespace(
+            occupancy=np.array([0.0, 1.0]), smoothed_regime=np.ones((100, 2)),
+            P=np.array([[0.5, 0.5], [0.5, 0.5]]),
+            covariance=np.array([[1.0, 1.0], [1.0, 1.0]]),
+            loglik=-100.0, mu=np.array([0.0, 1.0]), phi=np.array([0.3]))
+        record = flags.apply_msar_flags(_record(), unidentified, config)
+        assert ReasonCode.EMPTY_REGIME in record.reason_codes
         assert record.status is Status.FAILED

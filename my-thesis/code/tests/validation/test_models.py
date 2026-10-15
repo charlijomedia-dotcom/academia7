@@ -383,8 +383,19 @@ class TestFlags:
         record = apply_star_flags(self._record(), Fit(), config)
         assert ReasonCode.STAR_THRESHOLD_EXTREME in record.reason_codes
 
-    def test_singular_covariance_is_failure(self, config):
+    def test_singular_covariance_is_fragile_not_failure(self, config):
+        # Part 5 §8.2 lists a singular or unstable nonlinear Hessian/covariance among the
+        # conditions that make a model *fragile*, and §8.1 treats it as one ingredient of
+        # the empty-regime conjunction rather than a failure on its own. D8 makes it a
+        # failure only "when required for meaningful inference". The point estimates and
+        # the forecasts built from them survive; the asymptotic inference does not.
         record = apply_covariance_flags(self._record(), np.array([[1.0, 1.0], [1.0, 1.0]]), config)
+        assert ReasonCode.SINGULAR_COV in record.reason_codes
+        assert record.status is Status.FRAGILE
+
+    def test_singular_covariance_is_failure_when_inference_depends_on_it(self, config):
+        record = apply_covariance_flags(self._record(), np.array([[1.0, 1.0], [1.0, 1.0]]),
+                                        config, required_for_inference=True)
         assert ReasonCode.SINGULAR_COV in record.reason_codes
         assert record.status is Status.FAILED
 

@@ -486,3 +486,116 @@ their own first and last target date for the same reason.
 **Regression tests added:** `test_horizon_coverage.py` (19),
 `test_cache_horizons.py` (11), `test_locf_exposure_reach.py` (11).
 
+### H13 — Academic methodology audit against the three source papers (15 October 2026)
+
+Audit requested by the user against Hamilton (1989), Luukkonen–Saikkonen–Teräsvirta (1988)
+and Teräsvirta (1994), reading the papers themselves. The full literature-to-code matrix is
+in `part6_literature_compliance_matrix.md`; this entry records the corrections and their
+consequences.
+
+**H13.1 — STAR linearity tests: wrong auxiliary regression and wrong degrees of freedom.**
+`_lst_auxiliary` multiplied the entire linear design, intercept included, by the first
+three powers of the transition variable. Teräsvirta's (3.12) multiplies only
+`w_t = (y_{t−1},…,y_{t−p})'`; each coefficient vector is a *p*-vector and the null (3.11) is
+`3p` restrictions, which is the paper's χ²(3p). Including the intercept adds standalone
+`y^k_{t−d}` columns that are exactly collinear with existing ones whenever `d ≤ p`. At
+p=2, d=1 the design had 12 columns of rank 9 while `_f_test` counted 9 restrictions from
+raw column counts rather than 6, so both the numerator and the denominator degrees of
+freedom were wrong. The statistic was understated by roughly a factor of 1.5 and referred
+to too wide a distribution, making the test **conservative** — it under-rejected linearity,
+and only for `d ≤ p`, so the minimum-p-value delay rule was biased *against short delays*.
+`_f_test` now takes the restrictions from `rank(unrestricted) − rank(restricted)` and the
+denominator from `n − rank(unrestricted)`.
+
+**H13.2 — `d > p` is not an open question.** The approved delay grids do reach it (GDPC1
+has p=1 with delays 1–4). Teräsvirta's (3.11) states χ²(3p) with no dependence on `d`, and
+he applies the test at `d` far beyond `p` in his own Table 3. The §2 assumption `d ≤ p` is
+what makes (3.10) *complete* there, since the standalone powers are then already spanned.
+Writing the regression as the paper does gives exactly 3p restrictions at every delay,
+which is also the precondition for comparing p-values across the grid. **No change to the
+approved delay grid, and no decision needed.** The alternative — augmenting with the
+standalone terms at `d > p` to retain the `π₂₀` score direction — is documented in the
+compliance matrix and not adopted, because it would make the reference distribution vary
+across the delay grid.
+
+**H13.3 — Empirical consequence on the six approved initial estimation windows.** Same data,
+same dates, same AR orders; only the test construction differs.
+
+| target | p | before | after | changed |
+|---|---:|---|---|---|
+| GDPC1 | 1 | d=4, LSTAR, linearity not rejected | d=3, LSTAR, not rejected | delay |
+| CPIAUCSL | 2 | d=6, LSTAR, rejected | d=6, LSTAR, rejected | — |
+| UNRATE | 6 | d=1, LSTAR, rejected | d=1, LSTAR, rejected | — |
+| INDPRO | 12 | d=4, ESTAR, not rejected | d=4, ESTAR, not rejected | — |
+| FEDFUNDS | 1 | d=3, LSTAR, rejected | **d=1, ESTAR**, rejected | delay and type |
+| M2SL | 3 | d=4, LSTAR, rejected | d=5, LSTAR, **not rejected** | delay and linearity verdict |
+
+For every `d ≤ p` the corrected p-value is smaller, as the direction of the defect
+predicts. Three of six targets change delay, one changes transition type, one changes its
+linearity verdict. **The STAR specification therefore changes for GDPC1, FEDFUNDS and M2SL,
+so their STAR fits and forecasts are superseded.** No cached artefact had to be deleted by
+hand: the fit-cache key includes the code hash, so every cached fit was invalidated
+automatically by the change.
+
+**H13.4 — MSAR filter underflow.** The conditional Gaussian density was formed directly, so
+`exp(−(y−m)²/2σ²)` underflows to exactly zero for an observation far from every state's
+conditional mean, or for any small trial σ the optimizer proposes; the row then sums to
+zero and the likelihood is reported as −∞, discarding an admissible region of the parameter
+space. The density is now built in logs and rescaled by its maximum before exponentiation.
+Verified identical on well-behaved data — log-likelihood to 2e-16 relative, filtered
+probabilities to 3e-16 — and finite where the direct form returns −∞ (demonstrated at
+σ=0.8 and σ=0.1 with a single outlier). The predicted probabilities stay in the linear
+domain, so the `K^(p+1) × K^(p+1)` transition product remains one BLAS matmul.
+
+**H13.5 — MSAR parameter uncertainty.** Hamilton's Table I and footnote 7 report asymptotic
+standard errors from numerical second derivatives of the log likelihood; none were computed
+here. An observed-information Hessian is now taken at the mean-ordered optimum, with
+delta-method standard errors for σ and the transition probabilities through the log/logit
+parameterisation. Cost is 8–9% of fit time. The Hessian routine is verified against an
+analytic quadratic to 7e-9.
+
+**H13.6 — Optimizer convergence selection, both estimators.** Multistart chose the lowest
+finite objective even when that start reported failure. It now prefers the best admissible
+**converged** solution, falls back only when nothing converged, and preserves every
+attempt's objective, status and message in the fit record for audit.
+
+**H13.7 — Credibility diagnostics were never actually running.** `apply_covariance_flags`
+existed but was called only from a test, never from production code, so the singular and
+ill-conditioned covariance conditions required by Part 5 §§7.5, 8.1 and 8.2 were never
+evaluated. Both estimators now invoke it.
+
+**H13.8 — Two classification errors found once the diagnostic was live.** Both were my
+implementation being stricter than the approved rules, and both are corrected *towards*
+the specification, not away from it:
+
+- `apply_covariance_flags` classified a singular covariance as **failed**. Part 5 §8.2
+  lists a singular or unstable nonlinear Hessian/covariance among the conditions that make
+  a model **fragile**, and D8 makes it a failure only "when required for meaningful
+  inference". No Part 6 output reports an inference resting on these matrices, so the
+  default is now fragility, with a `required_for_inference=True` branch retained for a
+  caller that genuinely depends on it.
+- `apply_msar_flags` raised `EMPTY_REGIME` as a **failure** on numerically zero occupancy
+  *alone*. D8 requires zero occupancy **together with** corroborating evidence of
+  non-identification — an unusable covariance, or non-finite likelihood or parameters.
+  That conjunction was previously unevaluable because no covariance existed; it is now
+  implemented as written, and zero occupancy without corroboration is fragility.
+
+**H13.9 — A real finding the new diagnostic surfaces.** K=3 MSAR on the final 240-month
+INDPRO window converges and forecasts, but has two regimes at 1.3% occupancy, a zero
+self-transition probability, and an observed information whose smallest eigenvalue is
+−1.4e-6 — stable across finite-difference step sizes spanning a factor of 30, so this is
+genuine non-identification rather than a numerical artefact. Under the corrected rules the
+model is **fragile** with `LOW_OCCUPANCY`, `TRANSITION_BOUNDARY` and `SINGULAR_COV`, which
+is the Part 5 §8.1 classification: it stays in the T4.3 comparison with its weakness on the
+record. This is exactly the limit Hamilton describes in §4.2 — "there is a practical limit
+on how complicated we can permit the dynamics … to become and still have hope of obtaining
+useful results". It is a result for Part 8 to interpret, not a defect to fix.
+
+**H13.10 — Compliant without change.** The Tsay quadratic test against LST §2.5 (the
+p(p+1)/2 unique products, χ² with that many degrees of freedom, F as Keenan's finite-sample
+approximation, and the R cross-check already in place); the LSTAR and ESTAR transition
+functions and their standardisation by the transition standard deviation and variance
+respectively; concentrated conditional least squares; regime ordering by mean; the ergodic
+filter initialisation; expected durations as `(1−p_ii)⁻¹`; and the horizon-correct
+forecasting engine from the previous round, which this audit did not touch.
+

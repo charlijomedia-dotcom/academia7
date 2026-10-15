@@ -17,6 +17,28 @@ from ..core.config import Config
 from ..core.schemas import FitRecord, ReasonCode, Status, TestResult
 
 
+def _non_identification_evidence(fit, config: Config) -> str:
+    """Independent evidence that a regime is effectively unidentified, or an empty string.
+
+    This is the second half of the D8 empty-regime conjunction. It became checkable only
+    once the observed-information covariance was computed; before that the conjunction
+    could not be evaluated at all.
+    """
+    reasons = []
+    covariance = getattr(fit, "covariance", None)
+    if covariance is not None and np.size(covariance):
+        condition, detail = covariance_condition(covariance, config)
+        if condition == UNUSABLE:
+            reasons.append(f"an unusable covariance ({detail})")
+    if not np.isfinite(getattr(fit, "loglik", np.nan)):
+        reasons.append("a non-finite log likelihood")
+    for name in ("mu", "phi"):
+        values = np.asarray(getattr(fit, name, np.empty(0)), dtype=float)
+        if values.size and not np.isfinite(values).all():
+            reasons.append(f"non-finite {name}")
+    return " and ".join(reasons)
+
+
 def apply_msar_flags(record: FitRecord, fit, config: Config) -> FitRecord:
     """Part 5 §8.1 regime-credibility rules."""
     thresholds = config.get("thresholds.msar")
@@ -30,13 +52,25 @@ def apply_msar_flags(record: FitRecord, fit, config: Config) -> FitRecord:
                 ReasonCode.LOW_OCCUPANCY, Status.FRAGILE,
                 detail=f"regime {k + 1}: occupancy={share:.4f}, effective obs={count:.1f}",
             )
-        # Decision D8: failure needs evidence of effective non-identification, which is
-        # numerically zero occupancy, not merely a small share.
+        # Decision D8 and Part 5 §8.1: failure requires numerically zero posterior
+        # occupancy **together with** independent evidence of non-identification — an
+        # unusable covariance, or a non-finite likelihood or parameter vector. Zero
+        # occupancy on its own is already covered as low occupancy, which is fragile.
         if count <= 0.0 or share <= 0.0:
-            record.add_flag(
-                ReasonCode.EMPTY_REGIME, Status.FAILED,
-                detail=f"regime {k + 1} has numerically zero posterior occupancy",
-            )
+            corroborating = _non_identification_evidence(fit, config)
+            if corroborating:
+                record.add_flag(
+                    ReasonCode.EMPTY_REGIME, Status.FAILED,
+                    detail=(f"regime {k + 1} has numerically zero posterior occupancy, "
+                            f"with {corroborating}"),
+                )
+            else:
+                record.add_flag(
+                    ReasonCode.LOW_OCCUPANCY, Status.FRAGILE,
+                    detail=(f"regime {k + 1} has numerically zero posterior occupancy; "
+                            "no corroborating evidence of non-identification, so this is "
+                            "fragility rather than failure (D8)"),
+                )
 
     P = np.asarray(fit.P, dtype=float)
     if P.size:
@@ -105,26 +139,62 @@ def apply_residual_flags(
     return record
 
 
-def apply_covariance_flags(record: FitRecord, covariance: np.ndarray, config: Config) -> FitRecord:
-    """Decision D8 covariance rules: unusable is failure, ill-conditioned is fragile."""
+UNUSABLE = "unusable"
+ILL_CONDITIONED = "ill_conditioned"
+USABLE = "usable"
+
+
+def covariance_condition(covariance: np.ndarray, config: Config) -> tuple[str, str]:
+    """Classify a parameter covariance matrix. Returns (condition, detail)."""
     if covariance is None or not np.size(covariance):
-        return record
+        return USABLE, "no covariance supplied"
     if not np.isfinite(covariance).all():
-        record.add_flag(ReasonCode.SINGULAR_COV, Status.FAILED, detail="non-finite covariance")
-        return record
+        return UNUSABLE, "non-finite covariance"
     try:
-        condition = float(np.linalg.cond(covariance))
+        condition_number = float(np.linalg.cond(covariance))
     except np.linalg.LinAlgError:
-        record.add_flag(ReasonCode.SINGULAR_COV, Status.FAILED, detail="covariance not invertible")
-        return record
+        return UNUSABLE, "covariance not invertible"
     eigenvalues = np.linalg.eigvalsh((covariance + covariance.T) / 2)
     if eigenvalues.min() <= 0:
-        record.add_flag(ReasonCode.SINGULAR_COV, Status.FAILED, detail="covariance not positive definite")
-    elif condition > float(config.get("thresholds.covariance.ill_conditioned_condition_number")):
+        return UNUSABLE, "covariance not positive definite"
+    if condition_number > float(
+        config.get("thresholds.covariance.ill_conditioned_condition_number")
+    ):
+        return ILL_CONDITIONED, f"condition number={condition_number:.3g}"
+    return USABLE, f"condition number={condition_number:.3g}"
+
+
+def apply_covariance_flags(
+    record: FitRecord,
+    covariance: np.ndarray,
+    config: Config,
+    *,
+    required_for_inference: bool = False,
+) -> FitRecord:
+    """Covariance credibility, per Part 5 §8.1-§8.2 and decision D8.
+
+    D8 makes an unusable covariance a **failure** only "when required for meaningful
+    inference"; Part 5 §8.2 lists a singular or unstable nonlinear Hessian/covariance
+    among the conditions that make a STAR model **fragile**, not failed; and §8.1 reserves
+    MSAR failure for non-convergence, non-finite quantities, or an effectively
+    unidentified regime, with a singular covariance being one *ingredient* of the
+    empty-regime conjunction rather than a failure on its own.
+
+    So the default here is fragility: the point estimates and the forecasts built from
+    them stand, and what is unreliable is the asymptotic inference. A caller that genuinely
+    depends on the covariance for a reported inference passes
+    `required_for_inference=True` and gets the failure branch. Nothing in Part 6 reports
+    an inference that rests on these matrices, so nothing passes it.
+    """
+    condition, detail = covariance_condition(covariance, config)
+    if condition == UNUSABLE:
         record.add_flag(
-            ReasonCode.ILL_CONDITIONED_COV, Status.FRAGILE,
-            detail=f"condition number={condition:.3g}",
+            ReasonCode.SINGULAR_COV,
+            Status.FAILED if required_for_inference else Status.FRAGILE,
+            detail=detail,
         )
+    elif condition == ILL_CONDITIONED:
+        record.add_flag(ReasonCode.ILL_CONDITIONED_COV, Status.FRAGILE, detail=detail)
     return record
 
 
