@@ -482,7 +482,14 @@ class Pipeline:
                                            refit_date=str(target.index[-1].date()))
                             residuals, fitted = fit.residuals, fit.fitted
                         elif model in (MSAR, MSAR3):
-                            fit = fit_msar(target, spec.order, spec.k_regimes, series=series_id,
+                            # `config` is what enables the observed-information Hessian,
+                            # the parameter standard errors and the covariance
+                            # credibility flags. Omitting it here would have run the
+                            # §8.1 diagnostics on the rolling fits but not on the
+                            # full-sample fits that feed T3.2, which is where regime
+                            # credibility is actually reported.
+                            fit = fit_msar(target, spec.order, spec.k_regimes,
+                                           config=self.config, series=series_id,
                                            refit_date=str(target.index[-1].date()))
                             flags.apply_msar_flags(fit.record, fit, self.config)
                             residuals = fit.one_step_residuals()
@@ -644,10 +651,12 @@ class Pipeline:
                         {"figure_id": "F3.3", "series": series_id, "model": MSAR})
                 if STAR in fits:
                     fit = fits[STAR][0]
-                    zed = fit.y[max(fit.order, fit.delay) - fit.delay:][: fit.G.size] \
-                        if fit.y.size else np.empty(0)
+                    # The fitted transition variable itself, not a reconstruction from the
+                    # dependent variable: `fit.z` is y_{t-d} on exactly the estimation
+                    # rows, so G[i] and z[i] are the same observation by construction.
                     self._save_figure(
-                        figures.star_transition(zed, fit.G, series_id=series_id, kind=fit.kind,
+                        figures.star_transition(fit.z, fit.G, series_id=series_id,
+                                                kind=fit.kind,
                                                 gamma=fit.gamma, c=fit.c),
                         self.layout.figures, f"F3.3_{series_id}_STAR", stage,
                         {"figure_id": "F3.3", "series": series_id, "model": STAR})

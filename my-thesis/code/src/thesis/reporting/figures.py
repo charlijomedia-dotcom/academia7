@@ -224,7 +224,20 @@ def regime_probabilities(dates: pd.DatetimeIndex, smoothed: np.ndarray, usrec: p
 
 def star_transition(z: np.ndarray, g: np.ndarray, *, series_id: str, kind: str,
                     gamma: float, c: float) -> plt.Figure:
-    """F3.3 companion: the fitted STAR transition function against its variable."""
+    """F3.3 companion: the fitted STAR transition function against its variable.
+
+    `z` must be the transition variable on exactly the estimation rows, so that `z[i]`
+    and `g[i]` are the same observation. A mismatch is raised rather than plotted: sorting
+    one array by the order of a shorter one pairs the wrong values together and produces a
+    plausible-looking curve that is not the fitted transition function.
+    """
+    z = np.asarray(z, dtype=float)
+    g = np.asarray(g, dtype=float)
+    if z.shape != g.shape:
+        raise ValueError(
+            f"transition variable and transition function must align observation for "
+            f"observation; got {z.shape} and {g.shape}"
+        )
     order = np.argsort(z)
     fig, ax = plt.subplots(figsize=(6, 3.4))
     ax.plot(np.asarray(z)[order], np.asarray(g)[order], color="#eda100", linewidth=1.6)
