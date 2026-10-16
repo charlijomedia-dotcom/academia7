@@ -145,8 +145,10 @@ def main(argv: list[str] | None = None) -> int:
         # they do not compromise the commit-reproducibility claim D14 protects. Anything
         # else uncommitted still stops the run.
         context.require_clean_tree(produced_by_the_run=(layout.root, layout.cache))
-    context.write_run_manifest(layout)
-
+    # The run manifest is written by the pipeline's finalize stage, once a run has
+    # actually produced results. Writing it here too meant a `--data-only` check
+    # overwrote the manifest describing the run whose outputs sit beside it, leaving the
+    # provenance record pointing at a verification that produced nothing.
     panels = to_panels(bundle.frame)
     print(f"canonical input: {bundle.csv_path.name}  sha256={bundle.csv_sha256[:16]}...")
     print(f"rows: {len(bundle.frame)}")
@@ -160,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.data_only:
         print("--data-only: stopping after the frozen-input verification")
+        print("(no run manifest written: this is a check, not a run)")
         return 0
 
     pipeline = Pipeline(config, context, layout, bundle, smoke=args.smoke_test)
