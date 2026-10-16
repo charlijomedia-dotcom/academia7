@@ -146,6 +146,10 @@ class RunContext:
     data_cutoff: str | None = None
     vintage_date: str | None = None
     code_commit_sha: str = field(default_factory=git_commit_sha)
+    #: Whether the tree was modified at all when the run started. Recorded in the manifest
+    #: as provenance; it does **not** drive `require_clean_tree`, which asks git for the
+    #: dirty *paths* so it can distinguish the run's own outputs from a change that would
+    #: alter the result.
     tree_dirty: bool = field(default_factory=git_tree_dirty)
     started_utc: str = field(default_factory=utc_now)
     run_id: str = field(default="")

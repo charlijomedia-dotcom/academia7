@@ -153,14 +153,40 @@ class TestProvenance:
         assert sidecar.exists()
         assert "F2.0" in sidecar.read_text(encoding="utf-8")
 
-    def test_baseline_run_refuses_dirty_tree(self):
-        ctx = RunContext(namespace=Namespace.BASELINE, config_hash="abc", tree_dirty=True)
-        with pytest.raises(DirtyTreeError):
+    def test_baseline_run_refuses_an_uncommitted_source_change(self, monkeypatch):
+        # The check asks git which paths are dirty, rather than reading a boolean, so it
+        # can tell the run's own outputs from a change that would alter the result. This
+        # test supplies the paths directly; test_clean_tree.py exercises the real thing
+        # against a throwaway repository.
+        import thesis.core.provenance as provenance
+
+        monkeypatch.setattr(provenance, "git_dirty_paths",
+                            lambda: ("my-thesis/code/src/thesis/models/ar.py",))
+        ctx = RunContext(namespace=Namespace.BASELINE, config_hash="abc")
+        with pytest.raises(DirtyTreeError, match="ar.py"):
             ctx.require_clean_tree()
 
-    def test_non_baseline_run_tolerates_dirty_tree(self):
-        ctx = RunContext(namespace=Namespace.SMOKE, config_hash="abc", tree_dirty=True)
+    def test_baseline_run_tolerates_its_own_outputs(self, monkeypatch, tmp_path):
+        import thesis.core.provenance as provenance
+
+        monkeypatch.setattr(provenance, "git_dirty_paths", lambda: ("results/",))
+        monkeypatch.setattr(provenance, "_relative_to_repository", lambda p: "results")
+        ctx = RunContext(namespace=Namespace.BASELINE, config_hash="abc")
+        ctx.require_clean_tree(produced_by_the_run=(tmp_path / "results",))
+
+    def test_non_baseline_run_tolerates_dirty_tree(self, monkeypatch):
+        import thesis.core.provenance as provenance
+
+        monkeypatch.setattr(provenance, "git_dirty_paths",
+                            lambda: ("my-thesis/code/src/thesis/models/ar.py",))
+        ctx = RunContext(namespace=Namespace.SMOKE, config_hash="abc")
         ctx.require_clean_tree()  # must not raise
+
+    def test_the_manifest_still_records_whether_the_tree_was_dirty(self):
+        # `tree_dirty` no longer drives the check, but it remains provenance: a reader of
+        # the manifest can see whether the tree was modified when the run started.
+        ctx = RunContext(namespace=Namespace.SMOKE, config_hash="abc", tree_dirty=True)
+        assert ctx.manifest()["code_tree_dirty"] is True
 
 
 class TestOutputNamespaces:
