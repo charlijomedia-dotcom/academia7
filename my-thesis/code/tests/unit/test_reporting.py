@@ -288,6 +288,29 @@ class TestFigureConventions:
         produced = {path.stem for path in tmp_path.glob("*.png")}
         assert produced == set(names)
 
+    def test_saved_figures_are_byte_reproducible_across_runs(self, tmp_path):
+        # PDF and SVG embed a creation timestamp, so two runs of the same analysis would
+        # otherwise produce artifacts that differ for no checkable reason. A reviewer must
+        # be able to verify a figure by checksum the way the tables already can be.
+        import hashlib
+        import time
+
+        import matplotlib.pyplot as plt
+
+        digests = []
+        for run in range(2):
+            fig, ax = plt.subplots()
+            ax.plot([0, 1, 2], [0, 1, 4])
+            figures.save(fig, tmp_path / f"run{run}")
+            time.sleep(1.1)          # force a different clock second
+            digests.append({
+                suffix: hashlib.sha256(
+                    (tmp_path / f"run{run}.{suffix}").read_bytes()).hexdigest()
+                for suffix in ("png", "pdf")
+            })
+        assert digests[0]["png"] == digests[1]["png"]
+        assert digests[0]["pdf"] == digests[1]["pdf"]
+
     def test_save_writes_every_required_format_with_a_provenance_sidecar(self, tmp_path):
         from thesis.core.paths import Namespace
         from thesis.core.provenance import RunContext

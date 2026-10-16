@@ -93,7 +93,12 @@ def save(fig, path: Path, context=None, extra: dict[str, Any] | None = None,
     written = []
     for suffix in formats:
         target = path.parent / f"{path.name}.{suffix}"
-        fig.savefig(target, dpi=300, bbox_inches="tight")
+        # PDF and SVG embed a creation timestamp, which makes two runs of the same
+        # analysis produce files that differ in a handful of bytes for no reason anyone
+        # can check. Omitting it lets a reviewer verify every artifact by checksum, the
+        # way the tables already can be. PNG carries no such stamp.
+        metadata = {"CreationDate": None} if suffix in ("pdf", "svg") else None
+        fig.savefig(target, dpi=300, bbox_inches="tight", metadata=metadata)
         written.append(target)
         if context is not None:
             context.write_sidecar(target, extra)
