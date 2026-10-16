@@ -15,7 +15,7 @@ import platform
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import pandas as pd
 
@@ -31,7 +31,9 @@ PROVENANCE_COLUMNS = (
 )
 
 
-def _git(*args: str) -> str | None:
+def _git(*args: str, strip: bool = True) -> str | None:
+    """Run a git command. `strip=False` preserves leading whitespace, which the
+    porcelain status format uses as part of its fixed-width status field."""
     try:
         out = subprocess.run(
             ["git", *args],
@@ -43,18 +45,54 @@ def _git(*args: str) -> str | None:
         )
     except (OSError, subprocess.SubprocessError):
         return None
-    return out.stdout.strip() if out.returncode == 0 else None
+    if out.returncode != 0:
+        return None
+    return out.stdout.strip() if strip else out.stdout
 
 
 def git_commit_sha() -> str:
     return _git("rev-parse", "HEAD") or "unknown"
 
 
-def git_tree_dirty() -> bool:
-    status = _git("status", "--porcelain")
+def git_dirty_paths() -> tuple[str, ...] | None:
+    """Repository-relative paths with uncommitted changes, or None if git cannot answer.
+
+    Git collapses an untracked directory to a single entry ending in "/", which is kept
+    as-is: prefix matching against it still works for the output roots below.
+    """
+    # Not stripped: the porcelain status field is two fixed-width characters followed by
+    # a space, and the first of those is often a space itself. Stripping the output would
+    # remove it and shift the path by one character.
+    status = _git("status", "--porcelain", strip=False)
     if status is None:
+        return None
+    paths = []
+    for line in status.splitlines():
+        if not line.strip():
+            continue
+        entry = line[3:].strip() if len(line) > 3 else ""
+        # A rename reads "old -> new"; the destination is the one that matters.
+        if " -> " in entry:
+            entry = entry.split(" -> ", 1)[1]
+        paths.append(entry.strip('"'))
+    return tuple(paths)
+
+
+def git_tree_dirty() -> bool:
+    paths = git_dirty_paths()
+    if paths is None:
         return True  # cannot prove the tree is clean, so assume it is not
-    return bool(status.strip())
+    return bool(paths)
+
+
+def _relative_to_repository(path: Path) -> str:
+    """A path as git would name it, relative to the repository root."""
+    repository_root = _git("rev-parse", "--show-toplevel")
+    base = Path(repository_root) if repository_root else PROJECT_ROOT
+    try:
+        return Path(path).resolve().relative_to(base.resolve()).as_posix()
+    except ValueError:
+        return Path(path).resolve().as_posix()
 
 
 def utc_now() -> str:
@@ -118,13 +156,45 @@ class RunContext:
             stamp = self.started_utc.replace("-", "").replace(":", "").replace("Z", "")
             self.run_id = f"{self.namespace.value}-{stamp}-{self.config_hash[:8]}"
 
-    def require_clean_tree(self) -> None:
-        """Thesis-facing runs refuse to proceed from a modified working tree (D14)."""
-        if self.namespace is Namespace.BASELINE and self.tree_dirty:
+    def require_clean_tree(self, *, produced_by_the_run: Sequence[Path] = ()) -> None:
+        """Thesis-facing runs refuse to proceed from a modified working tree (D14).
+
+        What decision D14 protects is the claim that a baseline result can be reproduced
+        from the commit recorded beside it. That claim depends on the **inputs** —
+        the code, the configuration, the frozen data and the approved specifications.
+        It does not depend on the run's own artifacts, which are the result rather than
+        an input, and which land inside the repository because Part 5 requires every
+        thesis-facing number to be traceable to a file under `output/`.
+
+        Treating those artifacts as a dirty tree makes the baseline run refuse to run a
+        second time: the first run writes `output/`, and every later run then fails. So
+        paths under the directories this run itself writes are excluded, and a change
+        anywhere else still stops the run and is named in the error. The safeguard is
+        narrower in scope and no weaker: nothing that determines the result may be
+        uncommitted.
+        """
+        if self.namespace is not Namespace.BASELINE:
+            return
+        paths = git_dirty_paths()
+        if paths is None:
             raise DirtyTreeError(
-                "the working tree has uncommitted changes, so a thesis-facing baseline "
-                "run would not be reproducible from its recorded commit. Commit or stash "
-                "the changes, or run with a non-baseline namespace."
+                "git could not report the state of the working tree, so a thesis-facing "
+                "baseline run cannot certify which commit produced it."
+            )
+        generated = tuple(_relative_to_repository(path) for path in produced_by_the_run)
+        offending = [
+            path for path in paths
+            if not any(path == root or path.startswith(root.rstrip("/") + "/")
+                       for root in generated)
+        ]
+        if offending:
+            shown = ", ".join(sorted(offending)[:10])
+            more = "" if len(offending) <= 10 else f" (and {len(offending) - 10} more)"
+            raise DirtyTreeError(
+                "the working tree has uncommitted changes outside the run's own output "
+                f"directories, so a thesis-facing baseline run would not be reproducible "
+                f"from its recorded commit: {shown}{more}. Commit or stash them, or run "
+                "with a non-baseline namespace."
             )
 
     def fields(self) -> dict[str, Any]:

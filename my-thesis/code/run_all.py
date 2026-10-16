@@ -141,7 +141,10 @@ def main(argv: list[str] | None = None) -> int:
         notes={"parent_source_snapshot_hash": bundle.parent_source_hash},
     )
     if not args.smoke_test:
-        context.require_clean_tree()
+        # The run's own output and cache directories are its result, not its inputs, so
+        # they do not compromise the commit-reproducibility claim D14 protects. Anything
+        # else uncommitted still stops the run.
+        context.require_clean_tree(produced_by_the_run=(layout.root, layout.cache))
     context.write_run_manifest(layout)
 
     panels = to_panels(bundle.frame)
