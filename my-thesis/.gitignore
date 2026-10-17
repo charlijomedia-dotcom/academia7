@@ -17,6 +17,21 @@ output_refreshed/
 data/refreshed/
 data/audit/
 
+# Local Python virtual environments. A virtual environment is not an input to the
+# analysis: its contents are fully determined by code/requirements.lock.txt, whose hash is
+# recorded in every run manifest. Excluding it keeps the documented setup in REPRODUCING.md
+# (`python -m venv .venv` inside my-thesis/) from making the working tree dirty and so
+# blocking a legitimate baseline run.
+.venv/
+venv/
+ENV/
+env/
+
+# Environment files may hold credentials such as a FRED API key, which must never reach
+# the repository (Part 5 computational spec section 2).
+.env
+.env.*
+
 # Python
 __pycache__/
 *.py[cod]

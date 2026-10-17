@@ -42,6 +42,7 @@ def repository(tmp_path, monkeypatch):
     (root / "code" / "src" / "module.py").write_text("x = 1\n")
     (root / "specs" / "method.md").write_text("approved\n")
     (root / "output" / ".gitkeep").write_text("")
+    (root / ".gitignore").write_text(".venv/\nvenv/\nENV/\nenv/\n.env\n.env.*\ncache/\n")
     _run("add", "-A", cwd=root)
     _run("commit", "-q", "-m", "initial", cwd=root)
 
@@ -158,3 +159,120 @@ class TestTheSafeguardStillBites:
         with pytest.raises(DirtyTreeError, match="could not report"):
             RunContext(namespace=Namespace.BASELINE,
                        config_hash="abc").require_clean_tree()
+
+
+class TestTheDocumentedSetupIsPermitted:
+    """REPRODUCING.md tells the researcher to create `.venv` inside `my-thesis`.
+
+    That directory is not an input to the analysis — its contents are fully determined by
+    `code/requirements.lock.txt`, whose hash every run manifest records — but an untracked
+    directory is still a dirty tree, so without an ignore rule the documented setup made
+    the first baseline run refuse to start.
+    """
+
+    def _make_venv(self, root: Path) -> None:
+        """A directory shaped like a virtual environment, without building a real one."""
+        for relative in ("bin/python", "lib/python3.11/site-packages/numpy/__init__.py",
+                         "pyvenv.cfg"):
+            target = root / ".venv" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("x")
+
+    def test_a_virtual_environment_does_not_block_a_baseline_run(self, repository):
+        self._make_venv(repository)
+        assert git_dirty_paths() == (), "an ignored venv must not appear as a change"
+        _context(repository).require_clean_tree(
+            produced_by_the_run=(repository / "output",))
+
+    def test_it_does_not_block_one_alongside_the_runs_own_outputs(self, repository):
+        self._make_venv(repository)
+        (repository / "output" / "diagnostics" / "T2.2.csv").write_text("a\n1\n")
+        _context(repository).require_clean_tree(
+            produced_by_the_run=(repository / "output",))
+
+    def test_alternative_environment_directory_names_are_also_ignored(self, repository):
+        for name in ("venv", "env", "ENV"):
+            (repository / name).mkdir()
+            (repository / name / "pyvenv.cfg").write_text("x")
+        assert git_dirty_paths() == ()
+
+    def test_an_environment_file_holding_credentials_is_ignored(self, repository):
+        # A FRED API key must never reach the repository (Part 5 Comp §2).
+        (repository / ".env").write_text("FRED_API_KEY=secret\n")
+        (repository / ".env.local").write_text("FRED_API_KEY=secret\n")
+        assert git_dirty_paths() == ()
+
+    def test_a_source_change_still_refuses_with_a_venv_present(self, repository):
+        # The decisive pairing: the documented setup is permitted, and a genuine input
+        # modification is still caught, in the same working tree.
+        self._make_venv(repository)
+        (repository / "code" / "src" / "module.py").write_text("x = 2\n")
+        with pytest.raises(DirtyTreeError, match="code/src/module.py"):
+            _context(repository).require_clean_tree(
+                produced_by_the_run=(repository / "output",))
+
+    def test_a_specification_change_still_refuses_with_a_venv_present(self, repository):
+        self._make_venv(repository)
+        (repository / "specs" / "method.md").write_text("tampered\n")
+        with pytest.raises(DirtyTreeError, match="specs/method.md"):
+            _context(repository).require_clean_tree(
+                produced_by_the_run=(repository / "output",))
+
+    def test_a_directory_merely_starting_with_venv_is_not_ignored(self, repository):
+        # "venv_notes/" must not be swallowed by the "venv/" rule.
+        (repository / "venv_notes").mkdir()
+        (repository / "venv_notes" / "note.md").write_text("x\n")
+        with pytest.raises(DirtyTreeError, match="venv_notes"):
+            _context(repository).require_clean_tree(
+                produced_by_the_run=(repository / "output",))
+
+
+class TestTheProjectsOwnIgnoreRules:
+    """The rules must hold in this repository, not only in a constructed one."""
+
+    @staticmethod
+    def _rules() -> list[str]:
+        """The active rules, with comments and blank lines removed.
+
+        The file explains itself in prose that names paths it deliberately does *not*
+        ignore, so matching raw text would find those comments rather than real rules.
+        """
+        from thesis.core.paths import PROJECT_ROOT
+
+        text = (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8")
+        return [line.strip() for line in text.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")]
+
+    @classmethod
+    def _project_gitignore(cls) -> str:
+        return "\n".join(cls._rules())
+
+    def test_the_documented_virtual_environment_path_is_ignored(self):
+        assert ".venv/" in self._project_gitignore()
+
+    def test_common_alternative_names_are_ignored(self):
+        text = self._project_gitignore()
+        for name in ("venv/", "ENV/", "env/"):
+            assert name in text, name
+
+    def test_environment_files_are_ignored(self):
+        text = self._project_gitignore()
+        assert ".env" in text and ".env.*" in text
+
+    def test_nothing_that_determines_a_result_is_ignored(self):
+        # The ignore list must not have grown to cover an input, or the thesis-facing
+        # output directory whose traceability Part 5 requires.
+        rules = self._rules()
+        for forbidden in ("output/", "data/", "data/frozen/", "approved-specs/",
+                          "code/", "code/src/", "code/configs/", "notes/", "reports/"):
+            assert forbidden not in rules, f"{forbidden} must remain tracked"
+
+    def test_the_rules_that_are_present_are_derived_or_local_only(self):
+        # Every rule must name something regenerable, local, or explicitly non-baseline.
+        allowed_prefixes = (
+            "cache", "smoke_cache", "cache_refreshed", "smoke_output", "output_refreshed",
+            "data/refreshed", "data/audit", "__pycache__", "*.py", ".pytest_cache",
+            ".coverage", "htmlcov", "*.egg-info", ".venv", "venv", "ENV", "env", ".env",
+        )
+        for rule in self._rules():
+            assert rule.startswith(allowed_prefixes), f"unexpected ignore rule: {rule}"

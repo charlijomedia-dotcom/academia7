@@ -20,6 +20,7 @@ which would have stopped or corrupted a researcher's attempt:
 | 2 | `--data-only` overwrote the run manifest describing the run whose outputs sat beside it | provenance |
 | 3 | PDF figures embedded a timestamp, so artifacts could not be verified by checksum | verification |
 | 4 | A clean-tree test asserted nothing after the check was rewritten | test integrity |
+| 5 | The documented `.venv` location was not gitignored, so **the documented setup itself blocked the first baseline run** | blocking |
 
 No methodological decision, approved threshold, specification or datum was changed.
 
@@ -111,6 +112,9 @@ Run A and run B, independent, cold caches, same configuration and data.
 | Identical once run metadata is removed | 112 |
 | Genuinely different | 31 |
 
+*(Measured on the code as it stood before the PDF timestamp fix — see "What was and was
+not measured" below.)*
+
 All 31 were PDF figures, differing by **exactly 5 bytes of 16850** — the embedded
 `/CreationDate`. All 31 PNG figures were byte-identical.
 
@@ -120,8 +124,23 @@ assuming it: those columns matched in every file. Legitimate differences were co
 `run_id`, `created_utc`, wall-clock timings, and `code_commit_sha` (documentation was
 committed between the runs).
 
-PDF and SVG output now omits the creation timestamp, so **every artifact is verifiable by
-checksum**. Confirmed by saving the same figure twice a clock-second apart.
+### What was and was not measured
+
+To be precise about the evidence, because the sequence matters:
+
+- **Both complete cold-cache runs were executed *before* the PDF timestamp fix.** The
+  comparison above is therefore a pre-fix measurement. It is what identified the embedded
+  timestamp as the sole remaining source of variation.
+- **The PDF fix was verified separately**, by a targeted regression test that saves the
+  same figure twice with a forced clock-second gap between the saves and requires the
+  SHA-256 digests to match in both PNG and PDF. That test is part of the suite
+  (`test_saved_figures_are_byte_reproducible_across_runs`).
+- **No two-run, byte-for-byte comparison of the complete pipeline has been performed on
+  the post-fix code, and none is claimed here.** The expected outcome is that the 31 PDFs
+  would join the byte-identical set, since the five differing bytes were the timestamp and
+  that field is now omitted. Confirming it would require two further complete runs, which
+  were judged not to be worth the compute for a change whose effect is demonstrated
+  directly by the regression test.
 
 ## 8. Clean-tree protection and generated outputs (objective 8)
 
@@ -151,6 +170,36 @@ Secondary finding: `--data-only` wrote the run manifest before its early return,
 verification check overwrote the manifest describing the run whose outputs sat beside it.
 The pipeline's finalize stage is now the single writer; `--data-only` leaves the tracked
 tree untouched (0 modified files, verified).
+
+## 8a. The documented virtual environment blocked a baseline run
+
+**A second blocking defect, found in review of this report and corrected.**
+
+`REPRODUCING.md` §4 instructs the researcher to create the virtual environment at
+`my-thesis/.venv`, and `my-thesis/.gitignore` did not exclude it. Reproduced from a fresh
+clone: the checkout is clean, `python -m venv .venv` adds one untracked entry
+`?? my-thesis/.venv/`, and `python run_all.py --data-only` then dies with
+
+```
+DirtyTreeError: ... uncommitted changes outside the run's own output directories ...:
+my-thesis/.venv/
+```
+
+So a researcher following the instructions exactly could not run a baseline analysis at
+all. The smoke namespace was unaffected, which is why earlier Part 7 checks did not catch
+it.
+
+A virtual environment is **not** an input to the analysis: its contents are fully
+determined by `code/requirements.lock.txt`, whose SHA-256 every run manifest records.
+`.gitignore` now excludes `.venv/`, `venv/`, `ENV/`, `env/`, and — separately — `.env` and
+`.env.*`, since an environment file may hold a FRED API key that must never reach the
+repository (Comp §2).
+
+**No protection was weakened.** Verified from a fresh clone after the fix: the documented
+setup proceeds, and a modification to code or to an approved specification is still
+refused and named. Twelve regression tests cover this, including that a directory merely
+*starting* with `venv` is not swallowed by the rule, and that no ignore rule covers
+`output/`, `data/`, `approved-specs/`, `code/` or `notes/`.
 
 ## 9. Smoke evidence versus thesis results (objective 9)
 

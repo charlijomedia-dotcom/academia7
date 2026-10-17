@@ -58,6 +58,9 @@ python -m pip install -r code\requirements.lock.txt
 
 Your prompt should now start with `(.venv)`. Leave it active for everything below.
 
+The `.venv` folder is excluded from version control, so creating it here does not affect
+the repository's state or the integrity checks a full run performs.
+
 > **If PowerShell refuses to run the activation script** ("running scripts is disabled on
 > this system"), allow signed local scripts for your user once:
 > ```powershell
