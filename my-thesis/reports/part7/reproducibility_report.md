@@ -217,13 +217,18 @@ rather than a result is identifiable from the file alone.
 ## 10. Tests
 
 ```
-681 passed, 0 failed, 0 skipped, 0 errors    (28m44s)
+693 passed, 0 failed, 0 skipped, 0 errors    (30m11s)
 ```
 
 Run in the clean environment, from the locked dependencies, with `FRED_API_KEY` unset.
-Collected = 681 = passed. Part 7 added 21 tests: 16 for the clean-tree safeguard against a
-throwaway repository, 4 for the corrected contract in `test_core.py`, and 1 for figure
-byte-reproducibility.
+Collected = 693 = passed. Part 7 added 33 tests: 16 for the clean-tree safeguard against a
+throwaway repository, 4 for the corrected contract in `test_core.py`, 1 for figure
+byte-reproducibility, and the 12 added with the section 8a correction, which cover the
+documented virtual-environment setup in both directions — permitted when only a `.venv`
+is present, still refused when an input that determines a result is modified.
+
+This supersedes the count of 681 reported before the section 8a correction; the implementation
+is unchanged by this documentation update.
 
 ## 11. Limitations
 
