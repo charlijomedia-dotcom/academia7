@@ -361,3 +361,14 @@ def test_stage_registry_additions_are_reported(clock):
     assert s.stages["adequacy"].registry == {"failed": 1, "fragile": 4, "data_gaps": 0}
     assert "1 failed estimations, 4 fragility flags" in stage_end(s, s.stages["adequacy"],
                                                                  s.stages["adequacy"].ended)
+
+
+def test_longest_running_prefers_the_fit_over_its_batch_task(clock):
+    s = RunState()
+    s.apply(clock("plan", chains=[plan()]))
+    s.apply(clock("stage_start", stage="forecasting"))
+    s.apply(clock("task", stage="forecasting", label="INDPRO: rolling chains"))
+    s.apply(clock("chain_start", task_id="b|AR"))
+    s.apply(clock("origin_start", task_id="b|AR", origin_date="2005-04-01",
+                  window_start="", window_end=""))
+    assert "2005-04-01" in s.longest_running(clock.t + 500)["what"]

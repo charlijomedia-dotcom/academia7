@@ -461,6 +461,10 @@ class RunState:
             age = now - op.started
             if best is None or age > best["seconds"]:
                 best = {"seconds": age, "what": f"{op.category} {op.label}".strip()}
+        # A stage task (a whole batch of chains, say) is reported only when no fit or
+        # operation inside it is running: the individual computation is more useful.
+        if best is not None:
+            return best
         for stage in self.stages.values():
             if stage.status == "active" and stage.unit_started is not None and stage.unit_label:
                 age = now - stage.unit_started
