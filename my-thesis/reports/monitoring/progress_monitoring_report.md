@@ -248,7 +248,15 @@ run, so this costs nothing; the numbers are the same either way.
 
 ## 7. Tests
 
-RESULT_PLACEHOLDER
+```
+778 passed, 0 failed, 0 skipped, 0 errors    (47m24s)
+```
+
+Complete suite on the final code (`FRED_API_KEY` unset); collected = 778 = passed. That is
+the 693 tests of the approved Part 7 baseline, all still passing, plus 85 new ones. The
+suite ran on a machine shared with other work, which explains the longer time than Part
+7's 30 minutes. The frozen dataset's SHA-256 is unchanged:
+`7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a`.
 
 New tests, by property:
 
