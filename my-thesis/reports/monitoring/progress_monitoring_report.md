@@ -279,7 +279,32 @@ Observed on the reduced run (these are diagnostic observations, not changes):
   single-worker tail, repeated for every monthly series, is the main reason the full run
   exceeds a day.
 
-FULL_PLAN_PLACEHOLDER
+- **The full run's exact workload** (computed by `rolling_plan()` on the real baseline
+  configuration after running only the cheap stages 1–5): **121 chains, 72,233 forecast
+  origins, of which 58,125 must be fitted** (14,108 are the T4.8 baseline-length chains,
+  served from the forecast-stage cache).
+
+  | Exercise | Model | Chains | Origins | To fit |
+  |---|---|---:|---:|---:|
+  | Baseline | AR, ARMA, MSAR, STAR (each) | 6 | 3,527 | 3,527 |
+  | T4.3 K=3 (rolling, in the forecast stage) | MSAR3 | 6 | 3,527 | 3,527 |
+  | T4.1 transformation | AR, ARMA, MSAR, STAR (each) | 2 | 1,329 | 1,329 |
+  | T4.2 CPI AR lags | AR | 4 | 2,860 | 2,860 |
+  | T4.5 VAR (provisional) | VAR | 1 | 571 | 571 |
+  | T4.6 ARMA-GARCH (provisional) | ARMA-GARCH | 6 | 3,527 | 3,527 |
+  | T4.8 window lengths | AR, ARMA, MSAR, STAR (each) | 18 | 10,581 | 7,054 |
+
+  MSAR3 chains: CPIAUCSL 715, INDPRO 715, UNRATE 704, FEDFUNDS 625, M2SL 571 origins
+  (window 240), GDPC1 197 (window 120).
+
+- **Rough arithmetic, not a forecast.** At the reduced run's late-window speeds (MSAR3
+  ≈ 46 s, MSAR ≈ 18 s per monthly fit; measured on a shared 4-core machine, and early
+  windows may differ), the 3,330 monthly MSAR3 fits are ≈ 43 CPU-hours and the ≈ 11,000
+  monthly MSAR fits (baseline, T4.1, T4.8) ≈ 55 CPU-hours. Because each series' batch
+  waits for its own MSAR3 chain, the five monthly MSAR3 chains (≈ 7–9 hours each) run
+  essentially one after another: about 40 hours of wall time in the forecast stage alone,
+  whatever the number of workers. This is the dominant term, and the monitor's estimate
+  will show it once each model has five timed fits.
 
 These are reported, not acted on: this branch is observability only. A change of
 scheduling (for example submitting every series' chains to one pool) would not alter any
