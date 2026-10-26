@@ -35,6 +35,7 @@ import numpy as np
 
 from ..core.config import Config
 from ..core.schemas import TestResult
+from ..monitoring import probe
 
 _SQRT_2PI = np.sqrt(2.0 * np.pi)
 
@@ -281,7 +282,9 @@ def _null_distribution_cached(
         critical_value_replications=replications,
         critical_value_seed=seed,
     )
-    return tuple(_simulate_null(n, settings))
+    # Timed for the progress log only. lru_cache means this runs once per sample size.
+    with probe.operation("HLZ null-distribution simulation", f"n={n}, B={replications}"):
+        return tuple(_simulate_null(n, settings))
 
 
 def null_distribution(n: int, settings: HLZSettings) -> np.ndarray:

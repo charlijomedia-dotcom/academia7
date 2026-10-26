@@ -26,6 +26,7 @@ from ..core.cache import CacheKey, FitCache
 from ..core.config import Config
 from ..core.schemas import DataGapEvent, FailureEvent, FitRecord, ReasonCode, Status
 from ..models.registry import FitOutcome, ModelSpec, fit_and_forecast
+from ..monitoring.probe import ChainReporter
 from .windows import Origin, estimation_origins, horizon_coverage, targets_for
 
 
@@ -184,8 +185,14 @@ def run_chain(
     cache: FitCache | None = None,
     max_origins: int | None = None,
     warm_starts: bool | None = None,
+    task_id: str | None = None,
 ) -> ChainResult:
-    """Run every forecast origin for one model on one window length."""
+    """Run every forecast origin for one model on one window length.
+
+    `task_id` only labels progress events (`monitoring.probe`). The reporter reads values
+    the loop has already computed and never feeds anything back, so the numbers are the
+    same with or without a monitor (asserted by a test).
+    """
     horizons = sorted(set(int(h) for h in horizons))
     index = pd.DatetimeIndex(y.index)
     # Bounded by the SHORTEST horizon, not the longest: one fit serves every horizon, so
@@ -202,9 +209,22 @@ def run_chain(
     warm_payload: Any = None
     predecessor_hash = ""
 
-    for origin in origins:
+    reporter = ChainReporter(
+        task_id or f"{series_name}|{spec.model}|w{window_length}", len(origins),
+        series=series_name, model=spec.model, spec_label=spec.label,
+        window_length=int(window_length), horizons=list(horizons),
+        plan={"task_id": task_id or f"{series_name}|{spec.model}|w{window_length}",
+              "batch": "unplanned", "stage": "", "exercise": "unplanned",
+              "role": "baseline", "series": series_name, "model": spec.model,
+              "spec_label": spec.label, "k_regimes": spec.k_regimes,
+              "window_length": int(window_length), "frequency": frequency,
+              "horizons": list(horizons), "n_origins": len(origins)})
+    reporter.start()
+    for position, origin in enumerate(origins, start=1):
         window = y.iloc[origin.estimation_slice()]
         result.attempted += 1
+        reporter.origin_start(position, origin.origin_date, origin.window_start,
+                              origin.window_end)
 
         # A gap in the estimation window or in a required target is a data condition,
         # recorded separately so no model is charged for it.
@@ -215,6 +235,7 @@ def run_chain(
                                      origin.origin_date.strftime("%Y-%m-%d"), None,
                                      tuple(missing), "estimation_window",
                                      "required observations missing from the window"))
+            reporter.origin_end("gap")
             continue
 
         key = None
@@ -281,6 +302,7 @@ def run_chain(
         if use_warm and warm_payload is not None:
             predecessor_hash = f"{np.round(np.asarray(warm_payload, float).ravel(), 10).tolist()}"
 
+        rows_before = len(rows)
         for horizon, target_position, _ in targets_for(origin, horizons, index):
             actual = float(y.iloc[target_position])
             forecast = forecasts.get(horizon, np.nan)
@@ -299,6 +321,8 @@ def run_chain(
                 "reason_codes": ";".join(c.value for c in record.reason_codes),
                 "skeleton_forecast": skeleton.get(horizon, np.nan),
             })
+        reporter.origin_end("failed" if record.status is Status.FAILED else "valid",
+                            from_cache=payload is not None, n_records=len(rows) - rows_before)
 
     result.forecasts = pd.DataFrame(rows)
     result.coverage = horizon_coverage(index, window_length, horizons,
@@ -306,4 +330,6 @@ def run_chain(
     result.fit_records = records
     result.failures = failures
     result.data_gaps = gaps
+    reporter.end(attempted=result.attempted, valid=result.valid, failed=result.failed,
+                 from_cache=result.from_cache, n_records=len(rows), gaps=len(gaps))
     return result

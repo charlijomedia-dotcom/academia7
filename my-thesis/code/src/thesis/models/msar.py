@@ -33,6 +33,7 @@ from scipy.optimize import minimize
 
 from ..core.schemas import FitRecord, ReasonCode, Status
 from . import flags as flags_module
+from ..monitoring import probe
 from .optimize import (StartAttempt, covariance_from_hessian, delta_method,
                        numerical_hessian, numerical_jacobian, select_best,
                        standard_errors)
@@ -363,7 +364,10 @@ def fit_msar(
         starts.append((f"deterministic_p{diagonal}", _pack(mu0, phi0, sigma0, P0)))
 
     attempts: list[StartAttempt] = []
-    for label, theta0 in starts:
+    for number, (label, theta0) in enumerate(starts, start=1):
+        # Progress reporting only: names the start now being optimized.
+        probe.substep(f"MSAR K={k_regimes} likelihood maximization, start {number}/"
+                      f"{len(starts)} ({label})")
         try:
             result = minimize(
                 _negative_loglik, theta0, args=(values, k_regimes, order, states),
@@ -424,6 +428,7 @@ def fit_msar(
     natural_se: dict[str, float] = {}
     covariance_reason = "not computed"
     if compute_covariance and config is not None:
+        probe.substep(f"MSAR K={k_regimes} observed-information Hessian")
         hessian = numerical_hessian(
             lambda theta: _negative_loglik(theta, values, k_regimes, order, states),
             theta_hat)

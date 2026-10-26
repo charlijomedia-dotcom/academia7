@@ -10,7 +10,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .hashing import sha256_obj
 
@@ -34,6 +34,8 @@ class CheckpointStore:
     directory: Path
     enabled: bool = True
     entries: dict[str, dict[str, Any]] = field(default_factory=dict)
+    #: Called with the stage name after each record; progress reporting only.
+    on_record: Callable[[str], None] | None = None
 
     def __post_init__(self) -> None:
         self.directory = Path(self.directory)
@@ -57,6 +59,8 @@ class CheckpointStore:
         if self.enabled:
             self._path(stage).write_text(json.dumps(entry, indent=2, sort_keys=True),
                                          encoding="utf-8")
+        if self.on_record is not None:
+            self.on_record(stage)
         return entry
 
     def is_valid(self, stage: str, inputs: Any) -> bool:

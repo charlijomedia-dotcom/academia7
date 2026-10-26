@@ -18,13 +18,23 @@ decisions, nonlinearity diagnostics, specification selection, in-sample adequacy
 pseudo-out-of-sample rolling forecasts, the forecast-evaluation tests, the mandatory
 robustness exercises, and all required tables, figures and logs. `--data-only` stops
 after the data check for a quick provenance verification.
+
+While the analysis runs, a progress monitor reports the stage, series, model, window,
+forecast origin and remaining work on the console, and keeps an execution log, a
+structured event log and an atomically updated progress snapshot under
+`run_logs/<namespace>/<run_id>/` (outside `output/`, so no thesis-facing artifact carries
+a run-time timestamp). `--log-mirror DIR` also copies those logs to a second location,
+such as a mounted Google Drive folder. `--no-monitor` turns the monitor off; the
+numerical results are identical either way.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
@@ -33,9 +43,12 @@ from thesis.core.config import load_config  # noqa: E402
 from thesis.core.paths import (  # noqa: E402
     CONFIG_DIR,
     FROZEN_DIR,
+    RUN_LOGS_DIR,
     Namespace,
     output_layout,
+    run_log_dir,
 )
+from thesis.monitoring import Monitor  # noqa: E402
 from thesis.core.provenance import RunContext  # noqa: E402
 from thesis.pipeline import Pipeline  # noqa: E402
 from thesis.data.canonical import StoreState, to_panels  # noqa: E402
@@ -117,7 +130,31 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="ignore the fit cache and re-estimate every rolling window",
     )
+    parser.add_argument(
+        "--no-monitor",
+        action="store_true",
+        help="disable the progress monitor and its run_logs/ files (results are unchanged)",
+    )
+    parser.add_argument(
+        "--log-mirror",
+        default=os.environ.get("THESIS_LOG_MIRROR"),
+        help="also copy the run logs to this directory, e.g. a mounted Google Drive "
+             "folder (default: $THESIS_LOG_MIRROR)",
+    )
+    parser.add_argument("--heartbeat-seconds", type=float, default=60.0,
+                        help="heartbeat interval for long-running computations")
+    parser.add_argument("--summary-seconds", type=float, default=300.0,
+                        help="interval between global progress summaries")
     args = parser.parse_args(argv)
+
+    # Line-buffered output, so a log viewed in Colab or through a pipe is current rather
+    # than hours behind in a block buffer.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(line_buffering=True)
+        except (AttributeError, ValueError):
+            pass
+    started = time.time()
 
     names = ("baseline", "series_catalog", "thresholds")
     if args.smoke_test:
@@ -144,7 +181,10 @@ def main(argv: list[str] | None = None) -> int:
         # The run's own output and cache directories are its result, not its inputs, so
         # they do not compromise the commit-reproducibility claim D14 protects. Anything
         # else uncommitted still stops the run.
-        context.require_clean_tree(produced_by_the_run=(layout.root, layout.cache))
+        # run_logs/ holds this and earlier runs' operational logs: produced by runs, never
+        # an input, and gitignored besides.
+        context.require_clean_tree(
+            produced_by_the_run=(layout.root, layout.cache, RUN_LOGS_DIR))
     # The run manifest is written by the pipeline's finalize stage, once a run has
     # actually produced results. Writing it here too meant a `--data-only` check
     # overwrote the manifest describing the run whose outputs sit beside it, leaving the
@@ -165,8 +205,36 @@ def main(argv: list[str] | None = None) -> int:
         print("(no run manifest written: this is a check, not a run)")
         return 0
 
-    pipeline = Pipeline(config, context, layout, bundle, smoke=args.smoke_test)
-    summary = pipeline.run()
+    monitor = None
+    if not args.no_monitor:
+        workers = int(config.get("execution.parallel_workers", 1))
+        monitor = Monitor(
+            run_log_dir(namespace, context.run_id), run_id=context.run_id,
+            namespace=namespace.value, workers=workers,
+            heartbeat_seconds=args.heartbeat_seconds, summary_seconds=args.summary_seconds,
+            mirror_dir=args.log_mirror)
+        monitor.start()
+        monitor.emit("frozen_input_verified", csv=bundle.csv_path.name,
+                     csv_sha256=bundle.csv_sha256, rows=len(bundle.frame),
+                     seconds=round(time.time() - started, 2))
+        monitor.say(f"frozen input verified: {bundle.csv_path.name} "
+                    f"sha256={bundle.csv_sha256[:16]}... ({len(bundle.frame)} rows) "
+                    f"in {time.time() - started:.1f}s")
+
+    pipeline = Pipeline(config, context, layout, bundle, smoke=args.smoke_test,
+                        monitor=monitor)
+    try:
+        summary = pipeline.run()
+    except KeyboardInterrupt:
+        if monitor is not None:
+            monitor.close("interrupted", "KeyboardInterrupt")
+        raise
+    except BaseException as exc:
+        if monitor is not None:
+            monitor.close("failed", f"{type(exc).__name__}: {exc}"[:500])
+        raise
+    if monitor is not None:
+        monitor.close("complete")
 
     print("\n--- pipeline complete ---")
     print(f"stages:          {', '.join(summary['stages'])}")
@@ -182,6 +250,8 @@ def main(argv: list[str] | None = None) -> int:
     manifest.write_text(json.dumps(summary, indent=2, sort_keys=True, default=str),
                         encoding="utf-8")
     print(f"run summary:     {manifest}")
+    if monitor is not None:
+        print(f"run logs:        {monitor.log_dir}")
     return 0
 
 

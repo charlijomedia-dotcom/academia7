@@ -28,6 +28,15 @@ MANIFEST_NAME = "MANIFEST.json"
 CANONICAL_DIR = FROZEN_DIR
 
 NOTES_DIR = PROJECT_ROOT / "notes" / "claude"
+
+# Operational run logs (console log, structured events, progress snapshot). Kept apart
+# from output/ so their timestamps never reach a thesis-facing artifact or its checksum.
+RUN_LOGS_DIR = PROJECT_ROOT / "run_logs"
+
+
+def run_log_dir(namespace: "Namespace | str", run_id: str) -> Path:
+    """`run_logs/<namespace>/<run_id>/` for one run's operational logs."""
+    return RUN_LOGS_DIR / Namespace(namespace).value / run_id
 SOURCE_MATERIALS_DIR = PROJECT_ROOT / "source-materials"
 
 

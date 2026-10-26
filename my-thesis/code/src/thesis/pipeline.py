@@ -14,6 +14,7 @@ run does not invalidate the earlier work (Comp §5).
 from __future__ import annotations
 
 import json
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -41,7 +42,8 @@ from .evaluation.mcs import model_confidence_set
 from .evaluation.state_loss_regression import state_loss_regression
 from .forecasting.parallel import ChainJob, run_chains
 from .forecasting.rolling import DataIdentity
-from .forecasting.windows import common_calendar, describe_coverage, rolling_origins
+from .forecasting.windows import (common_calendar, describe_coverage, estimation_origins,
+                                  rolling_origins)
 from .models import flags
 from .models.ar import fit_ar
 from .models.arma import fit_arma
@@ -50,8 +52,25 @@ from .models.msar import fit_msar
 from .models.registry import AR, ARMA, MSAR, MSAR3, STAR, ModelSpec
 from .models.star import fit_star
 from .models.var import fit_var
+from .monitoring import NullMonitor, probe
+from .monitoring.plan import ChainPlan
 from .reporting import figures, tables
 from .transforms.growth import annualized_logdiff
+
+# Expensive operations are timed for the progress log. `probe.timed` returns the wrapped
+# function's own result untouched and is a direct call when no monitor is installed.
+_series_label = lambda *args, **kwargs: str(kwargs.get("series", ""))  # noqa: E731
+hlz_test = probe.timed("HLZ test", _series_label)(hlz_test)
+dm_hln_test = probe.timed("DM-HLN test", _series_label)(dm_hln_test)
+model_confidence_set = probe.timed("MCS bootstrap", _series_label)(model_confidence_set)
+state_loss_regression = probe.timed("state-loss regression", _series_label)(
+    state_loss_regression)
+fit_ar = probe.timed("AR single fit", _series_label)(fit_ar)
+fit_arma = probe.timed("ARMA single fit", _series_label)(fit_arma)
+fit_msar = probe.timed("MSAR single fit", _series_label)(fit_msar)
+fit_star = probe.timed("STAR single fit", _series_label)(fit_star)
+fit_var = probe.timed("VAR fit")(fit_var)
+fit_arma_garch = probe.timed("ARMA-GARCH fit", _series_label)(fit_arma_garch)
 
 def _supported(result) -> bool:
     """Whether a state-loss regression gives 5% support for state dependence.
@@ -83,8 +102,11 @@ class Pipeline:
     """Runs the approved methodology end to end from the canonical input."""
 
     def __init__(self, config: Config, context: RunContext, layout: OutputLayout,
-                 bundle, *, smoke: bool = False):
+                 bundle, *, smoke: bool = False, monitor=None):
         self.config = config
+        # Observability only: the monitor is told what happens and never consulted.
+        self.monitor = monitor if monitor is not None else NullMonitor()
+        self._current_stage: str | None = None
         self.context = context
         self.layout = layout
         self.bundle = bundle
@@ -92,6 +114,8 @@ class Pipeline:
         self.runtime = RuntimeLog()
         self.checkpoints = CheckpointStore(layout.cache / "checkpoints",
                                            enabled=bool(config.get("execution.checkpoint", True)))
+        if self.monitor.enabled:
+            self.checkpoints.on_record = self.monitor.checkpoint
         self.cache = FitCache(layout.cache / "fits",
                               enabled=bool(config.get("execution.cache", True)))
         self.identity = DataIdentity(
@@ -129,9 +153,11 @@ class Pipeline:
         written = figures.save(fig, directory / name, self.context, extra)
         stage.files.extend(str(p.relative_to(self.layout.root)) for p in written)
 
-    def _chains(self, jobs: Sequence[ChainJob]) -> list[tuple[Any, Any]]:
+    def _chains(self, jobs: Sequence[ChainJob], batch: str = "") -> list[tuple[Any, Any]]:
         """Run a batch of independent chains, recording everything each one produced."""
-        results = run_chains(jobs, self.config, self.identity, self.cache)
+        with self.monitor.batch(batch, [job.task_id for job in jobs]):
+            results = run_chains(jobs, self.config, self.identity, self.cache,
+                                 monitor=self.monitor if self.monitor.enabled else None)
         for _, chain in results:
             self.all_fit_records.extend(chain.fit_records)
             self.all_failures.extend(chain.failures)
@@ -140,12 +166,15 @@ class Pipeline:
 
     def _job(self, series_id: str, model_or_spec, horizons: Sequence[int],
              window_length: int, *, tag=None, transformation: str | None = None,
-             series: pd.Series | None = None) -> ChainJob:
+             series: pd.Series | None = None, batch: str = "") -> ChainJob:
         spec = (model_or_spec if isinstance(model_or_spec, ModelSpec)
                 else self.specs[series_id][model_or_spec])
         frequency = self.frequency[series_id]
+        tag = tag if tag is not None else spec.model
+        label = ":".join(str(part) for part in tag) if isinstance(tag, tuple) else str(tag)
         return ChainJob(
-            tag=tag if tag is not None else spec.model,
+            task_id=f"{batch}|{label}" if batch else "",
+            tag=tag,
             series_name=series_id,
             y=self.targets[series_id] if series is None else series,
             spec=spec,
@@ -183,6 +212,119 @@ class Pipeline:
             return None
         cap = self.config.get("smoke.max_origins", None)
         return None if cap is None else int(cap)
+
+    # -- progress monitoring ---------------------------------------------
+    #
+    # Everything below only *tells* the monitor what is happening. Nothing the monitor
+    # holds is ever read back by a calculation.
+
+    @contextmanager
+    def _stage(self, key: str, planned_units: int | None = None, **detail: Any):
+        """Report one stage, and what it added to the failure and data-gap registers."""
+        self._current_stage = key
+        before = (len(self.all_failures), len(self.all_gaps))
+        with self.monitor.stage(key, planned_units=planned_units, detail=detail):
+            yield
+            added = self.all_failures[before[0]:]
+            self.monitor.emit(
+                "stage_registry", stage=key,
+                failed=sum(1 for e in added if e.category is Status.FAILED),
+                fragile=sum(1 for e in added if e.category is Status.FRAGILE),
+                data_gaps=len(self.all_gaps) - before[1])
+
+    def _task(self, label: str) -> None:
+        if self._current_stage is not None:
+            self.monitor.task(self._current_stage, label)
+
+    def _forecast_jobs(self, series_id: str) -> tuple[str, list[ChainJob]]:
+        """The baseline rolling chains of one series (K=3 MSAR included, for T4.3)."""
+        frequency = self.frequency[series_id]
+        batch = f"forecasting:{series_id}"
+        return batch, [self._job(series_id, model, self._horizons(frequency),
+                                 self._window(frequency), tag=model, batch=batch)
+                       for model in (AR, ARMA, MSAR, STAR, MSAR3)]
+
+    def rolling_plan(self) -> list[ChainPlan]:
+        """Every rolling chain the run will execute, with exact origin counts.
+
+        Built from the same job builders the stages use, and counted with the same
+        `estimation_origins` the rolling engine uses, so a total cannot drift from what
+        is run (a test compares the two). The VAR and the GARCH chains are provisional:
+        whether they run is decided by their own stage.
+        """
+        plans: list[ChainPlan] = []
+        seen: dict[tuple, set[int]] = {}
+
+        def add(job: ChainJob, batch: str, stage: str, exercise: str, role: str) -> None:
+            n = len(estimation_origins(pd.DatetimeIndex(job.y.index), job.window_length,
+                                       list(job.horizons), max_origins=job.max_origins))
+            signature = (job.series_name, job.transformation,
+                         json.dumps(job.spec.as_dict(), sort_keys=True, default=str),
+                         job.window_length, job.max_origins)
+            cached = (self.cache.enabled and signature in seen
+                      and set(job.horizons) <= seen[signature])
+            seen.setdefault(signature, set()).update(job.horizons)
+            plans.append(ChainPlan(
+                task_id=job.task_id, batch=batch, stage=stage, exercise=exercise, role=role,
+                series=job.series_name, model=job.spec.model, spec_label=job.spec.label,
+                k_regimes=(job.spec.k_regimes if job.spec.model in (MSAR, MSAR3) else None),
+                window_length=job.window_length, frequency=job.frequency,
+                horizons=tuple(job.horizons), n_origins=n, expect_cached=cached))
+
+        for series_id in self._selected_targets():
+            batch, jobs = self._forecast_jobs(series_id)
+            for job in jobs:
+                k3 = job.spec.model == MSAR3
+                add(job, batch, "forecasting",
+                    "T4.3 K=3 regime count (rolling MSAR3)" if k3 else "baseline",
+                    "robustness" if k3 else "baseline")
+        applies = [s for s in self.config.get("robustness.transformation.applies_to")
+                   if s in self.targets]
+        for series_id in applies:
+            inputs = self._t41_inputs(series_id)
+            if inputs is not None:
+                for job in inputs["jobs"]:
+                    add(job, inputs["batch"], "robustness", "T4.1 transformation",
+                        "robustness")
+        inputs = self._t42_inputs()
+        if inputs is not None:
+            for job in inputs["jobs"]:
+                add(job, inputs["batch"], "robustness", "T4.2 CPI AR lags", "robustness")
+        for series_id in self._selected_targets():
+            batch, jobs = self._t48_jobs(series_id)
+            for job in jobs:
+                add(job, batch, "robustness", f"T4.8 window length {job.window_length}",
+                    "robustness")
+
+        # Serial loops in the parent process; whether they run is decided later.
+        panel = self._var_panel(record=False)
+        window = self._window("M")
+        if not panel.empty and len(panel) > window:
+            horizon = int(self.config.get("forecasting.horizons.primary.M"))
+            origins = rolling_origins(pd.DatetimeIndex(panel.index), window, horizon,
+                                      max_origins=self._max_origins())
+            plans.append(ChainPlan(
+                task_id="T4.5:VAR|VAR", batch="T4.5:VAR", stage="robustness",
+                exercise="T4.5 monthly VAR", role="robustness",
+                series="+".join(panel.columns), model="VAR",
+                spec_label="VAR (lag chosen by BIC)", k_regimes=None, window_length=window,
+                frequency="M", horizons=(horizon,), n_origins=len(origins),
+                provisional=True, runs_in="parent"))
+        for series_id in self._selected_targets():
+            frequency = self.frequency[series_id]
+            horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
+            origins = rolling_origins(pd.DatetimeIndex(self.targets[series_id].index),
+                                      self._window(frequency), horizon,
+                                      max_origins=self._max_origins())
+            plans.append(ChainPlan(
+                task_id=f"T4.6:{series_id}|ARMA-GARCH", batch=f"T4.6:{series_id}",
+                stage="robustness", exercise="T4.6 ARMA-GARCH (only if ARCH-LM rejects)",
+                role="robustness", series=series_id, model="ARMA-GARCH",
+                spec_label="ARMA(1,1)-GARCH(1,1)", k_regimes=None,
+                window_length=self._window(frequency), frequency=frequency,
+                horizons=(horizon,), n_origins=len(origins), provisional=True,
+                runs_in="parent"))
+        return plans
 
     # -- stage 1: data ----------------------------------------------------
 
@@ -232,6 +374,7 @@ class Pipeline:
             # Build modelling targets. The rate series wait for the §3.4 decision.
             dictionary_rows = []
             for series_id in self._selected_targets():
+                self._task(f"{series_id}: modelling target and data dictionary")
                 spec = self.config.get(f"targets.{series_id}")
                 frequency = spec["frequency"]
                 panel = self.panels[frequency]
@@ -292,6 +435,7 @@ class Pipeline:
         decision_rows = []
         with self.runtime.stage("stationarity"):
             for series_id in self._selected_targets():
+                self._task(f"{series_id}: stationarity battery")
                 frequency = self.frequency[series_id]
                 spec = self.config.get(f"targets.{series_id}")
                 level = self.panels[frequency][series_id].dropna()
@@ -367,6 +511,7 @@ class Pipeline:
         tsay_rows, star_rows = [], []
         with self.runtime.stage("nonlinearity"):
             for series_id in self._selected_targets():
+                self._task(f"{series_id}: Tsay and STAR linearity tests")
                 frequency = self.frequency[series_id]
                 target = self.targets[series_id]
                 initial = target.iloc[: self._window(frequency)]
@@ -407,6 +552,7 @@ class Pipeline:
         rows = []
         with self.runtime.stage("specification"):
             for series_id in self._selected_targets():
+                self._task(f"{series_id}: BIC order selection")
                 frequency = self.frequency[series_id]
                 initial = self.targets[series_id].iloc[: self._window(frequency)]
                 ar_choice = select_ar_order(initial, frequency, self.config, series=series_id)
@@ -472,6 +618,7 @@ class Pipeline:
 
                 for model in (AR, ARMA, MSAR, STAR, MSAR3):
                     spec = specs[model]
+                    self._task(f"{series_id} {spec.label} full-sample fit and diagnostics")
                     try:
                         if model == AR:
                             fit = fit_ar(target, spec.order, series=series_id,
@@ -709,9 +856,9 @@ class Pipeline:
                 self.forecasts[series_id] = {}
                 self.chain_results[series_id] = {}
 
-                jobs = [self._job(series_id, model, horizons, window_length, tag=model)
-                        for model in (AR, ARMA, MSAR, STAR, MSAR3)]
-                for model, chain in self._chains(jobs):
+                self._task(f"{series_id}: rolling chains AR, ARMA, MSAR, STAR, MSAR3")
+                batch, jobs = self._forecast_jobs(series_id)
+                for model, chain in self._chains(jobs, batch):
                     spec = self.specs[series_id][model]
                     self.forecasts[series_id][model] = chain.forecasts
                     self.chain_results[series_id][model] = chain
@@ -794,6 +941,7 @@ class Pipeline:
                     f"evaluation.states.turning_window_baseline.{frequency}"))
 
                 for horizon in self._horizons(frequency):
+                    self._task(f"{series_id} h={horizon}: HLZ, DM-HLN, MCS, state evaluation")
                     frames = self._horse_race(series_id, horizon)
                     if benchmark not in frames:
                         continue
@@ -1171,13 +1319,21 @@ class Pipeline:
         stage = StageOutputs("robustness")
         benchmark = str(self.config.get("evaluation.benchmark"))
         with self.runtime.stage("robustness"):
+            self._task("T4.1 transformation robustness")
             self._t41_transformation(stage, benchmark)
+            self._task("T4.2 CPI AR-lag robustness")
             self._t42_cpi_lags(stage, benchmark)
+            self._task("T4.3 regime count K=2 vs K=3")
             self._t43_regime_count(stage, benchmark)
+            self._task("T4.4 horizon robustness")
             self._t44_horizons(stage, benchmark)
+            self._task("T4.5 monthly VAR")
             self._t45_var(stage, benchmark)
+            self._task("T4.6 ARMA-GARCH diagnostic")
             self._t46_arma_garch(stage)
+            self._task("T4.8 estimation-window length")
             self._t48_window_lengths(stage, benchmark)
+            self._task("T4.9 LOCF exposure")
             self._t49_locf_exposure(stage)
         self.checkpoints.record("robustness", {"targets": sorted(self.targets)},
                                 {"files": len(stage.files)})
@@ -1190,23 +1346,16 @@ class Pipeline:
         applies = [s for s in self.config.get("robustness.transformation.applies_to")
                    if s in self.targets]
         for series_id in applies:
-            frequency = self.frequency[series_id]
-            decision = self.decisions.get(series_id)
-            if decision is None:
+            inputs = self._t41_inputs(series_id)
+            if inputs is None:
                 continue
-            level = self.panels[frequency][series_id].dropna()
-            baseline_kind = decision.decision
-            alternative_kind = "difference" if baseline_kind == "level" else "level"
-            alternative = level.diff().dropna() if alternative_kind == "difference" else level
-            horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
-            window_length = self._window(frequency)
-
-            jobs = [self._job(series_id, model, [horizon], window_length, tag=model,
-                              series=alternative,
-                              transformation=f"alternative:{alternative_kind}")
-                    for model in (AR, ARMA, MSAR, STAR)]
+            frequency = inputs["frequency"]
+            level = inputs["level"]
+            baseline_kind = inputs["baseline_kind"]
+            alternative_kind = inputs["alternative_kind"]
+            horizon = inputs["horizon"]
             frames = {model: chain.forecasts[chain.forecasts["horizon"] == horizon]
-                      for model, chain in self._chains(jobs)}
+                      for model, chain in self._chains(inputs["jobs"], inputs["batch"])}
 
             baseline_frames = self._horse_race(series_id, horizon)
             extra_common = {"series_frequency": frequency, "baseline_transformation": baseline_kind,
@@ -1254,21 +1403,52 @@ class Pipeline:
         self._write(pd.DataFrame(tests), self.layout.robustness,
                     "T4.1_transformation_predictive_tests.csv", stage)
 
-    def _t42_cpi_lags(self, stage: StageOutputs, benchmark: str) -> None:
-        """T4.2: the CPI AR-lag benchmark, p in {1,3,6,12}, on common forecast dates."""
+    def _t41_inputs(self, series_id: str) -> dict[str, Any] | None:
+        """The T4.1 alternative-transformation chains for one rate series."""
+        frequency = self.frequency[series_id]
+        decision = self.decisions.get(series_id)
+        if decision is None:
+            return None
+        level = self.panels[frequency][series_id].dropna()
+        baseline_kind = decision.decision
+        alternative_kind = "difference" if baseline_kind == "level" else "level"
+        alternative = level.diff().dropna() if alternative_kind == "difference" else level
+        horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
+        window_length = self._window(frequency)
+        batch = f"T4.1:{series_id}"
+        jobs = [self._job(series_id, model, [horizon], window_length, tag=model,
+                          series=alternative,
+                          transformation=f"alternative:{alternative_kind}", batch=batch)
+                for model in (AR, ARMA, MSAR, STAR)]
+        return {"frequency": frequency, "level": level, "baseline_kind": baseline_kind,
+                "alternative_kind": alternative_kind, "horizon": horizon,
+                "batch": batch, "jobs": jobs}
+
+    def _t42_inputs(self) -> dict[str, Any] | None:
+        """The T4.2 CPI AR-lag chains."""
         settings = self.config.get("robustness.cpi_lags")
         series_id = str(settings["series"])
+        if series_id not in self.targets:
+            return None
+        frequency = self.frequency[series_id]
+        horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
+        window_length = self._window(frequency)
+        batch = f"T4.2:{series_id}"
+        jobs = [self._job(series_id, ModelSpec(AR, order=int(order)), [horizon],
+                          window_length, tag=f"AR(p={int(order)})", batch=batch)
+                for order in settings["ar_orders"]]
+        return {"series_id": series_id, "frequency": frequency, "horizon": horizon,
+                "batch": batch, "jobs": jobs}
+
+    def _t42_cpi_lags(self, stage: StageOutputs, benchmark: str) -> None:
+        """T4.2: the CPI AR-lag benchmark, p in {1,3,6,12}, on common forecast dates."""
         rows, tests = [], []
-        if series_id in self.targets:
-            frequency = self.frequency[series_id]
-            target = self.targets[series_id]
-            horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
-            window_length = self._window(frequency)
-            jobs = [self._job(series_id, ModelSpec(AR, order=int(order)), [horizon],
-                              window_length, tag=f"AR(p={int(order)})")
-                    for order in settings["ar_orders"]]
+        inputs = self._t42_inputs()
+        if inputs is not None:
+            series_id = inputs["series_id"]
+            horizon = inputs["horizon"]
             frames = {}
-            for name, chain in self._chains(jobs):
+            for name, chain in self._chains(inputs["jobs"], inputs["batch"]):
                 frame = chain.forecasts[chain.forecasts["horizon"] == horizon].copy()
                 frame["model"] = name
                 frames[name] = frame
@@ -1391,12 +1571,16 @@ class Pipeline:
         self._write(pd.DataFrame(tests), self.layout.robustness,
                     "T4.4_horizon_predictive_tests.csv", stage)
 
-    def _transformed(self, series_id: str) -> pd.Series:
+    def _transformed(self, series_id: str, *, record: bool = True) -> pd.Series:
         """The modelling transformation of one series, computed on demand.
 
         The VAR needs all five monthly variables even when the run evaluates a subset of
         targets, so a variable outside the current target set is transformed here by the
         same approved rules rather than being dropped.
+
+        `record=False` computes the same series without storing the decision or its test
+        results, so the progress plan can count VAR origins without changing what (or in
+        which order) the run itself records.
         """
         if series_id in self.targets:
             return self.targets[series_id]
@@ -1410,15 +1594,17 @@ class Pipeline:
             initial = level.iloc[: self._window(frequency)]
             decision = decide_transformation(series_id, initial, frequency, self.config)
             decision = confirm_on_full_sample(decision, level, frequency, self.config)
-            self.decisions[series_id] = decision
-            self.all_tests.extend(decision.initial_window_results)
-            self.all_tests.extend(decision.full_sample_results)
+            if record:
+                self.decisions[series_id] = decision
+                self.all_tests.extend(decision.initial_window_results)
+                self.all_tests.extend(decision.full_sample_results)
         return level if decision.decision == "level" else level.diff().dropna()
 
-    def _var_panel(self) -> pd.DataFrame:
+    def _var_panel(self, *, record: bool = True) -> pd.DataFrame:
         """The balanced five-variable monthly system on the approved VAR sample."""
         names = list(self.config.get("models.var.variables"))
-        frame = pd.DataFrame({name: self._transformed(name) for name in names}).dropna()
+        frame = pd.DataFrame({name: self._transformed(name, record=record)
+                              for name in names}).dropna()
         start = pd.Timestamp(self.config.get("samples.var_start"))
         end = pd.Timestamp(self.config.get("samples.var_end"))
         return frame.loc[(frame.index >= start) & (frame.index <= end)]
@@ -1428,6 +1614,7 @@ class Pipeline:
         panel = self._var_panel()
         rows, tests, selection_rows = [], [], []
         if panel.empty or len(panel) <= self._window("M"):
+            self.monitor.skip_chain("T4.5:VAR|VAR", "balanced VAR panel too short")
             self._write(pd.DataFrame(rows), self.layout.robustness,
                         "T4.5_var_comparison.csv", stage)
             self._write(pd.DataFrame([{
@@ -1460,6 +1647,7 @@ class Pipeline:
             if (stable or not require_stability) and np.isfinite(fit.bic) and fit.bic < best_bic:
                 best_order, best_bic = order, fit.bic
         if best_order is None:
+            self.monitor.skip_chain("T4.5:VAR|VAR", "no stable VAR lag order")
             for note in candidate_notes:
                 note["selected"] = False
             self._write(pd.DataFrame(candidate_notes), self.layout.robustness,
@@ -1478,12 +1666,20 @@ class Pipeline:
                                   max_origins=self._max_origins())
         records: list[dict[str, Any]] = []
         unstable, attempted = 0, 0
+        reporter = probe.ChainReporter(
+            "T4.5:VAR|VAR", len(origins), series="+".join(panel.columns), model="VAR",
+            spec_label=f"VAR(p={best_order})", window_length=window_length,
+            horizons=[horizon])
+        reporter.start()
         for origin in origins:
             attempted += 1
+            reporter.origin_start(attempted, origin.origin_date, origin.window_start,
+                                  origin.window_end)
             window = panel.iloc[origin.estimation_slice()]
             fit = fit_var(window, best_order, refit_date=str(origin.origin_date.date()))
             self.all_fit_records.append(fit.record)
             if fit.record.status is Status.FAILED:
+                reporter.origin_end("failed")
                 unstable += 1
                 for code in fit.record.reason_codes:
                     self.all_failures.append(FailureEvent(
@@ -1506,6 +1702,9 @@ class Pipeline:
                     "status": fit.record.status.value,
                     "reason_codes": ";".join(c.value for c in fit.record.reason_codes),
                 })
+            reporter.origin_end("valid", n_records=len(panel.columns))
+        reporter.end(attempted=attempted, valid=attempted - unstable, failed=unstable,
+                     from_cache=0, n_records=len(records), gaps=0)
         var_frame = pd.DataFrame(records)
         self._write(var_frame, self.layout.robustness, "T4.5_var_forecasts.csv", stage)
 
@@ -1586,6 +1785,8 @@ class Pipeline:
                 "window": "initial estimation window",
             })
             if not triggered:
+                self.monitor.skip_chain(f"T4.6:{series_id}|ARMA-GARCH",
+                                        "ARCH-LM screen did not reject at 5%")
                 continue
 
             horizon = int(self.config.get(f"forecasting.horizons.primary.{frequency}"))
@@ -1593,12 +1794,22 @@ class Pipeline:
             origins = rolling_origins(pd.DatetimeIndex(target.index), window_length, horizon,
                                       max_origins=self._max_origins())
             garch_records, mean_records = [], []
-            for origin in origins:
+            reporter = probe.ChainReporter(
+                f"T4.6:{series_id}|ARMA-GARCH", len(origins), series=series_id,
+                model="ARMA-GARCH", spec_label="ARMA(1,1)-GARCH(1,1)",
+                window_length=window_length, horizons=[horizon])
+            reporter.start()
+            garch_failed = 0
+            for number, origin in enumerate(origins, start=1):
+                reporter.origin_start(number, origin.origin_date, origin.window_start,
+                                      origin.window_end)
                 window = target.iloc[origin.estimation_slice()]
                 fit = fit_arma_garch(window, (1, 1), series=series_id,
                                      refit_date=str(origin.origin_date.date()))
                 self.all_fit_records.append(fit.record)
                 if fit.record.status is Status.FAILED:
+                    reporter.origin_end("failed")
+                    garch_failed += 1
                     for code in fit.record.reason_codes:
                         self.all_failures.append(FailureEvent(
                             series=series_id, model="ARMA-GARCH",
@@ -1629,6 +1840,10 @@ class Pipeline:
                     "excluded_from_horse_race": True, "excluded_from_mcs": True,
                 })
                 mean_records.append((origin.target_date, prediction))
+                reporter.origin_end("valid", n_records=1)
+            reporter.end(attempted=len(origins), valid=len(origins) - garch_failed,
+                         failed=garch_failed, from_cache=0, n_records=len(garch_records),
+                         gaps=0)
 
             garch_frame = pd.DataFrame(garch_records)
             self._write(garch_frame, self.layout.robustness,
@@ -1676,6 +1891,20 @@ class Pipeline:
         self._write(pd.DataFrame(rows), self.layout.robustness,
                     "T4.6_arma_garch_summary.csv", stage)
 
+    def _t48_jobs(self, series_id: str) -> tuple[str, list[ChainJob]]:
+        """The T4.8 chains for one series: every usable length x every listed model."""
+        settings = self.config.require("robustness.window_lengths")
+        models = [str(m) for m in settings["models"]]
+        frequency = self.frequency[series_id]
+        horizon = int(settings["horizon"])
+        index = pd.DatetimeIndex(self.targets[series_id].index)
+        lengths = [int(length) for length in settings["lengths"][frequency]]
+        usable = [length for length in lengths if len(index) > length + horizon]
+        batch = f"T4.8:{series_id}"
+        return batch, [self._job(series_id, model, [horizon], length, tag=(length, model),
+                                 batch=batch)
+                       for length in usable for model in models]
+
     def _t48_window_lengths(self, stage: StageOutputs, benchmark: str) -> None:
         """T4.8: the mandatory estimation-window-length sensitivity exercise.
 
@@ -1701,9 +1930,8 @@ class Pipeline:
             calendar = common_calendar(index, usable, horizon)
             coverage = describe_coverage(index, usable, horizon)
 
-            jobs = [self._job(series_id, model, [horizon], length, tag=(length, model))
-                    for length in usable for model in models]
-            chains = dict(self._chains(jobs))
+            batch, jobs = self._t48_jobs(series_id)
+            chains = dict(self._chains(jobs, batch))
 
             per_length: dict[int, dict[str, pd.DataFrame]] = {}
             for length in usable:
@@ -1980,6 +2208,7 @@ class Pipeline:
     def finalize(self) -> StageOutputs:
         stage = StageOutputs("tables_and_figures")
         with self.runtime.stage("finalize"):
+            self._task("registries, manifests and output inventory")
             # T4.7 failure and fragility registry, plus the separate data-gap register.
             self._write(tables.failure_registry_table(self.all_failures),
                         self.layout.robustness, "T4.7_failure_registry.csv", stage)
@@ -2038,16 +2267,42 @@ class Pipeline:
     def run(self) -> dict[str, Any]:
         """Run every stage of the approved methodology, in order."""
         self.layout.create()
-        self.prepare_data()
-        self.stationarity_stage()
-        self.specification_stage(final=False)   # AR/ARMA orders for the probe
-        self.nonlinearity_stage()
-        self.specification_stage()              # STAR delay/type now known; writes T2.5
-        self.adequacy_stage()
-        self.forecasting_stage()
-        self.evaluation_stage()
-        self.robustness_stage()
-        self.finalize()
+        targets = self._selected_targets()
+        models = [AR, ARMA, MSAR, STAR, MSAR3]
+        n = len(targets)
+        with self._stage("data", n, series=targets, unit="targets"):
+            self.prepare_data()
+        with self._stage("stationarity", n, series=targets, unit="targets"):
+            self.stationarity_stage()
+        with self._stage("specification_preliminary", n, series=targets, models=[AR, ARMA],
+                         unit="targets"):
+            self.specification_stage(final=False)   # AR/ARMA orders for the probe
+        with self._stage("nonlinearity", n, series=targets, models=["Tsay", "STAR LM"],
+                         unit="targets"):
+            self.nonlinearity_stage()
+        with self._stage("specification", n, series=targets, models=models, unit="targets"):
+            self.specification_stage()              # STAR delay/type now known; writes T2.5
+            # Every discrete choice is now fixed, so the rolling workload is exactly known.
+            if self.monitor.enabled:
+                self.monitor.plan(self.rolling_plan())
+        with self._stage("adequacy", n * len(models), series=targets, models=models,
+                         unit="full-sample fits"):
+            self.adequacy_stage()
+        with self._stage("forecasting", n, series=targets, models=models,
+                         unit="series (one batch of 5 chains each)"):
+            self.forecasting_stage()
+        n_eval = sum(len(self._horizons(self.frequency[s])) for s in targets)
+        with self._stage("evaluation", n_eval, series=targets,
+                         models=["HLZ", "DM-HLN", "MCS", "state regressions"],
+                         unit="series x horizon evaluations"):
+            self.evaluation_stage()
+        with self._stage("robustness", 8, series=targets,
+                         models=["T4.1", "T4.2", "T4.3", "T4.4", "T4.5", "T4.6", "T4.8",
+                                 "T4.9"], unit="exercises"):
+            self.robustness_stage()
+        with self._stage("finalize", 1, unit="finalization"):
+            self.finalize()
+        self._current_stage = None
         return {
             "run_id": self.context.run_id,
             "namespace": self.context.namespace.value,

@@ -13,6 +13,10 @@ cache_refreshed/
 smoke_output/
 output_refreshed/
 
+# Operational run logs: console log, structured progress events and progress snapshot.
+# Timestamps and heartbeats only; every thesis-facing result is under output/.
+run_logs/
+
 # Refreshed and audit data snapshots (never the thesis baseline)
 data/refreshed/
 data/audit/

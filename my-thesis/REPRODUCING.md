@@ -136,9 +136,19 @@ same command again: completed work is reused and the run continues rather than r
 | `my-thesis\output\manifests\` | Run manifest, output inventory with per-file hashes |
 | `my-thesis\smoke_output\` | Reduced-computation results — never thesis-facing |
 | `my-thesis\cache\`, `smoke_cache\` | Fitted-model cache; safe to delete, only costs time |
+| `my-thesis\run_logs\` | Progress logs of each run (console log, events, snapshot); operational, never thesis-facing |
 
 Every table carries the run ID, data hash, code commit, configuration hash and timestamp,
 so any number can be traced back to what produced it.
+
+### 6.1 Watching a long run
+
+While a run is going, the console shows which stage, series, model, window and forecast
+origin is being computed, how many origins are done and remain, how long the current fit
+has been running, and a global summary every five minutes. The same information is kept
+in `run_logs\<namespace>\<run_id>\` as a log, an event stream and a progress snapshot
+(`progress.json`). See `MONITORING.md` for how to read them and how remaining work is
+counted. On Google Colab, use `colab/run_thesis_colab.ipynb`.
 
 ## 7. Telling a check apart from a result
 

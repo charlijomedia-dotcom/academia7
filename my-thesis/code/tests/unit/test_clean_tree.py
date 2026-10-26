@@ -227,6 +227,58 @@ class TestTheDocumentedSetupIsPermitted:
                 produced_by_the_run=(repository / "output",))
 
 
+class TestRunLogsDoNotBlockReruns:
+    """The progress monitor writes `run_logs/` inside the project on every run.
+
+    Those files are operational (a console log, progress events, a snapshot): produced by
+    runs, never read by one, and kept out of `output/`. They must not turn the next
+    baseline run into a refusal, and their presence must not mask a real input change.
+    """
+
+    def _write_logs(self, root: Path) -> None:
+        run = root / "run_logs" / "baseline" / "baseline-20261026T000000-abc"
+        run.mkdir(parents=True)
+        for name in ("execution.log", "events.jsonl", "progress.json"):
+            (run / name).write_text("x\n")
+        (root / "run_logs" / "baseline" / "LATEST").write_text(run.name + "\n")
+
+    def test_run_logs_are_permitted_as_the_runs_own_product(self, repository):
+        self._write_logs(repository)
+        _context(repository).require_clean_tree(
+            produced_by_the_run=(repository / "output", repository / "run_logs"))
+
+    def test_the_project_ignore_rule_hides_them_entirely(self, repository):
+        (repository / ".gitignore").write_text(
+            (repository / ".gitignore").read_text() + "run_logs/\n")
+        _run("add", ".gitignore", cwd=repository)
+        _run("commit", "-q", "-m", "ignore run logs", cwd=repository)
+        self._write_logs(repository)
+        assert git_dirty_paths() == ()
+
+    def test_a_source_change_still_refuses_with_run_logs_present(self, repository):
+        self._write_logs(repository)
+        (repository / "code" / "src" / "module.py").write_text("x = 2\n")
+        with pytest.raises(DirtyTreeError, match="code/src/module.py"):
+            _context(repository).require_clean_tree(
+                produced_by_the_run=(repository / "output", repository / "run_logs"))
+
+    def test_the_entry_point_excludes_exactly_the_run_log_directory(self):
+        from thesis.core.paths import CODE_ROOT, PROJECT_ROOT, RUN_LOGS_DIR
+
+        assert RUN_LOGS_DIR == PROJECT_ROOT / "run_logs"
+        assert not RUN_LOGS_DIR.is_relative_to(PROJECT_ROOT / "output")
+        source = (CODE_ROOT / "run_all.py").read_text(encoding="utf-8")
+        assert "produced_by_the_run=(layout.root, layout.cache, RUN_LOGS_DIR)" in source
+
+    def test_run_logs_rule_is_present_in_the_project(self):
+        from thesis.core.paths import PROJECT_ROOT
+
+        rules = [line.strip() for line in
+                 (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+                 if line.strip() and not line.lstrip().startswith("#")]
+        assert "run_logs/" in rules
+
+
 class TestTheProjectsOwnIgnoreRules:
     """The rules must hold in this repository, not only in a constructed one."""
 
@@ -273,6 +325,7 @@ class TestTheProjectsOwnIgnoreRules:
             "cache", "smoke_cache", "cache_refreshed", "smoke_output", "output_refreshed",
             "data/refreshed", "data/audit", "__pycache__", "*.py", ".pytest_cache",
             ".coverage", "htmlcov", "*.egg-info", ".venv", "venv", "ENV", "env", ".env",
+            "run_logs",
         )
         for rule in self._rules():
             assert rule.startswith(allowed_prefixes), f"unexpected ignore rule: {rule}"

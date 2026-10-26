@@ -24,6 +24,7 @@ from ..models.ar import fit_ar
 from ..models.arma import fit_arma
 from ..models.msar import fit_msar
 from ..models.star import fit_star
+from ..monitoring import probe
 from ..forecasting.simulate import star_bootstrap_forecast, star_skeleton_forecast
 
 AR = "AR"
@@ -137,6 +138,8 @@ def fit_and_forecast(
                 forecasts[1] = float(fit.forecast_one(values))
             longer = [h for h in horizons if h > 1]
             if longer:
+                probe.substep(f"STAR simulation forecast, {int(settings['paths'])} paths "
+                              f"to h={max(longer)}")
                 means, provenance = star_bootstrap_forecast(
                     fit, values, max(longer),
                     paths=int(settings["paths"]),

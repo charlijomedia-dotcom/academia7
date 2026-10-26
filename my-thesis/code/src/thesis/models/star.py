@@ -28,6 +28,7 @@ from scipy.optimize import minimize
 from ..core.schemas import FitRecord, ReasonCode, Status
 from .flags import (ILL_CONDITIONED, USABLE, apply_covariance_flags,
                     covariance_condition)
+from ..monitoring import probe
 from .optimize import (StartAttempt, covariance_from_hessian,
                        numerical_jacobian, select_best, standard_errors)
 
@@ -149,8 +150,11 @@ def fit_star(
             starts.append((gamma0, float(np.quantile(z, quantile))))
 
     attempts: list[StartAttempt] = []
-    for start in starts:
+    for number, start in enumerate(starts, start=1):
         label = f"gamma0={start[0]},c0={start[1]:.6g}"
+        # Progress reporting only: names the start now being optimized.
+        probe.substep(f"{kind} concentrated least squares, start {number}/{len(starts)} "
+                      f"({label})")
         try:
             result = minimize(
                 lambda params: _sse(params, dep, X, z, scale, kind)[0],
