@@ -38,6 +38,9 @@ try:
 except ImportError:                                     # pragma: no cover
     psutil = None
 
+#: Minimum seconds between two progress lines of the same chain.
+MILESTONE_GAP = 15.0
+
 
 class NullMonitor:
     """The do-nothing monitor: the pipeline's default, and the 'monitoring off' arm."""
@@ -101,6 +104,7 @@ class Monitor:
         self._last_fsync = time.time()
         self._mirror_offsets: dict[str, int] = {}
         self._milestone: dict[str, int] = {}
+        self._milestone_t: dict[str, float] = {}
         self._stage_detail: dict[str, dict[str, Any]] = {}
         self._run = {"run_id": run_id, "namespace": namespace, "workers": int(workers)}
         self.log_dir.mkdir(parents=True, exist_ok=True)
@@ -194,11 +198,17 @@ class Monitor:
             self._milestone[chain.plan.task_id] = 0
             self.say(render.chain_start(self.state, chain))
         elif kind == "origin_end" and chain is not None:
+            # A line at the first origin and at each tenth of the chain, but at most one
+            # every MILESTONE_GAP seconds per chain, so a chain that finishes in seconds
+            # does not print ten lines at once (its CHAIN DONE line follows anyway).
             step = int(self.milestones * chain.completed / max(1, chain.plan.n_origins))
-            if chain.completed == 1 or step > self._milestone.get(chain.plan.task_id, 0):
+            last = self._milestone_t.get(chain.plan.task_id)
+            due = last is None or event["t"] - last >= MILESTONE_GAP
+            if (chain.completed == 1 or step > self._milestone.get(chain.plan.task_id, 0)) \
+                    and due and chain.completed < chain.plan.n_origins:
                 self._milestone[chain.plan.task_id] = step
-                if chain.completed < chain.plan.n_origins:
-                    self.say(render.chain_milestone(chain, event["t"]))
+                self._milestone_t[chain.plan.task_id] = event["t"]
+                self.say(render.chain_milestone(chain, event["t"]))
         elif kind in ("chain_end", "chain_error") and chain is not None:
             self.say(render.chain_end(chain))
         elif kind == "warning":

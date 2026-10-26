@@ -102,7 +102,8 @@ def chain_identity(chain: ChainState) -> str:
 
 def chain_start(state: RunState, chain: ChainState) -> str:
     slot = state.slot_of(chain)
-    who = f"worker {slot}" if slot else "main"
+    who = ("main process" if chain.plan.runs_in == "parent" or not slot
+           else f"worker {slot}")
     return (f"[{clock(chain.started)}] CHAIN START ({who}) {chain_identity(chain)} "
             f"| {chain.plan.n_origins} origins | {chain.plan.exercise}")
 

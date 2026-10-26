@@ -256,3 +256,33 @@ def test_periods_display_like_the_data():
     assert period("2017-12-01", "Q") == "2017Q4"
     assert period("2005-04-01", "M") == "2005-04"
     assert period("", "M") == "-"
+
+
+def test_fast_chains_do_not_flood_the_console(tmp_path):
+    monitor, stream = _monitor(tmp_path, heartbeat_seconds=3600, summary_seconds=3600)
+    monitor.start()
+    monitor.plan([_plan(n=100)])
+    task = "forecasting:INDPRO|MSAR3"
+    monitor.emit("chain_start", task_id=task, n_origins=100)
+    for i in range(100):
+        monitor.emit("origin_start", task_id=task, index=i + 1, origin_date="2000-01-01",
+                     window_start="1980-02-01", window_end="2000-01-01")
+        monitor.emit("origin_end", task_id=task, status="valid", seconds=0.01)
+    monitor.emit("chain_end", task_id=task)
+    monitor.close()
+    progress = [l for l in stream.getvalue().splitlines() if "| origin " in l
+                and "/100 (" in l]
+    assert len(progress) == 1                       # only the first origin, then DONE
+    assert "CHAIN DONE" in stream.getvalue()
+
+
+def test_parent_process_chains_are_labelled_main_process():
+    from thesis.monitoring.render import chain_start
+    from thesis.monitoring.state import RunState
+
+    state = RunState()
+    plan = _plan(task_id="T4.5:VAR|VAR").to_dict()
+    plan["runs_in"] = "parent"
+    state.apply({"kind": "plan", "t": 1.0, "chains": [plan]})
+    state.apply({"kind": "chain_start", "t": 2.0, "pid": 1, "task_id": "T4.5:VAR|VAR"})
+    assert "(main process)" in chain_start(state, state.chains["T4.5:VAR|VAR"])
