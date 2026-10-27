@@ -95,6 +95,24 @@ Remaining counts cannot silently go wrong:
 - the parent compares each chain's event-derived counts with the result the chain
   actually returned, and logs any disagreement (the returned result wins).
 
+## 3a. How the rolling chains are scheduled
+
+With more than one worker, every rolling chain of the run — baseline AR, ARMA, MSAR and
+STAR, the rolling K=3 MSAR chains (T4.3), T4.1, T4.2 and T4.8 — is handed to **one shared
+worker pool** as soon as the specification stage has fixed it (`forecasting/scheduler.py`).
+A dispatcher keeps exactly `workers` chains running and always starts the most expensive
+ready chain next, so no worker waits for another series' slow chain. A chain that is
+served from the fit cache (the T4.8 baseline-length chains) starts only after the chain
+that fills those entries, so it is still served from the cache. The chains compute while
+the parent process runs the full-sample fits, the evaluation and the serial robustness
+exercises; each stage then collects its chains' results in its original order.
+
+On the console this shows as `Batch pool: N done, 4 active, M queued` in the heartbeat,
+and each worker line names its exercise (baseline, T4.3 K=3, T4.8 window 300, ...), since
+a worker may be computing a robustness chain while the banner still shows an earlier
+stage. `--workers N` sets the number of processes without changing the configuration
+hash or the fit cache; `--workers 1` runs everything in one process, in order.
+
 ## 4. The estimate of remaining time
 
 Labelled **UNCERTAIN** and given only where it can be grounded in observed speed:
@@ -105,9 +123,9 @@ Labelled **UNCERTAIN** and given only where it can be grounded in observed speed
 - Work belonging to a model that has not yet been timed is **not guessed**: it is listed
   by name with its origin count, and the estimate states what share of the remaining fits
   it covers.
-- Batches run one after another; chains inside a batch run on the parallel workers. Each
-  batch therefore contributes at least max(longest chain, total ÷ workers), and the figure
-  is that lower bound, not a promise.
+- With the shared pool all chains form one batch, so the figure is max(longest remaining
+  chain, total remaining ÷ workers): a lower bound, not a promise. (With `--workers 1`,
+  batches run one after another and are summed.)
 - It covers rolling fits only, not the evaluation and robustness bootstraps or tables,
   and assumes later windows cost what earlier ones did. Markov-switching fit times vary
   strongly with the window and the warm start, so treat it as an order of magnitude.
@@ -129,6 +147,7 @@ python code/run_all.py --smoke-test            # reduced run, monitored
 python code/run_all.py --log-mirror DIR        # also copy the logs to DIR (e.g. Google Drive)
 python code/run_all.py --heartbeat-seconds 60 --summary-seconds 300   # the defaults
 python code/run_all.py --no-monitor            # no monitor, no run_logs/ files
+python code/run_all.py --workers 4             # worker processes (results unchanged)
 ```
 
 `THESIS_LOG_MIRROR` can be set instead of `--log-mirror`. The mirror receives the snapshot
@@ -137,12 +156,13 @@ noted in the log and never stops the run.
 
 ## 7. Google Colab
 
-Use `colab/run_thesis_colab.ipynb`. It mounts Drive, installs the locked dependencies,
-verifies the frozen data, starts the run in the background with `nohup` (so a browser
-disconnect does not stop it) and `--log-mirror` to Drive, and has a cell that streams the
-live console log and prints the snapshot every five minutes; re-run it to reattach. Its
-console log is written to `/content/`, outside the clone, because an untracked file in the
-repository would make the clean-tree safeguard refuse the baseline run.
+Use `colab/run_thesis_colab.ipynb` with **Runtime → Run all**; nothing needs editing. It
+builds an isolated Python 3.11 environment from the approved lock, verifies the frozen
+data, restores a compatible fit cache from Drive, starts the run with four workers in
+the background, backs up new fits and outputs to Drive incrementally, streams the
+complete console here, then verifies, copies and (optionally) pushes the results. If the
+runtime is terminated, Run all again resumes from the backed-up cache. See the notebook's
+first cell and `reports/monitoring/scheduling_and_colab_report.md`.
 
 ## 8. Guarantees and limits
 
