@@ -182,7 +182,16 @@ actual Colab runtime, and a push to github.com with a real token.
 
 ## 6. Tests
 
-SUITE_RESULT
+```
+841 passed, 0 failed, 0 skipped, 0 errors    (41m38s)
+```
+
+Complete suite on the final code (`FRED_API_KEY` unset); collected = 841 = passed. That is
+the 778 tests of the approved monitoring baseline, all still passing, plus 63 new ones:
+`test_scheduler.py` (14), `test_cache_fidelity.py` (19), `test_colab_support.py` (25),
+`test_colab_notebook.py` (8, replacing 4), and one more end-to-end pipeline assertion.
+The frozen dataset's SHA-256 is unchanged:
+`7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a`.
 
 ## 7. Remaining bottlenecks
 
