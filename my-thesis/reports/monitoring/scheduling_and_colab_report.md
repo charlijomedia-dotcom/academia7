@@ -1,7 +1,7 @@
 # Shared-pool scheduling and the Colab Pro+ notebook — report
 
 Branch `claude/parallel-scheduling-colab`, based on `4137128` (the approved monitoring
-work). Final commit: FINAL_SHA. Part 8 was not started.
+work). The final commit is the head of that branch. Part 8 was not started.
 
 No approved specification, window, horizon, forecast origin, estimator, optimizer
 setting, seed, replication count, test or output definition was changed. One
@@ -98,8 +98,7 @@ measurements of the full run.
 | Shared pool (4 workers) vs serial vs old per-batch pools | synthetic data; AR, ARMA, MSAR, **MSAR3**, **STAR** (incl. simulated multi-step) and a cache-served chain (`test_scheduler.py`) | identical forecasts, parameters, statuses, starts used, counts |
 | Shared pool vs old per-batch pools | all six frozen series, all 114 pooled chains (benchmark) | identical: 849 forecast rows, all fits |
 | Sequential (1 process, no monitor) vs shared pool (4 workers, monitored) | full reduced pipeline on the frozen data (`test_monitoring_pipeline.py`) | identical outputs and checkpoints |
-| SERIAL_SMOKE_ROW |
-| RECOVERY_ROW |
+| Sequential smoke run (`--workers 1`, one process) vs the notebook's run (4 workers, shared pool, **terminated partway and resumed on a fresh machine from 21 restored fits**) | the approved reduced configuration on the frozen data, run through `run_all.py` | **identical**: 56 tables, 62 figures, 62 sidecars, 9 checkpoints, all 640 fit records with their diagnostics; INDPRO MSAR3 and STAR forecasts at h = 1, 3, 6, 12 equal |
 
 `code/tools/compare_runs.py` compares every table cell by cell, every figure byte for
 byte, every sidecar and checkpoint. It excludes only run metadata: provenance columns
@@ -170,7 +169,11 @@ repository. It selects the reduced run through the settings form.
 * **Run 2, on a fresh "VM"** (local work directory deleted): Run all restored the
   backed-up fits for the matching identity, completed the run, made the final backup,
   verified all inventory files and the frozen hash, copied the results to "Drive", and
-  correctly declined to push reduced results. RECOVERY_DETAIL
+  correctly declined to push reduced results. Run 2 restored 21 fits, finished with
+  exit status 0 and verified 113 inventory files. Its outputs are identical to the
+  sequential reference run (section 3).
+* The first version of this test found the cache-record defect in section 4. The test was
+  repeated after the correction and the outputs are now identical.
 
 The push path is tested against a local bare repository (`test_colab_support.py`):
 branch created, only `output/` committed, token absent from `.git/config`, credentialed
