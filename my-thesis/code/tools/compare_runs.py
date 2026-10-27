@@ -12,9 +12,10 @@ checkpoints and manifests. This tool compares everything else, exactly:
 * every figure sidecar and checkpoint JSON, after removing provenance and timestamp keys;
 * the set of files present.
 
-The run manifests (`manifests/run_manifest.json`, `manifests/run_summary.json`) and the
-output inventory's checksums describe the run rather than its results, so they are
-listed as metadata rather than compared. Usage:
+The run manifests (`manifests/run_manifest.json`, `manifests/run_summary.json`), the
+machine record (`logs/environment.json`), the cache-read counts and the output
+inventory's checksums describe the run rather than its results, so they are listed as
+metadata rather than compared. Usage:
 
     python tools/compare_runs.py OUTPUT_A OUTPUT_B [--cache-a CACHE_A --cache-b CACHE_B]
 
@@ -34,12 +35,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thesis.core.provenance import PROVENANCE_COLUMNS  # noqa: E402
 
-#: Columns that measure the run rather than the research result.
-RUNTIME_COLUMNS = {"wall_seconds", "cpu_seconds", "peak_memory_mb", "recorded_utc"}
+#: Columns that measure the run rather than the research result: elapsed times, and how
+#: many fits a chain read from the cache rather than estimated (a run resumed from a
+#: restored cache reads more; every fitted value and diagnostic is still compared).
+RUNTIME_COLUMNS = {"wall_seconds", "cpu_seconds", "peak_memory_mb", "recorded_utc",
+                   "origins_from_cache", "from_cache", "cache_horizon_misses"}
 #: Keys of JSON sidecars and checkpoints that are run-time metadata.
 RUNTIME_KEYS = set(PROVENANCE_COLUMNS) | {"recorded_utc", "created_utc", "run_id",
                                           "execution_timestamp", "code_commit_sha"}
-METADATA_FILES = {"manifests/run_manifest.json", "manifests/run_summary.json"}
+METADATA_FILES = {"manifests/run_manifest.json", "manifests/run_summary.json",
+                  # the machine the run used (kernel string, interpreter path)
+                  "logs/environment.json"}
 #: The inventory's per-file checksums cover the provenance columns, so only its list of
 #: paths is a result.
 INVENTORY = "manifests/output_inventory.csv"

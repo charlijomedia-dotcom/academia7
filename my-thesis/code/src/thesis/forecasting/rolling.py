@@ -112,6 +112,41 @@ def _cache_key(
     )
 
 
+def _encode(value: Any) -> Any:
+    """A JSON form of a diagnostic value that decodes to something printing identically.
+
+    The fit-record table prints floats with `.10g` and everything else with `str()`, and
+    the failure registry prints `str()`. Scalars therefore keep their type (numpy float64
+    becomes the float it subclasses; numpy integers and booleans print like Python's).
+    Anything else (a tuple, a list, an array) is only ever printed, never computed with,
+    so it is kept as its exact printed text: a container prints its elements' reprs,
+    which a type conversion would change.
+    """
+    if value is None or isinstance(value, (bool, str)):
+        return value
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if isinstance(value, float):
+        return float(value)
+    if isinstance(value, (int, np.integer)):
+        return int(value)
+    return {"__text__": str(value)}
+
+
+def _decode(value: Any) -> Any:
+    if isinstance(value, dict) and "__text__" in value:
+        return value["__text__"]
+    return value
+
+
+def _encode_mapping(mapping: dict) -> dict:
+    return {str(k): _encode(v) for k, v in mapping.items()}
+
+
+def _decode_mapping(mapping: dict | None) -> dict:
+    return {k: _decode(v) for k, v in (mapping or {}).items()}
+
+
 def _payload(outcome: FitOutcome, horizons: Sequence[int]) -> dict[str, Any]:
     return {
         # The horizons this payload was produced for. A later run asking for a horizon
@@ -130,6 +165,16 @@ def _payload(outcome: FitOutcome, horizons: Sequence[int]) -> dict[str, Any]:
         "params": outcome.record.params,
         "start_used": outcome.record.start_used,
         "wall_seconds": outcome.record.wall_seconds,
+        # The rest of the fit record, so a fit served from the cache is reported exactly
+        # as when it was estimated: its standard errors, optimizer message and the
+        # diagnostics behind every flag (which the failure registry quotes).
+        "record_detail": {
+            "spec_label": outcome.record.spec_label,
+            "spec_hash": outcome.record.spec_hash,
+            "std_errors": _encode_mapping(outcome.record.std_errors),
+            "optimizer_message": outcome.record.optimizer_message,
+            "diagnostics": _encode_mapping(outcome.record.diagnostics),
+        },
         "warm_payload": (
             list(np.asarray(outcome.warm_payload, dtype=float).ravel())
             if outcome.warm_payload is not None else None
@@ -168,6 +213,13 @@ def _record_from_payload(payload: dict, spec: ModelSpec, series: str, origin: Or
     )
     record.status = Status(payload.get("status", "adequate"))
     record.reason_codes = [ReasonCode(c) for c in payload.get("reason_codes", [])]
+    detail = payload.get("record_detail")
+    if detail is not None:
+        record.spec_label = detail.get("spec_label", record.spec_label)
+        record.spec_hash = detail.get("spec_hash", record.spec_hash)
+        record.std_errors = _decode_mapping(detail.get("std_errors"))
+        record.optimizer_message = detail.get("optimizer_message")
+        record.diagnostics = _decode_mapping(detail.get("diagnostics"))
     return record
 
 
