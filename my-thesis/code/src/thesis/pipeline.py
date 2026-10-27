@@ -41,6 +41,7 @@ from .evaluation.losses import ABSOLUTE, SIGN_CONVENTION, SQUARED, loss_differen
 from .evaluation.mcs import model_confidence_set
 from .evaluation.state_loss_regression import state_loss_regression
 from .forecasting.parallel import ChainJob, run_chains
+from .forecasting.scheduler import ChainScheduler, cache_dependencies, n_origins
 from .forecasting.rolling import DataIdentity
 from .forecasting.windows import (common_calendar, describe_coverage, estimation_origins,
                                   rolling_origins)
@@ -102,8 +103,14 @@ class Pipeline:
     """Runs the approved methodology end to end from the canonical input."""
 
     def __init__(self, config: Config, context: RunContext, layout: OutputLayout,
-                 bundle, *, smoke: bool = False, monitor=None):
+                 bundle, *, smoke: bool = False, monitor=None, workers: int | None = None):
         self.config = config
+        # Worker processes for rolling chains. An execution setting, not a modelling
+        # one: results are identical for any value (asserted by tests), so an explicit
+        # value here does not enter the configuration hash or the fit-cache key.
+        self.workers = max(1, int(workers if workers is not None
+                                  else config.get("execution.parallel_workers", 1)))
+        self.scheduler: ChainScheduler | None = None
         # Observability only: the monitor is told what happens and never consulted.
         self.monitor = monitor if monitor is not None else NullMonitor()
         self._current_stage: str | None = None
@@ -154,10 +161,20 @@ class Pipeline:
         stage.files.extend(str(p.relative_to(self.layout.root)) for p in written)
 
     def _chains(self, jobs: Sequence[ChainJob], batch: str = "") -> list[tuple[Any, Any]]:
-        """Run a batch of independent chains, recording everything each one produced."""
-        with self.monitor.batch(batch, [job.task_id for job in jobs]):
-            results = run_chains(jobs, self.config, self.identity, self.cache,
-                                 monitor=self.monitor if self.monitor.enabled else None)
+        """Run a batch of independent chains, recording everything each one produced.
+
+        When the shared pool is running (`run` with more than one worker), the chains
+        were scheduled up front and this only collects their results, in the order
+        given; otherwise they are run here. Either way the records are appended in the
+        same order, so every registry is identical.
+        """
+        if self.scheduler is not None and self.scheduler.has(jobs):
+            results = self.scheduler.results(jobs)
+        else:
+            with self.monitor.batch(batch, [job.task_id for job in jobs]):
+                results = run_chains(jobs, self.config, self.identity, self.cache,
+                                     workers=self.workers,
+                                     monitor=self.monitor if self.monitor.enabled else None)
         for _, chain in results:
             self.all_fit_records.extend(chain.fit_records)
             self.all_failures.extend(chain.failures)
@@ -244,57 +261,61 @@ class Pipeline:
                                  self._window(frequency), tag=model, batch=batch)
                        for model in (AR, ARMA, MSAR, STAR, MSAR3)]
 
+    def _rolling_jobs(self) -> list[tuple[ChainJob, str, str, str, str]]:
+        """Every pooled rolling chain, in the order the stages consume them.
+
+        Returns (job, batch, stage, exercise, role). Built from the same job builders the
+        stages call, so the plan, the shared-pool scheduler and the stages agree by
+        construction; `ChainScheduler.results` refuses a job that differs.
+        """
+        out: list[tuple[ChainJob, str, str, str, str]] = []
+        for series_id in self._selected_targets():
+            batch, jobs = self._forecast_jobs(series_id)
+            for job in jobs:
+                k3 = job.spec.model == MSAR3
+                out.append((job, batch, "forecasting",
+                            "T4.3 K=3 regime count (rolling MSAR3)" if k3 else "baseline",
+                            "robustness" if k3 else "baseline"))
+        applies = [s for s in self.config.get("robustness.transformation.applies_to")
+                   if s in self.targets]
+        for series_id in applies:
+            inputs = self._t41_inputs(series_id)
+            if inputs is not None:
+                out.extend((job, inputs["batch"], "robustness", "T4.1 transformation",
+                            "robustness") for job in inputs["jobs"])
+        inputs = self._t42_inputs()
+        if inputs is not None:
+            out.extend((job, inputs["batch"], "robustness", "T4.2 CPI AR lags", "robustness")
+                       for job in inputs["jobs"])
+        for series_id in self._selected_targets():
+            batch, jobs = self._t48_jobs(series_id)
+            out.extend((job, batch, "robustness", f"T4.8 window length {job.window_length}",
+                        "robustness") for job in jobs)
+        return out
+
     def rolling_plan(self) -> list[ChainPlan]:
         """Every rolling chain the run will execute, with exact origin counts.
 
         Built from the same job builders the stages use, and counted with the same
         `estimation_origins` the rolling engine uses, so a total cannot drift from what
         is run (a test compares the two). The VAR and the GARCH chains are provisional:
-        whether they run is decided by their own stage.
+        whether they run is decided by their own stage. When the shared pool runs the
+        chains, they form one batch, which is how the remaining-time estimate treats
+        them.
         """
         plans: list[ChainPlan] = []
-        seen: dict[tuple, set[int]] = {}
-
-        def add(job: ChainJob, batch: str, stage: str, exercise: str, role: str) -> None:
-            n = len(estimation_origins(pd.DatetimeIndex(job.y.index), job.window_length,
-                                       list(job.horizons), max_origins=job.max_origins))
-            signature = (job.series_name, job.transformation,
-                         json.dumps(job.spec.as_dict(), sort_keys=True, default=str),
-                         job.window_length, job.max_origins)
-            cached = (self.cache.enabled and signature in seen
-                      and set(job.horizons) <= seen[signature])
-            seen.setdefault(signature, set()).update(job.horizons)
+        rolling = self._rolling_jobs()
+        dependencies = cache_dependencies([job for job, *_ in rolling], self.cache.enabled)
+        pooled = self.workers > 1
+        for job, batch, stage, exercise, role in rolling:
             plans.append(ChainPlan(
-                task_id=job.task_id, batch=batch, stage=stage, exercise=exercise, role=role,
-                series=job.series_name, model=job.spec.model, spec_label=job.spec.label,
+                task_id=job.task_id, batch="pool" if pooled else batch, stage=stage,
+                exercise=exercise, role=role, series=job.series_name, model=job.spec.model,
+                spec_label=job.spec.label,
                 k_regimes=(job.spec.k_regimes if job.spec.model in (MSAR, MSAR3) else None),
                 window_length=job.window_length, frequency=job.frequency,
-                horizons=tuple(job.horizons), n_origins=n, expect_cached=cached))
-
-        for series_id in self._selected_targets():
-            batch, jobs = self._forecast_jobs(series_id)
-            for job in jobs:
-                k3 = job.spec.model == MSAR3
-                add(job, batch, "forecasting",
-                    "T4.3 K=3 regime count (rolling MSAR3)" if k3 else "baseline",
-                    "robustness" if k3 else "baseline")
-        applies = [s for s in self.config.get("robustness.transformation.applies_to")
-                   if s in self.targets]
-        for series_id in applies:
-            inputs = self._t41_inputs(series_id)
-            if inputs is not None:
-                for job in inputs["jobs"]:
-                    add(job, inputs["batch"], "robustness", "T4.1 transformation",
-                        "robustness")
-        inputs = self._t42_inputs()
-        if inputs is not None:
-            for job in inputs["jobs"]:
-                add(job, inputs["batch"], "robustness", "T4.2 CPI AR lags", "robustness")
-        for series_id in self._selected_targets():
-            batch, jobs = self._t48_jobs(series_id)
-            for job in jobs:
-                add(job, batch, "robustness", f"T4.8 window length {job.window_length}",
-                    "robustness")
+                horizons=tuple(job.horizons), n_origins=n_origins(job),
+                expect_cached=job.task_id in dependencies))
 
         # Serial loops in the parent process; whether they run is decided later.
         panel = self._var_panel(record=False)
@@ -2285,21 +2306,49 @@ class Pipeline:
             # Every discrete choice is now fixed, so the rolling workload is exactly known.
             if self.monitor.enabled:
                 self.monitor.plan(self.rolling_plan())
-        with self._stage("adequacy", n * len(models), series=targets, models=models,
-                         unit="full-sample fits"):
-            self.adequacy_stage()
-        with self._stage("forecasting", n, series=targets, models=models,
-                         unit="series (one batch of 5 chains each)"):
-            self.forecasting_stage()
-        n_eval = sum(len(self._horizons(self.frequency[s])) for s in targets)
-        with self._stage("evaluation", n_eval, series=targets,
-                         models=["HLZ", "DM-HLN", "MCS", "state regressions"],
-                         unit="series x horizon evaluations"):
-            self.evaluation_stage()
-        with self._stage("robustness", 8, series=targets,
-                         models=["T4.1", "T4.2", "T4.3", "T4.4", "T4.5", "T4.6", "T4.8",
-                                 "T4.9"], unit="exercises"):
-            self.robustness_stage()
+        # From here every rolling chain is known. With more than one worker they all go
+        # to one shared pool now, so they compute while the parent runs the full-sample
+        # fits, the evaluation and the serial robustness exercises; each stage then
+        # collects its chains' results in its original order.
+        if self.workers > 1:
+            self.scheduler = ChainScheduler(
+                self.config, self.identity, self.cache, workers=self.workers,
+                monitor=self.monitor).start([job for job, *_ in self._rolling_jobs()])
+        try:
+            with self._stage("adequacy", n * len(models), series=targets, models=models,
+                             unit="full-sample fits"):
+                self.adequacy_stage()
+            with self._stage("forecasting", n, series=targets, models=models,
+                             unit=("series (results collected from the shared pool)"
+                                   if self.scheduler is not None
+                                   else "series (one batch of 5 chains each)")):
+                self.forecasting_stage()
+            n_eval = sum(len(self._horizons(self.frequency[s])) for s in targets)
+            with self._stage("evaluation", n_eval, series=targets,
+                             models=["HLZ", "DM-HLN", "MCS", "state regressions"],
+                             unit="series x horizon evaluations"):
+                self.evaluation_stage()
+            with self._stage("robustness", 8, series=targets,
+                             models=["T4.1", "T4.2", "T4.3", "T4.4", "T4.5", "T4.6", "T4.8",
+                                     "T4.9"], unit="exercises"):
+                self.robustness_stage()
+        except BaseException:
+            if self.scheduler is not None:
+                self.scheduler.close(cancel=True)
+                self.scheduler = None
+            raise
+        if self.scheduler is not None:
+            self.scheduler.close()
+            self.scheduler_timings = self.scheduler.timings()
+            if self.monitor.enabled:
+                busy = sum(t["seconds"] or 0.0 for t in self.scheduler_timings)
+                wall = (self.scheduler.finished or 0) - (self.scheduler.started or 0)
+                self.monitor.emit("scheduler_summary", workers=self.workers,
+                                  chains=len(self.scheduler_timings),
+                                  busy_seconds=round(busy, 1), wall_seconds=round(wall, 1),
+                                  utilization=round(busy / (wall * self.workers), 4)
+                                  if wall > 0 else None)
+            self.scheduler = None
         with self._stage("finalize", 1, unit="finalization"):
             self.finalize()
         self._current_stage = None
@@ -2315,4 +2364,7 @@ class Pipeline:
             "n_data_gap_events": len(self.all_gaps),
             "n_test_results": len(self.all_tests),
             "runtime": self.runtime.to_frame().to_dict("records"),
+            # Execution metadata (run summary only, never a thesis-facing table).
+            "workers": self.workers,
+            "shared_pool": getattr(self, "scheduler_timings", None) is not None,
         }

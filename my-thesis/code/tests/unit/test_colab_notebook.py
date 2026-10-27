@@ -1,42 +1,81 @@
-"""The Colab notebook must be valid and must not block the run it launches.
+"""The Colab notebook must run with Run all, unedited, and keep its promises.
 
-The clean-tree safeguard refuses a baseline run beside any untracked file in the
-repository, so every file the notebook itself writes must live outside the clone.
+It is executed end to end outside Colab by the validation recorded in the scheduling
+report; these tests pin the properties that must never regress.
 """
 
 from __future__ import annotations
 
+import ast
 import json
+import re
+import subprocess
 
 from thesis.core.paths import PROJECT_ROOT
 
 NOTEBOOK = PROJECT_ROOT / "colab" / "run_thesis_colab.ipynb"
 
 
-def _code() -> str:
-    cells = json.loads(NOTEBOOK.read_text(encoding="utf-8"))["cells"]
-    return "\n".join("".join(c["source"]) for c in cells if c["cell_type"] == "code")
+def _cells() -> list[dict]:
+    return json.loads(NOTEBOOK.read_text(encoding="utf-8"))["cells"]
 
 
-def test_the_notebook_is_valid_json_with_cells():
-    notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
-    assert notebook["nbformat"] == 4 and len(notebook["cells"]) > 5
+def _code() -> list[str]:
+    return ["".join(c["source"]) for c in _cells() if c["cell_type"] == "code"]
 
 
-def test_it_runs_the_approved_entry_point_with_the_log_mirror():
-    code = _code()
-    assert "code/run_all.py" in code
-    assert "--log-mirror" in code
-    assert "python -u" in code
+def test_the_notebook_is_valid_and_every_cell_is_plain_python():
+    for source in _code():
+        ast.parse(source)                        # no IPython magics or shell escapes
+        assert not re.search(r"^\s*[!%]", source, re.M)
 
 
-def test_files_it_writes_are_outside_the_clone():
-    code = _code()
-    for name in ("colab_console.log", "colab_run.pid"):
-        for line in code.splitlines():
-            if name in line:
-                assert f"/content/{name}" in line, line
+def test_defaults_run_the_full_baseline_with_four_workers():
+    settings = _code()[0]
+    assert re.search(r"^WORKERS = 4\b", settings, re.M)
+    assert re.search(r"^SMOKE_TEST = False\b", settings, re.M)
+    assert re.search(r"^RESTORE_CACHE = True\b", settings, re.M)
+    assert re.search(r'^SOURCE_URL = ""', settings, re.M)
 
 
-def test_it_installs_the_locked_dependencies():
-    assert "requirements.lock.txt" in _code()
+def test_the_default_branch_is_the_one_holding_this_notebook():
+    settings = _code()[0]
+    branch = re.search(r'^BRANCH = "([^"]+)"', settings, re.M).group(1)
+    current = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=PROJECT_ROOT,
+                             capture_output=True, text=True).stdout.strip()
+    assert branch == current or current == "HEAD"
+
+
+def test_it_runs_the_approved_entry_point_with_workers_and_log_mirror():
+    code = "\n".join(_code())
+    assert '"code/run_all.py", "--workers", str(WORKERS)' in code
+    assert '"--log-mirror"' in code and '"-u"' in code
+    assert '"--data-only"' in code
+
+
+def test_python_311_environment_from_the_lock():
+    code = "\n".join(_code())
+    assert "requirements.lock.txt" in code and "create_environment" in code
+    assert "verify_environment" in code
+
+
+def test_backups_restore_and_verification_are_wired():
+    code = "\n".join(_code())
+    for needle in ("IncrementalArchive(CACHE_DIR, DRIVE_CACHE).restore()", "backup-daemon",
+                   "cache_identity", "verify_outputs", "push_results"):
+        assert needle in code, needle
+
+
+def test_the_token_comes_only_from_secrets_and_never_reaches_a_url():
+    code = "\n".join(_code())
+    assert 'userdata.get("GITHUB_TOKEN")' in code
+    assert not re.search(r"(ghp_|github_pat_)[A-Za-z0-9]", code)
+    assert "https://{" not in code and "@github.com" not in code
+    assert 'RUN_ENV.pop("THESIS_GIT_TOKEN", None)' in code
+
+
+def test_files_it_writes_stay_outside_the_clone():
+    code = "\n".join(_code())
+    assert 'WORK = "/content/work"' in code
+    assert 'REPO = WORK_DIR / "academia7"' in code
+    assert 'RUN_DIR = WORK_DIR / "run"' in code and 'VENV = WORK_DIR / "venv311"' in code

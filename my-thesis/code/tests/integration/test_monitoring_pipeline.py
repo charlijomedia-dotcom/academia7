@@ -1,10 +1,11 @@
-"""The monitor on a real end-to-end pipeline run.
+"""The monitor and the shared-pool scheduler on a real end-to-end pipeline run.
 
 The same reduced pipeline (real frozen data, real estimators, small windows) is run
-twice: once with no monitor and once with a monitor on two worker processes. Asserted:
+twice: once strictly sequentially (one process, no monitor) and once with the monitor and
+the shared four-worker pool. Asserted:
 
 * every research output is identical (tools/compare_runs.py, which excludes only the
-  documented run-time metadata);
+  documented run-time metadata), so neither scheduling nor monitoring changes a number;
 * the rolling plan built before the forecasts matches what actually ran, chain by chain
   and origin by origin, and nothing is left "remaining" at the end;
 * every one of the ten stages is reported in order and completes;
@@ -38,7 +39,7 @@ from compare_runs import compare_trees  # noqa: E402
 from test_pipeline import FAST_OVERRIDES  # noqa: E402
 
 OVERRIDES = {**FAST_OVERRIDES, "execution": {"cache": True, "checkpoint": True,
-                                             "parallel_workers": 2}}
+                                             "parallel_workers": 4}}
 
 
 def _run(root: Path, *, monitored: bool):
@@ -55,9 +56,10 @@ def _run(root: Path, *, monitored: bool):
     if monitored:
         stream = io.StringIO()
         monitor = Monitor(root / "run_logs" / context.run_id, run_id=context.run_id,
-                          namespace="smoke", workers=2, stream=stream,
+                          namespace="smoke", workers=4, stream=stream,
                           heartbeat_seconds=5, summary_seconds=30).start()
-    pipeline = Pipeline(config, context, layout, bundle, smoke=True, monitor=monitor)
+    pipeline = Pipeline(config, context, layout, bundle, smoke=True, monitor=monitor,
+                        workers=4 if monitored else 1)
     summary = pipeline.run()
     plan = pipeline.rolling_plan() if monitored else None
     if monitor is not None:
@@ -79,6 +81,16 @@ def test_research_outputs_identical_with_and_without_monitoring(runs):
     assert differences == []
     more, _ = compare_trees(plain[2].cache / "checkpoints", watched[2].cache / "checkpoints")
     assert more == []
+
+
+def test_the_monitored_run_used_the_shared_pool_and_the_plain_one_did_not(runs):
+    plain, watched = runs
+    assert plain[1]["workers"] == 1 and not plain[1]["shared_pool"]
+    assert watched[1]["workers"] == 4 and watched[1]["shared_pool"]
+    events = [json.loads(line) for line in
+              watched[3].paths["events"].read_text().splitlines()]
+    summary = [e for e in events if e["kind"] == "scheduler_summary"]
+    assert summary and summary[0]["workers"] == 4 and 0 < summary[0]["utilization"] <= 1
 
 
 def test_summaries_identical(runs):

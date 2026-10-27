@@ -274,6 +274,11 @@ class Monitor:
                   valid=result.valid, failed=result.failed, from_cache=result.from_cache,
                   n_records=int(len(result.forecasts)), gaps=len(result.data_gaps))
 
+    def chain_status(self, task_id: str) -> str | None:
+        with self._lock:
+            chain = self.state.chains.get(task_id)
+            return None if chain is None else chain.status
+
     def chain_error(self, task_id: str, error: str) -> None:
         self.emit("chain_error", task_id=task_id, error=error[:500])
 

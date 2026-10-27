@@ -141,6 +141,11 @@ def main(argv: list[str] | None = None) -> int:
         help="also copy the run logs to this directory, e.g. a mounted Google Drive "
              "folder (default: $THESIS_LOG_MIRROR)",
     )
+    parser.add_argument(
+        "--workers", type=int, default=None,
+        help="worker processes for the rolling chains (default: execution.parallel_workers "
+             "in the configuration). Results are identical for any value, so this does not "
+             "change the configuration hash or invalidate the fit cache")
     parser.add_argument("--heartbeat-seconds", type=float, default=60.0,
                         help="heartbeat interval for long-running computations")
     parser.add_argument("--summary-seconds", type=float, default=300.0,
@@ -205,9 +210,13 @@ def main(argv: list[str] | None = None) -> int:
         print("(no run manifest written: this is a check, not a run)")
         return 0
 
+    workers = int(args.workers if args.workers is not None
+                  else config.get("execution.parallel_workers", 1))
+    if workers < 1:
+        parser.error("--workers must be at least 1")
+    print(f"workers:         {workers}")
     monitor = None
     if not args.no_monitor:
-        workers = int(config.get("execution.parallel_workers", 1))
         monitor = Monitor(
             run_log_dir(namespace, context.run_id), run_id=context.run_id,
             namespace=namespace.value, workers=workers,
@@ -222,7 +231,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"in {time.time() - started:.1f}s")
 
     pipeline = Pipeline(config, context, layout, bundle, smoke=args.smoke_test,
-                        monitor=monitor)
+                        monitor=monitor, workers=workers)
     try:
         summary = pipeline.run()
     except KeyboardInterrupt:
@@ -243,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"failure events:  {summary['n_failure_events']}")
     print(f"data-gap events: {summary['n_data_gap_events']}")
     print(f"test results:    {summary['n_test_results']}")
+    print(f"workers:         {workers}")
     for timing in summary["runtime"]:
         print(f"  {timing['stage']:<14} {timing['wall_seconds']:>9.2f}s  {timing['notes']}")
     print(f"output root:     {layout.root}")
