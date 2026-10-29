@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Measure the shared-pool scheduler against the previous one-pool-per-batch design.
 
-Runs the real rolling workload of the run (every baseline, rolling K=3, T4.1, T4.2 and
-T4.8 chain, on all six frozen series and the approved windows, horizons and
-specifications) twice from a cold cache, with the same number of workers:
+Runs the real rolling workload of the run (every baseline, T4.1, T4.2 and T4.8 chain —
+since the 29 October 2026 amendment there is no rolling K=3 chain — on all six frozen
+series and the approved windows, horizons and specifications) from a cold cache, with the
+same number of workers in each arm:
 
 * **per-batch** — the previous design: each `_chains` call (one series' five chains, one
   T4.1/T4.2/T4.8 batch) gets its own pool, and the next starts when it is done;
@@ -140,6 +141,9 @@ def main(argv=None) -> int:
     parser.add_argument("--max-origins", type=int, default=6)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--out", type=Path)
+    parser.add_argument("--arms", nargs="+", default=["per-batch", "pooled"],
+                        choices=["per-batch", "pooled"],
+                        help="which arms to run; results are compared only when both run")
     args = parser.parse_args(argv)
 
     root = Path(tempfile.mkdtemp(prefix="sched-bench-"))
@@ -149,17 +153,21 @@ def main(argv=None) -> int:
     print(f"stages 1-5 prepared in {time.time() - began:.0f}s; {len(groups)} batches, "
           f"{sum(len(g) for g in groups)} chains", flush=True)
     summaries, results = [], {}
-    for name in ("per-batch", "pooled"):
+    for name in args.arms:
         summary, results[name] = run_arm(name, pipeline, groups, args.workers, root)
         summaries.append(summary)
         print(json.dumps(summary), flush=True)
-    problems = compare(results["per-batch"], results["pooled"])
     report = {"max_origins": args.max_origins, "workers": args.workers, "arms": summaries,
-              "speedup": round(summaries[0]["wall_seconds"] / summaries[1]["wall_seconds"], 3),
-              "identical_results": not problems, "differences": problems,
-              "chains_compared": len(results["pooled"]),
-              "forecast_rows_compared": int(sum(len(r.forecasts)
-                                                for _, r in results["pooled"].values()))}
+              "chains": sum(len(g) for g in groups)}
+    problems = []
+    if len(summaries) == 2:
+        problems = compare(results["per-batch"], results["pooled"])
+        report.update({
+            "speedup": round(summaries[0]["wall_seconds"] / summaries[1]["wall_seconds"], 3),
+            "identical_results": not problems, "differences": problems,
+            "chains_compared": len(results["pooled"]),
+            "forecast_rows_compared": int(sum(len(r.forecasts)
+                                              for _, r in results["pooled"].values()))})
     print(json.dumps({k: v for k, v in report.items() if k != "arms"}, indent=2))
     if args.out:
         args.out.write_text(json.dumps(report, indent=2))
