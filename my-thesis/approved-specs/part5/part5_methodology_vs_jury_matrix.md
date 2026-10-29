@@ -23,7 +23,7 @@
 | P-01 | Single-equation identification limit + VAR alternative-explanation check | VAR results + explicit limitation |
 | P-02 | ADF + KPSS + Zivot-Andrews decision rule for UNRATE/FEDFUNDS | Stationarity table + break plot |
 | P-03 | Policy-rate transformation and MS credibility separated into diagnostic stages | Dedicated policy-rate diagnostic output |
-| P-04 | Mandatory K=3 MSAR robustness | K=2/K=3 comparison |
+| P-04 | Mandatory K=3 MSAR robustness, as an in-sample regime-count comparison of full-sample K=2 and K=3 fits (amended 29 October 2026; methodology §11.1) | T4.3 in-sample K=2/K=3 comparison and credibility conclusion, T3.2, F4.3; not a predictive-accuracy comparison |
 | P-05 | h=1 baseline plus longer horizons | Horizon-robustness table |
 | P-06 | No universal model-ranking claim; U.S.-specific output framing | Final claims classification |
 

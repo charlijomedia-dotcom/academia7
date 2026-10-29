@@ -6,6 +6,8 @@
 
 **User-approved amendment — 12 October 2026:** Mandatory estimation-window-length robustness has been added (monthly 180/240/300, quarterly 90/120/150). The 240-month / 120-quarter baseline and all unrelated frozen Part 5 choices remain unchanged.
 
+**User-approved amendment — 29 October 2026:** The K=3 MSAR robustness exercise (P-04) is an **in-sample** regime-count comparison of full-sample K=2 and K=3 fits. K=3 is no longer re-estimated at every pseudo-out-of-sample origin, and no K=3 out-of-sample forecasts are computed or used in any ranking, model confidence set or predictive-ability test. K=2 remains the baseline. Every other approved choice is unchanged. Full record: `part5_methodology_amendment_2026-10-29_msar_k3.md`.
+
 **User-approved amendment — 13 October 2026:** Keep August 2026 / 2026Q2 endpoints and the October 5, 2026 historical vintage. Preserve FRED/ALFRED source observations including genuine missing values. In the **separate derived research input**, replace only October 2025 CPIAUCSL and UNRATE levels with their respective September 2025 levels (LOCF). Generate/lock/share a single fully documented seven-series long-format CSV. Part 6 loads this CSV first as a new DataFrame and performs all modeling locally without re-download on ordinary reruns. This overrides earlier *unsent* no-imputation and sample-truncation prompt drafts. Results must not be used to select a new baseline window.
 
 | Decision | Part 5 choice | Why |
@@ -27,7 +29,7 @@
 | Lag criterion | BIC, then residual-whiteness screen | More parsimonious than old AIC-first procedure and directly addresses CPI over-lagging |
 | CPI robustness | p = 1, 3, 6, 12 | Direct jury response |
 | Main regime count | K=2 | Interpretability and parsimony |
-| K=3 | Mandatory robustness | Direct P-04 response |
+| K=3 | Mandatory **in-sample** robustness: full-sample K=3 compared with full-sample K=2 (amended 29 October 2026; no rolling K=3 forecasts) | Direct P-04 response: tests whether the two-regime assumption is overly restrictive through regime credibility, not out-of-sample predictive superiority |
 | Univariate core | Retained | It is the thesis's central forecast-comparison architecture |
 | Multivariate response | Monthly 5-variable VAR robustness | Genuine response to cross-variable criticism without turning thesis into a VAR dissertation |
 | GDP in VAR | Not interpolated to monthly | Avoid artificial mixed-frequency construction |

@@ -455,13 +455,17 @@ REGISTER: list[Requirement] = [
         ("robustness/T4.2_cpi_lag_robustness.csv",),
         ("tests/integration/test_pipeline.py::TestRequiredOutputsExist",)),
     Requirement(
-        "M11-T4.3", f"{M} §11.1 / {O} §8 T4.3", "K=2 versus K=3 MSAR with BIC, "
-        "convergence, occupancy, transition summary, forecast metrics and the explicit "
-        "retention decision; K=2 stays the baseline",
-        ("src/thesis/pipeline.py:Pipeline._t43_regime_count",),
-        ("robustness/T4.3_regime_count.csv",),
-        ("tests/integration/test_pipeline.py::TestMethodologicalGuarantees::"
-         "test_msar3_is_robustness_only_and_absent_from_the_baseline_table",)),
+        "M11-T4.3", f"{M} §11.1 / {O} §8 T4.3 (amended 29 October 2026)",
+        "In-sample K=2 versus K=3 MSAR regime-count comparison from the full-sample fits: "
+        "likelihood, AIC, BIC, convergence and status, means with SEs, occupancy and empty "
+        "regimes, transition matrix with SEs, durations, covariance and boundary warnings, "
+        "distinguishability, descriptive interpretability and the §11.1 credibility "
+        "conclusion; no rolling K=3 fit and no K=3 forecast metric; K=2 stays the baseline",
+        ("src/thesis/pipeline.py:Pipeline._t43_regime_count",
+         "src/thesis/reporting/regime_count.py:conclusion_row"),
+        ("robustness/T4.3_regime_count.csv", "robustness/T4.3_regime_parameters.csv",
+         "robustness/T4.3_regime_count_conclusion.csv"),
+        ("tests/integration/test_msar3_amendment.py",)),
     Requirement(
         "M11-T4.4", f"{O} §8 T4.4", "Horizon robustness from the stored forecasts, with "
         "no re-estimation and no horizon-specific respecification",
@@ -750,12 +754,9 @@ REGISTER: list[Requirement] = [
         expected_status=DISCLOSURE,
         note="Not a requirement failure: Comp §9 requires per-stage runtime reporting, "
              "which row C9 verifies as complete. This row records a fact for scheduling "
-             "the Part 8 run. Measured cost of one MSAR fit on this 4-core container: K=2, p=4, n=240 "
-             "takes 6.2s; K=3, p=4, n=240 takes 25.5s and n=955 takes 110.5s. With "
-             "roughly 700 monthly origins per series the K=3 robustness chains dominate, "
-             "so a complete baseline run is a multi-hour job even with the fit cache, "
-             "warm starts and four workers. This is a Part 8 scheduling matter, not a "
-             "methodological problem, and no approved parameter was changed to reduce it."),
+             "the Part 8 run. Under the 29 October 2026 amendment K=3 is estimated once per "
+             "target on the full sample, not at rolling origins, so the rolling workload is "
+             "AR, ARMA, MSAR (K=2) and STAR only; MSAR (K=2) chains dominate it."),
 ]
 
 

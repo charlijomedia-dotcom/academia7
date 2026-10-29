@@ -123,7 +123,7 @@ def test_chain_counters_match_the_forecast_origin_audit(runs):
 
     _, (_, _, layout, monitor, _, _) = runs
     audit = pd.read_csv(layout.forecasts / "forecast_origin_audit.csv")
-    assert len(audit) == 10                       # 2 targets x 5 models
+    assert len(audit) == 8                        # 2 targets x 4 rolling models (no K=3)
     for row in audit.itertuples():
         chain = monitor.state.chains[f"forecasting:{row.series}|{row.model}"]
         assert chain.completed == row.attempted_origins

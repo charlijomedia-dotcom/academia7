@@ -208,12 +208,15 @@ class TestMethodologicalGuarantees:
         assert "ARMA-GARCH" not in set(mcs["model"].dropna())
 
     def test_msar3_is_robustness_only_and_absent_from_the_baseline_table(self, completed_run):
+        # Part 5 §11.1 as amended on 29 October 2026: K=3 appears in the in-sample T4.3
+        # comparison only, and K=2 is the maintained baseline in every conclusion.
         _, _, layout = completed_run
         main = pd.read_csv(layout.forecast_tests / "T3.3_main_forecast_table.csv")
         assert "MSAR3" not in set(main["model"])
         k3 = pd.read_csv(layout.robustness / "T4.3_regime_count.csv")
         assert "MSAR3" in set(k3["model"])
-        assert set(k3["retention_decision"].str.startswith("K=2 retained")) == {True}
+        conclusions = pd.read_csv(layout.robustness / "T4.3_regime_count_conclusion.csv")
+        assert set(conclusions["maintained_baseline"].str.startswith("K=2")) == {True}
 
     def test_the_state_regression_is_never_labelled_giacomini_white(self, completed_run):
         _, _, layout = completed_run
@@ -331,7 +334,11 @@ class TestMethodologicalGuarantees:
         for column in CLAIM_MATRIX_COLUMNS:
             assert column in frame.columns
         assert validate_claim_matrix(frame) == []
-        assert frame.empty, "Part 6 must not adjudicate claims (result-blind rule)"
+        # Only predeclared evidence routes are registered, and nothing is adjudicated:
+        # every result and status field is empty (result-blind rule, decision D18).
+        assert list(frame["claim_id"]) == ["P04-regime-count"]
+        for column in ("baseline_result", "robustness_result", "status"):
+            assert frame[column].isna().all(), "Part 6 must not adjudicate claims"
 
     def test_model_labels_are_consistent_across_every_table(self, completed_run):
         # The specification names a model, not the estimator. If an estimator labelled
@@ -367,3 +374,89 @@ class TestMethodologicalGuarantees:
         assert len(inventory) > 30
         assert (inventory["sha256"].str.len() == 64).all()
         assert (inventory["bytes"] > 0).all()
+
+
+class TestMSAR3Amendment:
+    """Part 5 §11.1 as amended on 29 October 2026, checked on a real run."""
+
+    def test_k3_is_fitted_on_the_full_sample_for_every_target(self, completed_run):
+        pipeline, _, layout = completed_run
+        adequacy = pd.read_csv(layout.models / "T3.1_in_sample_adequacy.csv")
+        k3 = adequacy[adequacy["model"] == "MSAR3"]
+        assert set(k3["series"]) == set(pipeline.targets)
+        assert set(k3["sample"]) == {"full"}
+
+    def test_no_rolling_k3_fit_or_forecast_exists(self, completed_run):
+        pipeline, _, layout = completed_run
+        for series in pipeline.targets:
+            assert "MSAR3" not in pipeline.chain_results[series]
+            forecasts = pd.read_csv(layout.forecasts / f"forecasts_{series}.csv")
+            assert "MSAR3" not in set(forecasts["model"])
+        for name in ("forecast_origin_audit.csv", "forecast_horizon_coverage.csv"):
+            assert "MSAR3" not in set(pd.read_csv(layout.forecasts / name)["model"])
+        records = pd.read_csv(layout.models / "fit_records.csv")
+        k3 = records[records["model"] == "MSAR3"]
+        # Exactly one record per target: the full-sample fit, ending at the sample end.
+        assert len(k3) == len(pipeline.targets)
+        for row in k3.itertuples():
+            assert row.refit_date == str(pipeline.targets[row.series].index[-1].date())
+        registry = pd.read_csv(layout.robustness / "T4.7_failure_registry.csv")
+        for row in registry[registry["model"] == "MSAR3"].itertuples():
+            assert row.refit_date == str(pipeline.targets[row.series].index[-1].date())
+
+    def test_k3_appears_only_in_in_sample_tables(self, completed_run):
+        """Every table in the run is scanned. K=3 rows are allowed only where the
+        full-sample fit is reported: adequacy, credibility, residual diagnostics, fit
+        records, the failure registry and T4.3. Anywhere else a K=3 row would be a
+        forecast or forecast metric that the amended design does not compute."""
+        _, _, layout = completed_run
+        in_sample = {"models/T3.1_in_sample_adequacy.csv", "models/T3.2_nonlinear_credibility.csv",
+                     "models/fit_records.csv", "diagnostics/T3.2_residual_tests.csv",
+                     "diagnostics/all_test_results.csv", "robustness/T4.7_failure_registry.csv",
+                     "robustness/T4.7_status_counts.csv", "robustness/T4.3_regime_count.csv",
+                     "robustness/T4.3_regime_parameters.csv"}
+        offenders = []
+        for path in layout.root.rglob("*.csv"):
+            relative = path.relative_to(layout.root).as_posix()
+            if relative in in_sample or not path.stat().st_size:
+                continue
+            frame = pd.read_csv(path, dtype=str)
+            for column in ("model", "model_a", "model_b", "competitor"):
+                if column in frame.columns and "MSAR3" in set(frame[column].dropna()):
+                    offenders.append(f"{relative}:{column}")
+        assert offenders == []
+        k3 = pd.read_csv(layout.robustness / "T4.3_regime_count.csv")
+        metrics = {"rmse", "mae", "oos_r2", "n_forecasts", "attempted_origins",
+                   "valid_origins", "failed_origins", "horizon"}
+        assert not metrics & set(k3.columns)
+
+    def test_t43_holds_the_in_sample_comparison_for_every_target(self, completed_run):
+        pipeline, _, layout = completed_run
+        rows = pd.read_csv(layout.robustness / "T4.3_regime_count.csv")
+        assert sorted(zip(rows["series"], rows["k_regimes"])) == sorted(
+            (s, k) for s in pipeline.targets for k in (2, 3))
+        for column in ("loglik", "aic", "bic", "converged", "status", "reason_codes",
+                       "covariance_status", "means_distinguishable", "min_occupancy",
+                       "expected_durations", "recession_expansion_profile", "figure_note"):
+            assert column in rows.columns, column
+        parameters = pd.read_csv(layout.robustness / "T4.3_regime_parameters.csv")
+        assert {"regime mean", "transition probability", "expected duration (periods)"} <= \
+            set(parameters["kind"])
+        conclusions = pd.read_csv(layout.robustness / "T4.3_regime_count_conclusion.csv")
+        assert set(conclusions["series"]) == set(pipeline.targets)
+        for column in ("delta_bic_k3_minus_k2", "bic_favours", "k3_credible",
+                       "k3_credibility_problems", "conclusion", "implication_for_k2",
+                       "maintained_baseline", "scope_note"):
+            assert column in conclusions.columns, column
+
+    def test_k3_figures_exist_only_for_estimates_that_did_not_fail(self, completed_run):
+        pipeline, _, layout = completed_run
+        rows = pd.read_csv(layout.robustness / "T4.3_regime_count.csv")
+        for row in rows[rows["k_regimes"] == 3].itertuples():
+            figure = layout.figures / f"F4.3_{row.series}_MSAR3.png"
+            if row.status == "failed":
+                assert not figure.exists()
+                assert row.figure_note.startswith("not produced")
+            else:
+                assert figure.exists()
+                assert row.figure_note.startswith("produced as F4.3")

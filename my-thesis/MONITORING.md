@@ -11,12 +11,13 @@ on or off (section 8).
 | When | What |
 |---|---|
 | Start and end of each of the 10 stages | A banner: stage number, name, UTC start, the Comp §5 checkpoint, the Part 5 section(s) it implements, the operations, series and models, planned tasks; at the end the elapsed time, tasks done, chains and origins completed, failures, and what runs next |
-| Start and end of each rolling chain | Series, model, specification (with K for Markov switching), window length, horizons, origin count, exercise (baseline, T4.3 K=3, T4.8 window 180, ...); at the end valid / failed / data-gap / cached origins, forecast records, mean fit time, chain time |
+| Start and end of each rolling chain | Series, model, specification (with K for Markov switching), window length, horizons, origin count, exercise (baseline, T4.1 transformation, T4.8 window 180, ...); at the end valid / failed / data-gap / cached origins, forecast records, mean fit time, chain time |
 | Every ~10% of a chain | Current rolling window, forecast origin, completed / remaining origins, valid and failed fits, mean fit time |
 | Every 60 s, when something has run for over 60 s | **Heartbeat**: each worker's series, model, origin and window, how long the current fit has been running, the active optimizer step (e.g. `MSAR K=3 likelihood maximization, start 2/3 (deterministic_p0.95)`), its completed / remaining origins, and its process's last liveness signal and CPU time |
 | Every 5 minutes | **Global summary**: stage, stages done, chains done / active / pending, baseline and robustness origins done / remaining, elapsed time, CPU and memory, longest-running task, last completed computation, last checkpoint, mean fit time by model, costliest operations, the next stage, and an estimate where one can honestly be made |
 
-Example heartbeat (from the reduced run):
+Example heartbeat (from a reduced run made before the 29 October 2026 amendment, when K=3
+was still a rolling chain; today only AR, ARMA, MSAR K=2 and STAR chains appear):
 
 ```
 [13:54:23] HEARTBEAT  stage 7/10 Pseudo-out-of-sample rolling forecasts  (run 6m41s)
@@ -76,8 +77,9 @@ Three units are kept separate throughout:
   every horizon that still has a realized target, so records outnumber origins.
 
 Once the specification stage has fixed every discrete choice, the run builds its complete
-rolling plan: every chain of the baseline forecasts (including the K=3 MSAR chains for
-T4.3), T4.1, T4.2 and T4.8, from the same job builders the stages use, with origin counts
+rolling plan: every chain of the baseline forecasts (AR, ARMA, MSAR K=2 and STAR; K=3 is
+estimated in-sample only since the 29 October 2026 amendment), plus T4.1, T4.2 and
+T4.8, from the same job builders the stages use, with origin counts
 from the same `estimation_origins` function the rolling engine uses. The totals are
 therefore exact, and a test runs the pipeline and checks every planned chain against what
 actually ran.
@@ -98,7 +100,7 @@ Remaining counts cannot silently go wrong:
 ## 3a. How the rolling chains are scheduled
 
 With more than one worker, every rolling chain of the run — baseline AR, ARMA, MSAR and
-STAR, the rolling K=3 MSAR chains (T4.3), T4.1, T4.2 and T4.8 — is handed to **one shared
+STAR, T4.1, T4.2 and T4.8 — is handed to **one shared
 worker pool** as soon as the specification stage has fixed it (`forecasting/scheduler.py`).
 A dispatcher keeps exactly `workers` chains running and always starts the most expensive
 ready chain next, so no worker waits for another series' slow chain. A chain that is
@@ -108,7 +110,7 @@ the parent process runs the full-sample fits, the evaluation and the serial robu
 exercises; each stage then collects its chains' results in its original order.
 
 On the console this shows as `Batch pool: N done, 4 active, M queued` in the heartbeat,
-and each worker line names its exercise (baseline, T4.3 K=3, T4.8 window 300, ...), since
+and each worker line names its exercise (baseline, T4.1 transformation, T4.8 window 300, ...), since
 a worker may be computing a robustness chain while the banner still shows an earlier
 stage. `--workers N` sets the number of processes without changing the configuration
 hash or the fit cache; `--workers 1` runs everything in one process, in order.

@@ -183,6 +183,38 @@ def empty_claim_matrix() -> pd.DataFrame:
     return pd.DataFrame(columns=list(CLAIM_MATRIX_COLUMNS))
 
 
+#: Evidence routes fixed by the methodology before Part 8, recorded with every result and
+#: status field empty: Part 8 adjudicates them (result-blind rule, decision D18).
+CLAIM_REGISTRATIONS = (
+    {
+        "claim_id": "P04-regime-count",
+        "claim_text_stub": (
+            "Whether the two-regime MSAR assumption is overly restrictive, assessed by an "
+            "in-sample comparison of full-sample K=2 and K=3 fits (regime credibility), "
+            "not by a predictive-accuracy comparison (Part 5 §11.1, amended 29 October "
+            "2026)"),
+        "target": "all six targets",
+        "supporting_output_files": (
+            "robustness/T4.3_regime_count.csv; robustness/T4.3_regime_parameters.csv; "
+            "robustness/T4.3_regime_count_conclusion.csv; models/T3.2_nonlinear_credibility.csv; "
+            "figures/F4.3_*_MSAR3.png"),
+        "baseline_result": None,
+        "robustness_result": None,
+        "status": None,
+        "jury_ids_addressed": "P-04",
+    },
+)
+
+#: Columns a registration must leave empty before Part 8.
+CLAIM_RESULT_COLUMNS = ("baseline_result", "robustness_result", "status")
+
+
+def claim_matrix_with_registrations() -> pd.DataFrame:
+    """The claim matrix with its predeclared evidence routes and no adjudication."""
+    frame = pd.DataFrame(list(CLAIM_REGISTRATIONS), columns=list(CLAIM_MATRIX_COLUMNS))
+    return frame
+
+
 def validate_claim_matrix(frame: pd.DataFrame) -> list[str]:
     """Return the problems with a claim matrix, empty when it is valid."""
     problems = []

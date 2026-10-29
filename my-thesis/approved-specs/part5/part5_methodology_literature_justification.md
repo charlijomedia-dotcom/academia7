@@ -346,7 +346,9 @@ There is no universal theorem that says a macroeconomic forecasting problem must
 
 ### Defense sentence
 
-> Two regimes provide the parsimonious baseline that maps naturally to low/high or expansion/recession dynamics. We then estimate three regimes because the jury correctly asks whether the two-state representation is imposed too strongly. K=3 is retained only if the additional state is populated, stable, distinct, and useful for forecasting.
+> Two regimes provide the parsimonious baseline that maps naturally to low/high or expansion/recession dynamics. We then estimate three regimes because the jury correctly asks whether the two-state representation is imposed too strongly. The three-regime model is estimated on the full sample and compared in-sample with the two-regime model: we report whether the additional state is populated, stable, distinct and interpretable. K=2 remains the predeclared baseline either way, and in-sample evidence for K=3 is reported transparently without being presented as forecasting evidence.
+
+*Amended 29 October 2026 (user-approved): K=3 is no longer re-estimated at rolling forecast origins; see `part5_methodology_amendment_2026-10-29_msar_k3.md`.*
 
 ### Status
 

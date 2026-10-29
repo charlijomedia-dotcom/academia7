@@ -55,7 +55,7 @@ from .models.star import fit_star
 from .models.var import fit_var
 from .monitoring import NullMonitor, probe
 from .monitoring.plan import ChainPlan
-from .reporting import figures, tables
+from .reporting import figures, regime_count, tables
 from .transforms.growth import annualized_logdiff
 
 # Expensive operations are timed for the progress log. `probe.timed` returns the wrapped
@@ -88,6 +88,14 @@ def _supported(result) -> bool:
 
 
 PAIRS = (("AR", "ARMA"), ("AR", "MSAR"), ("AR", "STAR"), ("ARMA", "MSAR"), ("ARMA", "STAR"))
+
+#: The models re-estimated at every pseudo-out-of-sample origin. K=3 MSAR is not among
+#: them: it is estimated once, on the full sample, as the in-sample regime-count
+#: robustness exercise T4.3 (Part 5 §11.1, user-approved amendment of 29 October 2026).
+ROLLING_MODELS = (AR, ARMA, MSAR, STAR)
+
+#: The models estimated on the full sample in the adequacy stage (K=3 included).
+FULL_SAMPLE_MODELS = (AR, ARMA, MSAR, STAR, MSAR3)
 
 
 @dataclass
@@ -254,12 +262,12 @@ class Pipeline:
             self.monitor.task(self._current_stage, label)
 
     def _forecast_jobs(self, series_id: str) -> tuple[str, list[ChainJob]]:
-        """The baseline rolling chains of one series (K=3 MSAR included, for T4.3)."""
+        """The baseline rolling chains of one series: AR, ARMA, MSAR (K=2) and STAR."""
         frequency = self.frequency[series_id]
         batch = f"forecasting:{series_id}"
         return batch, [self._job(series_id, model, self._horizons(frequency),
                                  self._window(frequency), tag=model, batch=batch)
-                       for model in (AR, ARMA, MSAR, STAR, MSAR3)]
+                       for model in ROLLING_MODELS]
 
     def _rolling_jobs(self) -> list[tuple[ChainJob, str, str, str, str]]:
         """Every pooled rolling chain, in the order the stages consume them.
@@ -271,11 +279,7 @@ class Pipeline:
         out: list[tuple[ChainJob, str, str, str, str]] = []
         for series_id in self._selected_targets():
             batch, jobs = self._forecast_jobs(series_id)
-            for job in jobs:
-                k3 = job.spec.model == MSAR3
-                out.append((job, batch, "forecasting",
-                            "T4.3 K=3 regime count (rolling MSAR3)" if k3 else "baseline",
-                            "robustness" if k3 else "baseline"))
+            out.extend((job, batch, "forecasting", "baseline", "baseline") for job in jobs)
         applies = [s for s in self.config.get("robustness.transformation.applies_to")
                    if s in self.targets]
         for series_id in applies:
@@ -291,6 +295,11 @@ class Pipeline:
             batch, jobs = self._t48_jobs(series_id)
             out.extend((job, batch, "robustness", f"T4.8 window length {job.window_length}",
                         "robustness") for job in jobs)
+        rolling_k3 = [job.task_id for job, *_ in out if job.spec.model == MSAR3]
+        if rolling_k3:
+            # A structural guarantee, not a convention: the amended design never
+            # estimates K=3 at a rolling origin (Part 5 §11.1).
+            raise RuntimeError(f"K=3 MSAR must not be a rolling chain: {rolling_k3}")
         return out
 
     def rolling_plan(self) -> list[ChainPlan]:
@@ -629,6 +638,9 @@ class Pipeline:
         adequacy_rows, credibility_rows = [], []
         diagnostics: list[TestResult] = []
         self.full_sample_fits: dict[str, dict[str, Any]] = {}
+        # Every full-sample attempt, including failed ones, which `full_sample_fits`
+        # omits: T4.3 must report a failed K=3 estimate rather than skip it.
+        self.full_sample_attempts: dict[str, dict[str, dict[str, Any]]] = {}
         with self.runtime.stage("adequacy"):
             usrec = self.panels["M"]["USREC"].dropna()
             for series_id in self._selected_targets():
@@ -636,8 +648,9 @@ class Pipeline:
                 target = self.targets[series_id]
                 specs = self.specs[series_id]
                 fits: dict[str, Any] = {}
+                attempts = self.full_sample_attempts.setdefault(series_id, {})
 
-                for model in (AR, ARMA, MSAR, STAR, MSAR3):
+                for model in FULL_SAMPLE_MODELS:
                     spec = specs[model]
                     self._task(f"{series_id} {spec.label} full-sample fit and diagnostics")
                     try:
@@ -675,6 +688,7 @@ class Pipeline:
                                            converged=False, optimizer_message=repr(exc)[:200])
                         record.add_flag(ReasonCode.NONCONVERGENCE, Status.FAILED,
                                         detail=repr(exc)[:150])
+                        attempts[model] = {"fit": None, "record": record}
                         self.all_fit_records.append(record)
                         self.all_failures.append(FailureEvent(
                             series=series_id, model=model,
@@ -693,6 +707,7 @@ class Pipeline:
                     # Same canonical identity rule as the registry: the specification
                     # names the model in every table, not the estimator.
                     fit.record.model = model
+                    attempts[model] = {"fit": fit, "record": fit.record}
                     residuals = np.asarray(residuals, dtype=float)
                     if residuals[np.isfinite(residuals)].size < 2:
                         # A failed fit leaves no residuals. That is recorded, not patched
@@ -877,7 +892,7 @@ class Pipeline:
                 self.forecasts[series_id] = {}
                 self.chain_results[series_id] = {}
 
-                self._task(f"{series_id}: rolling chains AR, ARMA, MSAR, STAR, MSAR3")
+                self._task(f"{series_id}: rolling chains {', '.join(ROLLING_MODELS)}")
                 batch, jobs = self._forecast_jobs(series_id)
                 for model, chain in self._chains(jobs, batch):
                     spec = self.specs[series_id][model]
@@ -1493,74 +1508,68 @@ class Pipeline:
                     "T4.2_cpi_lag_predictive_tests.csv", stage)
 
     def _t43_regime_count(self, stage: StageOutputs, benchmark: str) -> None:
-        """T4.3: K=2 against K=3, including the explicit retention decision."""
-        rows = []
+        """T4.3: in-sample K=2 versus K=3 regime-count comparison (Part 5 §11.1, amended
+        29 October 2026).
+
+        Built from the full-sample fits only. No rolling K=3 fit exists, and no forecast
+        metric is computed or reported for K=3. K=2 remains the maintained baseline in
+        every conclusion. `benchmark` is unused and kept for a uniform call signature.
+        """
+        rows, parameters, conclusions = [], [], []
+        thresholds = self.config.get("thresholds.msar")
+        usrec = self.panels["M"]["USREC"].dropna()
+        attempts_all = getattr(self, "full_sample_attempts", {})
         for series_id in self._selected_targets():
             frequency = self.frequency[series_id]
-            fits = getattr(self, "full_sample_fits", {}).get(series_id, {})
-            for horizon in self._horizons(frequency):
-                frames = self._horse_race(series_id, horizon)
-                k3 = self.forecasts[series_id].get(MSAR3)
-                if k3 is not None and not k3.empty:
-                    frames = {**frames, MSAR3: k3[k3["horizon"] == horizon]}
-                accuracy = metrics.accuracy_table(frames, benchmark, series=series_id,
-                                                  horizon=horizon)
-                for model in (MSAR, MSAR3):
-                    if model not in frames:
-                        continue
-                    match = accuracy[accuracy["model"] == model]
-                    chain = self.chain_results[series_id][model]
-                    fit = fits.get(model, (None,))[0]
-                    row = {
-                        "series": series_id, "horizon": horizon, "model": model,
-                        "k_regimes": self.specs[series_id][model].k_regimes,
-                        "role": "baseline" if model == MSAR else "robustness",
-                        "spec_label": self.specs[series_id][model].label,
-                        "full_sample_bic": getattr(fit, "bic", float("nan")) if fit else float("nan"),
-                        "full_sample_converged": (fit.record.converged if fit else False),
-                        "full_sample_status": (fit.record.status.value if fit else "failed"),
-                        "occupancy": ("; ".join(f"regime{i+1}={v:.4f}"
-                                                for i, v in enumerate(fit.occupancy))
-                                      if fit else ""),
-                        "transition_diagonal": ("; ".join(f"p{i+1}{i+1}={fit.P[i, i]:.4f}"
-                                                          for i in range(fit.k_regimes))
-                                                if fit else ""),
-                        "min_expected_duration": (float(np.min(fit.expected_duration))
-                                                  if fit else float("nan")),
-                        "attempted_origins": chain.attempted, "valid_origins": chain.valid,
-                        "failed_origins": chain.failed,
-                    }
-                    if not match.empty:
-                        row.update({k: v for k, v in match.iloc[0].to_dict().items()
-                                    if k not in ("series", "model", "horizon")})
-                    rows.append(row)
-        frame = pd.DataFrame(rows)
-        if not frame.empty:
-            # The retention decision is mechanical and predeclared: K=2 remains the
-            # baseline regardless of which fits better, because Part 5 fixes the baseline
-            # regime count. K=3 is reported as a robustness check only, and the field
-            # records what the comparison showed (Part 5 §11.3, decision D13).
-            decisions = {}
-            for (series_id, horizon), group in frame.groupby(["series", "horizon"]):
-                two = group[group["model"] == MSAR]
-                three = group[group["model"] == MSAR3]
-                if two.empty or three.empty:
-                    verdict = "K=2 retained as baseline; K=3 unavailable"
-                elif (str(three.iloc[0]["full_sample_status"]) == Status.FAILED.value
-                      or not bool(three.iloc[0]["full_sample_converged"])):
-                    verdict = "K=2 retained as baseline; K=3 did not fit adequately"
-                else:
-                    bic3 = float(three.iloc[0]["full_sample_bic"])
-                    bic2 = float(two.iloc[0]["full_sample_bic"])
-                    verdict = ("K=2 retained as baseline; K=3 improves full-sample BIC "
-                               f"({bic3:.2f} vs {bic2:.2f}) and is reported as robustness only"
-                               if bic3 < bic2 else
-                               "K=2 retained as baseline; K=3 does not improve full-sample BIC "
-                               f"({bic3:.2f} vs {bic2:.2f})")
-                decisions[(series_id, horizon)] = verdict
-            frame["retention_decision"] = [
-                decisions.get((r.series, r.horizon), "") for r in frame.itertuples()]
-        self._write(frame, self.layout.robustness, "T4.3_regime_count.csv", stage)
+            target = self.targets[series_id]
+            attempts = attempts_all.get(series_id, {})
+            recession = (states.to_quarterly(usrec) if frequency == "Q" else usrec)
+            # The K=2 figure is the existing F3.3 of the adequacy stage, made whenever the
+            # baseline fit produced usable residuals.
+            notes = {MSAR: ("produced as F3.3 (baseline K=2)"
+                            if MSAR in getattr(self, "full_sample_fits", {}).get(series_id, {})
+                            else "not produced: no usable baseline estimate")}
+            notes[MSAR3] = self._f43_figure(series_id, target, attempts.get(MSAR3), usrec,
+                                            stage)
+            series_rows, series_parameters = regime_count.regime_rows(
+                series_id, frequency, target, self.specs[series_id][MSAR3].order, attempts,
+                {m: self.specs[series_id][m].label for m in (MSAR, MSAR3)}, recession,
+                thresholds, notes)
+            rows.extend(series_rows)
+            parameters.extend(series_parameters)
+            conclusions.append(regime_count.conclusion_row(series_id, series_rows))
+        self._write(pd.DataFrame(rows), self.layout.robustness, "T4.3_regime_count.csv", stage)
+        self._write(pd.DataFrame(parameters), self.layout.robustness,
+                    "T4.3_regime_parameters.csv", stage)
+        self._write(pd.DataFrame(conclusions), self.layout.robustness,
+                    "T4.3_regime_count_conclusion.csv", stage)
+
+    def _f43_figure(self, series_id: str, target: pd.Series, attempt, usrec: pd.Series,
+                    stage: StageOutputs) -> str:
+        """F4.3: K=3 smoothed regime probabilities, only for an estimate that did not fail.
+
+        The title carries the status and every flag, so a fragile estimate is never shown
+        as if it were clean. Returns the note T4.3 records about the figure.
+        """
+        if attempt is None or attempt.get("fit") is None:
+            return "not produced: no K=3 estimate"
+        fit, record = attempt["fit"], attempt["record"]
+        if record.status is Status.FAILED or fit.smoothed_regime.size == 0:
+            codes = ";".join(c.value for c in record.reason_codes) or "failed"
+            return f"not produced: estimation failed ({codes})"
+        codes = [c.value for c in record.reason_codes]
+        status = record.status.value + (f" [{', '.join(codes)}]" if codes else "")
+        dates = target.index[-fit.smoothed_regime.shape[0]:]
+        self._save_figure(
+            figures.regime_probabilities(
+                dates, fit.smoothed_regime, usrec, series_id=series_id,
+                model="MSAR K=3 (in-sample robustness)", figure_id="F4.3",
+                status_note=status),
+            self.layout.figures, f"F4.3_{series_id}_MSAR3", stage,
+            {"figure_id": "F4.3", "series": series_id, "model": MSAR3,
+             "estimation_status": record.status.value, "reason_codes": ";".join(codes),
+             "scope": "in-sample full-sample fit; no forecasts"})
+        return f"produced as F4.3 (status: {status})"
 
     def _t44_horizons(self, stage: StageOutputs, benchmark: str) -> None:
         """T4.4: horizon robustness from the stored forecasts (no re-estimation)."""
@@ -2251,8 +2260,10 @@ class Pipeline:
 
             # Part 8 claim matrix: the schema is created here with its rows left for
             # Part 8, which is where claims are adjudicated. Claude must not fill the
-            # status column during Part 6 (CLAUDE.md §6, result-blind rule).
-            matrix = tables.empty_claim_matrix()
+            # status column during Part 6 (CLAUDE.md §6, result-blind rule). The only rows
+            # are evidence routes the methodology fixes in advance (P-04's in-sample
+            # regime-count comparison), with their result and status fields empty.
+            matrix = tables.claim_matrix_with_registrations()
             problems = tables.validate_claim_matrix(matrix)
             if problems:
                 raise RuntimeError(f"claim matrix schema is invalid: {problems}")
@@ -2318,10 +2329,10 @@ class Pipeline:
             with self._stage("adequacy", n * len(models), series=targets, models=models,
                              unit="full-sample fits"):
                 self.adequacy_stage()
-            with self._stage("forecasting", n, series=targets, models=models,
+            with self._stage("forecasting", n, series=targets, models=list(ROLLING_MODELS),
                              unit=("series (results collected from the shared pool)"
                                    if self.scheduler is not None
-                                   else "series (one batch of 5 chains each)")):
+                                   else "series (one batch of 4 chains each)")):
                 self.forecasting_stage()
             n_eval = sum(len(self._horizons(self.frequency[s])) for s in targets)
             with self._stage("evaluation", n_eval, series=targets,

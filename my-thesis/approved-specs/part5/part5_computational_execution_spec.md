@@ -1,7 +1,7 @@
 # Part 5: Computational execution specification
 
 **Date:** 5 October 2026  
-**Status:** APPROVED baseline with explicit user amendments (12 October 2026 window-length robustness; 13 October 2026 canonical CSV and CPI/UNRATE LOCF).
+**Status:** APPROVED baseline with explicit user amendments (12 October 2026 window-length robustness; 13 October 2026 canonical CSV and CPI/UNRATE LOCF; 29 October 2026 K=3 MSAR estimated in-sample only, not at rolling origins).
 **Purpose:** Implement the approved methodology from scratch without reproducing the unnecessary computational burden of the previous thesis pipeline.
 
 # 1. Clean build
@@ -70,6 +70,11 @@ Done on the initial estimation window only:
 
 ### Parameter re-estimation
 Done at **every forecast origin** using the current rolling estimation window.
+
+The rolling forecast model set is **AR, ARMA, MSAR (K=2) and STAR** (amended 29 October
+2026). The K=3 MSAR robustness model is estimated **once, on the full sample**, alongside
+the full-sample K=2 fit (methodology §11.1); it is never submitted as a rolling forecast
+chain. All other rolling exercises (T4.1, T4.2, T4.8) are unchanged.
 
 ### Forecast production
 Done at every forecast origin from that origin-specific parameter fit and the information available at that date.

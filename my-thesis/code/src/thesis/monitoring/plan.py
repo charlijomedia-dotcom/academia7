@@ -68,13 +68,15 @@ STAGES: tuple[StageSpec, ...] = (
               "standard errors, credibility flags, tables T3.1-T3.2, figures F3.1-F3.3"),
     StageSpec(7, "forecasting", "Pseudo-out-of-sample rolling forecasts",
               "forecasts", "Part 5 §9",
-              "re-estimate every model at every forecast origin on the rolling window and "
-              "forecast the approved horizons"),
+              "re-estimate AR, ARMA, MSAR (K=2) and STAR at every forecast origin on the "
+              "rolling window and forecast the approved horizons (K=3 is in-sample only, "
+              "§11.1 as amended 29 October 2026)"),
     StageSpec(8, "evaluation", "Forecast evaluation", "evaluation", "Part 5 §10",
               "accuracy, HLZ (primary), DM-HLN (secondary), model confidence set, "
               "state-conditioned losses and regressions, T3.3-T3.5"),
     StageSpec(9, "robustness", "Robustness exercises", "robustness", "Part 5 §11",
-              "T4.1 transformation, T4.2 CPI lags, T4.3 K=3, T4.4 horizons, T4.5 VAR, "
+              "T4.1 transformation, T4.2 CPI lags, T4.3 K=2 vs K=3 in-sample, T4.4 horizons, "
+              "T4.5 VAR, "
               "T4.6 ARMA-GARCH, T4.8 window lengths, T4.9 LOCF exposure"),
     StageSpec(10, "finalize", "Registries, manifests and logs", "tables_and_figures",
               "Part 5 §13; Comp §5, §9",
@@ -92,7 +94,7 @@ class ChainPlan:
     task_id: str
     batch: str
     stage: str                 # execution-stage key it runs in
-    exercise: str              # "baseline", "T4.3 K=3", "T4.8 window length", ...
+    exercise: str              # "baseline", "T4.1 transformation", "T4.8 window length", ...
     role: str                  # "baseline" or "robustness"
     series: str
     model: str

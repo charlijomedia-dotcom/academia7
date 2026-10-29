@@ -2,7 +2,7 @@
 
 **Project:** *Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications*  
 **Date:** 5 October 2026  
-**Status:** APPROVED baseline with explicit user amendments (12 October 2026 window-length robustness; 13 October 2026 CPI/UNRATE carry-forward and canonical CSV). All other specifications remain frozen.
+**Status:** APPROVED baseline with explicit user amendments (12 October 2026 window-length robustness; 13 October 2026 CPI/UNRATE carry-forward and canonical CSV; 29 October 2026 K=3 MSAR robustness made an in-sample regime-count comparison, §11.1). All other specifications remain frozen.
 **Inputs:** Parts 1–4, Part 2 jury registry, Prof. Verne requirements recorded in Part 4, and external econometric literature used only to choose appropriate procedures  
 **Purpose:** Freeze the empirical methodology that Claude Code must implement in Parts 6–8.
 
@@ -970,7 +970,7 @@ Each robustness exercise has a named threat.
 |---|---|---|
 | UNRATE/FEDFUNDS transformation drives result | Alternative level/difference specification | Confirm, qualify, or reject ranking |
 | CPI p=12 or lag choice drives result | Re-run CPI with p = 1, 3, 6, 12 under common comparison | Address R1-15 directly |
-| Two regimes imposed too strongly | Fit K=3 MSAR | Retain K=2 only if K=3 is not substantively supported |
+| Two regimes imposed too strongly | Estimate K=3 MSAR on the full sample and compare it in-sample with K=2 (§11.1; amended 29 October 2026) | K=2 remains the predeclared baseline; report whether K=3 is credible and what it implies for the two-regime assumption (P-04) |
 | Nonlinear value only at h=1 | h=3/6/12 monthly; h=2/4 quarterly | Address P-05 |
 | Own-history nonlinearity proxies omitted macro information | Monthly VAR | Address R1-19/P-01 |
 | Classical benchmark too weak | ARMA in main horse race | Test whether nonlinear gain survives stronger linear dynamics |
@@ -981,30 +981,76 @@ Each robustness exercise has a named threat.
 | Turning-point result depends on the arbitrary window width | Monthly ±1 / ±3 / ±6 months; quarterly 0 / ±1 / ±2 quarters | Confirm, qualify, or reject any claim that nonlinear gains are concentrated around peaks/troughs |
 | U.S. sample drives general claim | No false external-validity claim; common-sample/state reporting | Delimit, not “fix,” P-06 |
 
-## 11.1 K=3 decision rule
+## 11.1 K=3 regime-count robustness (user-approved amendment, 29 October 2026)
 
-Fit a three-regime version using the same MSAR structure and lag order.
+This section supersedes the original §11.1 of 5 October 2026, which also evaluated
+out-of-sample forecast performance of a rolling K=3 model. The reasons and implications
+are recorded in `part5_methodology_amendment_2026-10-29_msar_k3.md`.
 
-Do not retain K=3 as the main model merely because its likelihood is larger.
+**Purpose.** Answer P-04: whether the two-regime assumption is overly restrictive. The
+exercise concerns the credibility of the regime specification, not out-of-sample
+predictive superiority.
 
-Evaluate:
+**Baseline.** MSAR with **K=2** remains the predeclared baseline Markov-switching
+forecasting model (§5.5). It is not replaced or re-selected by this exercise.
 
-- BIC;
-- convergence;
-- regime occupancy;
-- transition probabilities;
-- economic distinctness of regimes;
-- OOS forecast performance.
+**Estimation.** For each of the six approved targets, estimate a K=3 model once on the
+**same full-sample observations** as the full-sample K=2 fit, with the same approved MSAR
+structure (§5.5: regime-specific means, common AR coefficients, common innovation
+variance), the same lag-order rule (the BIC-selected AR order, capped at 4 monthly and 4
+quarterly), the same deterministic multi-start and optimizer rules, the same
+observed-information standard errors, and the same mean-ordering rule for regime labels
+(§8.1).
 
-Keep K=2 as baseline if K=3:
+**No rolling K=3 forecasts.** K=3 is **not** re-estimated at pseudo-out-of-sample
+forecast origins, and no K=3 out-of-sample forecasts are computed. K=3 therefore enters
+no forecast table, ranking, model confidence set, Harvey-Leybourne-Zu, DM-HLN or
+state-dependent forecast-loss comparison.
 
-- has an empty/near-empty regime;
-- is unstable or non-convergent;
-- has materially worse BIC;
-- does not improve OOS evidence;
-- creates a third state with no stable economic/statistical distinction.
+**Comparison.** For K=2 and K=3, on every target, report:
 
-Report the K=3 attempt regardless of outcome.
+- the estimation sample dates, number of observations and number of parameters;
+- log-likelihood, AIC and BIC;
+- convergence, optimizer message, starts attempted and converged, the start used, the
+  estimation status (adequate / fragile / failed) and every reason code;
+- the regime means with their standard errors where the observed-information covariance
+  is usable;
+- smoothed-probability occupancy and effective observations of every regime, and whether
+  a regime is low-occupancy or empty under §8.1 and decision D8;
+- the complete transition matrix, with standard errors where estimable, and the expected
+  regime durations;
+- the covariance status (usable, ill-conditioned, singular) and every transition-boundary
+  flag;
+- whether adjacent ordered regime means are empirically distinguishable: the absolute
+  difference relative to its standard error, compared descriptively with 1.96, or "not
+  assessable" when the covariance is unusable;
+- for economic interpretability, the average smoothed probability of each regime during
+  NBER recession and during expansion periods. These are descriptive. No economic label
+  (recession, recovery, expansion) is assigned to a statistical state on their basis.
+
+**Credibility of the additional regime.** K=3 is assessed as **credible** only if all of
+the following hold: the estimate converged and is not failed; no regime is flagged
+low-occupancy or empty (§8.1, D8); no transition probability is flagged at the boundary
+(§8.1); the observed-information covariance is usable (neither singular nor
+ill-conditioned); and every pair of adjacent ordered regime means is distinguishable.
+Otherwise K=3 is assessed as **not credible**, with each failing condition stated. These
+are the §8.1 operational warning thresholds applied unchanged; they are not theoretical
+critical values. As §4.3 explains, no likelihood-ratio test of K=2 against K=3 with a
+standard reference distribution is reported; the information-criterion comparison is
+descriptive.
+
+**Decision.** K=2 is retained as the predeclared baseline **regardless** of whether K=3
+has the more favourable in-sample criterion. Where a credible K=3 has a lower BIC (or
+AIC), this is reported transparently as in-sample evidence that the two-regime
+representation may be restrictive for that target. In-sample superiority is **not**
+evidence of superior forecasting performance, and no forecasting claim is made for K=3.
+
+**Reporting.** Non-convergence, boundary estimates, empty or near-empty regimes, singular
+or ill-conditioned covariance and every other credibility problem are reported, never
+concealed. A K=3 regime-probability figure is produced only for an estimate that did not
+fail, and it carries the estimate's status and flags. The final per-target conclusion
+states whether K=3 is credible, what the in-sample criteria show, and what this implies
+for the maintained K=2 assumption.
 
 ---
 

@@ -210,8 +210,13 @@ def residual_acf(residuals: np.ndarray, *, series_id: str, model: str,
 
 
 def regime_probabilities(dates: pd.DatetimeIndex, smoothed: np.ndarray, usrec: pd.Series,
-                         *, series_id: str, model: str) -> plt.Figure:
-    """F3.3: smoothed regime probabilities, one panel per regime for readability."""
+                         *, series_id: str, model: str, figure_id: str = "F3.3",
+                         status_note: str | None = None) -> plt.Figure:
+    """F3.3 / F4.3: smoothed regime probabilities, one panel per regime for readability.
+
+    `status_note` puts the estimate's status and flags in the title, so a fragile
+    estimate is never displayed as if it were clean (F4.3, Part 5 §11.1).
+    """
     k = smoothed.shape[1]
     fig, axes = plt.subplots(k, 1, figsize=(9, 2.1 * k), sharex=True)
     axes = np.atleast_1d(axes)
@@ -221,8 +226,11 @@ def regime_probabilities(dates: pd.DatetimeIndex, smoothed: np.ndarray, usrec: p
         ax.plot(dates, smoothed[:, regime], color="#1baf7a", linewidth=1.0)
         ax.set_ylim(-0.02, 1.02)
         style_axes(ax, title="", xlabel="", ylabel=f"P(regime {regime + 1})")
-    axes[0].set_title(f"F3.3 {series_id} {model}: smoothed regime probabilities "
-                      f"(shaded: NBER recessions)", fontsize=11)
+    title = (f"{figure_id} {series_id} {model}: smoothed regime probabilities "
+             f"(shaded: NBER recessions)")
+    if status_note:
+        title += f"\nestimation status: {status_note}"
+    axes[0].set_title(title, fontsize=11)
     axes[-1].set_xlabel("date", fontsize=9)
     return fig
 

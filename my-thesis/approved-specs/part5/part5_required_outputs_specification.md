@@ -1,7 +1,7 @@
 # Part 5: Required empirical outputs specification
 
 **Date:** 5 October 2026  
-**Status:** APPROVED baseline with user-approved amendments (12 October 2026 rolling-window robustness; 13 October 2026 canonical CSV and disclosed LOCF).
+**Status:** APPROVED baseline with user-approved amendments (12 October 2026 rolling-window robustness; 13 October 2026 canonical CSV and disclosed LOCF; 29 October 2026 T4.3 redesigned as an in-sample K=2/K=3 regime-count comparison, with no rolling K=3 forecasts).
 **Purpose:** Tell Claude Code exactly what tables, figures, diagnostics, manifests, and result files must exist so Part 8 and Part 9 can be written without manually reconstructing evidence.
 
 # 1. Mandatory machine-readable outputs
@@ -362,14 +362,59 @@ Baseline transformation vs alternative.
 
 p = 1, 3, 6, 12.
 
-## T4.3 K=2 versus K=3 MSAR
+## T4.3 K=2 versus K=3 MSAR — in-sample regime-count robustness (amended 29 October 2026)
 
-- BIC;
-- convergence;
-- occupancy;
-- transition matrix summary;
-- forecast metrics;
-- final retention decision.
+Mandatory, for **every retained target**. An in-sample comparison of the full-sample K=2
+and K=3 fits (methodology §11.1). It answers P-04 on the credibility of the regime
+specification; it is **not** a forecast comparison.
+
+`robustness/T4.3_regime_count.csv`, one row per target and regime count:
+
+- series, frequency, estimation sample start and end dates;
+- K=2 / K=3 specification label and role (baseline / robustness);
+- number of observations and number of parameters;
+- log-likelihood, AIC, BIC;
+- convergence, optimizer message, starts attempted and converged, start used, selection
+  rule;
+- estimation status (adequate / fragile / failed) and every reason code;
+- covariance status, and singular / ill-conditioned covariance flags;
+- minimum occupancy and minimum effective observations across regimes; the regimes
+  flagged low-occupancy or empty;
+- transition-boundary flags;
+- distinguishability of adjacent ordered regime means (|Δμ| / SE), or "not assessable";
+- descriptive interpretability fields: each regime's average smoothed probability in NBER
+  recession and in expansion periods, with an explicit statement that no economic label
+  is assigned to a statistical state;
+- whether a regime-probability figure was produced, and why not if it was not.
+
+`robustness/T4.3_regime_parameters.csv`, one row per target, regime count and parameter:
+regime means, AR coefficients, innovation standard deviation, every transition
+probability, expected durations and occupancies, with standard errors where estimable
+and the relevant boundary or low-occupancy warning on the row it concerns.
+
+`robustness/T4.3_regime_count_conclusion.csv`, one row per target:
+
+- log-likelihood, AIC and BIC differences (K=3 minus K=2), and which regime count each
+  criterion favours;
+- whether K=3 is credible under the §11.1 rule, with every failing condition listed;
+- the documented regime-count robustness conclusion and what it implies for the
+  maintained K=2 assumption; the maintained baseline is K=2 in every row;
+- the statement that the comparison is in-sample and is not evidence about forecasting
+  performance.
+
+Excluded by design: K=3 out-of-sample RMSE, MAE, OOS R², predictive-ability tests, model
+confidence set membership and rolling-origin counts. No column may report a K=3 forecast
+metric, because none is computed.
+
+Machine-readable diagnostics and provenance follow the rules of §1 and §9 (T4.7): every
+K=3 reason code is also in the failure and fragility registry.
+
+## F4.3 K=3 smoothed regime probabilities (amended 29 October 2026)
+
+One figure per target whose full-sample K=3 estimate did not fail, one panel per regime,
+with NBER recession shading. The title carries the estimation status and any credibility
+flags, so a fragile estimate is never shown as if it were clean. No figure is produced
+for a failed estimate; T4.3 records why.
 
 ## T4.4 Horizon robustness
 
@@ -501,3 +546,8 @@ Columns:
 - jury_ids_addressed.
 
 This matrix is the bridge from empirical execution to Part 9 writing.
+
+**P-04 evidence route (amended 29 October 2026).** The matrix records that P-04 is
+addressed by the **in-sample** K=2/K=3 regime-count comparison (T4.3, T3.2, F4.3), not
+by a predictive-accuracy comparison. This row is registered before Part 8 with its
+result and status fields empty; Part 8 adjudicates it from the final outputs.

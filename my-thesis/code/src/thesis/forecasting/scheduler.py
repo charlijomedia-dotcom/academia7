@@ -44,7 +44,9 @@ from .windows import estimation_origins
 
 #: Relative cost of one origin, used only to decide which ready chain starts first.
 #: Ordering cannot change a result (see the module docstring); it only shortens the run.
-#: The values are the measured relative fit times of the reduced run.
+#: The values are the measured relative fit times of the reduced run. MSAR3 keeps an entry
+#: so the scheduler can cost any job it is given, but the pipeline no longer submits K=3
+#: rolling chains (Part 5 §11.1, amended 29 October 2026).
 COST_PER_ORIGIN = {"MSAR3": 50.0, "MSAR": 20.0, "STAR": 1.5, "ARMA": 0.2, "AR": 0.01}
 
 
