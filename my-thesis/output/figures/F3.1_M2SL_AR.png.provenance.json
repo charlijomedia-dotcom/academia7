@@ -1,0 +1,11 @@
+{
+  "artifact": "F3.1_M2SL_AR.png",
+  "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "2026-10-30T18:32:24Z",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "figure_id": "F3.1",
+  "model": "AR",
+  "run_id": "baseline-20261030T173044-949fcd76",
+  "series": "M2SL"
+}

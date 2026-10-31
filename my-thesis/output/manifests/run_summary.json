@@ -1,0 +1,127 @@
+{
+  "canonical_csv_sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "n_data_gap_events": 0,
+  "n_failure_events": 34153,
+  "n_files": 255,
+  "n_fit_records": 67253,
+  "n_test_results": 350,
+  "namespace": "baseline",
+  "run_id": "baseline-20261030T173044-949fcd76",
+  "runtime": [
+    {
+      "cpu_seconds": 0.984,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "4 growth targets built",
+      "peak_memory_mb": 292.3,
+      "stage": "data",
+      "wall_seconds": 0.984
+    },
+    {
+      "cpu_seconds": 4.293,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 369.2,
+      "stage": "stationarity",
+      "wall_seconds": 3.868
+    },
+    {
+      "cpu_seconds": 305.446,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 374.2,
+      "stage": "specification",
+      "wall_seconds": 39.967
+    },
+    {
+      "cpu_seconds": 0.371,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 374.4,
+      "stage": "nonlinearity",
+      "wall_seconds": 0.061
+    },
+    {
+      "cpu_seconds": 307.62,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 374.5,
+      "stage": "specification",
+      "wall_seconds": 40.424
+    },
+    {
+      "cpu_seconds": 2159.86,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 598.9,
+      "stage": "adequacy",
+      "wall_seconds": 3624.664
+    },
+    {
+      "cpu_seconds": 31.5,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "24 rolling chains",
+      "peak_memory_mb": 730.0,
+      "stage": "forecasting",
+      "wall_seconds": 25531.538
+    },
+    {
+      "cpu_seconds": 505.496,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 759.0,
+      "stage": "evaluation",
+      "wall_seconds": 268.844
+    },
+    {
+      "cpu_seconds": 7369.885,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 854.5,
+      "stage": "robustness",
+      "wall_seconds": 3133.662
+    },
+    {
+      "cpu_seconds": 7.086,
+      "failures": 0,
+      "fits_attempted": 0,
+      "fits_from_cache": 0,
+      "notes": "",
+      "peak_memory_mb": 933.2,
+      "stage": "finalize",
+      "wall_seconds": 7.095
+    }
+  ],
+  "shared_pool": true,
+  "stages": [
+    "canonical_input",
+    "stationarity_decisions",
+    "selected_specifications",
+    "nonlinearity_diagnostics",
+    "selected_specifications",
+    "model_fits",
+    "forecasts",
+    "evaluation",
+    "robustness",
+    "tables_and_figures"
+  ],
+  "workers": 4
+}
