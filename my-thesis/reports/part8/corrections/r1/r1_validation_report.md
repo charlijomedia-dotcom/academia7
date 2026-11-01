@@ -166,3 +166,11 @@ The only alternative that avoids re-estimation is to recompute the AR-only accur
 5. **Platform digits.** Changed cells carry values computed on this machine, not on Colab. The legacy gate bounds the platform effect at a relative difference of ≤ 1e-11.
 6. **Figures.** The legacy figures are byte-identical to the originals. The corrected figures were checked for presence and provenance only, not compared visually against a reference.
 7. **Holm.** The CPI h=12 Holm adjustment is unchanged at 0.204 (absolute) and 1.0 (squared). It remains an audit computation, not an approved table.
+
+## 6. Test suite
+
+I ran the full suite (`pytest -m "not network"`, slow tests included) at `b912432`. The result was **912 passed, 0 failed** in 42 minutes.
+
+The 14 warnings come from the slow legacy-gate test and are the statsmodels rank-deficient Wald warnings of the T3.5 state regression. The original run emits the same warnings.
+
+One test fails intermittently in about 1 of 20 repeated runs: `test_colab_support.py::test_restored_fits_are_not_reuploaded_by_name`. It checks whether the Colab archive detects changed files from their timestamps. That test and the code it covers come from `part8-corrections`, R1 does not touch either, and they are left unchanged.
