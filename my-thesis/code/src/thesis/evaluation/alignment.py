@@ -18,6 +18,8 @@ from typing import Mapping, Sequence
 import numpy as np
 import pandas as pd
 
+from .scoring import scoreable
+
 
 @dataclass(frozen=True)
 class Alignment:
@@ -31,8 +33,12 @@ class Alignment:
 
 
 def valid_dates(frame: pd.DataFrame) -> pd.DatetimeIndex:
-    """Target dates where this model produced a finite forecast and error."""
-    usable = frame[np.isfinite(frame["forecast"]) & np.isfinite(frame["actual"])]
+    """Target dates where this model produced a scoreable forecast.
+
+    Scoreable means a finite forecast and actual from a fit that did not fail (Part 5
+    §7.5; correction F1): a failed fit's finite forecast never enters a comparison.
+    """
+    usable = frame[scoreable(frame)]
     return pd.DatetimeIndex(sorted(usable["target_date"].unique()))
 
 

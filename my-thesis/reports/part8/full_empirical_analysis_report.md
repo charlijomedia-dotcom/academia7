@@ -1,5 +1,12 @@
 # Part 8 — Full empirical analysis and audit report
 
+> **Correction phase (2 November 2026).** This report audits the **original publication**: results commit `066294544e8f`, run `baseline-20261030T173044-949fcd76`. Every number cited from `output/` refers to that publication.
+>
+> - Corrections F1 (failed-forecast scoring), F2 (guarded MCS), F3 (pairwise sign convention) and F4 (Zivot–Andrews reporting) are implemented and tested on branch `part8-corrections`. They have **not** yet been applied to `output/`.
+> - Findings that depend on affected tables are **provisional**; see `corrections/correction_plan.md` and the `provisional` column of `claim_evidence_matrix_adjudicated.csv`.
+> - A corrected publication will be released separately, with its own run ID and manifests. It will not overwrite the original results commit.
+
+
 **Run audited:** `baseline-20261030T173044-949fcd76`
 
 - **Code:** commit `46a53181e5e9d23c415f1c7fe11c0da93d9c3964`, tree clean.
@@ -632,6 +639,34 @@ See `jury_resolution_status.md`. In summary, for the empirically testable remark
 - **Outside empirical scope:** R1-01 to R1-05, R1-08, R1-10, R1-11 (textual part), R1-16, R1-20, R1-21 and P-06.
 
 ---
+
+## H0. Correction-phase addenda (2 November 2026)
+
+**CPI h=12 and multiplicity.**
+- Within the 46 MSAR-versus-AR HLZ tests (T3.3A), Holm-adjusted p-values for CPIAUCSL h=12 are 0.204 (absolute loss) and 1.0 (squared loss). This is a Part 8 audit computation.
+- The result is an unadjusted 5% rejection. It is not evidence of a systematic nonlinear advantage.
+- Throughout this report, non-rejection means "no evidence of a difference", not "equal accuracy".
+
+**FEDFUNDS K=2 (F5, interpretation only).**
+- The full-sample FEDFUNDS two-regime MSAR is **effectively unidentified**:
+  - its regime means are equal (0.0025);
+  - the transition-probability SEs are 18.06 and 38.26;
+  - its log-likelihood equals AR(1)'s (−518.894; T3.1, T3.2, T4.3).
+- Its automatic status remains *fragile*. No new automatic classification rule is introduced.
+
+**F4 preview.** Zivot–Andrews on the levels, intercept-and-trend break, from `corrections/f4_zivot_andrews_preview.csv`. This is not an `output/` file until regeneration.
+
+| Series | Sample | Statistic | p-value | Break |
+|---|---|---|---|---|
+| UNRATE | initial window | −4.556 | 0.189 | 1957-08 |
+| UNRATE | full sample | −4.606 | 0.169 | 2008-04 |
+| FEDFUNDS | initial window | −3.500 | 0.811 | 1970-10 |
+| FEDFUNDS | full sample | −4.290 | 0.320 | 1984-08 |
+
+- The baseline transformations are unchanged (§3.4: ADF and KPSS agree).
+- For UNRATE, the break-allowing test does not reject a unit root, so the level-stationarity conclusion rests on ADF and KPSS alone.
+
+**F6.** The UNRATE K=2/K=3 information-criterion comparison is INCONCLUSIVE; see `corrections/correction_plan.md` §F6.
 
 ## H. Limitations
 

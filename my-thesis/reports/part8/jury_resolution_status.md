@@ -2,6 +2,8 @@
 
 **Remark IDs** are the permanent IDs from `approved-specs/part2/part2_jury_remark_registry.md`. Prof. Verne's constraints (V-04 to V-07) come from `approved-specs/part5/part5_methodology_vs_jury_matrix.md`.
 
+> **Correction phase, 2 November 2026.** These statuses describe the *original* publication, the results commit `0662945`. Corrections F1–F4 are implemented and tested on branch `part8-corrections`, but the outputs have **not yet been regenerated**. Remarks whose evidence depends on an affected table are therefore classified as PARTIALLY ADDRESSED until the corrected outputs are produced and re-audited (see `corrections/correction_plan.md`). The classification was reconsidered at your request: R1-13, R1-15, R1-19, P-04 and P-05 moved from RESOLVED to PARTIALLY ADDRESSED.
+
 **Rule (CLAUDE.md §12).** A remark is satisfied by properly performing and reporting the requested analysis, whatever the result.
 
 **Categories**
@@ -80,7 +82,7 @@
 - **Remaining action:** Minor: T2.1 still shows "pending stationarity decision" for UNRATE and FEDFUNDS (F7.1). Use T2.2D for those transformations.
 
 **R1-13 — Every test defined: H0, distribution, decision**
-- **Status:** RESOLVED for every test produced.
+- **Status:** PARTIALLY ADDRESSED. Every test produced is fully defined, but the Part 5 §3.2 Zivot–Andrews test is missing from the original outputs (F4: implemented, awaiting regeneration).
 - **Evidence:** Each diagnostic row carries the name, null hypothesis, statistic, reference distribution, p-value, 5% decision and implication (`diagnostics/all_test_results.csv`, 350 rows; T2.2, T2.3, T3.2 residual tests).
 - **Remaining action:** The Zivot–Andrews test is absent (see P-02).
 
@@ -97,10 +99,10 @@
     - the MCS is unavailable in 11 of 34 baseline cells (CPIAUCSL and M2SL) and in 2 window-length cells (F2);
     - the T3.3A/T3.3B sign-convention label is reversed (F3);
     - UNRATE AR-relative tests are affected by F1.
-- **Remaining action:** Decide F2 (option a, b or c); approve F1 and F3.
+- **Remaining action:** F1, F2 (guarded MCS, validated against `arch`) and F3 are implemented and tested. Regenerate and re-audit.
 
 **R1-15 — CPI lag structure**
-- **Status:** RESOLVED.
+- **Status:** PARTIALLY ADDRESSED, pending regeneration. The substantive answer is not expected to change, but the AR(p=12) row scores one FAILED origin (1974-09; F1) and must be regenerated.
 - **Evidence:**
   - BIC selects p=2 (`diagnostics/T2.5_selected_specs.csv`).
   - Under p=1, 3, 6 and 12 robustness (`robustness/T4.2_cpi_lag_robustness.csv`, `_predictive_tests.csv`), p=12 brings no gain: RMSE 2.969 against 2.967 for p=2.
@@ -128,7 +130,7 @@
 - **Remaining action:** none.
 
 **R1-19 — Multivariate dimension**
-- **Status:** RESOLVED.
+- **Status:** PARTIALLY ADDRESSED, pending regeneration. The VAR exercise was performed; the UNRATE comparison uses the F1-affected AR benchmark.
 - **Evidence:** A monthly five-variable VAR(1) robustness exercise (`robustness/T4.5_var_*`). The VAR never significantly beats AR, and is significantly worse for FEDFUNDS under absolute loss.
 - **Remaining action:** The UNRATE AR benchmark row is affected by F1. The limits of a linear VAR must be stated in Part 9.
 
@@ -173,7 +175,12 @@
     - FEDFUNDS has a unit root: ADF p = 0.129 and KPSS p ≤ 0.01.
     - The full sample agrees with the baseline rule (T2.2D).
   - **No Zivot–Andrews result or break date is reported.** ZA was coded only as the §3.4 tie-breaker and was never triggered (F4).
-- **Remaining action:** Approve F4: run ZA on both levels (initial window and full sample), report it and plot the break.
+- **Remaining action:** F4 is implemented, and a read-only preview is in `corrections/f4_zivot_andrews_preview.csv`:
+  - UNRATE: ZA does not reject a unit root (initial window p = 0.189, break 1957-08; full sample p = 0.169, break 2008-04).
+  - FEDFUNDS: ZA does not reject a unit root (initial window p = 0.811, break 1970-10; full sample p = 0.320, break 1984-08).
+  - The §3.4 transformations are unchanged, because ADF and KPSS agree.
+  - For UNRATE the break-allowing test does *not* corroborate the ADF rejection, which weakens the level-stationarity reading. This must be reported.
+  - Status becomes RESOLVED only after regeneration.
 
 **P-03 — Diagnose the extreme policy-rate Markov-switching result**
 - **Status:** RESOLVED.
@@ -192,7 +199,10 @@
 - **Remaining action:** F5, optionally: label the K=2 fit as unidentified.
 
 **P-04 — Three-regime robustness**
-- **Status:** RESOLVED.
+- **Status:** PARTIALLY ADDRESSED.
+  - The exercise was performed for all six targets and K=3 is not credible for any of them.
+  - The published UNRATE K=3 estimate is not a global maximum (log-likelihood below K=2's, although K=3 nests K=2), so the UNRATE in-sample comparison is INCONCLUSIVE.
+  - The F6 numerical review is in `corrections/f6_k3_nesting_feasibility.csv`. Any modification of T4.3 needs your approval.
 - **Evidence:**
   - Full-sample K=2 against K=3 for all six targets, per amended §11.1 (`robustness/T4.3_regime_count.csv`, `_conclusion.csv`, `T4.3_regime_parameters.csv`, `figures/F4.3_*`).
   - K=3 is not credible for any target.
@@ -200,10 +210,10 @@
   - K=2 is retained as predeclared.
   - The UNRATE comparison is inconclusive (non-global K=3 optimum; F6).
   - "Useful" is judged in-sample only, by design: no K=3 forecasts were made.
-- **Remaining action:** Decide F6 (option a or b).
+- **Remaining action:** Decide whether to approve the nesting-informed K=3 start (F6). Until then, report UNRATE as inconclusive.
 
 **P-05 — One-step horizon limitation**
-- **Status:** RESOLVED.
+- **Status:** PARTIALLY ADDRESSED, pending regeneration. Horizons were evaluated, but the UNRATE multi-step AR comparisons are dominated by the F1 failed forecast.
 - **Evidence:** h = 3, 6 and 12 months and h = 2 and 4 quarters (`forecast_tests/T3.3_main_forecast_table.csv`, `robustness/T4.4_horizon_*`). Longer horizons give no systematic nonlinear gain; the exception is CPIAUCSL MSAR at h=12.
 - **Remaining action:** UNRATE multi-step results are pending F1.
 
@@ -226,9 +236,9 @@
 
 | Status | Count | Remarks |
 |---|---|---|
-| RESOLVED | 13 | R1-07, R1-09, R1-12, R1-13, R1-15, R1-17, R1-18, R1-19, R1-23, P-01, P-03, P-04, P-05 |
-| PARTIALLY ADDRESSED | 5 | R1-06, R1-11 (empirical part only), R1-14, R1-22, P-02 |
+| RESOLVED | 8 | R1-07, R1-09, R1-12, R1-17, R1-18, R1-23, P-01, P-03 |
+| PARTIALLY ADDRESSED | 10 | R1-06, R1-11 (empirical part only), R1-13, R1-14, R1-15, R1-19, R1-22, P-02, P-04, P-05 |
 | UNRESOLVED | 0 | — |
 | OUTSIDE EMPIRICAL SCOPE | 11 | R1-01, R1-02, R1-03, R1-04, R1-05, R1-08, R1-10, R1-16, R1-20, R1-21, P-06 |
 
-Approving F1, F2 (option b), F3 and F4 would move R1-06, R1-14, R1-22 and P-02 to RESOLVED, provided the regenerated outputs are re-audited.
+After the approved targeted regeneration and re-audit, R1-06, R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05 are expected to become RESOLVED. P-04 depends on the F6 decision. R1-11 stays partial (its textual part is Part 9).

@@ -1,5 +1,12 @@
 # Part 8 — Main findings
 
+> **Correction phase (2 November 2026).** This report audits the **original publication**: results commit `066294544e8f`, run `baseline-20261030T173044-949fcd76`. Every number cited from `output/` refers to that publication.
+>
+> - Corrections F1 (failed-forecast scoring), F2 (guarded MCS), F3 (pairwise sign convention) and F4 (Zivot–Andrews reporting) are implemented and tested on branch `part8-corrections`. They have **not** yet been applied to `output/`.
+> - Findings that depend on affected tables are **provisional**; see `corrections/correction_plan.md` and the `provisional` column of `claim_evidence_matrix_adjudicated.csv`.
+> - A corrected publication will be released separately, with its own run ID and manifests. It will not overwrite the original results commit.
+
+
 **Run:** `baseline-20261030T173044-949fcd76` (results `0662945`, code `46a53181e5e9`, data `7e7dc769…`). Full evidence and citations are in `full_empirical_analysis_report.md`, whose §0 defines the source keys. All file paths are relative to `output/`.
 
 **Statuses** follow CLAUDE.md and Part 5 §12: SUPPORTED / QUALIFIED / NOT_SUPPORTED / INCONCLUSIVE.
@@ -21,7 +28,15 @@ The question is *when nonlinear state-dependent models give statistically credib
   - OOS R² 0.042 (T3.3, CPIAUCSL MSAR h=12);
   - HLZ p = 0.033 for squared loss and 0.004 for absolute loss (T3.3A, AR–MSAR rows).
   - It is a small, isolated result among many tests.
-- **Status:** NOT_SUPPORTED for a general nonlinear advantage; QUALIFIED for the CPI h=12 exception.
+- **Multiple comparisons.** This qualification is a descriptive audit check, not an approved procedure.
+  - Within the 46 MSAR-versus-AR HLZ tests (all targets, horizons and losses; T3.3A), the Holm-adjusted p-values are 0.204 (absolute loss) and 1.0 (squared loss).
+  - The Bonferroni threshold for that family is 0.05/46 ≈ 0.0011.
+  - **The CPI h=12 gain therefore does not survive a family-wise correction.** It is an unadjusted 5% result.
+- **Non-rejection is not equality.** Failing to reject equal accuracy means the data do not provide evidence of superiority. It does **not** show that the models forecast equally well. The tests have limited power with a few hundred dependent observations and time-varying loss differentials.
+- **Status:**
+  - NOT_SUPPORTED: a general nonlinear advantage.
+  - QUALIFIED: the CPI h=12 exception (unadjusted significance; not robust to multiplicity).
+  - PROVISIONAL for UNRATE (F1).
 
 ## 2. Nonlinearity evidence before estimation (R1-18)
 

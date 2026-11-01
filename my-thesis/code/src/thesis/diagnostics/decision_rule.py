@@ -43,6 +43,10 @@ class TransformationDecision:
     break_sensitive_robustness: bool = False
     full_sample_agrees: bool | None = None
     robustness_required: bool = True   # the alternative is always a Chapter 4 check
+    # Correction F4: the Zivot-Andrews results reported under Part 5 §3.2 / P-02 for the
+    # initial window and the full sample, whether or not the §3.4 tie-break needed them.
+    za_initial_window: TestResult | None = None
+    za_full_sample: TestResult | None = None
 
     def to_row(self) -> dict[str, Any]:
         return {
@@ -56,7 +60,61 @@ class TransformationDecision:
                 "" if self.full_sample_agrees is None else self.full_sample_agrees
             ),
             "alternative_transformation_robustness_required": self.robustness_required,
+            "za_initial_window_statistic": _za(self.za_initial_window, "statistic"),
+            "za_initial_window_p_value": _za(self.za_initial_window, "p_value"),
+            "za_initial_window_break_date": _za(self.za_initial_window, "break_date"),
+            "za_full_sample_statistic": _za(self.za_full_sample, "statistic"),
+            "za_full_sample_p_value": _za(self.za_full_sample, "p_value"),
+            "za_full_sample_break_date": _za(self.za_full_sample, "break_date"),
+            "za_role": ("§3.4 tie-break" if self.rule_branch.startswith("3")
+                        else "reported under §3.2 / P-02; not used by the §3.4 decision "
+                             "because ADF and KPSS agree"),
         }
+
+
+def _za(result: TestResult | None, field_name: str) -> Any:
+    if result is None:
+        return ""
+    if field_name == "break_date":
+        return str(result.extra.get("break_date", ""))
+    return getattr(result, field_name)
+
+
+def report_zivot_andrews(
+    decision: TransformationDecision,
+    initial_window: pd.Series,
+    full_sample: pd.Series,
+    frequency: str,
+    config: Config,
+) -> list[TestResult]:
+    """Zivot-Andrews on both levels, as Part 5 §3.2 requires (correction F4).
+
+    §3.2 applies Zivot-Andrews to UNRATE and FEDFUNDS in levels and requires the break
+    date to be reported and plotted; P-02 requires a break-allowing test. §3.4 uses the
+    same test as a tie-breaker only when ADF and KPSS disagree. This function reports the
+    test on the initial window and on the full sample in every case, reusing a result the
+    tie-break already produced. It never changes `decision.decision`: the §3.4 rule is
+    evaluated exactly as before, and a test that did not enter the rule is labelled so.
+    Returns only the newly computed results (to be added to T2.2).
+    """
+    def existing(results: list[TestResult]) -> TestResult | None:
+        return next((r for r in results if r.name.startswith("Zivot-Andrews")), None)
+
+    added: list[TestResult] = []
+    note = "reported under Part 5 §3.2 / P-02; not used by the §3.4 rule"
+    za_initial = existing(decision.initial_window_results)
+    if za_initial is None:
+        za_initial = zivot_andrews_test(initial_window, frequency, config,
+                                        label=f"initial window, level; {note}")
+        added.append(za_initial)
+    za_full = existing(decision.full_sample_results)
+    if za_full is None:
+        za_full = zivot_andrews_test(full_sample, frequency, config,
+                                     label=f"full sample, level; {note}")
+        added.append(za_full)
+    decision.za_initial_window = za_initial
+    decision.za_full_sample = za_full
+    return added
 
 
 def _rejects(result: TestResult) -> bool:

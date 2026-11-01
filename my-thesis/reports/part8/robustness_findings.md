@@ -1,5 +1,12 @@
 # Part 8 — Robustness findings
 
+> **Correction phase (2 November 2026).** This report audits the **original publication**: results commit `066294544e8f`, run `baseline-20261030T173044-949fcd76`. Every number cited from `output/` refers to that publication.
+>
+> - Corrections F1 (failed-forecast scoring), F2 (guarded MCS), F3 (pairwise sign convention) and F4 (Zivot–Andrews reporting) are implemented and tested on branch `part8-corrections`. They have **not** yet been applied to `output/`.
+> - Findings that depend on affected tables are **provisional**; see `corrections/correction_plan.md` and the `provisional` column of `claim_evidence_matrix_adjudicated.csv`.
+> - A corrected publication will be released separately, with its own run ID and manifests. It will not overwrite the original results commit.
+
+
 **Run:** `baseline-20261030T173044-949fcd76` · **Results commit** `0662945` · **Code** `46a53181e5e9`
 
 **Paths.** All paths below are relative to `output/`. The source keys are defined in `full_empirical_analysis_report.md` §0.

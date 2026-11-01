@@ -136,7 +136,8 @@ def sample_coverage_timeline(spans: Mapping[str, tuple[pd.Timestamp, pd.Timestam
 def series_overview(level: pd.Series, transformed: pd.Series, usrec: pd.Series,
                     *, series_id: str, level_units: str, transformed_units: str,
                     break_date: pd.Timestamp | None = None,
-                    imputed_dates: Sequence[pd.Timestamp] = ()) -> plt.Figure:
+                    imputed_dates: Sequence[pd.Timestamp] = (),
+                    za_breaks: Mapping[str, pd.Timestamp] | None = None) -> plt.Figure:
     """F2.1: raw level and transformed target, with recession shading.
 
     One panel per object, never a shared axis: a level and a growth rate have different
@@ -149,9 +150,14 @@ def series_overview(level: pd.Series, transformed: pd.Series, usrec: pd.Series,
     ):
         shade_recessions(ax, usrec)
         ax.plot(data.index, data.to_numpy(), color="#2a78d6", linewidth=1.0, label=label)
-        if break_date is not None:
+        if break_date is not None and not za_breaks:
             ax.axvline(break_date, color="#eb6834", linestyle="--", linewidth=1.2,
                        label=f"Zivot-Andrews break {break_date:%Y-%m}")
+        # Correction F4: the reported Zivot-Andrews break dates (Part 5 §3.2) on both
+        # samples, distinguished by line style.
+        for (sample, date), style in zip((za_breaks or {}).items(), ("--", "-.")):
+            ax.axvline(date, color="#eb6834", linestyle=style, linewidth=1.2,
+                       label=f"Zivot-Andrews break, {sample}: {pd.Timestamp(date):%Y-%m}")
         for date in imputed_dates:
             ax.axvline(date, color="#e87ba4", linestyle=":", linewidth=1.2,
                        label=f"imputed {pd.Timestamp(date):%Y-%m}")
@@ -298,10 +304,12 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
         diagnostic.plot(actual.index, actual.to_numpy(), color=ACTUAL_COLOUR,
                         linewidth=1.0, label="actual")
         for model, series in flagged.items():
-            style, _ = MODEL_STYLES.get(model, ("-", "o"))
+            _, marker = MODEL_STYLES.get(model, ("-", "o"))
+            # Flagged forecasts are isolated dates, so they are drawn as markers: a line
+            # would join non-adjacent dates and suggest a path that never existed (R1-06).
             diagnostic.plot(series.index, series.to_numpy(),
-                            color=MODEL_COLOURS.get(model, "#888"), linestyle=style,
-                            linewidth=1.1, label=f"{model} (flagged)")
+                            color=MODEL_COLOURS.get(model, "#888"), linestyle="none",
+                            marker=marker, markersize=4, label=f"{model} (flagged)")
         style_axes(diagnostic,
                    title="Diagnostic panel: failed or extreme forecasts, own scale, not clipped",
                    xlabel="date", ylabel=units)

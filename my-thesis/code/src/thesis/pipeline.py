@@ -33,11 +33,13 @@ from .core.schemas import (DataGapEvent, FailureEvent, FitRecord, ReasonCode,
                            Status, TestResult)
 from .data.canonical import STATUS_IMPUTED, to_panels
 from .diagnostics import nonlinearity, residual_tests, stationarity
-from .diagnostics.decision_rule import confirm_on_full_sample, decide_transformation
+from .diagnostics.decision_rule import (confirm_on_full_sample, decide_transformation,
+                                        report_zivot_andrews)
 from .evaluation import alignment, metrics, states, tp_sensitivity
 from .evaluation.dm_hln import agrees_with, dm_hln_test
 from .evaluation.hlz import HLZSettings, hlz_test
 from .evaluation.losses import ABSOLUTE, SIGN_CONVENTION, SQUARED, loss_differential
+from .evaluation.scoring import FAILED_RAW_FORECAST, mask_failed
 from .evaluation.mcs import model_confidence_set
 from .evaluation.state_loss_regression import state_loss_regression
 from .forecasting.parallel import ChainJob, run_chains
@@ -187,6 +189,10 @@ class Pipeline:
             self.all_fit_records.extend(chain.fit_records)
             self.all_failures.extend(chain.failures)
             self.all_gaps.extend(chain.data_gaps)
+            # Correction F1: a failed fit's finite forecast is kept for diagnosis
+            # (`failed_raw_forecast`) but never scored. Done here, after the chain has
+            # returned, so the estimation code and the fit cache are untouched.
+            chain.forecasts = mask_failed(chain.forecasts)
         return results
 
     def _job(self, series_id: str, model_or_spec, horizons: Sequence[int],
@@ -475,9 +481,14 @@ class Pipeline:
                     initial = level.iloc[:window_length]
                     decision = decide_transformation(series_id, initial, frequency, self.config)
                     decision = confirm_on_full_sample(decision, level, frequency, self.config)
+                    # Correction F4: Zivot-Andrews on both levels, reported (§3.2, P-02)
+                    # without changing the §3.4 decision taken above.
+                    za_added = report_zivot_andrews(decision, initial, level, frequency,
+                                                    self.config)
                     self.decisions[series_id] = decision
                     results.extend(decision.initial_window_results)
                     results.extend(decision.full_sample_results)
+                    results.extend(za_added)
                     decision_rows.append(decision.to_row())
                     if decision.decision == "level":
                         self.targets[series_id] = level
@@ -509,6 +520,13 @@ class Pipeline:
                 break_date = None
                 if decision is not None and decision.break_date:
                     break_date = pd.Timestamp(decision.break_date)
+                za_breaks = {}
+                if decision is not None:
+                    for label, result in (("initial window", decision.za_initial_window),
+                                          ("full sample", decision.za_full_sample)):
+                        date = (result.extra or {}).get("break_date") if result else None
+                        if date:
+                            za_breaks[label] = pd.Timestamp(date)
                 imputed = [pd.Timestamp(d) for d in self.bundle.frame[
                     (self.bundle.frame["series_id"] == series_id)
                     & (self.bundle.frame["observation_status"] == STATUS_IMPUTED)]["date"]]
@@ -517,7 +535,7 @@ class Pipeline:
                         self.panels[frequency][series_id].dropna(), self.targets[series_id],
                         usrec, series_id=series_id, level_units=entry.units,
                         transformed_units=self._units(series_id), break_date=break_date,
-                        imputed_dates=imputed),
+                        imputed_dates=imputed, za_breaks=za_breaks or None),
                     self.layout.figures, f"F2.1_{series_id}", stage,
                     {"figure_id": "F2.1", "series": series_id})
         self.checkpoints.record("stationarity_decisions", {"targets": sorted(self.targets)},
@@ -1039,18 +1057,24 @@ class Pipeline:
                         errors = alignment.aligned_errors(
                             {model_a: frames[model_a], model_b: frames[model_b]}, aligned.dates)
                         for loss_kind in losses:
-                            # Sign convention: competitor minus benchmark, where the
-                            # second-named model is the benchmark of the pair.
-                            d = loss_differential(errors[model_a], errors[model_b], loss_kind)
+                            # Sign convention (correction F3): each configured pair is
+                            # (benchmark, competitor) -- AR or ARMA first, as in Part 5
+                            # §10.2 "AR vs MSAR" -- so d = loss(model_b) - loss(model_a)
+                            # and a negative value favours the second-named competitor,
+                            # exactly as SIGN_CONVENTION states. Two-sided inference is
+                            # unchanged by the orientation; the statistic's sign and the
+                            # one-sided p-values now match the stated convention.
+                            d = loss_differential(errors[model_b], errors[model_a], loss_kind)
                             d = d[np.isfinite(d)]
                             numeric, hlz_result = hlz_test(
                                 d, settings, series=series_id, model_a=model_a, model_b=model_b)
                             dm_result = dm_hln_test(
-                                errors[model_a], errors[model_b], horizon, loss_kind,
+                                errors[model_b], errors[model_a], horizon, loss_kind,
                                 series=series_id, model_a=model_a, model_b=model_b)
                             common = {
                                 "series": series_id, "horizon": horizon, "loss": loss_kind,
                                 "model_a": model_a, "model_b": model_b,
+                                "benchmark": model_a, "competitor": model_b,
                                 "sign_convention": SIGN_CONVENTION,
                                 "n_common": aligned.n_common,
                                 "n_removed_a": aligned.removed.get("left", 0),
@@ -1240,9 +1264,13 @@ class Pipeline:
                     for model, frame in frames.items():
                         indexed = frame.set_index("target_date")
                         series_forecasts[model] = indexed["forecast"]
-                        bad = indexed[(indexed["status"] == Status.FAILED.value)
-                                      | indexed["reason_codes"].str.contains(
-                                          "EXTREME_FORECAST", na=False)]["forecast"]
+                        # Failed fits are unscored (F1); the diagnostic panel shows their
+                        # preserved raw forecast so the failure stays visible.
+                        failed_fit = indexed["status"] == Status.FAILED.value
+                        shown = indexed["forecast"].where(
+                            ~failed_fit, indexed.get(FAILED_RAW_FORECAST, indexed["forecast"]))
+                        bad = shown[failed_fit | indexed["reason_codes"].str.contains(
+                            "EXTREME_FORECAST", na=False)]
                         if not bad.empty:
                             flagged[model] = bad
                     self._save_figure(

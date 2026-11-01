@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from . import alignment
+from .scoring import scoreable
 
 
 def rmse(errors: np.ndarray) -> float:
@@ -56,7 +57,8 @@ def accuracy_table(
     """
     rows = []
     for name, frame in frames.items():
-        own = frame[np.isfinite(frame["error"])]
+        # Scoreable rows only: finite, and not from a failed fit (correction F1).
+        own = frame[scoreable(frame) & np.isfinite(frame["error"])]
         row = {
             "series": series,
             "model": name,

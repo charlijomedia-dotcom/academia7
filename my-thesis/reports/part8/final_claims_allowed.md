@@ -1,5 +1,12 @@
 # Part 8 — Final claims allowed
 
+> **Correction phase (2 November 2026).** This report audits the **original publication**: results commit `066294544e8f`, run `baseline-20261030T173044-949fcd76`. Every number cited from `output/` refers to that publication.
+>
+> - Corrections F1 (failed-forecast scoring), F2 (guarded MCS), F3 (pairwise sign convention) and F4 (Zivot–Andrews reporting) are implemented and tested on branch `part8-corrections`. They have **not** yet been applied to `output/`.
+> - Findings that depend on affected tables are **provisional**; see `corrections/correction_plan.md` and the `provisional` column of `claim_evidence_matrix_adjudicated.csv`.
+> - A corrected publication will be released separately, with its own run ID and manifests. It will not overwrite the original results commit.
+
+
 **Purpose.** This file is the bridge to Part 9. It gives the exact claims the frozen outputs of run `baseline-20261030T173044-949fcd76` permit, with the wording allowed, the status, the supporting files (relative to `output/`) and the jury IDs.
 
 The machine-readable version is `reports/part8/claim_evidence_matrix_adjudicated.csv` (see §4 for why it is a derived report file).
@@ -20,19 +27,33 @@ The machine-readable version is `reports/part8/claim_evidence_matrix_adjudicated
   - no economic labels on statistical regimes.
 - Every number used in Part 9 must be quoted from `output/`. The **[audit]** numbers in these reports are not citable as results.
 
+**Provisional claims (correction phase, 2 November 2026).** These rest on outputs that the approved corrections will regenerate. Until the corrected release is re-audited, they are **PROVISIONAL** and must not be used in Part 9 in final form.
+
+| Claims | Correction | Reason |
+|---|---|---|
+| C01, C04, C12, C13, C14, C15, C17, C21 | F1 | They depend on UNRATE comparisons against AR, or on robustness rows that score a failed fit |
+| C16 | F1 | One failed CPI p=12 origin |
+| C02 | F2 | The completeness of the CPI and M2 MCS cells |
+| P04-regime-count and C18 | F6 | UNRATE K=3 is a non-global optimum |
+
+The machine-readable matrix carries a `provisional` column.
+
+**Inference language.** In every claim, a non-rejection is reported as "no significant difference" or "no evidence of superiority". It is never reported as "equal forecasting ability".
+
 ---
 
 ## 1. Claims on the central question
 
 **C01 — No general nonlinear forecasting advantage at the baseline horizon**
 - **Status:** SUPPORTED. For UNRATE this is provisional pending F1.
-- **Allowed wording:** "At the one-step baseline horizon, neither MSAR nor STAR forecasts were significantly more accurate than the AR benchmark under the Harvey–Leybourne–Zu test for any of the six U.S. targets."
+- **Allowed wording:** "At the one-step baseline horizon, neither MSAR nor STAR forecasts were significantly more accurate than the AR benchmark under the Harvey–Leybourne–Zu test for any of the six U.S. targets. This is an absence of evidence of superiority, not a demonstration of equal accuracy."
 - **Evidence:** `forecast_tests/T3.3A_hlz_pairwise.csv` (h=1, AR–MSAR and AR–STAR rows); `forecast_tests/T3.3_main_forecast_table.csv`.
 - **Jury IDs:** R1-09, R1-14, R1-22.
 
 **C02 — The one formally supported nonlinear gain is small and occurs at a robustness horizon**
 - **Status:** QUALIFIED.
-- **Allowed wording:** "The only formally supported improvement of a nonlinear model over AR is MSAR for CPI inflation at the 12-month horizon (OOS R² = 0.042; HLZ p = 0.033 under squared and 0.004 under absolute loss). This is a modest gain at one robustness horizon among many comparisons, and no multiple-testing adjustment is applied."
+- **Allowed wording:** "The only nonlinear-over-AR rejection at the 5% level is MSAR for CPI inflation at the 12-month horizon (OOS R² = 0.042; HLZ p = 0.033 under squared and 0.004 under absolute loss). It is an unadjusted result at one robustness horizon: within the 46 MSAR-versus-AR tests it does not survive a Holm family-wise adjustment (adjusted p = 0.20 and 1.0), so it is not evidence of a systematic advantage."
+- **Source of the adjustment:** the Holm figures are a Part 8 audit computation on `forecast_tests/T3.3A_hlz_pairwise.csv`. They are not an approved procedure output. Part 9 should present them as a sensitivity remark, or recompute them as an approved table.
 - **Evidence:** T3.3 (CPIAUCSL MSAR h=12); T3.3A (CPIAUCSL h=12 AR–MSAR); T3.3B; `forecast_tests/T3.4_model_confidence_set.csv` (CPIAUCSL h=12 absolute, 90%: only ARMA excluded).
 - **Jury IDs:** P-05, R1-14.
 
