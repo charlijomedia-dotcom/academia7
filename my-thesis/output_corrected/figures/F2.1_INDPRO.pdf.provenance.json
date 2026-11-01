@@ -1,0 +1,10 @@
+{
+  "artifact": "F2.1_INDPRO.pdf",
+  "code_commit_sha": "77df9d8e8b781aa2bbbf09bb698aa5ea0cf7de29",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "2026-11-01T15:22:18Z",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "figure_id": "F2.1",
+  "run_id": "correction-20261101T152213-949fcd76",
+  "series": "INDPRO"
+}
