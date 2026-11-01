@@ -674,6 +674,13 @@ See `jury_resolution_status.md`. In summary, for the empirically testable remark
 2. **Single country.** The design covers one country (P-06) and uses a pseudo-out-of-sample evaluation on revised data, so it says nothing about real-time nowcasting (R1-20).
 3. **Few episodes.** There are 23 recession quarters for GDPC1 and 58 to 85 recession months for the monthly targets (T3.5R `n_recession`). State-specific inference has low power, and the 2020 episode dominates squared-error metrics.
 4. **Search depth.** MSAR used 2 deterministic starts, and the likelihoods are multimodal (F6). Different local optima are plausible across rolling origins.
-5. **Machine dependence.** Numerical results depend on the machine at the last digits (OpenBLAS kernel selection). Exact replication requires the same platform class (Part 7 report).
+5. **Machine dependence.** Most results depend on the machine only at the last digits (OpenBLAS kernel selection).
+   - **Not so for the full-sample MSAR optima.** The correction-phase F6 study refitted them on a different platform with the unchanged code:
+     - INDPRO K=2 log-likelihood: −3627.97 here against −3614.10 published;
+     - M2SL K=2: −2185.27 against −2203.65;
+     - UNRATE K=2 and K=3 also differ.
+     - Source: `corrections/f6_k3_nesting_feasibility.csv`.
+   - Under the 2-start rule the MSAR likelihood optimum reached is platform-sensitive. T3.1, T3.2 and T4.3 MSAR numbers are therefore reproducible on the publication's platform class only.
+   - The published INDPRO K=3 is also not a global maximum: a nesting-informed start reaches −3550.31 against −3563.27.
 6. **No multiple-testing correction.** None is part of the approved design. Isolated 5% rejections among 226 or more tests must be worded cautiously.
 7. **No STAR robustness measure.** STAR metrics are dominated by retained extreme forecasts, as the approved rules require. Any trimmed or robust-loss reading would be a new, unapproved procedure, and none is reported.

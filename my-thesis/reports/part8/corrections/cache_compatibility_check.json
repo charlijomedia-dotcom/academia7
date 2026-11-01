@@ -1,6 +1,6 @@
 {
   "approved_code_commit": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
-  "head": "337b84be1aafe5d85f554a39a4ae69a7e0ec8961",
+  "head": "44c8dff6e00c8d6ec92692ba2be80a141833e409",
   "fit_critical_files": [
     "my-thesis/code/src/thesis/models/ar.py",
     "my-thesis/code/src/thesis/models/arma.py",
@@ -18,7 +18,17 @@
   ],
   "fit_critical_diff_vs_approved": "(empty)",
   "config_diff_vs_approved": "(empty)",
-  "code_diff_vs_approved": [],
+  "code_diff_vs_approved": [
+    ".../code/src/thesis/diagnostics/decision_rule.py   |  58 ++++",
+    " my-thesis/code/src/thesis/evaluation/alignment.py  |  10 +-",
+    " my-thesis/code/src/thesis/evaluation/mcs.py        | 159 ++++++++++-",
+    " my-thesis/code/src/thesis/evaluation/metrics.py    |   4 +-",
+    " my-thesis/code/src/thesis/evaluation/scoring.py    |  71 +++++",
+    " my-thesis/code/src/thesis/pipeline.py              |  46 +++-",
+    " my-thesis/code/src/thesis/reporting/figures.py     |  18 +-",
+    " .../code/tests/unit/test_part8_corrections.py      | 303 +++++++++++++++++++++",
+    " 8 files changed, 650 insertions(+), 19 deletions(-)"
+  ],
   "cache_identity_head": "3413465b508bb844",
   "cache_identity_drive": "3413465b508bb844",
   "published_config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",

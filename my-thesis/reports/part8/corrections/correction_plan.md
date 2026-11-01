@@ -130,7 +130,35 @@ From `f4_zivot_andrews_preview.csv`, using the corrected stationarity code on th
 - Pass this vector through the **existing** `warm_start` argument of `fit_msar`. **No fit-critical file would change.**
 - The two approved deterministic starts still run, and the unchanged rule picks the best converged start.
 
-**Results:** see §9, filled in from the CSV.
+**Results** (`f6_k3_nesting_feasibility.csv`, refits on this container; log-likelihoods):
+
+| Target | Published K=2 | Published K=3 | Refit K=2 | Refit K=3, approved starts | K=3 with nesting start (selected start) | Nesting K3 − refit K2 |
+|---|---|---|---|---|---|---|
+| GDPC1 | −870.253 | −840.685 | −870.253 | −840.685 | −840.685 (deterministic) | +29.57 |
+| CPIAUCSL | −2415.560 | −2370.506 | −2415.560 | −2370.506 | −2370.506 (deterministic) | +45.05 |
+| INDPRO | −3614.104 | −3563.274 | **−3627.969** | −3563.273 | **−3550.313 (nesting)** | +77.66 |
+| M2SL | −2203.647 | −2151.519 | **−2185.268** | −2151.519 | −2151.519 (deterministic) | +33.75 |
+| UNRATE | 102.037 | 13.881 | **101.627** | **22.059** | **101.527 (nesting)** | **−0.10** |
+| FEDFUNDS | −518.894 | −253.411 | −518.894 | −253.410 | −253.410 (deterministic) | +265.48 |
+
+**Findings**
+
+1. **UNRATE.**
+   - The nesting start moves K=3 from about 80 log-likelihood points *below* K=2 to −0.10 below it.
+   - Its third regime ends essentially empty (occupancy 0.0000): the optimiser stops in the flat direction of an unvisited regime, so the result is still marginally inconsistent with nesting.
+   - It therefore restores approximate, not exact, nesting consistency. It also implies that the information criteria would favour K=2 only because K=3 adds parameters to an empty regime, which is not credible either way.
+2. **INDPRO.** The nesting start finds a higher K=3 optimum, 12.96 log-likelihood points above both the published K=3 and the approved starts. **The published INDPRO K=3 was not a global maximum either.**
+3. **Platform sensitivity (new finding).**
+   - Refits of the *unchanged* code reproduce the published log-likelihoods to about 1e-6 for GDPC1, CPIAUCSL and FEDFUNDS.
+   - They do **not** reproduce them for INDPRO K=2 (−13.9), M2SL K=2 (+18.4) or UNRATE K=2 (−0.41) and K=3 (+8.2).
+   - With 2 deterministic starts, the full-sample MSAR optimum reached depends on platform-level floating-point detail. Colab produced the published values; this container uses a different CPU and BLAS.
+   - Consequences:
+     - T3.1, T3.2 and T4.3 MSAR numbers are reproducible on the publication's platform class, not across platforms;
+     - for M2SL, a better K=2 optimum exists than the published one;
+     - the corrected release must run on the same Colab platform class for its MSAR full-sample numbers to remain comparable;
+     - the R1-17 and P-04 reports should state this sensitivity.
+   - Whether the *qualitative* regime conclusions (outlier and boundary regimes) survive at the alternative optima was not examined in this study.
+4. **Cost.** The extra K=3 start takes about one more K=3 optimisation per target. Measured here, the extra wall time ranges from roughly 0 to 100 seconds, and the total K=3 time from 17 seconds (GDPC1) to 334 seconds (UNRATE), while other jobs were running.
 
 **Numerical limitations**
 - L-BFGS-B from a start whose objective is about the K=2 value can only *descend*, so a converged nesting start ends with log-likelihood ≥ about K=2's. That restores nesting consistency.
@@ -220,5 +248,6 @@ The baseline run is not re-estimated: every rolling fit is served from the cache
 
 1. Approve the targeted execution plan (Option A) and the publication route (§9, steps 7–8).
 2. Accept or reject the F2 guarded MCS on the basis of §4.
-3. F6: approve or decline the nesting-informed K=3 start (§7). If approved, choose between a K=3-only start and the symmetric variant.
+3. F6: approve or decline the nesting-informed K=3 start (§7). If approved, choose between a K=3-only start and the symmetric variant. The study shows the start fixes the gross UNRATE violation (−88 → −0.1) and improves INDPRO, but cannot guarantee exact nesting or a global maximum.
+5. **New, from F6: full-sample MSAR optima are platform-sensitive under the 2-start rule** (INDPRO, M2SL and UNRATE K=2 differ between Colab and this container). Should the reports carry this only as a stated limitation of T3.1, T3.2 and T4.3 (my recommendation for the current release), or would you like a separate methodological proposal on the MSAR multi-start rule? That proposal would be a Part 5 matter needing your approval.
 4. F7.1, the stale "pending stationarity decision" in T2.1: approve fixing it in the same release (a one-line reporting change), or leave it documented.
