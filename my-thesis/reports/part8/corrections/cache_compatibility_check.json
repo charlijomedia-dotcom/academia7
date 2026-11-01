@@ -1,6 +1,6 @@
 {
   "approved_code_commit": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
-  "head": "44c8dff6e00c8d6ec92692ba2be80a141833e409",
+  "head": "9b7b681d23146863eb3a27c85c6a2fd98ddb07a8",
   "fit_critical_files": [
     "my-thesis/code/src/thesis/models/ar.py",
     "my-thesis/code/src/thesis/models/arma.py",
@@ -21,13 +21,17 @@
   "code_diff_vs_approved": [
     ".../code/src/thesis/diagnostics/decision_rule.py   |  58 ++++",
     " my-thesis/code/src/thesis/evaluation/alignment.py  |  10 +-",
-    " my-thesis/code/src/thesis/evaluation/mcs.py        | 159 ++++++++++-",
+    " my-thesis/code/src/thesis/evaluation/mcs.py        | 159 +++++++++-",
     " my-thesis/code/src/thesis/evaluation/metrics.py    |   4 +-",
     " my-thesis/code/src/thesis/evaluation/scoring.py    |  71 +++++",
-    " my-thesis/code/src/thesis/pipeline.py              |  46 +++-",
+    " my-thesis/code/src/thesis/pipeline.py              |  75 ++++-",
     " my-thesis/code/src/thesis/reporting/figures.py     |  18 +-",
-    " .../code/tests/unit/test_part8_corrections.py      | 303 +++++++++++++++++++++",
-    " 8 files changed, 650 insertions(+), 19 deletions(-)"
+    " .../code/tests/unit/test_cache_completeness.py     |  71 +++++",
+    " my-thesis/code/tests/unit/test_colab_notebook.py   |  18 ++",
+    " my-thesis/code/tests/unit/test_colab_support.py    |  75 +++++",
+    " .../code/tests/unit/test_part8_corrections.py      | 339 +++++++++++++++++++++",
+    " my-thesis/code/tools/cache_completeness.py         | 182 +++++++++++",
+    " 12 files changed, 1059 insertions(+), 21 deletions(-)"
   ],
   "cache_identity_head": "3413465b508bb844",
   "cache_identity_drive": "3413465b508bb844",
