@@ -24,7 +24,8 @@ The script refits K=2 and K=3 with the published code path (to confirm it reprod
 published T4.3 log-likelihoods), then K=3 with the extra start, and records log-likelihood,
 convergence, the start selected, occupancies and wall time for all six targets.
 
-Run from `my-thesis/`:  python reports/part8/corrections/f6_k3_nesting_feasibility.py
+Run from `my-thesis/`:  python reports/part8/corrections/f6_k3_nesting_feasibility.py [SERIES ...]
+(with series names, only those targets are refitted and merged into the existing CSV)
 """
 
 from __future__ import annotations
@@ -82,8 +83,12 @@ def nesting_start(fit2) -> np.ndarray:
 
 def main() -> None:
     config = load_config(names=("baseline", "series_catalog", "thresholds"), config_dir=CONFIG_DIR)
-    rows = []
+    wanted = set(sys.argv[1:])
+    rows = (pd.read_csv(DEST).to_dict("records") if DEST.exists() and wanted else [])
+    rows = [r for r in rows if r["series"] not in wanted]
     for series, y in targets().items():
+        if wanted and series not in wanted:
+            continue
         order = int(T43[(T43.series == series) & (T43.k_regimes == 2)].iloc[0].ar_order)
         published = T43[T43.series == series].set_index("k_regimes")
         t0 = time.perf_counter()
@@ -116,7 +121,7 @@ def main() -> None:
             "seconds_k3_with_nesting_start": round(t3n, 1),
         })
         print(rows[-1], flush=True)
-    pd.DataFrame(rows).to_csv(DEST, index=False)
+        pd.DataFrame(rows).to_csv(DEST, index=False)   # after every target
 
 
 if __name__ == "__main__":
