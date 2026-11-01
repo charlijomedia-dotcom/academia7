@@ -1,0 +1,85 @@
+check,series,model,horizon,metric,value,source_file,note
+A1 failed-but-finite forecasts,GDPC1,all,all,n_rows,0,forecasts/forecasts_GDPC1.csv,
+A1 failed-but-finite forecasts,CPIAUCSL,all,all,n_rows,0,forecasts/forecasts_CPIAUCSL.csv,
+A1 failed-but-finite forecasts,UNRATE,all,all,n_rows,4,forecasts/forecasts_UNRATE.csv,AR origin 2020-04
+A1 failed-but-finite forecasts,INDPRO,all,all,n_rows,0,forecasts/forecasts_INDPRO.csv,
+A1 failed-but-finite forecasts,FEDFUNDS,all,all,n_rows,0,forecasts/forecasts_FEDFUNDS.csv,
+A1 failed-but-finite forecasts,M2SL,all,all,n_rows,0,forecasts/forecasts_M2SL.csv,
+A2 UNRATE AR RMSE,UNRATE,AR,1,rmse_as_published,0.8859369009339337,forecasts/forecasts_UNRATE.csv,
+A2 UNRATE AR RMSE,UNRATE,AR,1,rmse_excluding_failed,0.5509896078379349,forecasts/forecasts_UNRATE.csv,audit recomputation; excludes the FAILED (UNSTABLE_AR) origin only
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,ARMA,1,oos_r2,0.23656601778120268,forecasts/forecasts_UNRATE.csv,n_common=688
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,MSAR,1,oos_r2,0.190169953559716,forecasts/forecasts_UNRATE.csv,n_common=692
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,STAR,1,oos_r2,-0.10271514580789076,forecasts/forecasts_UNRATE.csv,n_common=703
+A2 UNRATE AR RMSE,UNRATE,AR,3,rmse_as_published,3.2765939483377275,forecasts/forecasts_UNRATE.csv,
+A2 UNRATE AR RMSE,UNRATE,AR,3,rmse_excluding_failed,0.9415280294176172,forecasts/forecasts_UNRATE.csv,audit recomputation; excludes the FAILED (UNSTABLE_AR) origin only
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,ARMA,3,oos_r2,0.05559263758057531,forecasts/forecasts_UNRATE.csv,n_common=686
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,MSAR,3,oos_r2,-0.127756242983863,forecasts/forecasts_UNRATE.csv,n_common=690
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,STAR,3,oos_r2,-163.25251294319787,forecasts/forecasts_UNRATE.csv,n_common=701
+A2 UNRATE AR RMSE,UNRATE,AR,6,rmse_as_published,11.306435702907464,forecasts/forecasts_UNRATE.csv,
+A2 UNRATE AR RMSE,UNRATE,AR,6,rmse_excluding_failed,1.1654736474735972,forecasts/forecasts_UNRATE.csv,audit recomputation; excludes the FAILED (UNSTABLE_AR) origin only
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,ARMA,6,oos_r2,-0.13721224284713873,forecasts/forecasts_UNRATE.csv,n_common=683
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,MSAR,6,oos_r2,-0.5377136290742022,forecasts/forecasts_UNRATE.csv,n_common=687
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,STAR,6,oos_r2,-40303385.24399267,forecasts/forecasts_UNRATE.csv,n_common=698
+A2 UNRATE AR RMSE,UNRATE,AR,12,rmse_as_published,78.17399994546602,forecasts/forecasts_UNRATE.csv,
+A2 UNRATE AR RMSE,UNRATE,AR,12,rmse_excluding_failed,1.4920330365106433,forecasts/forecasts_UNRATE.csv,audit recomputation; excludes the FAILED (UNSTABLE_AR) origin only
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,ARMA,12,oos_r2,0.09318912250347522,forecasts/forecasts_UNRATE.csv,n_common=677
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,MSAR,12,oos_r2,-0.958598601540922,forecasts/forecasts_UNRATE.csv,n_common=681
+A2 UNRATE OOS R2 vs AR excluding failed,UNRATE,STAR,12,oos_r2,-4.1997257587958436e+18,forecasts/forecasts_UNRATE.csv,n_common=692
+A3 COVID-window sensitivity,GDPC1,ARMA,1,oos_r2_all_dates,0.01446981992843388,forecasts/forecasts_GDPC1.csv,failed rows excluded
+A3 COVID-window sensitivity,GDPC1,ARMA,1,oos_r2_excluding_2020-01_to_2021-06,-0.0037757625971615028,forecasts/forecasts_GDPC1.csv,n_excluded=6
+A3 COVID-window sensitivity,GDPC1,ARMA,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,1.0648222147662965,forecasts/forecasts_GDPC1.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,GDPC1,MSAR,1,oos_r2_all_dates,0.2917372207149517,forecasts/forecasts_GDPC1.csv,failed rows excluded
+A3 COVID-window sensitivity,GDPC1,MSAR,1,oos_r2_excluding_2020-01_to_2021-06,-0.05140336203426599,forecasts/forecasts_GDPC1.csv,n_excluded=6
+A3 COVID-window sensitivity,GDPC1,MSAR,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,1.0437705491720495,forecasts/forecasts_GDPC1.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,INDPRO,ARMA,1,oos_r2_all_dates,0.19081502934464278,forecasts/forecasts_INDPRO.csv,failed rows excluded
+A3 COVID-window sensitivity,INDPRO,ARMA,1,oos_r2_excluding_2020-01_to_2021-06,-0.005468587380151213,forecasts/forecasts_INDPRO.csv,n_excluded=18
+A3 COVID-window sensitivity,INDPRO,ARMA,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,1.0105134721875082,forecasts/forecasts_INDPRO.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,INDPRO,MSAR,1,oos_r2_all_dates,0.2355276179610376,forecasts/forecasts_INDPRO.csv,failed rows excluded
+A3 COVID-window sensitivity,INDPRO,MSAR,1,oos_r2_excluding_2020-01_to_2021-06,0.021227491771252494,forecasts/forecasts_INDPRO.csv,n_excluded=18
+A3 COVID-window sensitivity,INDPRO,MSAR,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,0.9669371387861302,forecasts/forecasts_INDPRO.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,INDPRO,ARMA,3,oos_r2_all_dates,0.1990531816965998,forecasts/forecasts_INDPRO.csv,failed rows excluded
+A3 COVID-window sensitivity,INDPRO,ARMA,3,oos_r2_excluding_2020-01_to_2021-06,-0.01756327976761818,forecasts/forecasts_INDPRO.csv,n_excluded=18
+A3 COVID-window sensitivity,INDPRO,ARMA,3,share_of_squared_loss_difference_from_2020-01_to_2021-06,1.0349107426251591,forecasts/forecasts_INDPRO.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,INDPRO,MSAR,3,oos_r2_all_dates,0.16537396627324497,forecasts/forecasts_INDPRO.csv,failed rows excluded
+A3 COVID-window sensitivity,INDPRO,MSAR,3,oos_r2_excluding_2020-01_to_2021-06,0.014155481362802536,forecasts/forecasts_INDPRO.csv,n_excluded=18
+A3 COVID-window sensitivity,INDPRO,MSAR,3,share_of_squared_loss_difference_from_2020-01_to_2021-06,0.9661327376829582,forecasts/forecasts_INDPRO.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,UNRATE,ARMA,1,oos_r2_all_dates,0.23656601778120268,forecasts/forecasts_UNRATE.csv,failed rows excluded
+A3 COVID-window sensitivity,UNRATE,ARMA,1,oos_r2_excluding_2020-01_to_2021-06,-0.0507761886296374,forecasts/forecasts_UNRATE.csv,n_excluded=17
+A3 COVID-window sensitivity,UNRATE,ARMA,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,1.019295102027112,forecasts/forecasts_UNRATE.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,UNRATE,MSAR,1,oos_r2_all_dates,0.190169953559716,forecasts/forecasts_UNRATE.csv,failed rows excluded
+A3 COVID-window sensitivity,UNRATE,MSAR,1,oos_r2_excluding_2020-01_to_2021-06,-0.0009451564117630706,forecasts/forecasts_UNRATE.csv,n_excluded=16
+A3 COVID-window sensitivity,UNRATE,MSAR,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,1.0004620567060631,forecasts/forecasts_UNRATE.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,CPIAUCSL,ARMA,1,oos_r2_all_dates,-0.07447933055769385,forecasts/forecasts_CPIAUCSL.csv,failed rows excluded
+A3 COVID-window sensitivity,CPIAUCSL,ARMA,1,oos_r2_excluding_2020-01_to_2021-06,-0.0735097553530768,forecasts/forecasts_CPIAUCSL.csv,n_excluded=18
+A3 COVID-window sensitivity,CPIAUCSL,ARMA,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,0.04633826204370226,forecasts/forecasts_CPIAUCSL.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,CPIAUCSL,MSAR,1,oos_r2_all_dates,0.0003438435633907888,forecasts/forecasts_CPIAUCSL.csv,failed rows excluded
+A3 COVID-window sensitivity,CPIAUCSL,MSAR,1,oos_r2_excluding_2020-01_to_2021-06,0.00035593270516565134,forecasts/forecasts_CPIAUCSL.csv,n_excluded=18
+A3 COVID-window sensitivity,CPIAUCSL,MSAR,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,-0.00021218732992100183,forecasts/forecasts_CPIAUCSL.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,CPIAUCSL,ARMA,12,oos_r2_all_dates,-0.07283290649637553,forecasts/forecasts_CPIAUCSL.csv,failed rows excluded
+A3 COVID-window sensitivity,CPIAUCSL,ARMA,12,oos_r2_excluding_2020-01_to_2021-06,-0.07567631213693171,forecasts/forecasts_CPIAUCSL.csv,n_excluded=18
+A3 COVID-window sensitivity,CPIAUCSL,ARMA,12,share_of_squared_loss_difference_from_2020-01_to_2021-06,-0.0005014569079104471,forecasts/forecasts_CPIAUCSL.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,CPIAUCSL,MSAR,12,oos_r2_all_dates,0.042242856933071615,forecasts/forecasts_CPIAUCSL.csv,failed rows excluded
+A3 COVID-window sensitivity,CPIAUCSL,MSAR,12,oos_r2_excluding_2020-01_to_2021-06,0.04387008882426646,forecasts/forecasts_CPIAUCSL.csv,n_excluded=18
+A3 COVID-window sensitivity,CPIAUCSL,MSAR,12,share_of_squared_loss_difference_from_2020-01_to_2021-06,-1.469800177144005e-06,forecasts/forecasts_CPIAUCSL.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,M2SL,ARMA,1,oos_r2_all_dates,-0.002268843442269297,forecasts/forecasts_M2SL.csv,failed rows excluded
+A3 COVID-window sensitivity,M2SL,ARMA,1,oos_r2_excluding_2020-01_to_2021-06,-0.0006884781517773053,forecasts/forecasts_M2SL.csv,n_excluded=18
+A3 COVID-window sensitivity,M2SL,ARMA,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,0.8361259258754629,forecasts/forecasts_M2SL.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,M2SL,MSAR,1,oos_r2_all_dates,-0.019662548774649125,forecasts/forecasts_M2SL.csv,failed rows excluded
+A3 COVID-window sensitivity,M2SL,MSAR,1,oos_r2_excluding_2020-01_to_2021-06,-0.022324096371776347,forecasts/forecasts_M2SL.csv,n_excluded=18
+A3 COVID-window sensitivity,M2SL,MSAR,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,0.3868613504517734,forecasts/forecasts_M2SL.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,FEDFUNDS,ARMA,1,oos_r2_all_dates,2.6037904062414796e-05,forecasts/forecasts_FEDFUNDS.csv,failed rows excluded
+A3 COVID-window sensitivity,FEDFUNDS,ARMA,1,oos_r2_excluding_2020-01_to_2021-06,3.78974049962677e-05,forecasts/forecasts_FEDFUNDS.csv,n_excluded=17
+A3 COVID-window sensitivity,FEDFUNDS,ARMA,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,-0.4443014907825358,forecasts/forecasts_FEDFUNDS.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A3 COVID-window sensitivity,FEDFUNDS,MSAR,1,oos_r2_all_dates,-0.019374011053108653,forecasts/forecasts_FEDFUNDS.csv,failed rows excluded
+A3 COVID-window sensitivity,FEDFUNDS,MSAR,1,oos_r2_excluding_2020-01_to_2021-06,-0.02007438312990284,forecasts/forecasts_FEDFUNDS.csv,n_excluded=18
+A3 COVID-window sensitivity,FEDFUNDS,MSAR,1,share_of_squared_loss_difference_from_2020-01_to_2021-06,-0.028225101174689373,forecasts/forecasts_FEDFUNDS.csv,negative loss difference = competitor better; share near 1 means the window drives the total
+A4 STAR HLZ p-value clustering,all,STAR pairs,all,"n_p_in_[0.30,0.34]",51,forecast_tests/T3.3A_hlz_pairwise.csv,of 88 available STAR-pair tests
+A5 T3.3A sign check,GDPC1,AR vs ARMA,1,mean(loss_AR - loss_ARMA) from forecasts,0.40406957583653635,forecasts/forecasts_GDPC1.csv,"equals T3.3A mean_loss_differential (+0.404), i.e. loss(model_a) - loss(model_b)"
+A6 MCS failure reproduction,CPIAUCSL,AR+ARMA+MSAR+STAR,1,outcome_90pct_squared,failed: IndexError('arrays used as indices must be of integer or boolean type'),forecasts/forecasts_CPIAUCSL.csv,cause diagnosis only; dropping STAR is NOT the approved model set
+A6 MCS failure reproduction,CPIAUCSL,AR+ARMA+MSAR,1,outcome_90pct_squared,"ran; included=AR,ARMA,MSAR",forecasts/forecasts_CPIAUCSL.csv,cause diagnosis only; dropping STAR is NOT the approved model set
+A7 K=3 nests K=2 check,CPIAUCSL,MSAR3-MSAR,in-sample,loglik_k3_minus_k2,45.05320194005253,robustness/T4.3_regime_count.csv,
+A7 K=3 nests K=2 check,FEDFUNDS,MSAR3-MSAR,in-sample,loglik_k3_minus_k2,265.4831964201866,robustness/T4.3_regime_count.csv,
+A7 K=3 nests K=2 check,GDPC1,MSAR3-MSAR,in-sample,loglik_k3_minus_k2,29.568421622694018,robustness/T4.3_regime_count.csv,
+A7 K=3 nests K=2 check,INDPRO,MSAR3-MSAR,in-sample,loglik_k3_minus_k2,50.83011158881163,robustness/T4.3_regime_count.csv,
+A7 K=3 nests K=2 check,M2SL,MSAR3-MSAR,in-sample,loglik_k3_minus_k2,52.12741729498657,robustness/T4.3_regime_count.csv,
+A7 K=3 nests K=2 check,UNRATE,MSAR3-MSAR,in-sample,loglik_k3_minus_k2,-88.15624942481847,robustness/T4.3_regime_count.csv,negative is impossible at a global maximum because K=3 nests K=2
