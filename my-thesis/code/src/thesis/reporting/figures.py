@@ -303,8 +303,14 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
         shade_recessions(diagnostic, usrec)
         diagnostic.plot(actual.index, actual.to_numpy(), color=ACTUAL_COLOUR,
                         linewidth=1.0, label="actual")
+        from ..correction.flags import ACTIVE as _flags
         for model, series in flagged.items():
-            _, marker = MODEL_STYLES.get(model, ("-", "o"))
+            style, marker = MODEL_STYLES.get(model, ("-", "o"))
+            if not _flags.f1_failed_forecast_masking:      # legacy (validation only)
+                diagnostic.plot(series.index, series.to_numpy(),
+                                color=MODEL_COLOURS.get(model, "#888"), linestyle=style,
+                                linewidth=1.1, label=f"{model} (flagged)")
+                continue
             # Flagged forecasts are isolated dates, so they are drawn as markers: a line
             # would join non-adjacent dates and suggest a path that never existed (R1-06).
             diagnostic.plot(series.index, series.to_numpy(),

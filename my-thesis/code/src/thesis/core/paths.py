@@ -46,6 +46,7 @@ class Namespace(str, Enum):
     BASELINE = "baseline"
     SMOKE = "smoke"
     REFRESH = "refresh"
+    CORRECTION = "correction"     # Part 8 R1 correction workflow (never a fresh estimation run)
 
 
 @dataclass(frozen=True)

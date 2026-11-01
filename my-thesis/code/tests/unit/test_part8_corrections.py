@@ -259,8 +259,9 @@ class TestPairwiseSignConvention:
         import inspect
         from thesis import pipeline
         source = inspect.getsource(pipeline.Pipeline.evaluation_stage)
-        assert "loss_differential(errors[model_b], errors[model_a], loss_kind)" in source
-        assert "errors[model_b], errors[model_a], horizon, loss_kind" in source
+        assert "competitor, reference = ((model_b, model_a) if oriented" in source
+        assert "loss_differential(errors[competitor], errors[reference]" in source
+        assert "errors[competitor], errors[reference], horizon, loss_kind" in source
 
 
 # --------------------------------------------------------------------------- F4 ----

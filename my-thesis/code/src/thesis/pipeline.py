@@ -40,6 +40,7 @@ from .evaluation.dm_hln import agrees_with, dm_hln_test
 from .evaluation.hlz import HLZSettings, hlz_test
 from .evaluation.losses import ABSOLUTE, SIGN_CONVENTION, SQUARED, loss_differential
 from .evaluation.scoring import FAILED_RAW_FORECAST, mask_failed
+from .correction.flags import ACTIVE as CORRECTIONS
 from .evaluation.mcs import model_confidence_set
 from .evaluation.state_loss_regression import state_loss_regression
 from .forecasting.parallel import ChainJob, run_chains
@@ -192,7 +193,7 @@ class Pipeline:
             # Correction F1: a failed fit's finite forecast is kept for diagnosis
             # (`failed_raw_forecast`) but never scored. Done here, after the chain has
             # returned, so the estimation code and the fit cache are untouched.
-            chain.forecasts = mask_failed(chain.forecasts)
+            chain.forecasts = mask_failed(chain.forecasts)   # no-op when F1 is off
         return results
 
     def _job(self, series_id: str, model_or_spec, horizons: Sequence[int],
@@ -485,8 +486,9 @@ class Pipeline:
                     decision = confirm_on_full_sample(decision, level, frequency, self.config)
                     # Correction F4: Zivot-Andrews on both levels, reported (§3.2, P-02)
                     # without changing the §3.4 decision taken above.
-                    za_added = report_zivot_andrews(decision, initial, level, frequency,
-                                                    self.config)
+                    za_added = (report_zivot_andrews(decision, initial, level, frequency,
+                                                     self.config)
+                                if CORRECTIONS.f4_zivot_andrews_reporting else [])
                     self.decisions[series_id] = decision
                     results.extend(decision.initial_window_results)
                     results.extend(decision.full_sample_results)
@@ -538,7 +540,9 @@ class Pipeline:
                         self.panels[frequency][series_id].dropna(), self.targets[series_id],
                         usrec, series_id=series_id, level_units=entry.units,
                         transformed_units=self._units(series_id), break_date=break_date,
-                        imputed_dates=imputed, za_breaks=za_breaks or None),
+                        imputed_dates=imputed,
+                        za_breaks=(za_breaks or None)
+                        if CORRECTIONS.f4_zivot_andrews_reporting else None),
                     self.layout.figures, f"F2.1_{series_id}", stage,
                     {"figure_id": "F2.1", "series": series_id})
         self.checkpoints.record("stationarity_decisions", {"targets": sorted(self.targets)},
@@ -556,7 +560,8 @@ class Pipeline:
         for row in getattr(self, "_dictionary_rows", []):
             row = dict(row)
             decision = self.decisions.get(row["target"])
-            if decision is not None and row["target"] in self.targets:
+            if (CORRECTIONS.f71_data_dictionary_decision and decision is not None
+                    and row["target"] in self.targets):
                 target = self.targets[row["target"]]
                 label = ("level (no transformation)" if decision.decision == "level"
                          else "first difference")
@@ -1089,17 +1094,22 @@ class Pipeline:
                             # exactly as SIGN_CONVENTION states. Two-sided inference is
                             # unchanged by the orientation; the statistic's sign and the
                             # one-sided p-values now match the stated convention.
-                            d = loss_differential(errors[model_b], errors[model_a], loss_kind)
+                            oriented = CORRECTIONS.f3_pairwise_orientation
+                            competitor, reference = ((model_b, model_a) if oriented
+                                                     else (model_a, model_b))
+                            d = loss_differential(errors[competitor], errors[reference],
+                                                  loss_kind)
                             d = d[np.isfinite(d)]
                             numeric, hlz_result = hlz_test(
                                 d, settings, series=series_id, model_a=model_a, model_b=model_b)
                             dm_result = dm_hln_test(
-                                errors[model_b], errors[model_a], horizon, loss_kind,
+                                errors[competitor], errors[reference], horizon, loss_kind,
                                 series=series_id, model_a=model_a, model_b=model_b)
                             common = {
                                 "series": series_id, "horizon": horizon, "loss": loss_kind,
                                 "model_a": model_a, "model_b": model_b,
-                                "benchmark": model_a, "competitor": model_b,
+                                **({"benchmark": model_a, "competitor": model_b}
+                                   if oriented else {}),
                                 "sign_convention": SIGN_CONVENTION,
                                 "n_common": aligned.n_common,
                                 "n_removed_a": aligned.removed.get("left", 0),
@@ -1292,8 +1302,9 @@ class Pipeline:
                         # Failed fits are unscored (F1); the diagnostic panel shows their
                         # preserved raw forecast so the failure stays visible.
                         failed_fit = indexed["status"] == Status.FAILED.value
-                        shown = indexed["forecast"].where(
+                        shown = (indexed["forecast"].where(
                             ~failed_fit, indexed.get(FAILED_RAW_FORECAST, indexed["forecast"]))
+                            if CORRECTIONS.f1_failed_forecast_masking else indexed["forecast"])
                         bad = shown[failed_fit | indexed["reason_codes"].str.contains(
                             "EXTREME_FORECAST", na=False)]
                         if not bad.empty:
@@ -1435,9 +1446,23 @@ class Pipeline:
         applies = [s for s in self.config.get("robustness.transformation.applies_to")
                    if s in self.targets]
         for series_id in applies:
+            produced = self._t41_series(series_id, benchmark)
+            if produced is None:
+                continue
+            rows.extend(produced[0])
+            tests.extend(produced[1])
+        self._write(pd.DataFrame(rows), self.layout.robustness,
+                    "T4.1_transformation_robustness.csv", stage)
+        self._write(pd.DataFrame(tests), self.layout.robustness,
+                    "T4.1_transformation_predictive_tests.csv", stage)
+
+    def _t41_series(self, series_id: str, benchmark: str) -> tuple[list, list] | None:
+        """T4.1 rows and tests for one rate series (None when the rule did not apply)."""
+        rows, tests = [], []
+        if True:
             inputs = self._t41_inputs(series_id)
             if inputs is None:
-                continue
+                return None
             frequency = inputs["frequency"]
             level = inputs["level"]
             baseline_kind = inputs["baseline_kind"]
@@ -1487,10 +1512,7 @@ class Pipeline:
                             "n": int(np.isfinite(error).sum()),
                             "rmse": metrics.rmse(error), "mae": metrics.mae(error),
                         })
-        self._write(pd.DataFrame(rows), self.layout.robustness,
-                    "T4.1_transformation_robustness.csv", stage)
-        self._write(pd.DataFrame(tests), self.layout.robustness,
-                    "T4.1_transformation_predictive_tests.csv", stage)
+        return rows, tests
 
     def _t41_inputs(self, series_id: str) -> dict[str, Any] | None:
         """The T4.1 alternative-transformation chains for one rate series."""
@@ -1791,7 +1813,21 @@ class Pipeline:
         var_frame = pd.DataFrame(records)
         self._write(var_frame, self.layout.robustness, "T4.5_var_forecasts.csv", stage)
 
-        for name in panel.columns:
+        rows, tests = self._t45_compare(var_frame, list(panel.columns), best_order,
+                                        require_stability, unstable, attempted, horizon,
+                                        benchmark)
+        self._write(pd.DataFrame(selection_rows), self.layout.robustness,
+                    "T4.5_var_selection.csv", stage)
+        self._write(pd.DataFrame(rows), self.layout.robustness, "T4.5_var_comparison.csv", stage)
+        self._write(pd.DataFrame(tests), self.layout.robustness,
+                    "T4.5_var_predictive_tests.csv", stage)
+
+    def _t45_compare(self, var_frame: pd.DataFrame, names: list[str], best_order: int,
+                     require_stability: bool, unstable: int, attempted: int, horizon: int,
+                     benchmark: str) -> tuple[list, list]:
+        """T4.5 comparison of the VAR forecasts with the univariate horse race."""
+        rows, tests = [], []
+        for name in names:
             if name not in self.forecasts:
                 continue
             univariate = self._horse_race(name, horizon)
@@ -1827,12 +1863,7 @@ class Pipeline:
                     if row["rank_with_var"] and row["rank_univariate_only"] else None)
             rows.extend(accuracy)
             tests.extend(self._predictive_rows(restricted, benchmark, name, horizon, extra))
-
-        self._write(pd.DataFrame(selection_rows), self.layout.robustness,
-                    "T4.5_var_selection.csv", stage)
-        self._write(pd.DataFrame(rows), self.layout.robustness, "T4.5_var_comparison.csv", stage)
-        self._write(pd.DataFrame(tests), self.layout.robustness,
-                    "T4.5_var_predictive_tests.csv", stage)
+        return rows, tests
 
     def _t46_arma_garch(self, stage: StageOutputs) -> None:
         """T4.6: the conditional-variance diagnostic, triggered by the initial-window ARCH-LM.
@@ -1996,11 +2027,39 @@ class Pipeline:
         calendar implied by the longest window.
         """
         settings = self.config.require("robustness.window_lengths")
+        comparison_rows, test_rows, audit_rows, mcs_rows = [], [], [], []
+        for series_id in self._selected_targets():
+            produced = self._t48_series(series_id, stage, benchmark)
+            if produced is None:
+                continue
+            for target, part in zip((comparison_rows, test_rows, audit_rows, mcs_rows), produced):
+                target.extend(part)
+
+        outputs = settings["outputs"]
+        self._write(pd.DataFrame(comparison_rows), self.layout.robustness,
+                    str(outputs["comparison"]), stage)
+        self._write(pd.DataFrame(test_rows), self.layout.robustness,
+                    str(outputs["predictive_tests"]), stage)
+        self._write(pd.DataFrame(audit_rows), self.layout.robustness,
+                    str(outputs["origin_audit"]), stage)
+        self._write(pd.DataFrame(mcs_rows), self.layout.robustness,
+                    "window_length_mcs.csv", stage)
+
+    def _t48_series(self, series_id: str, stage: StageOutputs, benchmark: str,
+                    lengths_to_score: Sequence[int] | None = None, make_figure: bool = True):
+        """T4.8 for one target: (comparison, tests, audit, mcs) rows, or None.
+
+        `lengths_to_score` restricts which window lengths are scored (the baseline length
+        is always included, because every other length is classified against it); the
+        R1 correction workflow uses it when only the baseline-length forecasts are
+        available for a target. The pipeline itself always scores every length.
+        """
+        settings = self.config.require("robustness.window_lengths")
         models = [str(m) for m in settings["models"]]
         comparison_rows, test_rows, audit_rows, mcs_rows = [], [], [], []
         confidences = [float(c) for c in self.config.get("evaluation.mcs.confidence_levels")]
 
-        for series_id in self._selected_targets():
+        if True:
             frequency = self.frequency[series_id]
             target = self.targets[series_id]
             horizon = int(settings["horizon"])
@@ -2009,15 +2068,19 @@ class Pipeline:
             index = pd.DatetimeIndex(target.index)
             usable = [length for length in lengths if len(index) > length + horizon]
             if not usable:
-                continue
+                return None
             calendar = common_calendar(index, usable, horizon)
             coverage = describe_coverage(index, usable, horizon)
 
             batch, jobs = self._t48_jobs(series_id)
+            scored = (usable if lengths_to_score is None
+                      else [length for length in usable
+                            if length in set(lengths_to_score) | {baseline_length}])
+            jobs = [job for job in jobs if job.window_length in scored]
             chains = dict(self._chains(jobs, batch))
 
             per_length: dict[int, dict[str, pd.DataFrame]] = {}
-            for length in usable:
+            for length in scored:
                 frames: dict[str, pd.DataFrame] = {}
                 for model in models:
                     spec = self.specs[series_id][model]
@@ -2074,8 +2137,8 @@ class Pipeline:
             # shorter window would otherwise be classified "unavailable" purely because
             # of the order of the list.
             baseline_support: dict[tuple[str, str], tuple[float, bool]] = {}
-            ordered = ([baseline_length] if baseline_length in usable else []) + \
-                [length for length in usable if length != baseline_length]
+            ordered = ([baseline_length] if baseline_length in scored else []) + \
+                [length for length in scored if length != baseline_length]
             for length in ordered:
                 frames = {m: f for m, f in per_length[length].items() if not f.empty}
                 if benchmark not in frames:
@@ -2134,7 +2197,7 @@ class Pipeline:
                             mcs_rows.append(row)
 
             frame = pd.DataFrame([r for r in comparison_rows if r.get("series") == series_id])
-            if not frame.empty and "oos_r2_vs_benchmark" in frame.columns:
+            if make_figure and not frame.empty and "oos_r2_vs_benchmark" in frame.columns:
                 self._save_figure(
                     figures.window_length_sensitivity(frame, series_id=series_id,
                                                       baseline_length=baseline_length,
@@ -2142,16 +2205,7 @@ class Pipeline:
                     self.layout.figures, f"F4.8_{series_id}", stage,
                     {"figure_id": "F4.8", "series": series_id,
                      "baseline_window_length": baseline_length})
-
-        outputs = settings["outputs"]
-        self._write(pd.DataFrame(comparison_rows), self.layout.robustness,
-                    str(outputs["comparison"]), stage)
-        self._write(pd.DataFrame(test_rows), self.layout.robustness,
-                    str(outputs["predictive_tests"]), stage)
-        self._write(pd.DataFrame(audit_rows), self.layout.robustness,
-                    str(outputs["origin_audit"]), stage)
-        self._write(pd.DataFrame(mcs_rows), self.layout.robustness,
-                    "window_length_mcs.csv", stage)
+        return comparison_rows, test_rows, audit_rows, mcs_rows
 
     def _imputed_dates(self, series_id: str) -> list[pd.Timestamp]:
         frame = self.bundle.frame

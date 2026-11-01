@@ -60,6 +60,15 @@ class TransformationDecision:
                 "" if self.full_sample_agrees is None else self.full_sample_agrees
             ),
             "alternative_transformation_robustness_required": self.robustness_required,
+            **(self._za_columns() if self._za_reported() else {}),
+        }
+
+    def _za_reported(self) -> bool:
+        from ..correction.flags import ACTIVE
+        return ACTIVE.f4_zivot_andrews_reporting
+
+    def _za_columns(self) -> dict[str, Any]:
+        return {
             "za_initial_window_statistic": _za(self.za_initial_window, "statistic"),
             "za_initial_window_p_value": _za(self.za_initial_window, "p_value"),
             "za_initial_window_break_date": _za(self.za_initial_window, "break_date"),

@@ -78,6 +78,8 @@ class MCSResult:
     implementation_note: str = ""
 
     def to_rows(self) -> list[dict[str, Any]]:
+        from ..correction.flags import ACTIVE
+        provenance = ACTIVE.f2_guarded_mcs        # legacy tables had no such columns
         rows = []
         for model in sorted(set(self.included) | set(self.excluded) | set(self.p_values)):
             rows.append({
@@ -97,8 +99,8 @@ class MCSResult:
                 "bootstrap": "stationary",
                 "inference_available": self.available,
                 "unavailable_reason": self.unavailable_reason,
-                "mcs_implementation": self.implementation,
-                "mcs_implementation_note": self.implementation_note,
+                **({"mcs_implementation": self.implementation,
+                    "mcs_implementation_note": self.implementation_note} if provenance else {}),
             })
         if not rows:
             rows.append({
@@ -106,8 +108,8 @@ class MCSResult:
                 "confidence_level": self.confidence, "model": "", "in_mcs": False,
                 "mcs_p_value": float("nan"), "t_common": self.t_common,
                 "inference_available": False, "unavailable_reason": self.unavailable_reason,
-                "mcs_implementation": self.implementation,
-                "mcs_implementation_note": self.implementation_note,
+                **({"mcs_implementation": self.implementation,
+                    "mcs_implementation_note": self.implementation_note} if provenance else {}),
             })
         return rows
 
@@ -264,7 +266,9 @@ def model_confidence_set(
         p_values = procedure.pvalues
         result.p_values = {str(idx): float(row.iloc[0]) for idx, row in p_values.iterrows()}
         variances = getattr(procedure, "_variances", None)
-        if variances is not None and not np.isfinite(np.asarray(variances)).all():
+        from ..correction.flags import ACTIVE as _flags
+        if (_flags.f2_guarded_mcs and variances is not None
+                and not np.isfinite(np.asarray(variances)).all()):
             # arch completed, but on an overflowed variance its statistics are invalid.
             raise MCSNumericalError("arch bootstrap variance overflowed")
         result.available = True
@@ -272,6 +276,12 @@ def model_confidence_set(
     except Exception as exc:  # noqa: BLE001 - recorded, then the guarded implementation
         arch_error = f"{exc!r}"[:160]
         result.included, result.excluded, result.p_values = [], [], {}
+        from ..correction.flags import ACTIVE
+        if not ACTIVE.f2_guarded_mcs:
+            # Legacy behaviour (validation only): the cell is reported unavailable.
+            result.available = False
+            result.unavailable_reason = f"MCS procedure failed: {exc!r}"[:200]
+            return result
 
     try:
         p_values, included, excluded, diagnostics = hln_mcs_r(

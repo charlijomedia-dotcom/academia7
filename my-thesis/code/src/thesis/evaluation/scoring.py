@@ -41,11 +41,19 @@ def failed_rows(frame: pd.DataFrame) -> pd.Series:
 
 
 def scoreable(frame: pd.DataFrame) -> pd.Series:
-    """Rows that may enter any loss: finite forecast and actual, fit not failed."""
+    """Rows that may enter any loss: finite forecast and actual, fit not failed.
+
+    With correction F1 switched off (legacy validation only, `correction.flags`), the
+    original rule applies: every finite forecast is scored.
+    """
+    from ..correction.flags import ACTIVE
+
     forecast = pd.to_numeric(frame["forecast"], errors="coerce").to_numpy(dtype=float)
     actual = pd.to_numeric(frame["actual"], errors="coerce").to_numpy(dtype=float)
-    finite = np.isfinite(forecast) & np.isfinite(actual)
-    return pd.Series(finite, index=frame.index) & ~failed_rows(frame)
+    finite = pd.Series(np.isfinite(forecast) & np.isfinite(actual), index=frame.index)
+    if not ACTIVE.f1_failed_forecast_masking:
+        return finite
+    return finite & ~failed_rows(frame)
 
 
 def mask_failed(frame: pd.DataFrame) -> pd.DataFrame:
@@ -54,6 +62,10 @@ def mask_failed(frame: pd.DataFrame) -> pd.DataFrame:
     `forecast` and `error` become NaN on failed rows; the original forecast is preserved in
     `failed_raw_forecast`. Every other row is returned unchanged. Idempotent.
     """
+    from ..correction.flags import ACTIVE
+
+    if not ACTIVE.f1_failed_forecast_masking:
+        return frame
     out = frame.copy()
     if out.empty or "forecast" not in out.columns:
         if FAILED_RAW_FORECAST not in out.columns:
