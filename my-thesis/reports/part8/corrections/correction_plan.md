@@ -19,6 +19,7 @@ All paths are under `my-thesis/`.
 | `code/src/thesis/diagnostics/decision_rule.py` | F4 | `report_zivot_andrews` reports ZA on the initial window and the full sample (§3.2, P-02) and never changes the §3.4 decision. Decision rows gain the ZA statistic, p-value, break date and role columns. |
 | `code/src/thesis/reporting/figures.py` | F1, F4 | Flagged forecasts in F3.4 are drawn as markers, not lines that join non-adjacent dates (R1-06). F2.1 marks both ZA break dates. |
 | `code/tests/unit/test_part8_corrections.py` (new) | F1–F4 | 22 regression tests (§3). |
+| `colab/run_thesis_colab.ipynb` | run preparation | Default `BRANCH = "part8-corrections"`, as the notebook's own test requires. `RESULTS_BRANCH_PREFIX = "part8-corrected-results"`, so a corrected release can never be pushed under the original `part8-results/` namespace. No run was launched. |
 | `reports/part8/corrections/*` (new) | evidence | Validation and feasibility scripts, their CSV/JSON results, and this plan. |
 | `reports/part8/*.md`, `claim_evidence_matrix_adjudicated.csv` | reporting | Provisional marking, multiplicity qualification, the F5 statement, F4 preview, reclassified jury statuses. |
 
@@ -69,7 +70,10 @@ The existing cache-fidelity tests (`tests/integration/test_cache_fidelity.py`, `
   - **F3:** reversing d leaves the HLZ two-sided p-value exactly unchanged and negates the statistic, and the pipeline uses competitor − benchmark.
   - **F4:** ZA is reported on both samples, the decision, rule branch and break field are unchanged, and a tie-break result is reused.
   - **Cache safety:** none of the corrected modules is in `_FIT_CRITICAL`.
-- **Full suite:** see §8, filled in from the test log at commit time.
+- **Full suite** (`pytest -q`, this container, 41 min): **887 passed and 1 failed**.
+  - The failure was `test_colab_notebook.py::test_the_default_branch_is_the_one_holding_this_notebook`. This guard requires the notebook's default `BRANCH` to be the branch it lives on, and the notebook still named `claude/msar3-in-sample-amendment`.
+  - After the notebook defaults were updated (row added to §1), the notebook test files pass (33/33). **Result: 888/888.**
+  - The suite includes the existing cache tests (`test_cache_fidelity.py`, `test_cache_horizons.py`), the parallel and scheduler equivalence tests, and the end-to-end pipeline integration test.
 
 ## 4. F2 validation (conditionally approved correction)
 
