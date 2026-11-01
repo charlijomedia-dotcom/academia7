@@ -282,3 +282,78 @@ def test_cache_identity_is_stable_and_depends_on_the_namespace():
     first = colab.cache_identity(Path(sys.executable), CODE_ROOT)
     assert len(first) == 16 and first == colab.cache_identity(Path(sys.executable), CODE_ROOT)
     assert colab.cache_identity(Path(sys.executable), CODE_ROOT, "smoke") != first
+
+
+class TestCacheRecoveryAndAudit:
+    """Part 8 correction phase: restored fits are not re-uploaded, parts are bounded,
+    recovery never touches existing parts and is verified, Drive paths are cleaned."""
+
+    def _cache(self, root, n=7):
+        for i in range(n):
+            path = root / f"{i:02d}" / f"{i:064d}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps({"i": i}))
+        return root
+
+    def test_restored_fits_are_not_reuploaded_by_name(self, tmp_path):
+        source = self._cache(tmp_path / "vm1")
+        drive = tmp_path / "drive"
+        colab.IncrementalArchive(source, drive).sync()
+        fresh = tmp_path / "vm2"
+        colab.IncrementalArchive(fresh, drive).restore()
+        # the signature rule (outputs) sees every restored file as changed ...
+        assert len(colab.IncrementalArchive(fresh, drive).pending()) == 7
+        # ... the by-name rule (content-addressed cache) sees none
+        assert colab.IncrementalArchive(fresh, drive, by_name=True).pending() == {}
+
+    def test_parts_are_bounded_and_each_is_logged(self, tmp_path):
+        source = self._cache(tmp_path / "vm", n=5)
+        notes = []
+        archive = colab.IncrementalArchive(source, tmp_path / "drive", by_name=True,
+                                           max_files_per_part=2)
+        archive.sync(note=notes.append)
+        assert len(archive._parts()) == 3 and len(notes) == 3
+
+    def test_recovery_writes_a_new_folder_and_verifies(self, tmp_path):
+        drive = tmp_path / "drive"
+        identity = "abc"
+        early = self._cache(tmp_path / "early", n=3)
+        colab.IncrementalArchive(early, drive / "fit_cache" / identity).sync()
+        before = sorted((drive / "fit_cache" / identity).iterdir())
+        stamps = {p: p.stat().st_mtime_ns for p in before}
+        vm = self._cache(tmp_path / "vm", n=6)            # 3 already archived + 3 new
+        summary = colab.recover_local_cache(vm, drive, identity, stamp="T1")
+        assert summary["already_archived"] == 3 and summary["newly_archived"] == 3
+        assert summary["verified"] == 3 and summary["mismatched"] == []
+        assert sorted((drive / "fit_cache" / identity).iterdir()) == before
+        assert all(p.stat().st_mtime_ns == stamps[p] for p in before)   # untouched
+        folders = colab.archive_folders(drive, identity)
+        assert folders[-1] == drive / "fit_cache_recovered" / "T1" / identity
+        restored = tmp_path / "restored"
+        total = sum(colab.IncrementalArchive(restored, folders[0]).restore(folder=f)
+                    for f in folders)
+        assert total == 6 and len(list(restored.rglob("*.json"))) == 6
+        report = colab.audit_drive([tmp_path / "drive_root_missing"])
+        assert report[str(tmp_path / "drive_root_missing")]["exists"] is False
+
+    def test_audit_counts_unique_payloads_and_partial_leftovers(self, tmp_path):
+        root = tmp_path / "root"
+        base = root / "baseline"
+        vm = self._cache(tmp_path / "vm", n=4)
+        colab.IncrementalArchive(vm, base / "fit_cache" / "id1").sync()
+        (base / "fit_cache" / "id1" / "part-00002.tar.gz.partial").write_text("x")
+        (base / "backup.log").write_text("[14:39:00] backup: final sync complete\n")
+        report = colab.audit_drive([root])[str(root)]
+        assert report["unique_fit_payloads_by_identity"] == {"id1": 4}
+        assert report["fit_cache"]["id1"]["partial_leftovers"] == ["part-00002.tar.gz.partial"]
+        assert report["backup_log_tail"][-1].endswith("final sync complete")
+
+    @pytest.mark.parametrize("raw", ['"/content/drive/MyDrive/KillyPhD/X"',
+                                     " '/content/drive/MyDrive/KillyPhD/X/' ",
+                                     "/content/drive/MyDrive/KillyPhD/X"])
+    def test_drive_root_quotes_are_stripped(self, raw):
+        assert colab.clean_drive_root(raw) == "/content/drive/MyDrive/KillyPhD/X"
+
+    def test_relative_or_foreign_drive_roots_are_refused(self):
+        with pytest.raises(ValueError):
+            colab.clean_drive_root("MyDrive/thesis")

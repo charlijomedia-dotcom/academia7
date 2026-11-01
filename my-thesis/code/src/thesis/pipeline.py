@@ -444,8 +444,10 @@ class Pipeline:
                     "source_institution": self.bundle.source_manifest.entry(series_id).source_institution,
                     "frequency": frequency,
                 })
-            self._write(tables.data_dictionary_table(dictionary_rows),
-                        self.layout.data_audit, "T2.1_data_dictionary.csv", stage)
+            # Correction F7.1: T2.1 is written by the stationarity stage, once the §3.4
+            # decision has fixed the transformation of the two rate series; written here
+            # it showed "pending stationarity decision" in the published table.
+            self._dictionary_rows = dictionary_rows
 
             # F2.0 sample coverage
             spans = {sid: (self.panels[self.frequency[sid]][sid].dropna().index.min(),
@@ -503,6 +505,7 @@ class Pipeline:
 
             frame = stationarity.results_to_frame(results)
             self._write(frame, self.layout.diagnostics, "T2.2_stationarity.csv", stage)
+            self._write_data_dictionary(stage)
             # Written even when no target in this run uses the §3.4 rule, so the
             # artifact is always present and a reader can tell "the rule applied to
             # nothing here" from "the rule was never run". A smoke run on two growth
@@ -542,6 +545,28 @@ class Pipeline:
                                 {"decisions": {k: v.decision for k, v in self.decisions.items()}})
         self.stage_outputs.append(stage)
         return stage
+
+    def _write_data_dictionary(self, stage: StageOutputs) -> None:
+        """T2.1 with the approved transformation of every target (correction F7.1).
+
+        Growth targets are fixed by the configuration; the two rate series take the
+        transformation the §3.4 rule chose, with its rule branch and transformed dates.
+        """
+        rows = []
+        for row in getattr(self, "_dictionary_rows", []):
+            row = dict(row)
+            decision = self.decisions.get(row["target"])
+            if decision is not None and row["target"] in self.targets:
+                target = self.targets[row["target"]]
+                label = ("level (no transformation)" if decision.decision == "level"
+                         else "first difference")
+                row["transformation"] = (f"{label}; Part 5 §3.4 rule branch "
+                                         f"{decision.rule_branch}")
+                row["transformed_first_date"] = target.index.min().strftime("%Y-%m-%d")
+                row["transformed_last_date"] = target.index.max().strftime("%Y-%m-%d")
+            rows.append(row)
+        self._write(tables.data_dictionary_table(rows), self.layout.data_audit,
+                    "T2.1_data_dictionary.csv", stage)
 
     def _units(self, series_id: str) -> str:
         spec = self.config.get(f"targets.{series_id}")

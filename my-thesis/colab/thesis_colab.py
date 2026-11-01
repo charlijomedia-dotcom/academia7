@@ -184,20 +184,36 @@ class IncrementalArchive:
     being written (`*.tmp`) are skipped. `restore` extracts the parts in order.
     """
 
-    def __init__(self, source: Path, destination: Path, *, skip_suffixes=(".tmp",)):
+    def __init__(self, source: Path, destination: Path, *, skip_suffixes=(".tmp",),
+                 by_name: bool = False, also_known: Iterable[Path] = (),
+                 max_files_per_part: int | None = None):
+        """`by_name=True` is for content-addressed, write-once trees such as the fit cache:
+        a file already listed in any part is never uploaded again, whatever its mtime. A
+        restored file's mtime cannot match the one recorded at backup time (tar keeps
+        less precision than `st_mtime_ns`), so the signature test would re-upload the
+        whole restored cache in one huge part (Part 8 cache audit, 2 November 2026).
+        `also_known` adds other archive folders whose listings count as already backed up
+        (a recovery archive next to the original). `max_files_per_part` bounds each part,
+        so a sync is a series of small copies, each logged, rather than one large copy.
+        """
         self.source = Path(source)
         self.destination = Path(destination)
         self.skip_suffixes = tuple(skip_suffixes)
+        self.by_name = by_name
+        self.max_files_per_part = max_files_per_part
         self.known: dict[str, list[int]] = {}
+        for folder in also_known:
+            self._load_lists(Path(folder))
         self._load_lists()
 
-    def _parts(self) -> list[Path]:
-        if not self.destination.exists():
+    def _parts(self, folder: Path | None = None) -> list[Path]:
+        folder = self.destination if folder is None else folder
+        if not folder.exists():
             return []
-        return sorted(self.destination.glob("part-*.tar.gz"))
+        return sorted(folder.glob("part-*.tar.gz"))
 
-    def _load_lists(self) -> None:
-        for part in self._parts():
+    def _load_lists(self, folder: Path | None = None) -> None:
+        for part in self._parts(folder):
             listing = part.with_name(part.name.replace(".tar.gz", ".json"))
             if listing.exists():
                 self.known.update(json.loads(listing.read_text(encoding="utf-8")))
@@ -212,38 +228,58 @@ class IncrementalArchive:
             info = path.stat()
             relative = path.relative_to(self.source).as_posix()
             signature = [info.st_size, info.st_mtime_ns]
-            if self.known.get(relative) != signature:
+            if self.by_name:
+                if relative not in self.known:
+                    changed[relative] = signature
+            elif self.known.get(relative) != signature:
                 changed[relative] = signature
         return changed
 
-    def sync(self) -> Path | None:
+    def sync(self, note=None) -> Path | None:
+        """Write the pending files as one or more new parts; return the last part.
+
+        Existing parts are never modified. With `max_files_per_part`, the pending files
+        are written in bounded chunks, each copied and renamed before the next starts,
+        and `note` (if given) is called before and after every copy, so a stalled copy
+        is visible in the log instead of silent.
+        """
         changed = self.pending()
         if not changed:
             return None
         self.destination.mkdir(parents=True, exist_ok=True)
-        number = len(self._parts()) + 1
-        name = f"part-{number:05d}"
-        with tempfile.TemporaryDirectory() as scratch:
-            local = Path(scratch) / f"{name}.tar.gz"
-            with tarfile.open(local, "w:gz") as archive:
-                for relative in sorted(changed):
-                    archive.add(self.source / relative, arcname=relative)
-            target = self.destination / f"{name}.tar.gz"
-            shutil.copyfile(local, target.with_name(target.name + ".partial"))
-            os.replace(target.with_name(target.name + ".partial"), target)
-        listing = self.destination / f"{name}.json"
-        listing.with_name(listing.name + ".partial").write_text(json.dumps(changed),
-                                                                 encoding="utf-8")
-        os.replace(listing.with_name(listing.name + ".partial"), listing)
-        self.known.update(changed)
-        return target
+        names = sorted(changed)
+        size = self.max_files_per_part or len(names)
+        last = None
+        for start in range(0, len(names), size):
+            chunk = {name: changed[name] for name in names[start:start + size]}
+            number = len(self._parts()) + 1
+            name = f"part-{number:05d}"
+            if note is not None:
+                note(f"{self.source.name}: writing {name} ({len(chunk)} files; "
+                     f"{len(names) - start} pending)")
+            with tempfile.TemporaryDirectory() as scratch:
+                local = Path(scratch) / f"{name}.tar.gz"
+                with tarfile.open(local, "w:gz") as archive:
+                    for relative in sorted(chunk):
+                        archive.add(self.source / relative, arcname=relative)
+                target = self.destination / f"{name}.tar.gz"
+                shutil.copyfile(local, target.with_name(target.name + ".partial"))
+                os.replace(target.with_name(target.name + ".partial"), target)
+            listing = self.destination / f"{name}.json"
+            listing.with_name(listing.name + ".partial").write_text(json.dumps(chunk),
+                                                                     encoding="utf-8")
+            os.replace(listing.with_name(listing.name + ".partial"), listing)
+            self.known.update(chunk)
+            last = target
+        return last
 
-    def restore(self, target: Path | None = None) -> int:
+    def restore(self, target: Path | None = None, *, folder: Path | None = None) -> int:
+        """Extract every part of `folder` (default: the destination) into `target`."""
         target = Path(target) if target is not None else self.source
         target.mkdir(parents=True, exist_ok=True)
         count = 0
         root = target.resolve()
-        for part in self._parts():
+        for part in self._parts(folder):
             with tarfile.open(part, "r:gz") as archive:
                 members = archive.getmembers()
                 for member in members:
@@ -264,10 +300,23 @@ class IncrementalArchive:
 
 
 def backup_daemon(pid: int, pairs: list[tuple[Path, Path]], interval: float,
-                  log: Path | None = None) -> None:
+                  log: Path | None = None, *, by_name_pairs: list[tuple[Path, Path]] = (),
+                  also_known: Iterable[Path] = (), max_files_per_part: int | None = 2000
+                  ) -> None:
     """Sync every (source, destination) pair every `interval` seconds while `pid` lives,
-    then once more after it exits, so the last fits and outputs are not lost."""
-    archives = [IncrementalArchive(source, destination) for source, destination in pairs]
+    then once more after it exits, so the last fits and outputs are not lost.
+
+    `by_name_pairs` are content-addressed trees (the fit cache): archived by file name,
+    with `also_known` archive folders counted as already backed up. Every sync logs its
+    start, each part it writes and any failure, and a heartbeat line is written when a
+    sync finds nothing new, so the log shows the daemon is alive.
+    """
+    archives = [IncrementalArchive(source, destination, max_files_per_part=max_files_per_part)
+                for source, destination in pairs]
+    archives += [IncrementalArchive(source, destination, by_name=True,
+                                    also_known=also_known,
+                                    max_files_per_part=max_files_per_part)
+                 for source, destination in by_name_pairs]
 
     def note(message: str) -> None:
         line = f"[{time.strftime('%H:%M:%S', time.gmtime())}] backup: {message}"
@@ -279,13 +328,17 @@ def backup_daemon(pid: int, pairs: list[tuple[Path, Path]], interval: float,
     def sync_all() -> None:
         for archive in archives:
             try:
-                written = archive.sync()
+                written = archive.sync(note=note)
                 if written is not None:
-                    note(f"{archive.source.name}: wrote {written.name} "
-                         f"({written.stat().st_size / 1e6:.1f} MB)")
+                    note(f"{archive.source.name}: wrote up to {written.name} "
+                         f"({len(archive.known)} files known in total)")
+                else:
+                    note(f"{archive.source.name}: nothing new ({len(archive.known)} known)")
             except Exception as exc:                     # a backup never stops the run
                 note(f"{archive.source} failed: {exc!r}")
 
+    note(f"daemon started for pid {pid}; interval {interval:.0f} s; "
+         f"{sum(len(a.known) for a in archives)} files already archived")
     while process_alive(pid):
         deadline = time.time() + interval
         while time.time() < deadline and process_alive(pid):
@@ -293,6 +346,141 @@ def backup_daemon(pid: int, pairs: list[tuple[Path, Path]], interval: float,
         sync_all()
     sync_all()
     note("final sync complete")
+
+
+# -- 4b. cache audit and recovery (Part 8 correction phase) -----------------------------
+
+def clean_drive_root(value: str) -> str:
+    """A Drive folder typed into a Colab form, without stray quotes or whitespace.
+
+    A form field pasted as `"/content/drive/..."` would otherwise carry the quotation marks
+    into the path and silently create a new folder. Only absolute paths under
+    /content/drive are accepted.
+    """
+    text = str(value).strip().strip('"').strip("'").strip()
+    if not text.startswith("/content/drive/"):
+        raise ValueError(f"DRIVE_ROOT must be an absolute path under /content/drive/: {value!r}")
+    return text.rstrip("/")
+
+
+def archive_folders(drive: Path, identity: str) -> list[Path]:
+    """Every archive folder holding fits for `identity`: the main one, then recoveries."""
+    folders = [drive / "fit_cache" / identity]
+    recovered = drive / "fit_cache_recovered"
+    if recovered.exists():
+        folders += sorted(p / identity for p in recovered.iterdir() if (p / identity).is_dir())
+    return folders
+
+
+def archive_summary(folder: Path) -> dict:
+    """Read-only summary of one archive folder: parts, listed files, times, leftovers."""
+    parts = sorted(folder.glob("part-*.tar.gz")) if folder.exists() else []
+    names: set[str] = set()
+    missing_lists = []
+    for part in parts:
+        listing = part.with_name(part.name.replace(".tar.gz", ".json"))
+        if listing.exists():
+            names.update(json.loads(listing.read_text(encoding="utf-8")))
+        else:
+            missing_lists.append(part.name)
+    stamps = [p.stat().st_mtime for p in parts]
+    return {
+        "folder": str(folder),
+        "parts": len(parts),
+        "unique_files_listed": len(names),
+        "first_part_utc": (time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(min(stamps)))
+                           if stamps else None),
+        "last_part_utc": (time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(max(stamps)))
+                          if stamps else None),
+        "parts_without_listing": missing_lists,
+        "partial_leftovers": sorted(p.name for p in folder.glob("*.partial"))
+        if folder.exists() else [],
+        "bytes": sum(p.stat().st_size for p in parts),
+    }
+
+
+def audit_drive(roots: Iterable[Path], namespace: str = "baseline") -> dict:
+    """Read-only inventory of candidate Drive backup roots (nothing is written).
+
+    For each root: every fit-cache identity with its part count, unique listed files,
+    part time range and any `.partial` leftover (an interrupted copy); recovered
+    archives; the last lines of `backup.log`; the run folders under `results/`; and the
+    output-increment folders. Together these say which session backed up what, and
+    when, and the union of listed names is the number of unique fit payloads that can be
+    restored.
+    """
+    report = {}
+    for root in roots:
+        base = Path(root) / namespace
+        entry: dict = {"exists": base.exists()}
+        if base.exists():
+            caches = {}
+            union: set[str] = set()
+            for folder in sorted((base / "fit_cache").glob("*")) if (base / "fit_cache").exists() else []:
+                caches[folder.name] = archive_summary(folder)
+            recovered = base / "fit_cache_recovered"
+            recoveries = {}
+            if recovered.exists():
+                for stamp in sorted(recovered.iterdir()):
+                    for folder in sorted(stamp.glob("*")):
+                        recoveries[f"{stamp.name}/{folder.name}"] = archive_summary(folder)
+            for identity in {c for c in caches} | {k.split("/")[1] for k in recoveries}:
+                for folder in archive_folders(base, identity):
+                    for part in sorted(folder.glob("part-*.tar.gz")):
+                        listing = part.with_name(part.name.replace(".tar.gz", ".json"))
+                        if listing.exists():
+                            union.update(f"{identity}:{n}" for n in
+                                         json.loads(listing.read_text(encoding="utf-8")))
+            log = base / "backup.log"
+            entry.update(
+                fit_cache=caches, fit_cache_recovered=recoveries,
+                unique_fit_payloads_by_identity={
+                    identity: sum(1 for n in union if n.startswith(identity + ":"))
+                    for identity in {n.split(":", 1)[0] for n in union}},
+                backup_log_tail=(log.read_text(encoding="utf-8").splitlines()[-15:]
+                                 if log.exists() else None),
+                results_runs=sorted(p.name for p in (base / "results").glob("*"))
+                if (base / "results").exists() else [],
+                output_increments={p.name: archive_summary(p)
+                                   for p in sorted((base / "output_increments").glob("*"))}
+                if (base / "output_increments").exists() else {},
+            )
+        report[str(root)] = entry
+    return report
+
+
+def recover_local_cache(cache_dir: Path, drive: Path, identity: str, *,
+                        stamp: str | None = None, max_files_per_part: int = 2000) -> dict:
+    """Back up a VM's local fit cache to a NEW recovery folder, never touching old parts.
+
+    Only files not already listed in any existing archive folder for `identity` are
+    written, to `<drive>/fit_cache_recovered/<stamp>/<identity>/`. Each part is then read
+    back from Drive and every member's SHA-256 is compared with the local file, so the
+    recovery is verified rather than assumed. Returns a summary for the record.
+    """
+    stamp = stamp or time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    destination = drive / "fit_cache_recovered" / stamp / identity
+    existing = [f for f in archive_folders(drive, identity) if f != destination]
+    archive = IncrementalArchive(cache_dir, destination, by_name=True, also_known=existing,
+                                 max_files_per_part=max_files_per_part)
+    pending = archive.pending()
+    before = len(archive.known)
+    archive.sync()
+    verified, mismatched = 0, []
+    for part in archive._parts():
+        with tarfile.open(part, "r:gz") as tar:
+            for member in tar.getmembers():
+                if not member.isfile():
+                    continue
+                data = tar.extractfile(member).read()
+                local = (Path(cache_dir) / member.name).read_bytes()
+                if hashlib.sha256(data).digest() == hashlib.sha256(local).digest():
+                    verified += 1
+                else:
+                    mismatched.append(member.name)
+    return {"destination": str(destination), "already_archived": before,
+            "newly_archived": len(pending), "verified": verified, "mismatched": mismatched,
+            "local_files": sum(1 for p in Path(cache_dir).rglob("*.json"))}
 
 
 # -- 5. starting and watching the run ---------------------------------------------------
@@ -471,13 +659,30 @@ def main(argv: Iterable[str] | None = None) -> int:
     daemon.add_argument("--pid", type=int, required=True)
     daemon.add_argument("--interval", type=float, default=600.0)
     daemon.add_argument("--pair", nargs=2, action="append", metavar=("SOURCE", "DEST"),
-                        required=True)
+                        default=[])
+    daemon.add_argument("--pair-by-name", nargs=2, action="append", metavar=("SOURCE", "DEST"),
+                        default=[], help="content-addressed tree (the fit cache)")
+    daemon.add_argument("--also-known", action="append", type=Path, default=[],
+                        help="other archive folders whose files count as backed up")
+    daemon.add_argument("--max-files-per-part", type=int, default=2000)
     daemon.add_argument("--log", type=Path)
+    audit = sub.add_parser("audit-drive", help="read-only inventory of Drive backup roots")
+    audit.add_argument("roots", nargs="+", type=Path)
+    audit.add_argument("--json", type=Path)
     args = parser.parse_args(list(argv) if argv is not None else None)
     if args.command == "backup-daemon":
+        if not args.pair and not args.pair_by_name:
+            parser.error("give at least one --pair or --pair-by-name")
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
         backup_daemon(args.pid, [(Path(s), Path(d)) for s, d in args.pair], args.interval,
-                      args.log)
+                      args.log, by_name_pairs=[(Path(s), Path(d)) for s, d in args.pair_by_name],
+                      also_known=args.also_known, max_files_per_part=args.max_files_per_part)
+    elif args.command == "audit-drive":
+        report = audit_drive(args.roots)
+        text = json.dumps(report, indent=2, default=str)
+        print(text)
+        if args.json:
+            args.json.write_text(text, encoding="utf-8")
     return 0
 
 

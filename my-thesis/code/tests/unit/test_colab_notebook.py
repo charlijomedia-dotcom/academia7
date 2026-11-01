@@ -79,3 +79,21 @@ def test_files_it_writes_stay_outside_the_clone():
     assert 'WORK = "/content/work"' in code
     assert 'REPO = WORK_DIR / "academia7"' in code
     assert 'RUN_DIR = WORK_DIR / "run"' in code and 'VENV = WORK_DIR / "venv311"' in code
+
+
+def test_correction_release_defaults_are_safe():
+    """Part 8 correction phase: the known Drive root, a preflight that stops before the
+    run, a completeness gate, and a results prefix that cannot reach `part8-results/`."""
+    settings = _code()[0]
+    assert re.search(r'^DRIVE_ROOT = "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29"',
+                     settings, re.M)
+    assert re.search(r"^PREFLIGHT_ONLY = True\b", settings, re.M)
+    assert re.search(r"^ALLOW_PARTIAL_CACHE = False\b", settings, re.M)
+    assert re.search(r'^RESULTS_BRANCH_PREFIX = "part8-corrected-results"', settings, re.M)
+    code = "\n".join(_code())
+    assert "tools/cache_completeness.py" in code and "PREFLIGHT_ONLY" in code
+    assert "--pair-by-name" in code and "recover_local_cache" in code
+    assert ".strip('\"')" in code and "tc.clean_drive_root(DRIVE_ROOT)" in code
+    # the gate comes before the run is launched
+    joined = "\n".join(_code())
+    assert joined.index("raise SystemExit(\"PREFLIGHT_ONLY") < joined.index("launch_background(command")

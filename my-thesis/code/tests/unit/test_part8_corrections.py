@@ -301,3 +301,39 @@ def test_corrected_modules_are_not_part_of_the_fit_cache_identity():
                    "evaluation/metrics.py", "pipeline.py", "reporting/figures.py",
                    "diagnostics/decision_rule.py"):
         assert module not in critical
+
+
+# -------------------------------------------------------------------------- F7.1 ----
+
+def test_data_dictionary_reports_the_decided_transformation(tmp_path):
+    """T2.1 carries the §3.4 decision for the rate series instead of "pending"."""
+    from types import SimpleNamespace
+
+    from thesis.pipeline import Pipeline
+
+    written = {}
+    pipeline = Pipeline.__new__(Pipeline)
+    pipeline._dictionary_rows = [
+        {"target": "UNRATE", "transformation": "pending stationarity decision",
+         "transformed_first_date": "", "transformed_last_date": ""},
+        {"target": "FEDFUNDS", "transformation": "pending stationarity decision",
+         "transformed_first_date": "", "transformed_last_date": ""},
+        {"target": "CPIAUCSL", "transformation": "1200 x dlog",
+         "transformed_first_date": "1947-02-01", "transformed_last_date": "2026-08-01"},
+    ]
+    index = pd.date_range("1948-01-01", periods=12, freq="MS")
+    pipeline.targets = {"UNRATE": pd.Series(range(12), index=index),
+                        "FEDFUNDS": pd.Series(range(11), index=index[1:])}
+    pipeline.decisions = {
+        "UNRATE": SimpleNamespace(decision="level", rule_branch="1: clear level stationarity"),
+        "FEDFUNDS": SimpleNamespace(decision="difference", rule_branch="2: clear nonstationarity"),
+    }
+    pipeline.layout = SimpleNamespace(data_audit=tmp_path)
+    pipeline._write = lambda frame, directory, name, stage: written.update({name: frame})
+    pipeline._write_data_dictionary(stage=None)
+    table = written["T2.1_data_dictionary.csv"].set_index("target")
+    assert "pending" not in " ".join(table["transformation"])
+    assert table.loc["UNRATE", "transformation"].startswith("level")
+    assert table.loc["FEDFUNDS", "transformation"].startswith("first difference")
+    assert table.loc["FEDFUNDS", "transformed_first_date"] == "1948-02-01"
+    assert table.loc["CPIAUCSL", "transformation"] == "1200 x dlog"
