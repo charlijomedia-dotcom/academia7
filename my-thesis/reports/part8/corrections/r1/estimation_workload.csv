@@ -1,0 +1,21 @@
+exercise,task_id,series,model,variant,origins,mean_seconds_per_fit,cpu_hours,warm_started,platform_sensitivity,tier
+T4.2,T4.2:CPIAUCSL|AR(p=1),CPIAUCSL,AR,baseline (240),715,0.0011169230833448782,0.00022183333460877445,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.2,T4.2:CPIAUCSL|AR(p=3),CPIAUCSL,AR,baseline (240),715,0.0011169230833448782,0.00022183333460877445,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.2,T4.2:CPIAUCSL|AR(p=6),CPIAUCSL,AR,baseline (240),715,0.0011169230833448782,0.00022183333460877445,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.2,T4.2:CPIAUCSL|AR(p=12),CPIAUCSL,AR,baseline (240),715,0.0011169230833448782,0.00022183333460877445,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.1,T4.1:UNRATE|AR,UNRATE,AR,alternative transformation,703,0.0010770398323948235,0.00021032194504821137,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.1,T4.1:UNRATE|ARMA,UNRATE,ARMA,alternative transformation,703,27.57165179876276,5.384130892925061,False,"low (numerical optimiser, no warm start)",B
+T4.1,T4.1:UNRATE|MSAR,UNRATE,MSAR,alternative transformation,703,64.41333467191093,12.57849285398705,True,"high (EM/BFGS multistart, warm-started chain; F6)",B
+T4.1,T4.1:UNRATE|STAR,UNRATE,STAR,alternative transformation,703,1.8915186082714905,0.3693715504485716,True,"moderate (nonlinear optimiser, warm-started chain)",B
+T4.1,T4.1:FEDFUNDS|AR,FEDFUNDS,AR,alternative transformation,626,0.000834060787976689,0.0001450339036870576,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.1,T4.1:FEDFUNDS|ARMA,FEDFUNDS,ARMA,alternative transformation,626,0.1732112690210949,0.030119515113112613,False,"low (numerical optimiser, no warm start)",B
+T4.1,T4.1:FEDFUNDS|MSAR,FEDFUNDS,MSAR,alternative transformation,626,11.578629392559433,2.01339499992839,True,"high (EM/BFGS multistart, warm-started chain; F6)",B
+T4.1,T4.1:FEDFUNDS|STAR,FEDFUNDS,STAR,alternative transformation,626,1.4796756410397252,0.2572991531363522,True,"moderate (nonlinear optimiser, warm-started chain)",B
+T4.8,T4.8:UNRATE|180:AR,UNRATE,AR,window 180,764,0.0010770398323948235,0.0002285717866526792,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.8,T4.8:UNRATE|180:ARMA,UNRATE,ARMA,window 180,764,27.57165179876276,5.851317215070763,False,"low (numerical optimiser, no warm start)",B
+T4.8,T4.8:UNRATE|180:MSAR,UNRATE,MSAR,window 180,764,64.41333467191093,13.669941024816653,True,"high (EM/BFGS multistart, warm-started chain; F6)",B
+T4.8,T4.8:UNRATE|180:STAR,UNRATE,STAR,window 180,764,1.8915186082714905,0.40142228242206074,True,"moderate (nonlinear optimiser, warm-started chain)",B
+T4.8,T4.8:UNRATE|300:AR,UNRATE,AR,window 300,644,0.0010770398323948235,0.0001926704589061851,False,none observed (closed form; re-estimated T4.2 reproduces published to 1e-14),A (cheap)
+T4.8,T4.8:UNRATE|300:ARMA,UNRATE,ARMA,window 300,644,27.57165179876276,4.932262155112005,False,"low (numerical optimiser, no warm start)",B
+T4.8,T4.8:UNRATE|300:MSAR,UNRATE,MSAR,window 300,644,64.41333467191093,11.522829869086289,True,"high (EM/BFGS multistart, warm-started chain; F6)",B
+T4.8,T4.8:UNRATE|300:STAR,UNRATE,STAR,window 300,644,1.8915186082714905,0.3383716621463444,True,"moderate (nonlinear optimiser, warm-started chain)",B
