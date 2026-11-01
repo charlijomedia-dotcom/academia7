@@ -156,3 +156,12 @@ None of these changes touches the fit-cache identity. The notebook, `thesis_cola
 2. **Re-estimated rolling fits**, under R1 or R2, can differ for the same reason.
 3. **ARMA-GARCH and the VAR** are re-estimated; they are cheap but not cached. Their numerical identity must likewise be shown by comparison, not assumed.
 4. **Deterministic re-scoring** (HLZ critical values, MCS bootstrap, state regressions) uses fixed seeds and is expected to be identical. The comparison will show it.
+
+## 7. Tests at the pre-execution head
+
+The full suite passes: **900 passed, 0 failed** (36 min, this container). It includes:
+
+- the new completeness-walker tests;
+- the recovery, by-name backup, Drive-path and notebook-gate tests;
+- the F7.1 test;
+- all earlier correction and cache-fidelity tests.
