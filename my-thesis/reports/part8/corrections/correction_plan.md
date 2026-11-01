@@ -214,13 +214,20 @@ The baseline run is not re-estimated: every rolling fit is served from the cache
 
 ## 9. Targeted execution plan (requires your approval; no run launched)
 
+> **Superseded in part (2 November 2026, cache audit).** The statement below that all rolling fits would be served from the cache was an *assumption*, not a verified fact. It is **withdrawn**.
+>
+> - The production run estimated 34,300 fits that may never have reached Drive.
+> - Completeness is now measured, not assumed: the notebook's preflight runs `code/tools/cache_completeness.py` and stops.
+> - The run is refused unless every planned origin is a hit.
+> - See `cache_recovery_report.md` for the current strategy (R0, R1 or R2).
+
 **Recommended: Option A, a full entry-point run with the restored compatible cache.**
 
 1. **Code.** Check out `part8-corrections` at the pushed SHA in Colab, from the same notebook (Python 3.11 venv with the exact lock, 4 workers).
 2. **Gate before computing.** The notebook computes `cache_identity`; it must print `3413465b508bb844`. If it differs, stop.
 3. **Cache.** Restore the Drive fit cache with that identity. The notebook restores only a matching identity.
 4. **Run.** Run `run_all.py` as approved.
-   - **Rolling chains, baseline and robustness, about 67,000 fits:** all are served from the cache, so no rolling estimation happens.
+   - **Rolling chains, baseline and robustness (67,223 origins):** served from the cache **only if** the preflight completeness report shows every origin as a hit. That is unverified, and doubtful given the backup gap (see `cache_recovery_report.md`).
    - **Re-estimated deterministically, because these steps are not cached:**
      - the full-sample adequacy fits, including MSAR K=3 (about 60 min in the original run);
      - ARMA-GARCH, the VAR, the T4.3 tables and evaluation and robustness scoring (about 55 min).

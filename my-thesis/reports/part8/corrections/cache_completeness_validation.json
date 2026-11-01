@@ -1,0 +1,36 @@
+{
+  "complete_full": {
+    "payload_files_present": 432,
+    "chains": 32,
+    "totals": {
+      "n_origins": 576,
+      "hit": 576,
+      "miss": 0,
+      "horizon_miss": 0,
+      "unknown_after_miss": 0,
+      "gap": 0
+    },
+    "complete": true,
+    "chains_with_misses": []
+  },
+  "complete_damaged": {
+    "payload_files_present": 430,
+    "chains": 32,
+    "totals": {
+      "n_origins": 576,
+      "hit": 538,
+      "miss": 4,
+      "horizon_miss": 0,
+      "unknown_after_miss": 34,
+      "gap": 0
+    },
+    "complete": false,
+    "chains_with_misses": [
+      "forecasting:INDPRO|AR",
+      "forecasting:INDPRO|MSAR",
+      "T4.8:INDPRO|240:AR",
+      "T4.8:INDPRO|240:MSAR"
+    ]
+  },
+  "note": "Validation of code/tools/cache_completeness.py on a real smoke-run cache (run_all.py --smoke-test, 2 November 2026). complete_full: intact cache. complete_damaged: a copy with two payloads deleted - forecasting:INDPRO|AR origin 3 and forecasting:INDPRO|MSAR origin 1. Expected and observed: AR exactly 1 miss (no warm start); MSAR 1 miss + 17 unknown_after_miss (warm-start cascade); the T4.8 240-window duplicates of both chains flagged identically; exit status 1."
+}

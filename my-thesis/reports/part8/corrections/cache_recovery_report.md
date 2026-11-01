@@ -93,6 +93,13 @@ A real assessment is now built in:
   - Those later fits are served from the cache only if the refit reproduces the original **bit for bit**, which is not guaranteed on another machine (§6).
   - So one missing MSAR or STAR fit can force the rest of its chain to be refitted.
   - AR and ARMA keys do not depend on predecessors and are counted exactly.
+- **Validated** on a real smoke-run cache (`cache_completeness_validation.json`; unit test `tests/unit/test_cache_completeness.py`).
+  - The intact cache gives 576 of 576 hits.
+  - After deleting one AR fit and one MSAR fit:
+    - the AR chain shows exactly 1 miss;
+    - the MSAR chain shows 1 miss plus 17 `unknown_after_miss` (the warm-start cascade);
+    - their 240-window duplicates are flagged identically;
+    - the exit status is 1.
 - **The notebook now runs this check by default and stops** (`PREFLIGHT_ONLY = True`). It restores every archive folder for the identity, writes `cache_completeness_<identity>_<commit>.json` to Drive, and raises before `run_all.py`.
   - Even with `PREFLIGHT_ONLY = False`, the run refuses to start unless every planned origin is a hit, unless `ALLOW_PARTIAL_CACHE` is set explicitly.
 
