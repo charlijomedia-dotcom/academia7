@@ -1,0 +1,14 @@
+{
+  "artifact": "F4.3_UNRATE_MSAR3.png",
+  "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "2026-10-31T01:55:59Z",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "estimation_status": "fragile",
+  "figure_id": "F4.3",
+  "model": "MSAR3",
+  "reason_codes": "SINGULAR_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY;RESIDUAL_AUTOCORR",
+  "run_id": "baseline-20261030T173044-949fcd76",
+  "scope": "in-sample full-sample fit; no forecasts",
+  "series": "UNRATE"
+}
