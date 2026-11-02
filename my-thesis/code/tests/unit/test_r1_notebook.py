@@ -57,3 +57,44 @@ def test_drive_cache_is_only_read_and_outputs_go_to_new_places():
     assert "push\", \"--force" not in code and "-f\"" not in code
     for branch in re.findall(r'push\(f"([^"]+)"', code):
         assert "{STAMP}" in branch                            # a new branch every time
+
+
+# -- the setup cell, evaluated for real with the notebook's own defaults ----------------
+
+def _run_settings_and_setup(monkeypatch, pin_override=None):
+    """Execute the Settings and Setup cells exactly as Colab would, off Colab.
+
+    `google.colab` is absent here, so the cell takes its documented non-Colab branch;
+    directory creation is a no-op so nothing is written under /content.
+    """
+    import pathlib
+    monkeypatch.setattr(pathlib.Path, "mkdir", lambda self, *a, **k: None)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    settings, setup = _code()[0], _code()[1]
+    namespace: dict = {}
+    exec(compile(settings, "settings", "exec"), namespace)
+    if pin_override is not None:
+        namespace["PIN_COMMIT"] = pin_override
+    exec(compile(setup, "setup", "exec"), namespace)
+    return namespace
+
+
+def test_setup_cell_accepts_the_default_pinned_commit(monkeypatch):
+    default_pin = re.search(r'^PIN_COMMIT = "([^"]+)"', _code()[0], re.M).group(1)
+    assert re.fullmatch(r"[0-9a-f]{40}", default_pin), "the shipped notebook must be pinned"
+    namespace = _run_settings_and_setup(monkeypatch)      # must not raise
+    assert namespace["PIN_COMMIT"] == default_pin
+    assert namespace["RUN_TIER_A"] is False
+
+
+def test_setup_cell_rejects_a_placeholder_or_short_pin(monkeypatch):
+    import pytest
+    for bad in ("__PIN__", "8aaa421", "", "g" * 40):
+        with pytest.raises(AssertionError):
+            _run_settings_and_setup(monkeypatch, pin_override=bad)
+
+
+def test_the_pin_appears_only_in_its_default_assignment():
+    pin = re.search(r'^PIN_COMMIT = "([^"]+)"', _code()[0], re.M).group(1)
+    code = "\n".join(_code())
+    assert code.count(pin) == 1, "the pinned SHA leaked into another cell (e.g. a guard)"

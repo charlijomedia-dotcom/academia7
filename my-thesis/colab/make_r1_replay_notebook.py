@@ -42,7 +42,7 @@ USE_CONSTRAINTS = True  # @param {type:"boolean"}
 WORK = "/content/r1work"
 SOURCE_URL = ""'''
 
-SETUP = '''import os, sys, json, time, shutil, subprocess, importlib.util
+SETUP = '''import os, re, sys, json, time, shutil, subprocess, importlib.util
 from pathlib import Path
 
 try:
@@ -57,7 +57,8 @@ except ImportError:                       # outside Colab (used only to test thi
 
 DRIVE_ROOT = str(DRIVE_ROOT).strip().strip('"').strip("'").strip().rstrip("/")
 assert DRIVE_ROOT.startswith("/content/drive/"), f"DRIVE_ROOT must be under /content/drive/: {DRIVE_ROOT!r}"
-assert len(PIN_COMMIT) == 40 and PIN_COMMIT != "__PIN__", "set PIN_COMMIT to the full commit SHA"
+PIN_COMMIT = str(PIN_COMMIT).strip().lower()
+assert re.fullmatch(r"[0-9a-f]{40}", PIN_COMMIT), f"PIN_COMMIT must be a full 40-character commit SHA, got {PIN_COMMIT!r}"
 DRIVE = Path(DRIVE_ROOT) / "baseline"
 STAMP = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
 EVIDENCE = Path(DRIVE_ROOT) / "r1_replay" / STAMP          # a new folder, never reused
@@ -250,6 +251,8 @@ else:
                f"Part 8 corrected release (provisional) {run_id}: cache replay, code {COMMIT[:12]}")
     print("release branch:", f"{RELEASE_BRANCH_PREFIX}/r1-replay-{STAMP}", sha)'''
 
+PIN_DEFAULT_LINE = 'PIN_COMMIT = "__PIN__"'
+
 CELLS = [
     ("markdown", MD_INTRO),
     ("code", SETTINGS),
@@ -276,7 +279,9 @@ CELLS = [
 def build(pin: str) -> dict:
     cells = []
     for kind, text in CELLS:
-        text = text.replace("__PIN__", pin)
+        # Substitute the pin ONLY in the default assignment. A blanket replace once also
+        # rewrote the setup cell's guard, which then rejected the intended pinned SHA.
+        text = text.replace(PIN_DEFAULT_LINE, f'PIN_COMMIT = "{pin}"')
         lines = text.splitlines(keepends=True)
         cell = {"cell_type": kind, "metadata": {}, "source": lines}
         if kind == "code":

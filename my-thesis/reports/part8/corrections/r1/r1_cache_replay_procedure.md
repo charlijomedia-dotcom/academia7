@@ -143,3 +143,36 @@ The residual Tier B workload is the `tier_b_chains_to_estimate` list and its CPU
 ## 6. Test suite at `fba98d3`
 
 The full suite (`pytest -m "not network"`, slow tests included) gave **924 passed, 0 failed** in 41.5 minutes. That includes 12 new tests: 8 for the replay path and 4 for the notebook. The 14 warnings are the known statsmodels warnings from the T3.5 state regression.
+
+## 7. Notebook fix (3 November 2026): `PIN_COMMIT` guard
+
+**Bug, found by ChatGPT.** `make_r1_replay_notebook.py` replaced the placeholder `__PIN__` everywhere. That included the setup cell's guard, which became `PIN_COMMIT != "<the pinned SHA>"`. Under the default settings the guard rejected the intended pinned commit, so Run all stopped at step 1.
+
+**Fix.**
+
+- The generator now substitutes the pin only in the `PIN_COMMIT = "…"` default assignment.
+- The guard now normalises the value and checks it with `re.fullmatch(r"[0-9a-f]{40}", PIN_COMMIT)`. This also rejects any 40-character string that is not hexadecimal, which the old length check accepted.
+- The pinned code is unchanged: `8aaa4217536ab3cb942dd248dd19ece7838a8d60`.
+
+**Regression tests** (`test_r1_notebook.py`):
+
+- `test_setup_cell_accepts_the_default_pinned_commit` executes the real Settings and Setup cells with the notebook's own defaults (off Colab; directory creation is a no-op).
+- `test_setup_cell_rejects_a_placeholder_or_short_pin` checks that `__PIN__`, a short SHA, an empty string and a non-hexadecimal string are all rejected.
+- `test_the_pin_appears_only_in_its_default_assignment` checks that the SHA appears nowhere else in the notebook.
+- Against the old notebook these fail, with the exact error "set PIN_COMMIT to the full commit SHA". On the fixed notebook all 7 notebook tests pass.
+
+**No effect on estimation, cache identity or outputs.**
+
+- The change touches only `colab/make_r1_replay_notebook.py`, `colab/r1_cache_replay.ipynb` and `code/tests/unit/test_r1_notebook.py`. No file under `code/src` or `code/tools` changed.
+- The cache identity computed from this checkout is `3413465b508bb844`.
+- In the replay notebook, only the setup cell's import line and guard changed.
+
+**Environment finding (not caused by this fix).** The fix was validated in a fresh container, whose environment I built from the approved lock. In that container, the slow legacy-gate test reproduced every table, but not the figure files:
+
+- **Fonts.** This container has the `Inter` font installed system-wide. The figure style lists `Inter` first, with DejaVu Sans as the fallback. The original run's PDFs embed DejaVu Sans; here they embedded Inter.
+- **PDFs.** With Inter hidden from matplotlib (a test-only `sitecustomize`, not in the repository), all PDFs are byte-identical to the original.
+- **PNGs.** The 25 PNGs still differ by anti-aliasing and ±1 pixel of image size. That comes from this container's FreeType rasteriser (2.14.3).
+- **Tables.** Every table reproduces: 58 identical, plus the same 9 files within 1e-9 relative, with the same maxima as before.
+- **History.** The same code reproduced all 92 files byte for byte, figures included, in the container used on 1–2 November.
+
+**Implication for the Colab run.** Figure files are byte-compared by the legacy gate. If the Colab image now renders fonts differently from the original run, step 6 stops. That is a safe failure: nothing is published. The replay report from steps 4–5 is already saved to the Drive evidence folder before step 6 runs.
