@@ -1,0 +1,9 @@
+family,n_tests,raw_p,holm_p,bonferroni
+"STAR vs AR, all series/horizons/losses",44,0.0015,0.066,0.066
+nonlinear vs AR (MSAR+STAR),90,0.0015,0.135,0.135
+"all AR-benchmark pairs (ARMA, MSAR, STAR vs AR)",136,0.0015,0.1995,0.20400000000000001
+all primary pairwise HLZ tests (5 pairs),226,0.0015,0.33,0.339
+"UNRATE h=1, both losses, 5 pairs",10,0.0015,0.015,0.015
+"UNRATE h=1 absolute, 5 pairs",5,0.0015,0.0075,0.0075
+"UNRATE, all horizons/losses, 5 pairs",40,0.0015,0.06,0.06
+STAR vs AR at h=1 (6 series x 2 losses),12,0.0015,0.018000000000000002,0.018000000000000002

@@ -4,6 +4,21 @@
 
 > **Correction phase, 2 November 2026.** These statuses describe the *original* publication, the results commit `0662945`. Corrections F1–F4 are implemented and tested on branch `part8-corrections`, but the outputs have **not yet been regenerated**. Remarks whose evidence depends on an affected table are therefore classified as PARTIALLY ADDRESSED until the corrected outputs are produced and re-audited (see `corrections/correction_plan.md`). The classification was reconsidered at your request: R1-13, R1-15, R1-19, P-04 and P-05 moved from RESOLVED to PARTIALLY ADDRESSED.
 
+> **R1 status (2 November 2026; provisional, not yet authoritative).** Corrections F1, F2, F3, F4 and F7.1 have been applied by recomputing from the published forecasts. No model was estimated.
+>
+> - Implementation: branch `part8-r1-rescore`.
+> - Provisional corrected release: `part8-corrected-results/r1-20261101`. A release regenerated from a clean, pinned commit has identical tables.
+> - Evidence: `corrections/r1/`.
+>
+> The text below is unchanged and still describes the original publication. Until you approve the corrected release, the original numbers stand where they differ, as follows:
+>
+> - **UNRATE AR benchmark (F1).** The published version scored a failed fit. Corrected AR RMSE at h=1 is 0.551, not 0.886. Corrected OOS R² against AR is 0.24 for ARMA, 0.19 for MSAR and −0.10 for STAR. No nonlinear-over-AR rejection appears anywhere.
+> - **New nominal HLZ rejection against STAR** (UNRATE h=1, absolute loss, p = 0.0015). It is not robust to multiplicity: Holm-adjusted p is 0.066 across the 44 STAR-vs-AR tests, and STAR stays in the 90% and 95% MCS. See `corrections/r1/multiplicity_unrate_star.md`.
+> - **F2 MCS cells.** The 24 previously unavailable cells (CPI and M2SL) now have sets, and MSAR and STAR are retained in all of them.
+> - **Still pending, and kept provisional:** T4.1 alternative transformations, T4.2, and T4.8 UNRATE at 180 and 300 months. These await the approved cache replay and, where needed, Tier A or Tier B estimation.
+> - **Corrected claim statuses** are in `corrections/r1/claim_evidence_matrix_corrected.csv`.
+> - **F6** (MSAR global optimum) remains an unresolved limitation.
+
 **Rule (CLAUDE.md §12).** A remark is satisfied by properly performing and reporting the requested analysis, whatever the result.
 
 **Categories**

@@ -107,11 +107,11 @@ The release has 61 files that differ from the original. There are 56 regenerated
 | h=1 RMSE rank: AR / ARMA / MSAR / STAR | 4 / 3 / 1 / 2 | 2 / 4 / 1 / 3 |
 | AR rank, h = 3 / 6 / 12 | 3 / 3 / 3 | 1 / 1 / 2 |
 | MSAR OOS R² vs AR, h = 3 / 6 / 12 | 0.894 / 0.985 / 0.999 | −0.128 / −0.538 / −0.959 |
-| STAR vs AR, h = 1, absolute loss (HLZ) | −1.18, p = 0.47 | **+5.49, p = 0.0015 (STAR worse)** |
+| STAR vs AR, h = 1, absolute loss (HLZ) | −1.18, p = 0.47 | +5.49, p = 0.0015 nominal (STAR worse; Holm 0.066 over 44 tests; STAR stays in the MCS) |
 
 New rejections all go against the nonlinear model:
 
-- STAR is worse than AR at h = 1 under absolute loss. This holds for HLZ and DM-HLN, in T3.3, T4.4, T4.5 and the 240-month window table.
+- STAR is nominally worse than AR at h = 1 under absolute loss. This holds for HLZ and DM-HLN, in T3.3, T4.4, T4.5 and the 240-month window table. It is a nominal per-comparison result: there is no predeclared pairwise family, it does not survive Holm across the 44 STAR-vs-AR tests (0.066), and STAR is retained in the 90% and 95% MCS. See `multiplicity_unrate_star.md` (added 2 November 2026 at the user's request).
 - Under DM-HLN only, STAR is also worse at h = 3 absolute (HLZ p = 0.057).
 - No nonlinear-over-AR rejection appears anywhere.
 

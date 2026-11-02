@@ -14,6 +14,7 @@ The original output tree is not modified. The corrected release is a copy of tha
 | F3 | reporting error | Pairwise tests are oriented competitor minus benchmark, with explicit `benchmark` and `competitor` columns. | Signs and one-sided p-values in T3.3A and T3.3B. Two-sided p-values and decisions change only through F1. |
 | F4 | omitted required output | Zivot–Andrews tests for UNRATE and FEDFUNDS levels are reported (Part 5 §3.2 / P-02). They are not used by the §3.4 rule. | T2.2, T2.2 decisions, `all_test_results`, F2.1 figures |
 | F7.1 | reporting error | The data dictionary shows the transformation chosen by the §3.4 rule. | T2.1 |
+| F8 | presentation error (found in the R1 figure review, 2 November 2026; **awaiting your confirmation**) | F3.4's main panel omits flagged values, and the title says so. The diagnostic panel uses a labelled symmetric-log axis when flagged values exceed 100 times the data range. Nothing is clipped (Part 5 §13.1) | F3.4 figures only; no number changes |
 
 F5: interpretation only, so no code change. F6: not implemented. UNRATE K=3 remains inconclusive, and see the unresolved limitation below.
 
