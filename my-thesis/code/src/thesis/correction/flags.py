@@ -29,6 +29,9 @@ class CorrectionFlags:
     f3_pairwise_orientation: bool = True
     f4_zivot_andrews_reporting: bool = True
     f71_data_dictionary_decision: bool = True
+    # F8 (found in the R1 figure review, 2 November 2026; presentation only): F3.4's main
+    # panel keeps the valid models readable (Part 5 §13.1 / outputs spec F3.4).
+    f8_readable_main_panel: bool = True
 
     def as_dict(self) -> dict[str, bool]:
         return {f.name: getattr(self, f.name) for f in fields(self)}

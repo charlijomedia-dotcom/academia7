@@ -159,15 +159,21 @@ def series_overview(level: pd.Series, transformed: pd.Series, usrec: pd.Series,
         if ax is axes[0]:
             for (sample, date), style in zip((za_breaks or {}).items(), ("--", "-.")):
                 ax.axvline(date, color="#eb6834", linestyle=style, linewidth=1.2,
-                           label=f"Zivot-Andrews candidate break (level test, {sample}): "
-                                 f"{pd.Timestamp(date):%Y-%m}")
+                           label=f"Zivot-Andrews candidate break: {pd.Timestamp(date):%Y-%m}"
+                                 f"\n(level test, {sample})")
         for date in imputed_dates:
             ax.axvline(date, color="#e87ba4", linestyle=":", linewidth=1.2,
                        label=f"imputed {pd.Timestamp(date):%Y-%m}")
         style_axes(ax, title="", xlabel="", ylabel=units)
         handles, labels = ax.get_legend_handles_labels()
         unique = dict(zip(labels, handles))
-        ax.legend(unique.values(), unique.keys(), fontsize=7, loc="best")
+        if za_breaks:
+            # The candidate-break labels are long: keep the legend outside the axes so no
+            # part of the series (e.g. the 1980-81 policy-rate peaks) is hidden behind it.
+            ax.legend(unique.values(), unique.keys(), fontsize=7, loc="upper left",
+                      bbox_to_anchor=(1.01, 1.0), frameon=False)
+        else:
+            ax.legend(unique.values(), unique.keys(), fontsize=7, loc="best")
     axes[0].set_title(
         f"F2.1 {series_id}: {level.index.min():%Y-%m} to {level.index.max():%Y-%m} "
         f"(shaded: NBER recessions)", fontsize=11
@@ -292,15 +298,26 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
     fig, axes = plt.subplots(panels, 1, figsize=(9, 3.8 * panels), sharex=True)
     axes = np.atleast_1d(axes)
 
+    from ..correction.flags import ACTIVE as _flags
+    readable = _flags.f8_readable_main_panel and bool(flagged or failed)
     ax = axes[0]
     shade_recessions(ax, usrec)
     ax.plot(actual.index, actual.to_numpy(), color=ACTUAL_COLOUR, linewidth=1.1, label="actual")
     for model, series in forecasts.items():
         style, _ = MODEL_STYLES.get(model, ("-", "o"))
+        if readable:
+            # F8: a flagged (failed or extreme) value is drawn in the diagnostic panel, not
+            # here, so one exploding forecast cannot compress the economically relevant
+            # series (Part 5 §13.1). The gap is announced in the title; nothing is clipped.
+            moved = set(flagged.get(model, pd.Series(dtype=float)).index) | set(
+                failed.get(model, pd.Series(dtype=float)).index)
+            series = series.where(~series.index.isin(list(moved)))
         ax.plot(series.index, series.to_numpy(), color=MODEL_COLOURS.get(model, "#888"),
                 linestyle=style, linewidth=1.1, label=model)
-    style_axes(ax, title=f"F3.4 {series_id}: actual and one-step forecasts "
-                         f"(shaded: NBER recessions)", xlabel="", ylabel=units)
+    title = (f"F3.4 {series_id}: actual and one-step forecasts (shaded: NBER recessions)"
+             + ("\nflagged forecasts are omitted here and shown in the diagnostic panel"
+                if readable else ""))
+    style_axes(ax, title=title, xlabel="", ylabel=units)
     ax.legend(fontsize=8, ncol=3)
 
     if flagged or failed:
@@ -308,7 +325,6 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
         shade_recessions(diagnostic, usrec)
         diagnostic.plot(actual.index, actual.to_numpy(), color=ACTUAL_COLOUR,
                         linewidth=1.0, label="actual")
-        from ..correction.flags import ACTIVE as _flags
         for model, series in flagged.items():
             style, marker = MODEL_STYLES.get(model, ("-", "o"))
             if not _flags.f1_failed_forecast_masking:      # legacy (validation only)
@@ -329,9 +345,16 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
                             marker=marker, markersize=8, markerfacecolor="none",
                             markeredgewidth=1.6, color=MODEL_COLOURS.get(model, "#888"),
                             label=f"{model} failed fit (raw value, not scored)")
-        style_axes(diagnostic,
-                   title="Diagnostic panel: failed or extreme forecasts, own scale, not clipped",
-                   xlabel="date", ylabel=units)
+        diagnostic_title = "Diagnostic panel: failed or extreme forecasts, own scale, not clipped"
+        if readable:
+            values = pd.concat([*flagged.values(), *failed.values()]).abs()
+            span = float(np.nanmax(np.abs(actual.to_numpy(dtype=float)))) if len(actual) else 0
+            if span > 0 and float(values.max()) > 100 * span:
+                # F8: values spanning many orders of magnitude are shown on a labelled
+                # symmetric-log axis (linear within +/- the data range), not clipped.
+                diagnostic.set_yscale("symlog", linthresh=span)
+                diagnostic_title += "; symmetric log scale (linear within ±%.3g)" % span
+        style_axes(diagnostic, title=diagnostic_title, xlabel="date", ylabel=units)
         if _flags.f1_failed_forecast_masking:
             # Below the axes, so no extreme value can be hidden behind the legend.
             diagnostic.legend(fontsize=8, ncol=3, loc="upper center",
