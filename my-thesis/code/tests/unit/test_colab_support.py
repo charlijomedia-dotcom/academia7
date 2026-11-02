@@ -301,6 +301,14 @@ class TestCacheRecoveryAndAudit:
         colab.IncrementalArchive(source, drive).sync()
         fresh = tmp_path / "vm2"
         colab.IncrementalArchive(fresh, drive).restore()
+        # tar (PAX) keeps mtime as a float (~1e-7 s): a restored file's st_mtime_ns is
+        # within a few hundred ns of the one listed at backup time, and about 1 time in
+        # 300 per file it is identical, which made this assertion fail intermittently.
+        # Move each restored mtime by 1 ms, far beyond that error, so "restored files
+        # look changed to the signature rule" holds deterministically:
+        for path in fresh.rglob("*.json"):
+            info = path.stat()
+            os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns + 1_000_000))
         # the signature rule (outputs) sees every restored file as changed ...
         assert len(colab.IncrementalArchive(fresh, drive).pending()) == 7
         # ... the by-name rule (content-addressed cache) sees none

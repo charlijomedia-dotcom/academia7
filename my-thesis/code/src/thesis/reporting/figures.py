@@ -153,11 +153,14 @@ def series_overview(level: pd.Series, transformed: pd.Series, usrec: pd.Series,
         if break_date is not None and not za_breaks:
             ax.axvline(break_date, color="#eb6834", linestyle="--", linewidth=1.2,
                        label=f"Zivot-Andrews break {break_date:%Y-%m}")
-        # Correction F4: the reported Zivot-Andrews break dates (Part 5 §3.2) on both
-        # samples, distinguished by line style.
-        for (sample, date), style in zip((za_breaks or {}).items(), ("--", "-.")):
-            ax.axvline(date, color="#eb6834", linestyle=style, linewidth=1.2,
-                       label=f"Zivot-Andrews break, {sample}: {pd.Timestamp(date):%Y-%m}")
+        # Correction F4: the Zivot-Andrews candidate break dates of the level test (Part 5
+        # §3.2), on the level panel only, each labelled with its test outcome: a date
+        # whose test does not reject the unit root is a candidate, not a detected break.
+        if ax is axes[0]:
+            for (sample, date), style in zip((za_breaks or {}).items(), ("--", "-.")):
+                ax.axvline(date, color="#eb6834", linestyle=style, linewidth=1.2,
+                           label=f"Zivot-Andrews candidate break (level test, {sample}): "
+                                 f"{pd.Timestamp(date):%Y-%m}")
         for date in imputed_dates:
             ax.axvline(date, color="#e87ba4", linestyle=":", linewidth=1.2,
                        label=f"imputed {pd.Timestamp(date):%Y-%m}")
@@ -275,7 +278,8 @@ def star_transition(z: np.ndarray, g: np.ndarray, *, series_id: str, kind: str,
 
 def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
                        usrec: pd.Series, *, series_id: str, units: str,
-                       flagged: Mapping[str, pd.Series] | None = None) -> plt.Figure:
+                       flagged: Mapping[str, pd.Series] | None = None,
+                       failed: Mapping[str, pd.Series] | None = None) -> plt.Figure:
     """F3.4: actual against forecasts, with failed or extreme models separated.
 
     AR and ARMA are always shown. A model with flagged values goes to its own lower panel
@@ -283,7 +287,8 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
     unreadable, and nothing is clipped.
     """
     flagged = flagged or {}
-    panels = 2 if flagged else 1
+    failed = failed or {}
+    panels = 2 if (flagged or failed) else 1
     fig, axes = plt.subplots(panels, 1, figsize=(9, 3.8 * panels), sharex=True)
     axes = np.atleast_1d(axes)
 
@@ -298,7 +303,7 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
                          f"(shaded: NBER recessions)", xlabel="", ylabel=units)
     ax.legend(fontsize=8, ncol=3)
 
-    if flagged:
+    if flagged or failed:
         diagnostic = axes[1]
         shade_recessions(diagnostic, usrec)
         diagnostic.plot(actual.index, actual.to_numpy(), color=ACTUAL_COLOUR,
@@ -315,11 +320,24 @@ def actual_vs_forecast(actual: pd.Series, forecasts: Mapping[str, pd.Series],
             # would join non-adjacent dates and suggest a path that never existed (R1-06).
             diagnostic.plot(series.index, series.to_numpy(),
                             color=MODEL_COLOURS.get(model, "#888"), linestyle="none",
-                            marker=marker, markersize=4, label=f"{model} (flagged)")
+                            marker=marker, markersize=4,
+                            label=f"{model} extreme (scored)")
+        for model, series in failed.items():
+            # Failed fits: raw forecast kept for diagnosis, excluded from every score (F1).
+            _, marker = MODEL_STYLES.get(model, ("-", "o"))
+            diagnostic.plot(series.index, series.to_numpy(), linestyle="none",
+                            marker=marker, markersize=8, markerfacecolor="none",
+                            markeredgewidth=1.6, color=MODEL_COLOURS.get(model, "#888"),
+                            label=f"{model} failed fit (raw value, not scored)")
         style_axes(diagnostic,
                    title="Diagnostic panel: failed or extreme forecasts, own scale, not clipped",
                    xlabel="date", ylabel=units)
-        diagnostic.legend(fontsize=8, ncol=3)
+        if _flags.f1_failed_forecast_masking:
+            # Below the axes, so no extreme value can be hidden behind the legend.
+            diagnostic.legend(fontsize=8, ncol=3, loc="upper center",
+                              bbox_to_anchor=(0.5, -0.18), frameon=False)
+        else:
+            diagnostic.legend(fontsize=8, ncol=3)
     else:
         axes[-1].set_xlabel("date", fontsize=9)
     return fig

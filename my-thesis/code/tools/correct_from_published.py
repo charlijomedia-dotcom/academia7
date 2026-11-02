@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from thesis.correction import workflow  # noqa: E402
 from thesis.correction.compare import compare_trees  # noqa: E402
+from thesis.core.provenance import git_commit_sha, git_dirty_paths  # noqa: E402
 
 
 def main(argv=None) -> int:
@@ -47,6 +48,9 @@ def main(argv=None) -> int:
                         help="restored fit cache root (holding fits/); enables replay")
     parser.add_argument("--approve", action="append", default=[],
                         help="chain task id approved for new estimation (repeatable)")
+    parser.add_argument("--refit-cache", type=Path, default=None,
+                        help="checkpoint store for --approve'd chains (a directory apart "
+                             "from the original cache; lets an interrupted refit resume)")
     parser.add_argument("--release", type=Path, default=None,
                         help="assemble the corrected release here (not with --legacy)")
     parser.add_argument("--legacy-staging", type=Path, default=None,
@@ -57,9 +61,26 @@ def main(argv=None) -> int:
         parser.error(f"{args.staging} is not empty")
     if args.legacy and args.release:
         parser.error("--release is only for the corrected mode")
+    if args.release or args.legacy_staging:
+        # A release is reproducible from its recorded commit only if nothing that
+        # determines it was uncommitted; the legacy tree used for reconciliation must come
+        # from the same commit.
+        dirty = git_dirty_paths()
+        if dirty is None or dirty:
+            parser.error("a release must be built from a clean, committed tree; "
+                         f"uncommitted: {list(dirty or ['<git unavailable>'])[:10]}")
+    if args.legacy_staging:
+        manifest = json.loads((args.legacy_staging / "manifests" / "run_manifest.json")
+                              .read_text(encoding="utf-8"))
+        if manifest.get("code_commit_sha") != git_commit_sha() or manifest.get(
+                "code_tree_dirty"):
+            parser.error("--legacy-staging was produced by a different or dirty commit "
+                         f"({manifest.get('code_commit_sha')}, dirty="
+                         f"{manifest.get('code_tree_dirty')}); rerun --legacy first")
 
     summary = workflow.run(args.original.resolve(), args.staging.resolve(), legacy=args.legacy,
-                           cache_root=args.cache_root, approved_estimation=args.approve)
+                           cache_root=args.cache_root, approved_estimation=args.approve,
+                           refit_cache=args.refit_cache)
     files = [f for f in summary["regenerated_files"] if f not in workflow.WORKFLOW_FILES]
     comparison = compare_trees(args.original.resolve(), args.staging.resolve(), files=files)
     comparison.to_csv(args.staging / "r1_comparison.csv", index=False)
@@ -73,6 +94,7 @@ def main(argv=None) -> int:
         print(f"  fp-level  {row.path}  max rel diff {row.max_relative_difference:.2e}")
     for row in changed.itertuples():
         print(f"  {row.status:<9} {row.path}  {getattr(row, 'columns_differing', '')}")
+    print("estimations performed:", summary.get("estimations_performed") or "none")
     print(json.dumps({k: summary[k] for k in ("chain_sources", "retained")}, indent=1,
                      default=str)[:4000])
     if args.legacy:

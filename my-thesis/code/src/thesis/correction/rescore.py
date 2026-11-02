@@ -38,6 +38,7 @@ from typing import Any, Iterable
 import numpy as np
 import pandas as pd
 
+from ..core.cache import FitCache
 from ..core.provenance import PROVENANCE_COLUMNS
 from ..core.schemas import ReasonCode, Status
 from ..evaluation.scoring import mask_failed
@@ -46,6 +47,7 @@ from ..forecasting.rolling import ChainResult
 from ..forecasting.windows import horizon_coverage
 from ..models.registry import AR, ARMA, MSAR, MSAR3, STAR, ModelSpec
 from ..pipeline import StageOutputs, Pipeline
+from . import guard
 
 ORIGINAL_RUN_ID = "baseline-20261030T173044-949fcd76"
 ORIGINAL_COMMIT = "066294544e8ff84f3c2c73ab647c8d13331dcac1"
@@ -137,16 +139,74 @@ def chain_from_published(series: str, spec: ModelSpec, window_length: int,
     return result
 
 
+#: Marker written into every payload estimated by an approved R1 refit.
+REFIT_MARKER = "r1_provenance"
+REFIT_README = (
+    "R1 REFIT CACHE: every payload here was RE-ESTIMATED by the R1 correction workflow\n"
+    "(approved chains only, platform-dependent). Never copy these files into the original\n"
+    "fit cache: the keys are the original keys, and the original cache must hold original\n"
+    "estimates only. Each payload carries the field '" + "r1_provenance" + "'.\n")
+
+
+class RefitCache(FitCache):
+    """The checkpoint store of approved re-estimates, kept apart from the original cache."""
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        (self.directory / "README_R1_REFIT_CACHE.txt").write_text(REFIT_README,
+                                                                  encoding="utf-8")
+
+    def put(self, key, payload):
+        super().put(key, {**payload, REFIT_MARKER: "re-estimated"})
+
+
+class _OriginalOnly:
+    """A read-only view of the original fit cache that rejects re-estimated payloads.
+
+    If an R1 refit payload had been copied into the original cache, replaying it would
+    present a new estimate as an original one; the view treats it as a miss instead,
+    and nothing is ever written through it.
+    """
+
+    def __init__(self, cache: FitCache):
+        self._cache = cache
+        self.enabled = cache.enabled
+        self.directory = cache.directory
+        self.refit_payloads_rejected = 0
+
+    def get(self, key):
+        payload = self._cache.get(key)
+        if payload is not None and REFIT_MARKER in payload:
+            self.refit_payloads_rejected += 1
+            return None
+        return payload
+
+    def put(self, key, payload):
+        raise _NoEstimation()
+
+    def path_for(self, key):
+        return self._cache.path_for(key)
+
+
 class PublishedRescorer(Pipeline):
     """The pipeline, fed from the published outputs instead of re-estimating."""
 
     def __init__(self, config, context, layout, bundle, *, original: Path,
                  approved_estimation: Iterable[str] = (), use_cache: bool = True,
-                 monitor=None):
+                 refit_cache: Path | None = None, monitor=None):
         super().__init__(config, context, layout, bundle, monitor=monitor, workers=1)
         self.original = Path(original)
         self.approved_estimation = set(approved_estimation)
         self.use_cache = use_cache
+        # Approved re-estimates are checkpointed in their own cache, never in the original
+        # one: a resumed chain re-reads only its own new fits, and the original cache
+        # keeps holding original estimates only.
+        self.refit_cache = None
+        if refit_cache is not None:
+            refit_fits = (Path(refit_cache) / "fits").resolve()
+            if use_cache and refit_fits == Path(self.cache.directory).resolve():
+                raise ValueError("the refit cache must not be the original fit cache")
+            self.refit_cache = RefitCache(refit_fits)
         self.record = RescoreRecord()
         self.regenerated: list[str] = []
         self._published: dict[str, pd.DataFrame] = {}
@@ -262,8 +322,8 @@ class PublishedRescorer(Pipeline):
             return rolling.run_chain(
                 job.series_name, job.y, job.spec, job.horizons, job.window_length,
                 self.config, frequency=job.frequency, transformation=job.transformation,
-                identity=self.identity, cache=self.cache, max_origins=job.max_origins,
-                task_id=job.task_id)
+                identity=self.identity, cache=_OriginalOnly(self.cache),
+                max_origins=job.max_origins, task_id=job.task_id)
         except _NoEstimation:
             return None
         finally:
@@ -296,13 +356,19 @@ class PublishedRescorer(Pipeline):
                 if chain is not None:
                     source, detail = "cache", "original estimate served whole from the fit cache"
             if chain is None and job.task_id in self.approved_estimation:
-                chain = rolling.run_chain(
-                    job.series_name, job.y, job.spec, job.horizons, job.window_length,
-                    self.config, frequency=job.frequency, transformation=job.transformation,
-                    identity=None, cache=None, max_origins=job.max_origins,
-                    task_id=job.task_id)
+                checkpoint = self.refit_cache
+                with guard.allowed():
+                    chain = rolling.run_chain(
+                        job.series_name, job.y, job.spec, job.horizons, job.window_length,
+                        self.config, frequency=job.frequency,
+                        transformation=job.transformation,
+                        identity=self.identity if checkpoint else None, cache=checkpoint,
+                        max_origins=job.max_origins, task_id=job.task_id)
                 chain.forecasts = chain.forecasts.assign(forecast_provenance="re-estimated")
-                source, detail = "re-estimated", "approved new estimation (platform-dependent)"
+                source = "re-estimated"
+                detail = ("approved new estimation of the whole chain (platform-dependent)"
+                          + (f"; checkpointed in {checkpoint.directory}, resumed origins "
+                             f"{chain.from_cache}" if checkpoint else ""))
             if chain is None:
                 missing.append(job.task_id)
                 continue

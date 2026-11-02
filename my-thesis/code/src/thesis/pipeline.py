@@ -531,7 +531,13 @@ class Pipeline:
                                           ("full sample", decision.za_full_sample)):
                         date = (result.extra or {}).get("break_date") if result else None
                         if date:
-                            za_breaks[label] = pd.Timestamp(date)
+                            # The candidate date is shown with its test outcome: when the
+                            # unit root is not rejected it is not an estimated break.
+                            outcome = (f"p={result.p_value:.2f}, unit root "
+                                       + ("rejected" if result.p_value < 0.05
+                                          else "not rejected")
+                                       if result.p_value is not None else "no p-value")
+                            za_breaks[f"{label}; {outcome}"] = pd.Timestamp(date)
                 imputed = [pd.Timestamp(d) for d in self.bundle.frame[
                     (self.bundle.frame["series_id"] == series_id)
                     & (self.bundle.frame["observation_status"] == STATUS_IMPUTED)]["date"]]
@@ -1295,7 +1301,7 @@ class Pipeline:
                 if frames:
                     actual = (frames[benchmark].set_index("target_date")["actual"]
                               if benchmark in frames else pd.Series(dtype=float))
-                    series_forecasts, flagged = {}, {}
+                    series_forecasts, flagged, failed_points = {}, {}, {}
                     for model, frame in frames.items():
                         indexed = frame.set_index("target_date")
                         series_forecasts[model] = indexed["forecast"]
@@ -1305,15 +1311,25 @@ class Pipeline:
                         shown = (indexed["forecast"].where(
                             ~failed_fit, indexed.get(FAILED_RAW_FORECAST, indexed["forecast"]))
                             if CORRECTIONS.f1_failed_forecast_masking else indexed["forecast"])
-                        bad = shown[failed_fit | indexed["reason_codes"].str.contains(
-                            "EXTREME_FORECAST", na=False)]
+                        extreme = indexed["reason_codes"].str.contains("EXTREME_FORECAST",
+                                                                       na=False)
+                        if CORRECTIONS.f1_failed_forecast_masking:
+                            # Unscored failed fits and scored extreme forecasts are drawn
+                            # apart, so the figure says which values enter the evaluation.
+                            raw_failed = shown[failed_fit].dropna()
+                            if not raw_failed.empty:
+                                failed_points[model] = raw_failed
+                            bad = shown[extreme & ~failed_fit]
+                        else:
+                            bad = shown[failed_fit | extreme]
                         if not bad.empty:
                             flagged[model] = bad
                     self._save_figure(
                         figures.actual_vs_forecast(actual, series_forecasts, usrec,
                                                    series_id=series_id,
                                                    units=self._units(series_id),
-                                                   flagged=flagged or None),
+                                                   flagged=flagged or None,
+                                                   failed=failed_points or None),
                         self.layout.figures, f"F3.4_{series_id}", stage,
                         {"figure_id": "F3.4", "series": series_id, "horizon": primary})
 

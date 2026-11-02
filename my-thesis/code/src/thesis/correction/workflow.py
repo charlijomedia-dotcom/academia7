@@ -26,11 +26,12 @@ import pandas as pd
 from ..core.config import load_config
 from ..core.hashing import sha256_file
 from ..core.paths import CONFIG_DIR, FROZEN_DIR, Namespace, OutputLayout
-from ..core.provenance import PROVENANCE_COLUMNS, RunContext
+from ..core.provenance import PROVENANCE_COLUMNS, RunContext, git_dirty_paths
 from ..data.store import load_bundle
 from ..pipeline import StageOutputs
 from ..reporting import tables
 from . import flags as correction_flags
+from . import guard
 from .compare import compare_trees
 from .rescore import (ORIGINAL_COMMIT, ORIGINAL_RUN_ID, ChainUnavailable, PublishedRescorer,
                       summarise)
@@ -91,8 +92,24 @@ def merge_groups(original: pd.DataFrame, recomputed: pd.DataFrame, group: Sequen
 
 
 def run(original: Path, staging: Path, *, legacy: bool, cache_root: Path | None = None,
-        approved_estimation: Iterable[str] = ()) -> dict:
-    """Run the R1 workflow into `staging` (an output-tree layout). Returns a summary."""
+        approved_estimation: Iterable[str] = (), refit_cache: Path | None = None) -> dict:
+    """Run the R1 workflow into `staging` (an output-tree layout). Returns a summary.
+
+    The whole run executes under `guard.estimation_forbidden()`: no model is estimated
+    except inside an `--approve`d chain, and any other estimation attempt aborts the run.
+    """
+    with guard.estimation_forbidden() as state:
+        summary = _run(original, staging, legacy=legacy, cache_root=cache_root,
+                       approved_estimation=approved_estimation, refit_cache=refit_cache)
+        summary["estimations_performed"] = dict(state.permitted)
+    (Path(staging) / "r1_summary.json").write_text(json.dumps(summary, indent=2, default=str),
+                                                   encoding="utf-8")
+    return summary
+
+
+def _run(original: Path, staging: Path, *, legacy: bool, cache_root: Path | None,
+         approved_estimation: Iterable[str], refit_cache: Path | None) -> dict:
+    approved_estimation = sorted(approved_estimation)
     config = load_config(names=("baseline", "series_catalog", "thresholds"),
                          config_dir=CONFIG_DIR)
     bundle = load_bundle(FROZEN_DIR, config)
@@ -101,6 +118,9 @@ def run(original: Path, staging: Path, *, legacy: bool, cache_root: Path | None 
                          data_cutoff=config.get("samples.monthly_end"),
                          vintage_date=config.get("run.vintage_date"),
                          notes={"workflow": "R1 correction from published forecasts",
+                                "uncommitted_paths_at_start": list(git_dirty_paths() or ()),
+                                "cache_root": str(cache_root) if cache_root else None,
+                                "approved_estimation": sorted(approved_estimation),
                                 "original_run_id": ORIGINAL_RUN_ID,
                                 "original_results_commit": ORIGINAL_COMMIT,
                                 "mode": "legacy-validation" if legacy else "corrected",
@@ -112,7 +132,8 @@ def run(original: Path, staging: Path, *, legacy: bool, cache_root: Path | None 
     with switches:
         rescorer = PublishedRescorer(config, context, layout, bundle, original=original,
                                      approved_estimation=approved_estimation,
-                                     use_cache=cache_root is not None)
+                                     use_cache=cache_root is not None,
+                                     refit_cache=refit_cache)
         layout.create()
         rescorer.prepare_data()
         rescorer.stationarity_stage()
