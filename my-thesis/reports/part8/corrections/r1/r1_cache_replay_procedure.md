@@ -139,3 +139,7 @@ The residual Tier B workload is the `tier_b_chains_to_estimate` list and its CPU
   - The archive code is unchanged. The fit cache is backed up by name, which never consults mtimes, so backups of fits were not affected. Under the signature rule, an exact round trip only means an unchanged file is not uploaded again, which is correct.
 - **Visual review of the corrected figures.** I reviewed the PNGs of the provisional release. See `figure_review.md`.
 - **Multiplicity.** See `multiplicity_unrate_star.md`.
+
+## 6. Test suite at `fba98d3`
+
+The full suite (`pytest -m "not network"`, slow tests included) gave **924 passed, 0 failed** in 41.5 minutes. That includes 12 new tests: 8 for the replay path and 4 for the notebook. The 14 warnings are the known statsmodels warnings from the T3.5 state regression.
