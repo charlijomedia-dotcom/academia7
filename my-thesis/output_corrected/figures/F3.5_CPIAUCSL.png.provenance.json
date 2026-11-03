@@ -1,0 +1,10 @@
+{
+  "artifact": "F3.5_CPIAUCSL.png",
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "2026-11-03T07:39:46Z",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "figure_id": "F3.5",
+  "run_id": "correction-20261103T073809-949fcd76",
+  "series": "CPIAUCSL"
+}
