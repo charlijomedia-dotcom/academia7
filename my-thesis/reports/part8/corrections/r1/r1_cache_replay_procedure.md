@@ -187,3 +187,14 @@ Step 8 was fixed so that it publishes the release the completed steps produced (
 - the failure audit: 76 expected failed AR origins across the eight Tier A chains, 71 of them in the FEDFUNDS T4.1 level chain;
 - the classification of the 35 unavailable chain contexts: 9 need Tier B, and 26 are legitimately unaffected;
 - the HLZ, DM-HLN and HAC warnings.
+
+## 9. Tier B preflight (3 November 2026; design only, not authorised)
+
+See `tier_b_preflight.md`:
+
+- the nine chains: 6,041 origins and 49.4 CPU-hours measured from the original fit records; the longest chain takes 17.9 h, and that sets the wall-clock time;
+- the resumable design on the unchanged pin `8aaa421`;
+- the checkpoint layout and the validation gates G0–G9;
+- how the Tier A chains carry over.
+
+Time-critical: the Tier A refit cache is only on the Tier A runtime's local disk. `colab/r1_backup_tier_a_refit_cache.py` backs it up to Drive, with verification; it is a dry run by default.
