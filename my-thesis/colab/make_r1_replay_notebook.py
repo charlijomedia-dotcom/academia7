@@ -18,7 +18,7 @@ What it does, in order:
 4. writes the per-chain replay report for the 20 pending chains (`code/tools/r1_cache_replay_report.py`);
 5. runs the R1 workflow with `--cache-root` and **no `--approve`**: first in legacy mode (the validation gate, which now also covers every chain the cache replays), then in corrected mode with the release assembled from the clean, pinned tree;
 6. only if `RUN_TIER_A = True` (off by default): re-estimates the Tier A AR chains that the cache could **not** replay, after validating the AR estimator against the published results;
-7. copies every report to a **new** Drive folder `r1_replay/<stamp>/`, and optionally pushes the evidence and the provisional release to **new** GitHub branches.
+7. copies every report to a **new** Drive folder `r1_replay/<stamp>/`. Step 8 selects the release to publish **from the files the completed steps wrote**: the Tier A release (`r1_tier_a_release`) when Tier A ran, otherwise the step-6 release. It cross-checks run ID, commit, re-estimated chains and validation, refuses on any mismatch or missing output, and is a **dry run unless `CONFIRM_PUBLISH = True`**. Pushes go to **new** GitHub branches only.
 
 **No estimation can happen in steps 4–5.** The R1 workflow runs under `guard.estimation_forbidden()`: every model-estimation function of the package raises if called outside an approved chain, and the cache replay itself turns a cache miss into "chain unavailable". Each step asserts `estimations_performed == none`.
 
@@ -36,6 +36,8 @@ EXPECTED_PAYLOADS = 18964  # @param {type:"integer"}
 # and then only for AR chains the cache could not replay.
 RUN_TIER_A = False  # @param {type:"boolean"}
 PUSH_EVIDENCE = True  # @param {type:"boolean"}
+# Step 8 pushes only when this is True (after the evidence has been reviewed).
+CONFIRM_PUBLISH = False  # @param {type:"boolean"}
 EVIDENCE_BRANCH_PREFIX = "part8-r1-replay"  # @param {type:"string"}
 RELEASE_BRANCH_PREFIX = "part8-corrected-results"  # @param {type:"string"}
 USE_CONSTRAINTS = True  # @param {type:"boolean"}
@@ -220,36 +222,127 @@ else:
             shutil.copy2(staging / "r1_summary.json", EVIDENCE / f"{staging.name}_summary.json")
             shutil.copy2(staging / "r1_comparison.csv", EVIDENCE / f"{staging.name}_comparison.csv")'''
 
-PUBLISH = '''print("evidence on Drive:", EVIDENCE)
-if not PUSH_EVIDENCE:
-    print("PUSH_EVIDENCE is off")
+PUBLISH = """# Step 8: choose WHAT to publish only from the files the completed steps wrote, never from
+# variables left over from earlier cells (a stale RELEASE / corrected from step 6 would
+# publish the wrong release after Tier A). Self-contained: it can be pasted into a session
+# that ran the older notebook (it needs only WORK_DIR, EVIDENCE, REPO, PROJECT, PIN_COMMIT,
+# COMMIT, STAMP, GIT_ENV, GITHUB_TOKEN, RUN_TIER_A and the branch prefixes).
+# Nothing is pushed unless CONFIRM_PUBLISH is True; otherwise this is a dry run.
+import json as _json, shutil as _shutil, subprocess as _subprocess
+from pathlib import Path as _Path
+
+
+def _load(path):
+    path = _Path(path)
+    if not path.is_file():
+        raise RuntimeError(f"required output missing: {path}")
+    return _json.loads(path.read_text())
+
+
+def select_publication(work_dir, run_tier_a, pin_commit):
+    \"\"\"The release to publish, with its run ID and evidence; fails rather than guesses.\"\"\"
+    work_dir = _Path(work_dir)
+    tier_a_dirs = [work_dir / n for n in ("r1_tier_a", "r1_tier_a_release",
+                                          "r1_tier_a_legacy", "tier_a_validation")]
+    replay = _load(work_dir / "replay_report" / "replay_report.json")
+    tasks = sorted(replay["tier_a_ar_chains_to_estimate"])
+    if run_tier_a and tasks:
+        label, staging, release = "tier-a", work_dir / "r1_tier_a", work_dir / "r1_tier_a_release"
+        validation = _load(work_dir / "tier_a_validation" / "ar_refit_validation.json")
+        if validation.get("ok") is not True:
+            raise RuntimeError("Tier A AR validation did not pass; nothing is published")
+        legacy = work_dir / "r1_tier_a_legacy" / "r1_comparison.csv"
+        if not legacy.is_file():
+            raise RuntimeError(f"required output missing: {legacy}")
+        import csv
+        with open(legacy, newline="") as handle:
+            bad = [r["path"] for r in csv.DictReader(handle)
+                   if r["status"] not in ("identical", "equal_within_fp_tolerance")]
+        if bad:
+            raise RuntimeError(f"Tier A legacy gate failed for {bad[:5]}; nothing is published")
+    elif run_tier_a:
+        raise RuntimeError("RUN_TIER_A is True but the replay left no AR chain to re-estimate; "
+                           "there is no Tier A release to publish (publish step 6 with "
+                           "RUN_TIER_A = False)")
+    else:
+        present = [str(d) for d in tier_a_dirs if d.exists()]
+        if present:
+            raise RuntimeError("RUN_TIER_A is False but Tier A outputs exist "
+                               f"({present}); refusing to guess which release to publish")
+        label, staging, release = "replay", work_dir / "r1_corrected", work_dir / "r1_release"
+    summary = _load(staging / "r1_summary.json")
+    manifest = _load(release / "manifests" / "correction_run_manifest.json")
+    released = _load(release / "manifests" / "correction_summary.json")
+    problems = []
+    if manifest.get("run_id") != summary.get("run_id"):
+        problems.append(f"release run_id {manifest.get('run_id')} != staging {summary.get('run_id')}")
+    if released.get("run_id") != summary.get("run_id"):
+        problems.append("release correction_summary.json is not the staging summary")
+    if manifest.get("code_commit_sha") != pin_commit:
+        problems.append(f"release built from {manifest.get('code_commit_sha')}, not {pin_commit}")
+    if manifest.get("code_tree_dirty"):
+        problems.append("release built from a dirty tree")
+    reestimated = sorted(summary.get("chain_sources", {}).get("re-estimated", []))
+    if label == "tier-a" and reestimated != tasks:
+        problems.append(f"re-estimated chains {reestimated} != Tier A tasks {tasks}")
+    if label == "replay" and reestimated:
+        problems.append(f"step-6 release unexpectedly contains re-estimated chains {reestimated}")
+    if problems:
+        raise RuntimeError("publication refused: " + "; ".join(problems))
+    return {"label": label, "release": str(release), "staging": str(staging),
+            "run_id": summary["run_id"], "re_estimated": reestimated,
+            "estimations_performed": summary.get("estimations_performed") or {},
+            "chain_sources": {k: len(v) for k, v in summary.get("chain_sources", {}).items()}}
+
+
+PLAN = select_publication(WORK_DIR, RUN_TIER_A, PIN_COMMIT)
+_Path(EVIDENCE).mkdir(parents=True, exist_ok=True)
+(_Path(EVIDENCE) / "publication_plan.json").write_text(_json.dumps(PLAN, indent=2))
+_shutil.copytree(_Path(PLAN["release"]) / "manifests", _Path(EVIDENCE) / "published_release_manifests",
+                 dirs_exist_ok=True)
+print("publication plan:", _json.dumps(PLAN, indent=1))
+CONFIRM = bool(globals().get("CONFIRM_PUBLISH", False))
+if not CONFIRM:
+    print("DRY RUN: CONFIRM_PUBLISH is not True; nothing pushed. Evidence is on Drive:", EVIDENCE)
+elif not PUSH_EVIDENCE:
+    print("PUSH_EVIDENCE is off; evidence is on Drive:", EVIDENCE)
 elif not GITHUB_TOKEN:
-    print("no GITHUB_TOKEN secret; evidence is on Drive only")
+    print("no GITHUB_TOKEN secret; evidence is on Drive only:", EVIDENCE)
 else:
-    # Evidence and the replay release go to NEW branches; nothing existing is touched.
     def push(branch, paths, message):
-        subprocess.run(["git", "checkout", "-q", "-B", branch, PIN_COMMIT], cwd=REPO, check=True)
-        subprocess.run(["git", "add", "--", *paths], cwd=REPO, check=True)
-        subprocess.run(["git", "-c", "user.name=Thesis pipeline (Colab)", "-c",
-                        "user.email=thesis-pipeline@users.noreply.github.com", "commit", "-q",
-                        "-m", message], cwd=REPO, check=True)
-        subprocess.run(["git", "push", "-u", "origin", branch], cwd=REPO, check=True, env=GIT_ENV)
-        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True,
-                              text=True, check=True).stdout.strip()
-    target = PROJECT / "reports" / "part8" / "corrections" / "r1" / f"replay_{STAMP}"
-    shutil.copytree(EVIDENCE, target)
+        _subprocess.run(["git", "checkout", "-q", "-B", branch, PIN_COMMIT], cwd=REPO, check=True)
+        _subprocess.run(["git", "add", "--", *paths], cwd=REPO, check=True)
+        _subprocess.run(["git", "-c", "user.name=Thesis pipeline (Colab)", "-c",
+                         "user.email=thesis-pipeline@users.noreply.github.com", "commit", "-q",
+                         "-m", message], cwd=REPO, check=True)
+        _subprocess.run(["git", "push", "-u", "origin", branch], cwd=REPO, check=True, env=GIT_ENV)
+        return _subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True,
+                               text=True, check=True).stdout.strip()
+    what = ("Tier A: AR chains re-estimated (" + ", ".join(PLAN["re_estimated"]) + ")"
+            if PLAN["label"] == "tier-a" else "cache replay; no estimation")
+    target = _Path(PROJECT) / "reports" / "part8" / "corrections" / "r1" / f"replay_{STAMP}"
+    _shutil.copytree(EVIDENCE, target)
     sha = push(f"{EVIDENCE_BRANCH_PREFIX}/{STAMP}", [str(target.relative_to(REPO))],
-               f"R1 real-cache replay evidence {STAMP} (code {COMMIT[:12]}; no estimation)")
+               f"R1 evidence {STAMP} ({what}; run {PLAN['run_id']}; code {COMMIT[:12]})")
     print("evidence branch:", f"{EVIDENCE_BRANCH_PREFIX}/{STAMP}", sha)
-    release_target = PROJECT / "output_corrected"
+    release_target = _Path(PROJECT) / "output_corrected"
     if release_target.exists():
-        shutil.rmtree(release_target)
-    shutil.copytree(RELEASE, release_target)
-    run_id = corrected["run_id"]
-    sha = push(f"{RELEASE_BRANCH_PREFIX}/r1-replay-{STAMP}",
-               [str(release_target.relative_to(REPO))],
-               f"Part 8 corrected release (provisional) {run_id}: cache replay, code {COMMIT[:12]}")
-    print("release branch:", f"{RELEASE_BRANCH_PREFIX}/r1-replay-{STAMP}", sha)'''
+        _shutil.rmtree(release_target)
+    _shutil.copytree(PLAN["release"], release_target)
+    branch = f"{RELEASE_BRANCH_PREFIX}/r1-{PLAN['label']}-{STAMP}"
+    sha = push(branch, [str(release_target.relative_to(REPO))],
+               f"Part 8 corrected release (provisional) {PLAN['run_id']}: {what}; "
+               f"code {COMMIT[:12]}")
+    print("release branch:", branch, sha)"""
+
+STEP8_PASTE_HEADER = """# R1 Step 8 (fixed), for a Colab session that is ALREADY OPEN and ran the older notebook.
+# Paste this whole file into a NEW cell of that session and run it INSTEAD of the old step-8
+# cell (never run the old one: it publishes the step-6 release). It reads only what the
+# completed steps wrote to disk. Set CONFIRM_PUBLISH = True in the session only after the
+# dry run has been reviewed and publication authorised.
+# Generated by make_r1_replay_notebook.py; identical to the notebook's step-8 cell.
+
+"""
 
 PIN_DEFAULT_LINE = 'PIN_COMMIT = "__PIN__"'
 
@@ -300,3 +393,6 @@ if __name__ == "__main__":
     target = Path(__file__).with_name("r1_cache_replay.ipynb")
     target.write_text(json.dumps(build(pin), indent=1) + "\n", encoding="utf-8")
     print("wrote", target)
+    paste = Path(__file__).with_name("r1_step8_publish_cell.py")
+    paste.write_text(STEP8_PASTE_HEADER + PUBLISH + "\n", encoding="utf-8")
+    print("wrote", paste)

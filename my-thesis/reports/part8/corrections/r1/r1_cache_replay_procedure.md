@@ -176,3 +176,14 @@ The full suite (`pytest -m "not network"`, slow tests included) gave **924 passe
 - **History.** The same code reproduced all 92 files byte for byte, figures included, in the container used on 1–2 November.
 
 **Implication for the Colab run.** Figure files are byte-compared by the legacy gate. If the Colab image now renders fonts differently from the original run, step 6 stops. That is a safe failure: nothing is published. The replay report from steps 4–5 is already saved to the Drive evidence folder before step 6 runs.
+
+## 8. After Tier A (3 November 2026)
+
+Step 8 was fixed so that it publishes the release the completed steps produced (Tier A when Tier A ran), with fail-safe provenance checks and a `CONFIRM_PUBLISH` gate. A session that ran the older notebook must use `colab/r1_step8_publish_cell.py` instead of its old Step 8 cell.
+
+`tier_a_review.md` covers:
+
+- the Step 8 fix;
+- the failure audit: 76 expected failed AR origins across the eight Tier A chains, 71 of them in the FEDFUNDS T4.1 level chain;
+- the classification of the 35 unavailable chain contexts: 9 need Tier B, and 26 are legitimately unaffected;
+- the HLZ, DM-HLN and HAC warnings.
