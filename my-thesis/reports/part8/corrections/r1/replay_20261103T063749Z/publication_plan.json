@@ -1,0 +1,23 @@
+{
+  "label": "tier-a",
+  "release": "/content/r1work/r1_tier_a_release",
+  "staging": "/content/r1work/r1_tier_a",
+  "run_id": "correction-20261103T073809-949fcd76",
+  "re_estimated": [
+    "T4.1:FEDFUNDS|AR",
+    "T4.1:UNRATE|AR",
+    "T4.2:CPIAUCSL|AR(p=1)",
+    "T4.2:CPIAUCSL|AR(p=12)",
+    "T4.2:CPIAUCSL|AR(p=3)",
+    "T4.2:CPIAUCSL|AR(p=6)",
+    "T4.8:UNRATE|180:AR",
+    "T4.8:UNRATE|300:AR"
+  ],
+  "estimations_performed": {},
+  "chain_sources": {
+    "published": 48,
+    "re-estimated": 8,
+    "cache": 17,
+    "unavailable": 35
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "code_tree_dirty": false,
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "data_cutoff": "2026-08-01",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "environment": {
+    "packages": {
+      "arch": "8.0.0",
+      "joblib": "1.6.0",
+      "matplotlib": "3.11.2",
+      "numpy": "2.4.6",
+      "pandas": "3.0.6",
+      "psutil": "7.2.2",
+      "pyarrow": "26.0.0",
+      "scipy": "1.17.1",
+      "statsmodels": "0.15.0",
+      "tabulate": "0.10.0",
+      "yaml": "6.0.1"
+    },
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "python": "3.11.18",
+    "requirements_lock_sha256": "91d1e59e770a365ffd83cc7d0083e232ececf43d22410b6cec3d9d24ca94863b"
+  },
+  "namespace": "correction",
+  "notes": {
+    "approved_estimation": [],
+    "cache_root": "/content/r1work/r1_cache",
+    "corrections": "F1, F2, F3, F4, F7.1",
+    "mode": "corrected",
+    "original_results_commit": "066294544e8ff84f3c2c73ab647c8d13331dcac1",
+    "original_run_id": "baseline-20261030T173044-949fcd76",
+    "uncommitted_paths_at_start": [],
+    "workflow": "R1 correction from published forecasts"
+  },
+  "run_id": "correction-20261103T070846-949fcd76",
+  "started_utc": "2026-11-03T07:08:46Z",
+  "vintage_date": "2026-10-05"
+}
