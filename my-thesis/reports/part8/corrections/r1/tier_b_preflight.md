@@ -2,6 +2,8 @@
 
 Date: 3 November 2026.
 
+> **Superseded in part (4 November 2026).** The single-notebook execution design here is replaced by three independent batch notebooks; see `tier_b_batches.md`. The workload analysis and gate definitions below still apply.
+
 - **Status:** a proposal. Tier B is **not** authorised, and nothing here estimates, publishes or changes methodology.
 - **Inputs read:**
   - `my-thesis/CLAUDE.md`;
