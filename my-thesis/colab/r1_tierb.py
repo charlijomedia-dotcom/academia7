@@ -11,14 +11,17 @@ committed, or before an origin would start that cannot finish within the runtime
 Layout on Google Drive (one namespace per batch; nothing shared is ever written):
 
     DRIVE_ROOT/baseline/r1_tierb_batches/<B>/
-        checkpoints/<task-slug>/ckpt-<utc>-<session>-<seq>/   committed, immutable
-            payloads.tar.gz      payloads new since the parent checkpoint
-            manifest.json        task, session, parent, member sha256s, archive sha256
-            COMMITTED            written last, after the archive was read back and verified
-        checkpoints/<task-slug>/ckpt-...partial/               an interrupted write: ignored
-        sessions/<utc>-<session>/                              logs, progress, summaries
+        checkpoints/<task-slug>/ckpt-<utc>-<session>-<seq>-<rand>/   committed, immutable
+            payloads.tar.gz      payloads new since the parent checkpoint (read back, verified)
+            manifest.json        task, session, parent, member sha256s, archive sha256,
+                                 session_record (traceable even if the session was killed)
+            COMMITTED            written last: JSON with the manifest and archive sha256
+        a checkpoint folder without a valid COMMITTED marker is an interrupted write: ignored
+        (the completion-marker protocol does not rely on directory renames)
+        sessions/<utc>-<session>/                              started record, progress, summary, logs
         leases/<session>.json                                  one active session per batch
-        certificates/COMPLETE-<utc>-<session>.json             only when every chain verified
+        certificates/COMPLETE-<utc>-<session>.json             every chain complete; carries
+                                                               scientific_status, never approval
 """
 
 from __future__ import annotations
@@ -199,29 +202,68 @@ def _safe_members(archive: tarfile.TarFile, prefix: str = "") -> list[tarfile.Ta
 
 
 # -- committed checkpoints ---------------------------------------------------------------
+#
+# Completion-marker protocol (does not rely on directory renames being atomic on the
+# Google Drive mount). A checkpoint folder is created under its final name and filled in
+# this order: payloads.tar.gz (read back and verified member by member), manifest.json
+# (read back), and last COMMITTED, a small JSON naming the checkpoint and the sha256 of
+# the manifest and the archive (read back). A folder is a committed checkpoint only if
+# COMMITTED parses and both hashes match; a folder without a valid marker is an
+# interrupted write: it is ignored, listed, and never deleted or modified. Once a valid
+# marker exists, any later mismatch is corruption and raises.
+
+COMMIT_MARKER = "COMMITTED"
+PROTOCOL = "r1-tierb-marker-v1"
+
 
 def _checkpoint_dirs(task_dir: Path) -> list[Path]:
     if not task_dir.exists():
         return []
-    return sorted(p for p in task_dir.iterdir() if p.is_dir() and p.name.startswith("ckpt-")
-                  and not p.name.endswith(".partial"))
+    return sorted(p for p in task_dir.iterdir() if p.is_dir() and p.name.startswith("ckpt-"))
+
+
+def _marker(folder: Path) -> dict | None:
+    """The parsed completion marker, or None for an interrupted (incomplete) write."""
+    if folder.name.endswith(".partial"):
+        return None
+    path = folder / COMMIT_MARKER
+    if not path.is_file():
+        return None
+    try:
+        marker = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return None                         # a marker cut off mid-write: never completed
+    if not isinstance(marker, dict) or marker.get("protocol") != PROTOCOL:
+        return None
+    return marker
+
+
+def incomplete_checkpoints(task_dir: Path | str) -> list[str]:
+    """Folders of interrupted checkpoint writes (no valid completion marker)."""
+    return [p.name for p in _checkpoint_dirs(Path(task_dir)) if _marker(p) is None]
 
 
 def committed_checkpoints(task_dir: Path | str) -> list[tuple[Path, dict]]:
     """Committed checkpoints of one chain, validated and in commit order.
 
-    A folder counts only if it has COMMITTED, a manifest, and an archive whose sha256
-    matches the manifest. The parents must form one linear history: a fork (two sessions
-    writing the same chain) or a gap is an error, never resolved by guessing.
+    A folder counts only with a valid completion marker whose manifest and archive
+    sha256 match the files. The parents must form one linear history: a fork (two
+    sessions writing the same chain) or a gap is an error, never resolved by guessing.
     """
     task_dir = Path(task_dir)
     found = []
     for folder in _checkpoint_dirs(task_dir):
-        if not (folder / "COMMITTED").is_file():
-            continue                       # an abandoned write; earlier commits stand
-        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-        archive = folder / "payloads.tar.gz"
-        if not archive.is_file() or sha256_file(archive) != manifest["archive_sha256"]:
+        marker = _marker(folder)
+        if marker is None:
+            continue                       # an interrupted write; earlier commits stand
+        if marker.get("checkpoint_id") != folder.name:
+            raise TierBError(f"checkpoint {folder.name}: marker names {marker.get('checkpoint_id')}")
+        manifest_path, archive = folder / "manifest.json", folder / "payloads.tar.gz"
+        if not manifest_path.is_file() or sha256_file(manifest_path) != marker["manifest_sha256"]:
+            raise TierBError(f"checkpoint {folder.name}: manifest missing or sha256 mismatch")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if not archive.is_file() or sha256_file(archive) != manifest["archive_sha256"] \
+                or manifest["archive_sha256"] != marker["archive_sha256"]:
             raise TierBError(f"checkpoint {folder.name}: archive missing or sha256 mismatch")
         if manifest.get("checkpoint_id") != folder.name:
             raise TierBError(f"checkpoint {folder.name}: manifest names {manifest.get('checkpoint_id')}")
@@ -252,16 +294,27 @@ def committed_inventory(task_dir: Path | str) -> dict[str, str]:
     return files
 
 
+def _write_verified(path: Path, data: bytes) -> None:
+    """Write a file in place and read it back; raise if the destination differs."""
+    with open(path, "wb") as handle:
+        handle.write(data)
+        handle.flush()
+        os.fsync(handle.fileno())
+    if sha256_file(path) != sha256_bytes(data):
+        raise TierBError(f"{path}: read-back differs from what was written")
+
+
 def commit_checkpoint(local_fits: Path | str, task_dir: Path | str, *, task: str,
                       session: str, extra: dict | None = None,
-                      _fail_after_archive: bool = False) -> dict | None:
+                      _fail_after_archive: bool = False,
+                      _fail_in_marker: bool = False) -> dict | None:
     """Commit the payloads written since the last committed checkpoint.
 
-    The archive is built on local disk, copied into `<id>.partial/`, read back from the
-    destination and verified member by member; only then are the manifest and COMMITTED
-    written and the folder renamed to its final name. An interruption at any point leaves
-    at most a `.partial` folder, which is ignored: earlier commits are never touched.
-    Returns the manifest, or None when nothing is new. Raises on any write failure.
+    The archive is built on local disk, copied into the checkpoint folder, read back
+    from the destination and verified member by member; then the manifest; then the
+    completion marker. An interruption at any point leaves a folder without a valid
+    marker, which is ignored: earlier commits are never touched. Returns the manifest,
+    or None when nothing is new. Raises on any write or verification failure.
     """
     local_fits, task_dir = Path(local_fits), Path(task_dir)
     history = committed_checkpoints(task_dir)
@@ -278,35 +331,42 @@ def commit_checkpoint(local_fits: Path | str, task_dir: Path | str, *, task: str
     sequence = len(history) + 1
     # unique even when a retry follows an abandoned write in the same second
     checkpoint_id = f"ckpt-{utc_stamp()}-{session}-{sequence:05d}-{os.urandom(3).hex()}"
+    folder = task_dir / checkpoint_id
     with tempfile.TemporaryDirectory() as scratch:
         local_archive = Path(scratch) / "payloads.tar.gz"
         with tarfile.open(local_archive, "w:gz") as archive:
             for name in new:
                 archive.add(local_fits / name, arcname=name)
-        archive_sha = sha256_file(local_archive)
-        partial = task_dir / f"{checkpoint_id}.partial"
-        partial.mkdir(parents=True, exist_ok=False)
-        shutil.copyfile(local_archive, partial / "payloads.tar.gz")
+        archive_bytes = local_archive.read_bytes()
+    archive_sha = sha256_bytes(archive_bytes)
+    folder.mkdir(parents=True, exist_ok=False)
+    written = folder / "payloads.tar.gz"
+    _write_verified(written, archive_bytes)
     if _fail_after_archive:                # test hook: an interrupted backup
         raise OSError("simulated interruption during checkpoint write")
-    written = partial / "payloads.tar.gz"
-    if sha256_file(written) != archive_sha:
-        raise TierBError(f"{task}: archive changed while being written to {partial}")
     with tarfile.open(written, "r:gz") as archive:
         members = _safe_members(archive)
         got = {m.name: sha256_bytes(archive.extractfile(m).read()) for m in members}
     expected = {n: current[n] for n in new}
     if got != expected:
         raise TierBError(f"{task}: archive read back does not match the local payloads")
-    manifest = {"checkpoint_id": checkpoint_id, "task": task, "session": session,
-                "sequence": sequence,
+    manifest = {"checkpoint_id": checkpoint_id, "protocol": PROTOCOL, "task": task,
+                "session": session, "sequence": sequence,
                 "parent": history[-1][1]["checkpoint_id"] if history else None,
                 "created_utc": utc_stamp(), "archive_sha256": archive_sha,
-                "members": expected, "cumulative_payloads": len(known) + len(new),
-                **(extra or {})}
-    write_json_atomic(partial / "manifest.json", manifest)
-    (partial / "COMMITTED").write_text(checkpoint_id, encoding="utf-8")
-    os.replace(partial, task_dir / checkpoint_id)
+                "members": expected, "new_payloads": len(new),
+                "cumulative_payloads": len(known) + len(new), **(extra or {})}
+    manifest_bytes = json.dumps(manifest, indent=1, sort_keys=True).encode("utf-8")
+    _write_verified(folder / "manifest.json", manifest_bytes)
+    marker = json.dumps({"protocol": PROTOCOL, "checkpoint_id": checkpoint_id,
+                         "manifest_sha256": sha256_bytes(manifest_bytes),
+                         "archive_sha256": archive_sha}, sort_keys=True).encode("utf-8")
+    if _fail_in_marker:                    # test hook: the marker itself cut off
+        (folder / COMMIT_MARKER).write_bytes(marker[: len(marker) // 2])
+        raise OSError("simulated interruption while writing the completion marker")
+    _write_verified(folder / COMMIT_MARKER, marker)
+    if _marker(folder) is None:
+        raise TierBError(f"{folder}: completion marker not readable after writing")
     return manifest
 
 
@@ -315,7 +375,8 @@ def restore_checkpoints(task_dir: Path | str, local_fits: Path | str) -> dict:
     task_dir, local_fits = Path(task_dir), Path(local_fits)
     local_fits.mkdir(parents=True, exist_ok=True)
     expected = committed_inventory(task_dir)
-    for folder, manifest in committed_checkpoints(task_dir):
+    history = committed_checkpoints(task_dir)
+    for folder, manifest in history:
         with tarfile.open(folder / "payloads.tar.gz", "r:gz") as archive:
             for member in _safe_members(archive):
                 data = archive.extractfile(member).read()
@@ -330,9 +391,13 @@ def restore_checkpoints(task_dir: Path | str, local_fits: Path | str) -> dict:
                 temporary = target.with_name(target.name + ".tmp")
                 temporary.write_bytes(data)
                 os.replace(temporary, target)
-    partials = [p.name for p in task_dir.glob("*.partial")] if task_dir.exists() else []
-    return {"payloads": len(expected), "checkpoints": len(committed_checkpoints(task_dir)),
-            "ignored_partial_writes": partials}
+    restored = inventory(local_fits)
+    missing = [n for n, d in expected.items() if restored.get(n) != d]
+    if missing:
+        raise TierBError(f"{task_dir.name}: restored payloads do not match the manifests: "
+                         f"{missing[:3]}")
+    return {"payloads": len(expected), "checkpoints": len(history),
+            "ignored_incomplete_writes": incomplete_checkpoints(task_dir)}
 
 
 # -- Tier A ------------------------------------------------------------------------------
@@ -593,46 +658,179 @@ def release_lease(lease: Path | str) -> None:
     write_json_atomic(lease, data)
 
 
+# -- session provenance (also for hard-killed sessions) ------------------------------------
+
+SESSION_START = "session_started.json"
+SESSION_SUMMARY = "session_summary.json"
+
+
+def _session_of_checkpoint(name: str) -> str:
+    """`ckpt-<utc>-<session>-<seq>-<rand>` -> `<session>` (sessions contain hyphens)."""
+    parts = name.removesuffix(".partial").split("-")
+    return "-".join(parts[2:-2])
+
+
+def session_ledger(root: Path | str) -> dict:
+    """Every session of a batch, from its session folder, leases AND checkpoint manifests.
+
+    A session is `terminated` only if it wrote `session_summary.json`. Any other session
+    seen anywhere (a session folder with only `session_started.json` or `progress.json`,
+    an unreleased lease, committed checkpoints, or an incomplete checkpoint write) is
+    `interrupted`: it was hard-killed or lost before its summary. Work it committed is
+    still accounted for from the manifests; work after its last commit was lost.
+    """
+    root = Path(root)
+    sessions: dict[str, dict] = {}
+
+    def entry(session: str) -> dict:
+        return sessions.setdefault(session, {
+            "session": session, "session_dir": None, "started_utc": None,
+            "finished_utc": None, "elapsed_hours": None, "exit_code": None,
+            "final_verification": None, "outcomes": None, "lease_released": None,
+            "last_progress_utc": None, "checkpoints": 0, "first_checkpoint_utc": None,
+            "last_checkpoint_utc": None, "payloads_committed_by_task": {},
+            "incomplete_checkpoint_writes": [], "summary_estimations": None})
+
+    for folder in sorted((root / "sessions").glob("*")) if (root / "sessions").exists() else []:
+        if not folder.is_dir():
+            continue
+        start = folder / SESSION_START
+        info = json.loads(start.read_text(encoding="utf-8")) if start.is_file() else {}
+        session = info.get("session") or folder.name.split("-", 1)[-1]
+        e = entry(session)
+        e["session_dir"] = folder.name
+        e["started_utc"] = info.get("started_utc") or folder.name.split("-", 1)[0]
+        progress = folder / "progress.json"
+        if progress.is_file():
+            e["last_progress_utc"] = _dt.datetime.fromtimestamp(
+                progress.stat().st_mtime, _dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        summary = folder / SESSION_SUMMARY
+        if summary.is_file():
+            data = json.loads(summary.read_text(encoding="utf-8"))
+            for key in ("finished_utc", "elapsed_hours", "exit_code", "final_verification",
+                        "outcomes"):
+                e[key] = data.get(key)
+            e["summary_estimations"] = data.get("estimations")
+    for lease in sorted((root / "leases").glob("*.json")) if (root / "leases").exists() else []:
+        data = json.loads(lease.read_text(encoding="utf-8"))
+        entry(data.get("session") or lease.stem)["lease_released"] = data.get("released") is not None
+    checkpoints = root / "checkpoints"
+    for task_dir in sorted(checkpoints.iterdir()) if checkpoints.exists() else []:
+        if not task_dir.is_dir():
+            continue
+        for _, manifest in committed_checkpoints(task_dir):
+            e = entry(manifest["session"])
+            e["checkpoints"] += 1
+            stamp = manifest["created_utc"]
+            e["first_checkpoint_utc"] = min(filter(None, [e["first_checkpoint_utc"], stamp]))
+            e["last_checkpoint_utc"] = max(filter(None, [e["last_checkpoint_utc"], stamp]))
+            counts = e["payloads_committed_by_task"]
+            counts[manifest["task"]] = counts.get(manifest["task"], 0) + len(manifest["members"])
+            record = manifest.get("session_record") or {}
+            e["started_utc"] = e["started_utc"] or record.get("started_utc")
+        for name in incomplete_checkpoints(task_dir):
+            entry(_session_of_checkpoint(name))["incomplete_checkpoint_writes"].append(
+                f"{task_dir.name}/{name}")
+    terminated, interrupted = [], []
+    for session in sorted(sessions, key=lambda s: (sessions[s]["started_utc"] or "", s)):
+        e = sessions[session]
+        if e["exit_code"] is not None:
+            e["state"] = {0: "terminated: complete", 3: "terminated: budget reached, work remains",
+                          2: "terminated: error"}.get(e["exit_code"], f"terminated: exit {e['exit_code']}")
+            terminated.append(e)
+        else:
+            e["state"] = "interrupted: no session summary (hard-killed or lost)"
+            interrupted.append(e)
+    return {"terminated": terminated, "interrupted": interrupted,
+            "payloads_committed_by_task": _sum_counts(
+                e["payloads_committed_by_task"] for e in sessions.values())}
+
+
+def _sum_counts(dicts: Iterable[dict]) -> dict:
+    out: dict = {}
+    for d in dicts:
+        for key, value in d.items():
+            out[key] = out.get(key, 0) + value
+    return out
+
+
 # -- certificates ------------------------------------------------------------------------
+#
+# A certificate says the COMPUTATION is complete and verified. It never says the result
+# is scientifically approved: that is a separate, human decision. `scientific_status`
+# is one of the values below, and `scientific_approval` is always "not granted".
+
+STATUS_REVIEW_REQUIRED = "COMPUTATION_COMPLETE_REVIEW_REQUIRED"
+STATUS_WARNINGS = "COMPUTATION_COMPLETE_SENSITIVITY_REPORTED"
+STATUS_REPRODUCED = "COMPUTATION_COMPLETE_REPRODUCED"
+STATUS_INCOMPLETE = "COMPUTATION_INCOMPLETE"
+APPROVAL_NOT_GRANTED = ("not granted: a completed computation is not an approved result; "
+                        "every review item and reported warning needs independent review")
+
+
+def scientific_status(blocking: Iterable[str], sensitivity: Iterable[str]) -> str:
+    if list(blocking):
+        return STATUS_REVIEW_REQUIRED
+    if list(sensitivity):
+        return STATUS_WARNINGS
+    return STATUS_REPRODUCED
+
 
 def certificate(batch: str, walks: dict[str, dict], checkpoints: dict[str, list[dict]], *,
-                provenance: dict, sessions: list[dict], estimations: dict,
-                agreement: dict | None = None) -> dict:
-    """The batch completion certificate (only produced when every chain is complete)."""
+                provenance: dict, sessions: dict, agreement: dict[str, dict]) -> dict:
+    """The batch completion certificate (only produced when every chain is complete).
+
+    `sessions` is `session_ledger(...)`; `agreement` is `agreement(...)` per task. Changed
+    failure counts and every blocking agreement item are review items; MSAR/STAR
+    optimizer sensitivity is reported separately. Neither is ever folded into "approved".
+    """
     tasks = batch_tasks(batch)
     if set(walks) != set(tasks):
         raise TierBError(f"{batch}: walks for {sorted(walks)} != {sorted(tasks)}")
+    if set(agreement) != set(tasks):
+        raise TierBError(f"{batch}: agreement for {sorted(agreement)} != {sorted(tasks)}")
     incomplete = {t: w["completed"] for t, w in walks.items() if not w["complete"]}
     unreachable = {t: len(w["unreachable"]) for t, w in walks.items() if w["unreachable"]}
     if incomplete or unreachable:
         raise TierBError(f"{batch} not complete: incomplete {incomplete}, "
                          f"unreachable {unreachable}")
+    estimations = sessions["payloads_committed_by_task"]
     if set(estimations) - set(tasks):
         raise TierBError(f"{batch}: estimations outside the batch: {set(estimations) - set(tasks)}")
-    chains = {}
+    chains, review_items, sensitivity = {}, [], []
     for task in tasks:
         walk = walks[task]
         statuses = walk["statuses"]
         planned, _, original_failed = TIER_B_CHAINS[task]
         if walk["planned"] != planned:
             raise TierBError(f"{task}: {walk['planned']} origins, expected {planned}")
+        a = agreement[task]
+        failed = statuses.get("failed", 0)
+        if failed != original_failed:
+            review_items.append(f"{task}: failed fits {failed} vs original {original_failed}")
+        review_items += a["review_items"]
+        sensitivity += a["sensitivity_items"]
         chains[task] = {"planned_origins": planned, "completed_origins": walk["completed"],
-                        "status": "complete", "adequate": statuses.get("adequate", 0),
-                        "fragile": statuses.get("fragile", 0),
-                        "failed": statuses.get("failed", 0),
+                        "computation": "complete", "adequate": statuses.get("adequate", 0),
+                        "fragile": statuses.get("fragile", 0), "failed": failed,
                         "original_failed": original_failed,
-                        "failure_count_changed": statuses.get("failed", 0) != original_failed,
+                        "failure_count_changed": failed != original_failed,
+                        "agreement_status": a["status"],
+                        "agreement": {k: v for k, v in a.items() if k != "rows"},
                         "checkpoints": checkpoints.get(task, [])}
+    status = scientific_status(review_items, sensitivity)
     return {"batch": batch, "authorized_tasks": list(tasks), "complete": True,
+            "computation_status": "COMPUTATION_COMPLETE",
+            "scientific_status": status, "scientific_approval": APPROVAL_NOT_GRANTED,
+            "review_items": review_items, "sensitivity_reported": sensitivity,
             "expected_origins": sum(TIER_B_CHAINS[t][0] for t in tasks),
             "completed_origins": sum(w["completed"] for w in walks.values()),
-            "chains": chains, "provenance": provenance, "sessions": sessions,
-            "estimations_by_task": estimations,
+            "chains": chains, "provenance": provenance,
+            "sessions_terminated": sessions["terminated"],
+            "sessions_interrupted": sessions["interrupted"],
+            "estimations_by_task": {"committed_payloads": estimations},
             "only_authorized_models_estimated": not (set(estimations) - set(tasks)),
-            "warnings": [f"{t}: failed fits {c['failed']} vs original {c['original_failed']}"
-                         for t, c in chains.items() if c["failure_count_changed"]]
-            + list((agreement or {}).get("warnings", [])),
-            "agreement": agreement, "created_utc": utc_stamp()}
+            "warnings": review_items + sensitivity, "created_utc": utc_stamp()}
 
 
 def latest_certificate(root: Path | str) -> dict | None:
@@ -658,6 +856,41 @@ def no_estimation_allowed():
 
 
 # -- numerical agreement with the original estimates (G7) ---------------------------------
+#
+# Tolerances (declared, used as stated):
+#   LOGLIK_TOLERANCE   |l_new - l_orig| / max(1, |l_orig|)
+#   PARAM_TOLERANCE    max over parameters of |p_new - p_orig| / max(1, |p_orig|)
+# The original parameters are stored with 10 significant digits (fit_records.params),
+# so their rounding contributes at most 5e-10 to the scaled difference: well inside
+# PARAM_TOLERANCE.
+
+LOGLIK_TOLERANCE = 1e-6
+PARAM_TOLERANCE = 1e-8
+WARM_STARTED = ("MSAR", "MSAR3", "STAR")
+
+# Per origin, exactly one category. REVIEW categories make the chain (and the batch and
+# the aggregation) REVIEW_REQUIRED; SENSITIVITY categories are expected optimizer
+# sensitivity of warm-started models (F6): always reported, never called an error,
+# never called reproduced.
+REVIEW_CATEGORIES = {
+    "classification_changed": "status or reason codes differ from the original fit",
+    "missing_original_record": "no original fit record for a re-estimated origin",
+    "original_origin_not_reestimated": "an original fit record with no re-estimated origin",
+    "parameter_names_differ": "the re-estimated and original parameter sets differ",
+    "reproduction_failure": "non-warm-started model (ARMA) does not reproduce within tolerance",
+    "unexplained_parameter_discrepancy": ("parameters differ beyond tolerance at equal "
+                                          "likelihood before the chain's warm-start path "
+                                          "diverged (not explained by different starts)"),
+}
+SENSITIVITY_CATEGORIES = {
+    "optimizer_sensitivity": ("warm-started model, same classification, different "
+                              "log-likelihood (another optimum or different start)"),
+    "flat_likelihood_sensitivity": ("warm-started model, same classification, equal "
+                                    "log-likelihood, different parameters after the "
+                                    "warm-start path diverged"),
+}
+REPRODUCED_CATEGORIES = ("reproduced", "reproduced_regime_labels_permuted")
+
 
 def _parse_params(text) -> dict:
     out = {}
@@ -667,8 +900,70 @@ def _parse_params(text) -> dict:
             try:
                 out[name.strip()] = float(value)
             except ValueError:
-                pass
+                out[name.strip()] = float("nan")
     return out
+
+
+def _codes(value) -> frozenset:
+    if value is None or (isinstance(value, float) and value != value):
+        return frozenset()
+    if isinstance(value, (list, tuple)):
+        return frozenset(str(v) for v in value if str(v))
+    return frozenset(c.strip() for c in str(value).split(";") if c.strip())
+
+
+def _scaled_diff(a: float, b: float) -> float:
+    import math
+    if a is None or b is None:
+        return 0.0 if a is b else float("inf")
+    a, b = float(a), float(b)
+    if not (math.isfinite(a) and math.isfinite(b)):
+        return 0.0 if (a == b or (a != a and b != b)) else float("inf")
+    return abs(a - b) / max(1.0, abs(b))
+
+
+def regime_permutations(names: Iterable[str]) -> list[dict[str, str]]:
+    """Renamings of MSAR parameters for every relabelling of the regimes.
+
+    Regime-indexed names in the pinned MSAR (msar.py): `mu{k}` and `p{ij}`; `phi{j}`
+    (AR lags) and `sigma` are shared by all regimes and never renamed. The identity
+    renaming comes first.
+    """
+    import itertools
+    names = list(names)
+    k = sum(1 for n in names if re.fullmatch(r"mu\d", n))
+    if k < 2:
+        return [{n: n for n in names}]
+    out = []
+    for perm in itertools.permutations(range(1, k + 1)):
+        mapping = {}
+        for n in names:
+            if re.fullmatch(r"mu\d", n):
+                mapping[n] = f"mu{perm[int(n[2]) - 1]}"
+            elif re.fullmatch(r"p\d\d", n):
+                mapping[n] = f"p{perm[int(n[1]) - 1]}{perm[int(n[2]) - 1]}"
+            else:
+                mapping[n] = n
+        out.append(mapping)
+    return out
+
+
+def aligned_param_diff(new: dict, original: dict, model: str) -> tuple[float, str]:
+    """Max scaled parameter difference, minimised over regime relabellings for MSAR.
+
+    Returns (difference, permutation label): "identity" or e.g. "mu1->mu2,mu2->mu1".
+    """
+    candidates = (regime_permutations(new) if model in ("MSAR", "MSAR3")
+                  else [{n: n for n in new}])
+    best, label = float("inf"), "identity"
+    for mapping in candidates:
+        diff = max((_scaled_diff(new[n], original[mapping[n]]) for n in new), default=0.0)
+        if diff < best:
+            best = diff
+            moved = sorted(f"{n}->{m}" for n, m in mapping.items()
+                           if n != m and n.startswith("mu"))
+            label = ",".join(moved) or "identity"
+    return best, label
 
 
 def original_chain_records(fit_records, task: str, job):
@@ -687,58 +982,122 @@ def original_chain_records(fit_records, task: str, job):
     if int(job.window_length) == 240:
         repeats = f.groupby(["refit_date", "params"])["params"].transform("size")
         f = f[repeats == 1] if task.startswith("T4.1:") else f
+    dates = f["refit_date"].astype(str).str[:10]
+    if dates.duplicated().any():                    # never pick one of several silently
+        raise TierBError(f"{task}: original fit records are ambiguous at "
+                         f"{sorted(set(dates[dates.duplicated()]))[:3]}")
     return {str(r.refit_date)[:10]: r for r in f.itertuples()}
 
 
+def validate_original_records(fit_records, jobs, tasks) -> list[str]:
+    """Each chain's original records: one per planned origin; failures as declared."""
+    problems = []
+    for task in tasks:
+        planned, _, failed = TIER_B_CHAINS[task]
+        try:
+            records = original_chain_records(fit_records, task, jobs[task])
+        except TierBError as error:
+            problems.append(str(error))
+            continue
+        found = sum(1 for r in records.values() if r.status == "failed")
+        if len(records) != planned or found != failed:
+            problems.append(f"{task}: {len(records)} original records ({planned} planned), "
+                            f"{found} failed ({failed} declared)")
+    return problems
+
+
 def agreement(task: str, job, walk: dict, fits, fit_records, *,
-              loglik_tolerance: float = 1e-6, param_tolerance: float = 1e-8) -> dict:
+              loglik_tolerance: float = LOGLIK_TOLERANCE,
+              param_tolerance: float = PARAM_TOLERANCE) -> dict:
     """Origin-by-origin agreement of a re-estimated chain with the original estimates.
 
-    ARMA has no warm start, so it must reproduce (status identical, loglik within
-    `loglik_tolerance` relative): otherwise `requires_review`. MSAR and STAR are
-    warm-started and platform-sensitive (F6): their first divergent origin and the
-    divergence profile are reported, never hidden and never auto-accepted.
+    Every origin gets exactly one category (REVIEW_CATEGORIES, SENSITIVITY_CATEGORIES or
+    reproduced). For every model, a changed classification (status or reason codes), a
+    missing original record, an original origin not re-estimated, or a different set of
+    parameter names requires review. ARMA (no warm start) must reproduce: loglik and
+    every parameter within tolerance. MSAR/STAR are compared after aligning regime
+    labels; a different optimum with the same classification is reported as optimizer
+    sensitivity (F6), never as reproduced and never as an error.
     """
-    import math
+    model = job.spec.model
+    warm = model in WARM_STARTED
     original = original_chain_records(fit_records, task, job)
-    rows, first_divergence = [], None
-    status_mismatch = loglik_diverged = missing = 0
+    rows, counts, seen = [], {}, set()
+    first_divergence = None
+    diverged_path = False
     for date, relative in walk["sequence"]:
         payload = read_payload(Path(fits) / relative)
         record = original.get(date)
+        seen.add(date)
+        row = {"refit_date": date, "status_new": payload.get("status"),
+               "reason_codes_new": ";".join(sorted(_codes(payload.get("reason_codes"))))}
         if record is None:
-            missing += 1
-            continue
-        same_status = payload["status"] == record.status
-        a, b = payload.get("loglik"), record.loglik
-        if a is None or b is None or not (math.isfinite(a) and math.isfinite(b)):
-            rel = 0.0 if a == b else float("inf")
+            row["category"] = "missing_original_record"
         else:
-            rel = abs(a - b) / max(1.0, abs(b))
-        mine, theirs = payload.get("params") or {}, _parse_params(record.params)
-        common = set(mine) & set(theirs)
-        prel = max((abs(mine[k] - theirs[k]) / max(1e-12, abs(theirs[k])) for k in common),
-                   default=0.0)
-        diverged = (not same_status) or rel > loglik_tolerance
-        status_mismatch += not same_status
-        loglik_diverged += rel > loglik_tolerance
-        if diverged and first_divergence is None:
-            first_divergence = date
-        rows.append({"refit_date": date, "status_new": payload["status"],
-                     "status_original": record.status, "loglik_rel_diff": rel,
-                     "params_max_rel_diff": prel})
-    warm = job.spec.model in ("MSAR", "MSAR3", "STAR")
-    review = (not warm) and (status_mismatch > 0 or loglik_diverged > 0)
-    warnings = []
-    if status_mismatch:
-        warnings.append(f"{task}: failure/adequacy classification differs at "
-                        f"{status_mismatch} origins (first {first_divergence})")
-    if loglik_diverged:
-        warnings.append(f"{task}: log-likelihood differs beyond {loglik_tolerance:g} at "
-                        f"{loglik_diverged} origins")
-    if missing:
-        warnings.append(f"{task}: {missing} origins without an original record")
-    return {"task": task, "warm_started": warm, "origins_compared": len(rows),
-            "status_mismatches": status_mismatch, "loglik_diverged": loglik_diverged,
-            "first_divergence": first_divergence, "requires_review": review,
-            "warnings": warnings, "rows": rows}
+            same_class = (payload.get("status") == record.status
+                          and _codes(payload.get("reason_codes")) == _codes(
+                              getattr(record, "reason_codes", None)))
+            mine = payload.get("params") or {}
+            theirs = _parse_params(record.params)
+            names_ok = set(mine) == set(theirs)
+            l_new, l_orig = payload.get("loglik"), record.loglik
+            l_diff = _scaled_diff(l_new, l_orig)
+            if names_ok:
+                p_diff, permutation = aligned_param_diff(mine, theirs, model)
+            else:
+                p_diff, permutation = float("nan"), "n/a"
+            loglik_ok, params_ok = l_diff <= loglik_tolerance, p_diff <= param_tolerance
+            if not same_class:
+                category = "classification_changed"
+            elif not names_ok:
+                category = "parameter_names_differ"
+            elif loglik_ok and params_ok:
+                category = ("reproduced" if permutation == "identity"
+                            else "reproduced_regime_labels_permuted")
+            elif not warm:
+                category = "reproduction_failure"
+            elif loglik_ok:
+                category = ("flat_likelihood_sensitivity" if diverged_path
+                            else "unexplained_parameter_discrepancy")
+            else:
+                category = "optimizer_sensitivity"
+            row.update({
+                "status_original": record.status,
+                "reason_codes_original": ";".join(sorted(_codes(getattr(record, "reason_codes", None)))),
+                "loglik_new": l_new, "loglik_original": l_orig,
+                "loglik_new_minus_original": (None if l_new is None or l_orig is None
+                                              else float(l_new) - float(l_orig)),
+                "loglik_scaled_diff": l_diff, "params_max_scaled_diff": p_diff,
+                "regime_label_permutation": permutation,
+                "param_names_new_only": ";".join(sorted(set(mine) - set(theirs))),
+                "param_names_original_only": ";".join(sorted(set(theirs) - set(mine))),
+                "start_used_new": payload.get("start_used"),
+                "start_used_original": getattr(record, "start_used", None),
+                "category": category})
+        if row["category"] not in REPRODUCED_CATEGORIES:
+            diverged_path = True
+            first_divergence = first_divergence or date
+        counts[row["category"]] = counts.get(row["category"], 0) + 1
+        rows.append(row)
+    unmatched = sorted(set(original) - seen)
+    for date in unmatched:
+        rows.append({"refit_date": date, "category": "original_origin_not_reestimated"})
+    if unmatched:
+        counts["original_origin_not_reestimated"] = len(unmatched)
+    review_items = [f"{task}: {n} origins {c} ({REVIEW_CATEGORIES[c]})"
+                    for c, n in sorted(counts.items()) if c in REVIEW_CATEGORIES]
+    sensitivity_items = [f"{task}: {n} origins {c} ({SENSITIVITY_CATEGORIES[c]})"
+                         for c, n in sorted(counts.items()) if c in SENSITIVITY_CATEGORIES]
+    worse = sum(1 for r in rows if r.get("category") in SENSITIVITY_CATEGORIES
+                and (r.get("loglik_new_minus_original") or 0) < 0)
+    if sensitivity_items:
+        sensitivity_items.append(f"{task}: re-estimated log-likelihood lower than the "
+                                 f"original at {worse} of the sensitivity origins")
+    return {"task": task, "model": model, "warm_started": warm,
+            "loglik_tolerance": loglik_tolerance, "param_tolerance": param_tolerance,
+            "origins_compared": sum(1 for r in rows if "status_original" in r),
+            "categories": counts, "first_divergence": first_divergence,
+            "status": scientific_status(review_items, sensitivity_items),
+            "requires_review": bool(review_items),
+            "review_items": review_items, "sensitivity_items": sensitivity_items,
+            "warnings": review_items + sensitivity_items, "rows": rows}

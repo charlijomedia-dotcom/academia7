@@ -39,6 +39,10 @@ def _certify_all(drive: Path, tmp: Path, skip=None, mutate=None) -> None:
             continue
         origins = sum(tb.TIER_B_CHAINS[t][0] for t in tasks)
         cert = {"batch": batch, "complete": True, "authorized_tasks": list(tasks),
+                "computation_status": "COMPUTATION_COMPLETE",
+                "scientific_status": tb.STATUS_REPRODUCED,
+                "scientific_approval": tb.APPROVAL_NOT_GRANTED,
+                "review_items": [], "sensitivity_reported": [], "sessions_interrupted": [],
                 "expected_origins": origins, "completed_origins": origins, "chains": chains,
                 "provenance": {"scientific_commit": tb.SCIENTIFIC_PIN,
                                "cache_identity": tb.CACHE_IDENTITY},
@@ -65,6 +69,13 @@ def test_a_missing_batch_refuses_aggregation(tmp_path):
     (lambda c: c.update(completed_origins=c["expected_origins"] - 1), "origins"),
     (lambda c: c.update(authorized_tasks=c["authorized_tasks"][:-1] or ["x"]), "tasks"),
     (lambda c: c["provenance"].update(scientific_commit="0" * 40), "provenance"),
+    (lambda c: c.update(review_items=["x: failed fits 3 vs original 2"]), "inconsistent"),
+    (lambda c: c.update(scientific_approval="granted"), "claims scientific approval"),
+    (lambda c: c.update(computation_status="COMPUTATION_INCOMPLETE"), "computation status"),
+    (lambda c: next(iter(c["chains"].values())).update(failure_count_changed=True),
+     "changed failure count not listed"),
+    (lambda c: next(iter(c["chains"].values())).update(
+        agreement_status=tb.STATUS_REVIEW_REQUIRED), "no review item listed"),
 ])
 def test_an_invalid_certificate_refuses_aggregation(tmp_path, damage, message):
     _certify_all(tmp_path / "drive", tmp_path, mutate={"B3": damage})
@@ -170,3 +181,36 @@ def test_gates_refuse(tmp_path, kwargs, message):
     out, tier_a, unaffected = _assembly(tmp_path, **kwargs)
     problems = agg.gates(out, tier_a, unaffected)["problems"]
     assert any(message in p for p in problems), problems
+
+
+def _certs(review=None, sensitivity=None):
+    out = {}
+    for batch in tb.BATCHES:
+        out[batch] = {"review_items": (review or {}).get(batch, []),
+                      "sensitivity_reported": (sensitivity or {}).get(batch, []),
+                      "sessions_interrupted": [{"session": f"{batch}-k"}]}
+    return out
+
+
+def test_aggregation_status_can_never_read_as_approved():
+    clean = agg.aggregation_status(_certs(), {"problems": []})
+    assert clean["aggregation_status"] == tb.STATUS_REPRODUCED
+    assert clean["scientific_approval"] == tb.APPROVAL_NOT_GRANTED
+    assert clean["sessions_interrupted"] == {"B1": ["B1-k"], "B2": ["B2-k"], "B3": ["B3-k"]}
+    review = agg.aggregation_status(_certs(review={"B3": ["T4.1:FEDFUNDS|ARMA: 2 origins "
+                                                         "reproduction_failure"]},
+                                           sensitivity={"B1": ["s"]}), {"problems": []})
+    assert review["aggregation_status"] == "COMPUTATION_COMPLETE_REVIEW_REQUIRED"
+    assert review["review_items"] == ["B3: T4.1:FEDFUNDS|ARMA: 2 origins reproduction_failure"]
+    assert review["sensitivity_reported"] == ["B1: s"]                  # not suppressed
+    sens = agg.aggregation_status(_certs(sensitivity={"B2": ["s"]}), {"problems": []})
+    assert sens["aggregation_status"] == tb.STATUS_WARNINGS
+    refused = agg.aggregation_status(_certs(), {"problems": ["T4.2 differs"]})
+    assert refused["aggregation_status"] == "AGGREGATION_REFUSED"
+
+
+def test_table_differences_no_chain_report_explains_require_review():
+    status = agg.aggregation_status(_certs(), {"problems": [], "legacy_differences_from_"
+                                               "reestimated_chains": ["robustness/T4.1_x.csv"]})
+    assert status["aggregation_status"] == "COMPUTATION_COMPLETE_REVIEW_REQUIRED"
+    assert "robustness/T4.1_x.csv" in status["review_items"][0]

@@ -42,7 +42,7 @@ def log(path: Path, message: str) -> None:
         handle.write(line + "\n")
 
 
-def commit_all(args, tasks, root: Path, logfile: Path) -> dict:
+def commit_all(args, tasks, root: Path, logfile: Path, session_info: dict) -> dict:
     committed = {}
     for task in tasks:
         local = args.work / "chains" / tb.slug(task) / "fits"
@@ -50,7 +50,8 @@ def commit_all(args, tasks, root: Path, logfile: Path) -> dict:
             continue
         task_dir = tb.assert_writable_path(root / "checkpoints" / tb.slug(task),
                                            args.drive_root, args.batch)
-        manifest = tb.commit_checkpoint(local, task_dir, task=task, session=args.session)
+        manifest = tb.commit_checkpoint(local, task_dir, task=task, session=args.session,
+                                        extra={"session_record": session_info})
         if manifest:
             committed[task] = manifest["checkpoint_id"]
             log(logfile, f"committed {manifest['checkpoint_id']} ({len(manifest['members'])} "
@@ -76,13 +77,14 @@ def main(argv=None) -> int:
     parser.add_argument("--skip-complete", type=Path, default=None,
                         help="preflight report: chains already complete are not launched")
     parser.add_argument("--poll-seconds", type=float, default=15.0)
+    parser.add_argument("--provenance", type=Path, default=None,
+                        help="provenance.json written by the notebook's preflight cell")
     args = parser.parse_args(argv)
 
     tasks = list(tb.batch_tasks(args.batch))
     root = tb.batch_root(args.drive_root, args.batch)
     session_dir = tb.assert_writable_path(root / "sessions" / f"{tb.utc_stamp()}-{args.session}",
                                           args.drive_root, args.batch)
-    session_dir.mkdir(parents=True, exist_ok=False)
     local_logs = args.work / "logs"
     local_logs.mkdir(parents=True, exist_ok=True)
     logfile = local_logs / "supervisor.log"
@@ -90,8 +92,22 @@ def main(argv=None) -> int:
     if stop_file.exists():
         stop_file.unlink()
     budget = tb.Budget(args.start_epoch, args.budget_hours, args.reserve_minutes)
-    lease = tb.acquire_lease(root, args.session)
+    lease = tb.acquire_lease(root, args.session)   # refused: nothing of this session written
+    session_dir.mkdir(parents=True, exist_ok=False)
     started = time.time()
+    provenance = (json.loads(args.provenance.read_text(encoding="utf-8"))
+                  if args.provenance and args.provenance.exists() else {})
+    # Written first, so a session that is hard-killed before any summary is still on
+    # record; every checkpoint manifest of this session repeats it (traceable from the
+    # checkpoints alone, even if this folder were lost).
+    session_info = {"batch": args.batch, "session": args.session,
+                    "session_dir": session_dir.name, "started_utc": tb.utc_stamp(),
+                    "vm_start_epoch": args.start_epoch, "budget_hours": args.budget_hours,
+                    "max_workers": args.max_workers, "host": os.uname().nodename,
+                    "scientific_commit": provenance.get("scientific_commit"),
+                    "orchestration_commit": provenance.get("orchestration_commit"),
+                    "cache_identity": provenance.get("cache_identity")}
+    tb.write_json_atomic(session_dir / tb.SESSION_START, session_info)
     summary = {"batch": args.batch, "session": args.session, "started_utc": tb.utc_stamp(),
                "budget_hours": args.budget_hours, "vm_start_epoch": args.start_epoch,
                "outcomes": {}, "estimations": {}, "commits": [], "error": None}
@@ -152,7 +168,7 @@ def main(argv=None) -> int:
                 if code not in (0, 3):
                     raise tb.TierBError(f"worker for {task} failed with exit {code}")
             if time.time() - last_backup >= args.backup_minutes * 60:
-                summary["commits"].append(commit_all(args, tasks, root, logfile))
+                summary["commits"].append(commit_all(args, tasks, root, logfile, session_info))
                 tb.heartbeat(lease)
                 tb.write_json_atomic(session_dir / "progress.json",
                                      {**summary, "running": sorted(running),
@@ -171,7 +187,7 @@ def main(argv=None) -> int:
         exit_code = 2
     # final commit and verification: Drive must hold exactly the local payloads
     try:
-        summary["commits"].append(commit_all(args, tasks, root, logfile))
+        summary["commits"].append(commit_all(args, tasks, root, logfile, session_info))
         for task in tasks:
             local = args.work / "chains" / tb.slug(task) / "fits"
             if not local.exists():

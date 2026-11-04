@@ -16,7 +16,16 @@ completion certificate. It never estimates and never pushes:
     unaffected unavailable chains; no `original_retained_pending_estimation` row left;
     legacy reproduction of every file not built from a re-estimated Tier B chain; T4.2
     identical to the Tier A release; the batches' origin-level agreement reports;
- 5. write a dry-run publication plan to DRIVE_ROOT/baseline/r1_tierb_aggregation/<stamp>/.
+ 5. derive one aggregation status that cannot be read as scientific approval:
+    AGGREGATION_REFUSED (a gate failed), COMPUTATION_COMPLETE_REVIEW_REQUIRED (any
+    changed failure classification, unexplained parameter discrepancy, ARMA reproduction
+    failure, missing original record, or table difference no chain report explains),
+    COMPUTATION_COMPLETE_SENSITIVITY_REPORTED (MSAR/STAR optimizer sensitivity only), or
+    COMPUTATION_COMPLETE_REPRODUCED. `scientific_approval` is always "not granted";
+ 6. write a dry-run publication plan to DRIVE_ROOT/baseline/r1_tierb_aggregation/<stamp>/.
+
+Exit status: 0 = computation complete, nothing needs review beyond reported sensitivity;
+4 = computation complete, REVIEW REQUIRED; 1 = refused (a gate failed).
 """
 
 from __future__ import annotations
@@ -54,6 +63,7 @@ def discover(drive_root: Path) -> dict[str, dict]:
         if cert.get("completed_origins") != cert.get("expected_origins"):
             problems.append(f"{batch}: {cert.get('completed_origins')} of "
                             f"{cert.get('expected_origins')} origins")
+        problems += certificate_consistency(batch, cert)
         prov = cert.get("provenance", {})
         if prov.get("scientific_commit") != tb.SCIENTIFIC_PIN or \
                 prov.get("cache_identity") != tb.CACHE_IDENTITY:
@@ -79,6 +89,50 @@ def discover(drive_root: Path) -> dict[str, dict]:
     if problems:
         raise tb.TierBError("aggregation refused: " + "; ".join(problems))
     return certificates
+
+
+def certificate_consistency(batch: str, cert: dict) -> list[str]:
+    """A certificate's status must follow from its own contents; never weaker."""
+    problems = []
+    if cert.get("computation_status") != "COMPUTATION_COMPLETE":
+        problems.append(f"{batch}: computation status {cert.get('computation_status')}")
+    review = list(cert.get("review_items") or [])
+    sensitivity = list(cert.get("sensitivity_reported") or [])
+    for task, chain in (cert.get("chains") or {}).items():
+        if chain.get("failure_count_changed") and not any(
+                r.startswith(f"{task}: failed fits") for r in review):
+            problems.append(f"{batch} {task}: changed failure count not listed for review")
+        if chain.get("agreement_status") == tb.STATUS_REVIEW_REQUIRED and not any(
+                r.startswith(f"{task}:") for r in review):
+            problems.append(f"{batch} {task}: chain requires review but no review item listed")
+    expected = tb.scientific_status(review, sensitivity)
+    if cert.get("scientific_status") != expected:
+        problems.append(f"{batch}: scientific status {cert.get('scientific_status')} "
+                        f"inconsistent with its review items (expected {expected})")
+    if cert.get("scientific_approval") != tb.APPROVAL_NOT_GRANTED:
+        problems.append(f"{batch}: certificate claims scientific approval")
+    return problems
+
+
+def aggregation_status(certificates: dict[str, dict], gate_report: dict) -> dict:
+    """One overall status; review items and sensitivity are carried, never dropped."""
+    review = [f"{b}: {r}" for b, c in sorted(certificates.items())
+              for r in c.get("review_items", [])]
+    sensitivity = [f"{b}: {r}" for b, c in sorted(certificates.items())
+                   for r in c.get("sensitivity_reported", [])]
+    dependent = gate_report.get("legacy_differences_from_reestimated_chains", [])
+    if dependent and not review and not sensitivity:
+        review.append("tables fed by re-estimated chains differ from the original although "
+                      f"every chain reproduced: {dependent}")
+    if gate_report.get("problems"):
+        status = "AGGREGATION_REFUSED"
+    else:
+        status = tb.scientific_status(review, sensitivity)
+    return {"aggregation_status": status, "scientific_approval": tb.APPROVAL_NOT_GRANTED,
+            "review_items": review, "sensitivity_reported": sensitivity,
+            "table_differences_from_reestimated_chains": dependent,
+            "sessions_interrupted": {b: [s["session"] for s in c.get("sessions_interrupted", [])]
+                                     for b, c in sorted(certificates.items())}}
 
 
 def merge(drive_root: Path, tier_a_archive: Path, merged_fits: Path) -> dict:
@@ -200,23 +254,29 @@ def main(argv=None) -> int:
     exits = assemble(args.code_dir, args.original, args.cache_root, merged_root,
                      args.work / "assembly")
     report = gates(args.work / "assembly", args.tier_a_release, args.unaffected_csv)
+    if not (exits["corrected_exit"] == 0 and exits["legacy_exit"] in (0, 1)):
+        report["problems"].append(f"assembly exit codes {exits}")
+    status = aggregation_status(certificates, report)
     plan = {"dry_run": True, "release": str(args.work / "assembly" / "release"),
             "run_id": json.loads((args.work / "assembly" / "corrected" / "r1_summary.json")
                                  .read_text())["run_id"],
             "certificates": {b: c["created_utc"] for b, c in certificates.items()},
-            "agreement_warnings": [w for c in certificates.values() for w in c["warnings"]],
-            "requires_review": [t for c in certificates.values()
-                                for t in c.get("agreement", {}).get("requires_review", [])],
+            **status,
+            "scientific_status_by_batch": {b: c["scientific_status"]
+                                           for b, c in sorted(certificates.items())},
             "merge": {k: v for k, v in merge_report.items() if k != "batches"},
             "walks": walks, "assembly": exits, "gates": report,
             "publish": "NOT PERFORMED: final publication requires separate authorisation"}
     target = args.drive_root / "baseline" / "r1_tierb_aggregation" / tb.utc_stamp()
     tb.write_json_atomic(target / "aggregation_plan.json", plan)
-    print(json.dumps({k: plan[k] for k in ("run_id", "requires_review", "gates")}, indent=1))
+    print(json.dumps({k: plan[k] for k in ("run_id", "aggregation_status", "scientific_approval",
+                                           "review_items", "sensitivity_reported", "gates")},
+                     indent=1))
+    print(f"AGGREGATION_STATUS: {plan['aggregation_status']}")
     # In legacy mode the pinned CLI exits 1 whenever any file differs; files fed by the
-    # re-estimated chains are expected to differ, so the gate above decides, not that code.
-    ok = not report["problems"] and exits["corrected_exit"] == 0 and exits["legacy_exit"] in (0, 1)
-    return 0 if ok else 1
+    # re-estimated chains are expected to differ, so the gates decide, not that code.
+    return {"AGGREGATION_REFUSED": 1, tb.STATUS_REVIEW_REQUIRED: 4}.get(
+        plan["aggregation_status"], 0)
 
 
 if __name__ == "__main__":

@@ -72,11 +72,11 @@ def test_interrupted_backup_preserves_the_previous_verified_checkpoint(tmp_path)
         _payload(local, i)
     with pytest.raises(OSError, match="simulated"):
         _commit(local, drive, _fail_after_archive=True)
-    assert len(list(drive.glob("*.partial"))) == 1              # the abandoned write
+    assert len(tb.incomplete_checkpoints(drive)) == 1            # the abandoned write
     history = tb.committed_checkpoints(drive)
     assert [m["checkpoint_id"] for _, m in history] == [first["checkpoint_id"]]
     restored = tb.restore_checkpoints(drive, tmp_path / "after_crash")
-    assert restored["payloads"] == 3 and restored["ignored_partial_writes"]
+    assert restored["payloads"] == 3 and restored["ignored_incomplete_writes"]
     retry = _commit(local, drive)                                # next commit carries them
     assert len(retry["members"]) == 3 and retry["parent"] == first["checkpoint_id"]
     assert tb.restore_checkpoints(drive, tmp_path / "final")["payloads"] == 6
@@ -215,3 +215,93 @@ def test_budget_stops_scheduling_before_the_reserve():
     assert budget.can_start(600.0, now=2000.0)                  # 1000 s left
     assert not budget.can_start(600.0, now=2500.0)               # 500 s left < 600 s
     assert budget.remaining(now=3000.0) == pytest.approx(0.0)
+
+
+def test_a_completion_marker_cut_mid_write_leaves_the_checkpoint_uncommitted(tmp_path):
+    local, drive = tmp_path / "local", tmp_path / "drive" / "T"
+    _payload(local, 1)
+    first = _commit(local, drive)
+    _payload(local, 2)
+    with pytest.raises(OSError, match="marker"):
+        _commit(local, drive, _fail_in_marker=True)
+    assert [m["checkpoint_id"] for _, m in tb.committed_checkpoints(drive)] == [first["checkpoint_id"]]
+    assert len(tb.incomplete_checkpoints(drive)) == 1
+    retry = _commit(local, drive)
+    assert retry["parent"] == first["checkpoint_id"] and len(retry["members"]) == 1
+
+
+def test_the_protocol_never_renames_a_checkpoint_folder(tmp_path, monkeypatch):
+    import os
+    renamed = []
+    real = os.replace
+    monkeypatch.setattr(os, "replace", lambda a, b: (renamed.append((a, b)), real(a, b)))
+    local, drive = tmp_path / "local", tmp_path / "drive" / "T"
+    _payload(local, 1)
+    _commit(local, drive)
+    assert not any(Path(a).is_dir() or Path(b).is_dir() for a, b in renamed)
+
+
+def test_a_tampered_manifest_or_marker_is_detected(tmp_path):
+    local, drive = tmp_path / "local", tmp_path / "drive" / "T"
+    _payload(local, 1)
+    manifest = _commit(local, drive)
+    folder = drive / manifest["checkpoint_id"]
+    text = (folder / "manifest.json").read_text()
+    (folder / "manifest.json").write_text(text.replace('"sequence": 1', '"sequence": 2'))
+    with pytest.raises(tb.TierBError, match="manifest"):
+        tb.committed_checkpoints(drive)
+    (folder / "manifest.json").write_text(text)
+    marker = json.loads((folder / tb.COMMIT_MARKER).read_text())
+    marker["checkpoint_id"] = "ckpt-other"
+    (folder / tb.COMMIT_MARKER).write_text(json.dumps(marker))
+    with pytest.raises(tb.TierBError, match="marker names"):
+        tb.committed_checkpoints(drive)
+
+
+def test_legacy_partial_folders_and_foreign_markers_are_ignored(tmp_path):
+    local, drive = tmp_path / "local", tmp_path / "drive" / "T"
+    _payload(local, 1)
+    first = _commit(local, drive)
+    (drive / "ckpt-x-S-00002-abc.partial").mkdir()
+    foreign = drive / "ckpt-y-S-00002-def"
+    foreign.mkdir()
+    (foreign / tb.COMMIT_MARKER).write_text("done")              # not this protocol's marker
+    assert [m["checkpoint_id"] for _, m in tb.committed_checkpoints(drive)] == [first["checkpoint_id"]]
+    assert sorted(tb.incomplete_checkpoints(drive)) == ["ckpt-x-S-00002-abc.partial",
+                                                        "ckpt-y-S-00002-def"]
+
+
+def test_session_ledger_separates_interrupted_from_terminated_sessions(tmp_path):
+    root = tb.batch_root(tmp_path / "drive", "B3")
+    task = tb.batch_tasks("B3")[0]
+    task_dir = root / "checkpoints" / tb.slug(task)
+    local = tmp_path / "local"
+    # session 1: hard-killed: started record and one commit, no summary, lease held
+    tb.write_json_atomic(root / "sessions" / "20261104T010000Z-B3-a" / tb.SESSION_START,
+                         {"session": "B3-a", "started_utc": "20261104T010000Z"})
+    tb.acquire_lease(root, "B3-a")
+    _payload(local, 1)
+    tb.commit_checkpoint(local, task_dir, task=task, session="B3-a",
+                         extra={"session_record": {"started_utc": "20261104T010000Z"}})
+    _payload(local, 2)
+    with pytest.raises(OSError):
+        tb.commit_checkpoint(local, task_dir, task=task, session="B3-a", _fail_after_archive=True)
+    # session 2: killed before even its session folder survived; only a commit remains
+    _payload(local, 3)
+    tb.commit_checkpoint(local, task_dir, task=task, session="B3-b")
+    # session 3: terminated normally
+    folder = root / "sessions" / "20261104T030000Z-B3-c"
+    tb.write_json_atomic(folder / tb.SESSION_START, {"session": "B3-c", "started_utc": "20261104T030000Z"})
+    tb.write_json_atomic(folder / tb.SESSION_SUMMARY, {"exit_code": 3, "finished_utc": "x",
+                                                       "elapsed_hours": 1.0})
+    ledger = tb.session_ledger(root)
+    interrupted = {e["session"]: e for e in ledger["interrupted"]}
+    assert set(interrupted) == {"B3-a", "B3-b"}
+    assert [e["session"] for e in ledger["terminated"]] == ["B3-c"]
+    assert ledger["terminated"][0]["state"].startswith("terminated: budget")
+    a = interrupted["B3-a"]
+    assert a["checkpoints"] == 1 and a["lease_released"] is False
+    assert a["payloads_committed_by_task"] == {task: 1}
+    assert len(a["incomplete_checkpoint_writes"]) == 1
+    assert interrupted["B3-b"]["session_dir"] is None and interrupted["B3-b"]["checkpoints"] == 1
+    assert ledger["payloads_committed_by_task"] == {task: 3}

@@ -42,11 +42,16 @@ This notebook re-estimates **only** these chains (whole chains, the pinned code,
 | **Total** | **{origins}** | **{hours:.2f}** |
 
 It is independent of the other two batch notebooks: run it in a fresh Colab runtime,
-before, after or at the same time as them. Everything it writes on Drive is under
-`baseline/r1_tierb_batches/{batch}/`.
+before, after or at the same time as them. Batch work is written on Drive only under
+`baseline/r1_tierb_batches/{batch}/`; the Drive checkpoint check (section 3b) writes only
+under its own disposable `baseline/r1_tierb_drive_check/<session>/`.
 
 **Defaults are safe.** `RUN_TIER_B = False`: *Run all* only checks and restores; it
 estimates nothing. `RUN_AGGREGATION = False` and nothing in this notebook pushes to GitHub.
+
+**A certificate is not an approval.** A completed batch is certified as
+`COMPUTATION_COMPLETE_REVIEW_REQUIRED`, `..._SENSITIVITY_REPORTED` or `..._REPRODUCED`;
+every certificate says `scientific_approval: not granted`.
 
 **Runtime.** No managed Colab runtime can guarantee 24 hours; plan for interruption.
 Set `RUNTIME_BUDGET_HOURS` below the limit of your plan (for Colab Pro+ use 20). When the
@@ -77,6 +82,11 @@ MAX_WORKERS = {tb.DEFAULT_WORKERS[batch]}  # @param {{type:"integer"}}
 # Safety switches: estimation and aggregation run only when explicitly set to True.
 RUN_TIER_B = False  # @param {{type:"boolean"}}
 RUN_AGGREGATION = False  # @param {{type:"boolean"}}
+# Non-estimating check of the checkpoint protocol on the mounted Drive, in a disposable
+# namespace baseline/r1_tierb_drive_check/<session>/ (synthetic payloads only).
+RUN_DRIVE_CHECK = True  # @param {{type:"boolean"}}
+# To confirm persistence across runtimes: the check id printed by an EARLIER runtime.
+DRIVE_CHECK_VERIFY_ID = ""  # @param {{type:"string"}}
 CONFIRM_PUBLISH = False  # publication is not implemented in these notebooks
 USE_CONSTRAINTS = True  # @param {{type:"boolean"}}
 WORK = "/content/r1tierb_{batch}"'''
@@ -170,8 +180,26 @@ IDENTITY = tc.cache_identity(PY, CODE, "baseline")
 assert IDENTITY == EXPECTED_IDENTITY, f"cache identity {IDENTITY} != {EXPECTED_IDENTITY}"
 print(f"Python {FOUND['python']}; {len(FOUND['packages'])} packages verified; identity {IDENTITY}")'''
 
+DRIVE_CHECK = '''# Synthetic payloads only: no model is fitted. Writes only under
+# baseline/r1_tierb_drive_check/<SESSION>/ and verifies that nothing else changed.
+import r1_tierb_drive_check as dc
+if DRIVE_CHECK_VERIFY_ID:
+    persisted = dc.verify(DRIVE_ROOT, DRIVE_CHECK_VERIFY_ID.strip())
+    print("cross-runtime persistence of", persisted["check_id"], "OK" if persisted["ok"] else "FAILED")
+    assert persisted["ok"], "checkpoints written by an earlier runtime did not restore identically"
+if not RUN_DRIVE_CHECK:
+    print("RUN_DRIVE_CHECK is False: Drive checkpoint check skipped")
+else:
+    ORIGINAL_ARCHIVES = list(tc.archive_folders(Path(DRIVE_ROOT) / "baseline", IDENTITY))
+    DRIVE_REPORT = dc.run(DRIVE_ROOT, SESSION, protected_extra=ORIGINAL_ARCHIVES)
+    print(dc.summary(DRIVE_REPORT))
+    print("folder:", DRIVE_REPORT["folder"])
+    print("To confirm persistence, set DRIVE_CHECK_VERIFY_ID =", repr(SESSION),
+          "in a NEW runtime and run up to this cell.")
+    assert DRIVE_REPORT["ok"], "the Drive checkpoint check failed: do not run this batch"'''
+
 RESTORE = '''DRIVE = Path(DRIVE_ROOT) / "baseline"
-BATCH_ROOT = tb.batch_root(DRIVE_ROOT, BATCH_ID)  # the ONLY place this notebook writes on Drive
+BATCH_ROOT = tb.batch_root(DRIVE_ROOT, BATCH_ID)  # the only place batch work is written on Drive
 # 1. original cache, read only, onto local disk
 ORIGINAL_CACHE = WORK_DIR / "original_cache"
 if not (ORIGINAL_CACHE / "fits").exists():
@@ -228,7 +256,8 @@ else:
                "--start-epoch", str(START_EPOCH), "--budget-hours", str(RUNTIME_BUDGET_HOURS),
                "--reserve-minutes", str(RESERVE_MINUTES), "--backup-minutes", str(BACKUP_MINUTES),
                "--max-workers", str(min(int(MAX_WORKERS), os.cpu_count() or 1)),
-               "--skip-complete", str(PREFLIGHT)]
+               "--skip-complete", str(PREFLIGHT),
+               "--provenance", str(WORK_DIR / "provenance.json")]
     pid = tc.launch_background(command, cwd=WORK_DIR, console=SUPERVISOR_LOG,
                                exit_file=SUPERVISOR_EXIT, pid_file=SUPERVISOR_PID, env=RUN_ENV)
     print(f"supervisor started (pid {pid}); budget {RUNTIME_BUDGET_HOURS} h from VM start, "
@@ -290,7 +319,10 @@ else:
                           "--work", str(WORK_DIR / "aggregation")],
                          cwd=PINNED / "my-thesis" / "code", env=RUN_ENV, capture_output=True, text=True)
     print(agg.stdout[-6000:], agg.stderr[-2000:])
-    print("aggregation", "PASSED (dry run; nothing published)" if agg.returncode == 0 else "REFUSED")'''
+    status = [l for l in agg.stdout.splitlines() if l.startswith("AGGREGATION_STATUS: ")]
+    print(status[-1] if status else "AGGREGATION_STATUS: unknown (see the output above)")
+    print("This is a dry run. A completed computation is NOT a scientifically approved result; "
+          "nothing was published.")'''
 
 
 def cells(batch: str) -> list[tuple[str, str]]:
@@ -299,6 +331,8 @@ def cells(batch: str) -> list[tuple[str, str]]:
             ("markdown", "## 2. Orchestration and pinned scientific code, both verified"),
             ("code", CLONE),
             ("markdown", "## 3. Approved environment, frozen data, cache identity"), ("code", ENV),
+            ("markdown", "## 3b. Google Drive checkpoint check (disposable namespace; no estimation)"),
+            ("code", DRIVE_CHECK),
             ("markdown", "## 4. Restore: original cache, Tier A cache, this batch's checkpoints"),
             ("code", RESTORE),
             ("markdown", "## 5. Preflight (no estimation): Tier A chains, this batch's progress"),

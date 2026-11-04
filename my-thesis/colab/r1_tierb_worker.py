@@ -28,6 +28,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import r1_tierb as tb  # noqa: E402
 
 
+FIT_RECORD_COLUMNS = ["series", "model", "window_start", "window_end", "refit_date", "params",
+                      "loglik", "status", "reason_codes", "start_used"]
+
+
 def preflight(args) -> int:
     jobs, identity, config = tb.build_jobs(args.original, args.code_dir)
     report = {"batch": args.batch, "tier_a": {}, "batch_chains": {}, "problems": []}
@@ -65,8 +69,17 @@ def preflight(args) -> int:
         spec = jobs[task].spec
         if spec.model == "MSAR3" or (spec.model == "MSAR" and spec.k_regimes != 2):
             report["problems"].append(f"{task}: not a K=2 specification (Tier B has no K=3)")
+    # the original records each chain will be compared with (G7): unambiguous and complete
+    import pandas as pd
+    fit_records = pd.read_parquet(Path(args.original) / "models" / "fit_records.parquet",
+                                  columns=FIT_RECORD_COLUMNS)
+    found = tb.validate_original_records(fit_records, jobs, tb.batch_tasks(args.batch))
+    report["original_records"] = "one per planned origin; failures as declared" if not found \
+        else found
+    report["problems"] += found
     tb.write_json_atomic(args.report, report)
-    print(json.dumps({k: report[k] for k in ("cache_identity", "problems")}, indent=1))
+    print(json.dumps({k: report[k] for k in ("cache_identity", "original_records", "problems")},
+                     indent=1))
     return 0 if not report["problems"] else 1
 
 
@@ -119,8 +132,7 @@ def certify(args) -> int:
     jobs, identity, config = tb.build_jobs(args.original, args.code_dir)
     root = tb.batch_root(args.drive_root, args.batch)
     fit_records = pd.read_parquet(Path(args.original) / "models" / "fit_records.parquet",
-                                  columns=["series", "model", "window_start", "window_end",
-                                           "refit_date", "params", "loglik", "status"])
+                                  columns=FIT_RECORD_COLUMNS)
     walks, checkpoints, agreements, problems = {}, {}, {}, []
     with tempfile.TemporaryDirectory() as scratch:
         for task in tb.batch_tasks(args.batch):
@@ -138,33 +150,24 @@ def certify(args) -> int:
                                 f"{len(walk['unreachable'])} unreachable")
                 continue
             agreements[task] = tb.agreement(task, jobs[task], walk, fits, fit_records)
-    sessions, estimations = [], {}
-    for summary in sorted((root / "sessions").glob("*/session_summary.json")):
-        data = json.loads(summary.read_text(encoding="utf-8"))
-        sessions.append({k: data.get(k) for k in ("session", "started_utc", "finished_utc",
-                                                  "elapsed_hours", "outcomes")})
-        for task, counts in (data.get("estimations") or {}).items():
-            for name, n in counts.items():
-                estimations.setdefault(task, {}).setdefault(name, 0)
-                estimations[task][name] += n
+    ledger = tb.session_ledger(root)
     report = {"batch": args.batch, "complete": not problems, "problems": problems,
+              "computation_status": "COMPUTATION_COMPLETE" if not problems
+              else tb.STATUS_INCOMPLETE,
               "walks": {t: {k: w[k] for k in ("planned", "completed", "complete", "statuses",
                                               "first_missing")} for t, w in walks.items()},
               "agreement": {t: {k: v for k, v in a.items() if k != "rows"}
-                            for t, a in agreements.items()}}
+                            for t, a in agreements.items()},
+              "sessions_terminated": ledger["terminated"],
+              "sessions_interrupted": ledger["interrupted"]}
     tb.write_json_atomic(args.report, report)
     if problems:
         print(json.dumps(report, indent=1))
-        print("NOT COMPLETE: no certificate written")
+        print(f"{tb.STATUS_INCOMPLETE}: no certificate written")
         return 3
     provenance = json.loads(Path(args.provenance).read_text(encoding="utf-8"))
-    agreement_summary = {"warnings": [w for a in agreements.values() for w in a["warnings"]],
-                         "requires_review": sorted(t for t, a in agreements.items()
-                                                   if a["requires_review"]),
-                         "chains": report["agreement"]}
     cert = tb.certificate(args.batch, walks, checkpoints, provenance=provenance,
-                          sessions=sessions, estimations=estimations,
-                          agreement=agreement_summary)
+                          sessions=ledger, agreement=agreements)
     target = root / "certificates" / f"COMPLETE-{tb.utc_stamp()}-{args.session}.json"
     tb.assert_writable_path(target, args.drive_root, args.batch)
     tb.write_json_atomic(target, cert)
@@ -172,8 +175,12 @@ def certify(args) -> int:
     pd.DataFrame([dict(task=t, **r) for t, a in agreements.items() for r in a["rows"]]) \
         .to_csv(rows, index=False)
     shutil_copy(rows, root / "certificates" / f"agreement-{args.session}.csv")
-    print(json.dumps({k: cert[k] for k in ("batch", "complete", "expected_origins",
-                                           "completed_origins", "warnings")}, indent=1))
+    print(json.dumps({k: cert[k] for k in ("batch", "computation_status", "scientific_status",
+                                           "scientific_approval", "expected_origins",
+                                           "completed_origins", "review_items",
+                                           "sensitivity_reported")}, indent=1))
+    print(f"interrupted sessions: {len(cert['sessions_interrupted'])}; "
+          f"terminated sessions: {len(cert['sessions_terminated'])}")
     print("certificate:", target)
     return 0
 

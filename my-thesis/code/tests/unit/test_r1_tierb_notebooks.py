@@ -53,6 +53,8 @@ def test_defaults_are_safe_and_pinned():
         assert re.search(r"^RUNTIME_BUDGET_HOURS = 11\.0\b", settings, re.M)
         assert re.search(rf"^MAX_WORKERS = {tb.DEFAULT_WORKERS[batch]}\b", settings, re.M)
         assert re.search(rf'^WORK = "/content/r1tierb_{batch}"', settings, re.M)
+        assert re.search(r"^RUN_DRIVE_CHECK = True\b", settings, re.M)
+        assert re.search(r'^DRIVE_CHECK_VERIFY_ID = ""', settings, re.M)
 
 
 def test_union_of_the_three_task_lists_is_exactly_the_nine_chains():
@@ -170,3 +172,36 @@ def test_scientific_code_and_methodology_unchanged_since_the_pin():
     if result.returncode == 128:
         pytest.skip("pinned commit not in this clone")
     assert result.returncode == 0, "scientific code, data or specifications changed since the pin"
+
+
+def test_drive_check_cell_writes_only_its_disposable_namespace(tmp_path):
+    import r1_tierb_drive_check as dc
+    for batch in FILES:
+        drive = tmp_path / batch / "drive"
+        original = drive / "baseline" / "fit_cache" / tb.CACHE_IDENTITY
+        original.mkdir(parents=True)
+        (original / "part-0001.tar.gz").write_bytes(b"original")
+
+        class FakeTC:
+            def archive_folders(self, base, identity):
+                assert identity == tb.CACHE_IDENTITY
+                return [base / "fit_cache" / identity]
+        session = f"{batch}-20261104T000000Z-abc123"
+        ns = {"RUN_DRIVE_CHECK": True, "DRIVE_CHECK_VERIFY_ID": "", "DRIVE_ROOT": str(drive),
+              "SESSION": session, "IDENTITY": tb.CACHE_IDENTITY, "tc": FakeTC(), "Path": Path}
+        exec(compile(_cell(batch, "import r1_tierb_drive_check as dc"), batch, "exec"), ns)
+        assert ns["DRIVE_REPORT"]["ok"]
+        written = {p for p in drive.rglob("*") if p.is_file()} - {original / "part-0001.tar.gz"}
+        root = dc.check_root(drive, session)
+        assert written and all(root in p.parents for p in written)
+        # a later runtime confirms persistence
+        ns2 = {**ns, "RUN_DRIVE_CHECK": False, "DRIVE_CHECK_VERIFY_ID": session}
+        exec(compile(_cell(batch, "import r1_tierb_drive_check as dc"), batch, "exec"), ns2)
+        assert "DRIVE_REPORT" not in ns2 or ns2["DRIVE_REPORT"] is ns["DRIVE_REPORT"]
+
+
+def test_aggregation_cell_never_reports_approval():
+    for batch in FILES:
+        cell = _cell(batch, "Optional, from any one batch")
+        assert "PASSED" not in cell and "AGGREGATION_STATUS" in cell
+        assert "NOT a scientifically approved result" in cell

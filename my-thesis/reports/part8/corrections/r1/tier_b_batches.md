@@ -1,6 +1,6 @@
 # R1 Tier B — three independent batch notebooks (implementation; not authorised to run)
 
-Date: 4 November 2026. This document replaces the single-notebook execution design in `tier_b_preflight.md` §2–§4. That document's workload analysis and gate definitions still apply.
+Date: 4 November 2026; revised the same day after independent review (safeguards: agreement categories, review-required status, interrupted-session provenance, Drive protocol check). This document replaces the single-notebook execution design in `tier_b_preflight.md` §2–§4. That document's workload analysis and gate definitions still apply.
 
 - **Authorised:** implementation and testing only.
 - **Not executed:** no Tier B estimation, no Tier A regeneration, no publication. Part 9 has not been started.
@@ -51,7 +51,8 @@ At runtime each notebook asserts:
    - the original cache: 18,964 payloads, read only;
    - the Tier A cache: archive sha256 `df73c295…61c2`, 5,597 marked payloads;
    - this batch's own committed checkpoints.
-   Finally it runs the preflight, which walks the eight Tier A chains and checks their failure counts (2, 71, 0, 0, 0, 1, 1, 1), and reports each chain's committed progress. **It estimates nothing.**
+   Before the restores, section 3b runs the **Drive checkpoint check** (§6a) in a disposable namespace.
+   Finally it runs the preflight. This walks the eight Tier A chains and checks their failure counts (2, 71, 0, 0, 0, 1, 1, 1). It also checks that each of this batch's chains has exactly one original fit record per planned origin, with the declared original failure count. It then reports each chain's committed progress. **It estimates nothing.**
 5. **Only with authorisation:** set `RUN_TIER_B = True` and run cell 6 (or Run all again). The supervisor starts in the background. Cell 7 shows progress and can be re-run to re-attach after a browser disconnect.
 6. **When the supervisor ends:**
    - exit **0**: every chain is complete and committed. Cell 8 certifies the batch from what is on Drive.
@@ -108,46 +109,120 @@ I can't verify these limits for your account. If simultaneous runtimes are not a
 ```
 baseline/r1_tierb_batches/<B>/
   checkpoints/<chain>/ckpt-<utc>-<session>-<seq>-<rand>/   payloads.tar.gz, manifest.json, COMMITTED
-  checkpoints/<chain>/ckpt-...partial/                     interrupted write: ignored
-  sessions/<utc>-<session>/   progress.json, session_summary.json, logs/
+  sessions/<utc>-<session>/   session_started.json, progress.json, session_summary.json, logs/
   leases/<session>.json
   certificates/COMPLETE-<utc>-<session>.json, agreement-<session>.csv
 ```
 
-**Commit protocol (every `BACKUP_MINUTES`, default 10, and finally).**
+**Completion-marker protocol.** This does not rely on renaming directories. A checkpoint folder is created under its final name and filled in this order:
 
-1. Gather the payloads new since the last commit. Every one must carry the refit marker, and none may differ from an already committed payload.
-2. Build the tar locally, copy it into `<id>.partial/`, read it back from Drive, and require every member's sha256 to match.
-3. Write the manifest (parent, member sha256s, archive sha256) and `COMMITTED`.
-4. Rename the folder to its final name.
+1. The new payloads since the last commit are gathered. Each must carry the refit marker, and none may differ from an already committed payload.
+2. `payloads.tar.gz` is built locally, written, `fsync`ed, read back from Drive, and checked member by member against the local payloads.
+3. `manifest.json` is written and read back. It records the parent, the members' sha256 values, the archive sha256 and the session record (§6b).
+4. `COMMITTED` is written last and read back. It is a small JSON naming the checkpoint, with the sha256 of the manifest and of the archive.
 
-A write interrupted at any step leaves only a `.partial` folder; earlier commits are never modified. A failed Drive write stops the session with exit 2.
+**Validity rules.**
+
+- A folder counts **only** if `COMMITTED` parses, belongs to this protocol, and both hashes match.
+- A folder without a valid marker is an **interrupted write**: an archive or manifest cut off, or a marker cut mid-write. It is ignored and listed, never modified or deleted. Earlier commits are never touched.
+- Once a valid marker exists, any later mismatch is corruption, and it **raises**.
+- A failed Drive write stops the session with exit 2.
 
 **Restore checks:**
 
-- `COMMITTED` and the archive sha256 match the manifest;
-- every member's sha256 matches;
-- the parent chain is linear, with no fork and no gap;
-- there is no conflicting duplicate.
+- the marker and both hashes;
+- every member's sha256;
+- a linear parent chain, with no fork and no gap;
+- no conflicting duplicate.
 
 The worker then **walks** each chain through the restored payloads with the pinned key function, including the warm-start predecessor hash. It requires a contiguous prefix and that **no payload is unreachable**. A resumed chain serves its verified origins from the restored payloads, reading only, and estimates from the first missing origin onwards.
 
 **Lost work.** Only committed checkpoints survive the loss of a VM. By design, what can be lost is what was estimated since the last successful commit, plus the origin in progress. **I do not claim a guaranteed maximum.** The tests prove recovery to the last commit and identical estimates after resuming; they do not prove a bound on Drive latency.
 
-## 7. Batch certificates
+### 6a. Drive checkpoint check (notebook section 3b; `RUN_DRIVE_CHECK = True`)
 
-Cell 8 runs `r1_tierb_worker.py certify`. It restores the batch **from Drive only** into a temporary folder, walks every chain, compares each origin with the original fit records (G7), and writes `certificates/COMPLETE-…json` **only if every chain verifies**. The certificate contains:
+`colab/r1_tierb_drive_check.py` runs **the batches' own checkpoint code** on the mounted Drive. It uses synthetic, properly marked payloads and fits no model. Everything goes into a disposable namespace, `baseline/r1_tierb_drive_check/<SESSION>/`, which is new each time and never reused. It checks:
 
-- the batch and its exact tasks;
-- expected and completed origins;
-- per-chain status and counts of adequate, fragile and failed fits, alongside the original failed counts;
-- the checkpoint IDs and their archive sha256 values;
-- the sessions, with their start and end times and elapsed hours;
-- provenance: scientific and orchestration commits, cache identity, frozen-data sha256, Python and package versions, Tier A archive sha256;
-- estimations by task, with confirmation that only authorised chains were estimated;
-- warnings: failure-count changes, and the agreement report.
+1. checkpoint creation;
+2. archive read-back from Drive against the manifest;
+3. a second, incremental checkpoint with the correct parent, plus an informational probe of directory and file renames on the mount (the protocol does not depend on them);
+4. interrupted-write recovery: a write cut after the archive, and one cut inside the marker, are both ignored; the history is unchanged; the retry commits with the right parent;
+5. restore into a fresh local folder equals the source;
+6. a corrupted archive and a tampered manifest are both detected;
+7. **namespace isolation**:
+   - a listing (size and mtime) of every protected namespace is identical before and after: all three batch namespaces, the Tier A checkpoint, the aggregation folder and every original-cache archive folder;
+   - nothing was written outside the check's folder;
+   - the batch write guard refuses the check folder.
 
-**Agreement rule.** An ARMA chain (no warm start) must reproduce the original: identical status and log-likelihood within 1e-6. Otherwise the certificate sets `requires_review`. MSAR and STAR report their first divergent origin and the extent of divergence (F6).
+Any failure stops the notebook before any restore or run. The report is written to `<check folder>/drive_check_report.json`.
+
+**Persistence across runtimes.** Reading back on the same VM may be served from that VM's Drive cache. To confirm that checkpoints persist on Drive itself, open any batch notebook in a **new** runtime, set `DRIVE_CHECK_VERIFY_ID` to the check id printed by the first runtime, and run up to section 3b. It restores the earlier check's checkpoints from Drive and compares them.
+
+### 6b. Session provenance, including hard-killed sessions
+
+- The supervisor takes the lease **first**. A session refused by the lease leaves no record.
+- It then writes `sessions/<utc>-<session>/session_started.json`, recording:
+  - batch, session, start, VM start and budget;
+  - worker count and host;
+  - scientific and orchestration commits, and cache identity.
+- Every checkpoint manifest of the session repeats this record as `session_record`. A session is therefore traceable **from its checkpoints alone**, even if its session folder or summary is missing.
+- `r1_tierb.session_ledger()` reconstructs every session from session folders, leases, committed manifests and incomplete checkpoint writes:
+  - **`terminated`** sessions wrote `session_summary.json`, and are classified as complete, budget reached or error;
+  - **`interrupted`** sessions did not (hard-killed or lost), with: last progress time, unreleased lease, committed checkpoints and payloads per chain, and incomplete writes.
+- Certificates list the two groups separately. Estimations by chain are counted from the committed manifests: a payload committed by a session is a fit that session estimated. Work after a session's last commit was lost, and is re-estimated on resume.
+
+## 7. Batch certificates and the agreement report (G7)
+
+Cell 8 runs `r1_tierb_worker.py certify`. It restores the batch **from Drive only** into a temporary folder and walks every chain. It then compares every origin with the original fit records, and writes `certificates/COMPLETE-…json` when **every chain is complete**.
+
+**A completion certificate is not an approval.** It carries three separate fields:
+
+- `computation_status`: `COMPUTATION_COMPLETE`. An incomplete batch gets no certificate; the report says `COMPUTATION_INCOMPLETE`.
+- `scientific_status`, one of:
+  - **`COMPUTATION_COMPLETE_REVIEW_REQUIRED`**: at least one review item;
+  - **`COMPUTATION_COMPLETE_SENSITIVITY_REPORTED`**: no review item, but expected MSAR/STAR optimizer sensitivity is reported;
+  - **`COMPUTATION_COMPLETE_REPRODUCED`**: every origin reproduced.
+- `scientific_approval`: always *"not granted: a completed computation is not an approved result"*.
+
+The certificate also contains `review_items` and `sensitivity_reported`, kept separate and both in full. It also contains everything listed before: tasks, origins, per-chain counts, checkpoints, provenance and estimations. Sessions appear as `sessions_terminated` and `sessions_interrupted`.
+
+**Tolerances (declared, used as stated).**
+
+- Log-likelihood: |l_new − l_orig| / max(1, |l_orig|) ≤ **1e-6**.
+- Every parameter: |p_new − p_orig| / max(1, |p_orig|) ≤ **1e-8**.
+- The original parameters are stored with 10 significant digits, so their rounding contributes at most 5e-10.
+
+**Original records.** Each chain is matched by series, model and window span. At the 240-month span, the T4.1 chain is the one record per origin not shared with the baseline chain.
+
+- The preflight requires exactly one record per planned origin, with the declared original failure count. Verified on real data for all nine chains.
+- An ambiguous match **raises**; it is never guessed.
+
+**Per origin, exactly one category:**
+
+| Category | Meaning | Effect |
+|---|---|---|
+| `reproduced` | same status and reason codes; loglik and every parameter within tolerance | — |
+| `reproduced_regime_labels_permuted` | MSAR: as above after relabelling regimes (`mu{k}`, `p{ij}` permuted; `phi`, `sigma` are shared and never permuted) | — |
+| `classification_changed` | status **or reason codes** differ (any model) | **review** |
+| `missing_original_record` | a re-estimated origin with no original record | **review** |
+| `original_origin_not_reestimated` | an original record with no re-estimated origin | **review** |
+| `parameter_names_differ` | the parameter sets differ (names listed) | **review** |
+| `reproduction_failure` | ARMA (no warm start): loglik or any parameter outside tolerance | **review** |
+| `unexplained_parameter_discrepancy` | MSAR/STAR: parameters differ at equal likelihood **before** the chain's warm-start path diverged | **review** |
+| `optimizer_sensitivity` | MSAR/STAR: same classification, different log-likelihood (another optimum; signed difference reported) | reported (F6) |
+| `flat_likelihood_sensitivity` | MSAR/STAR: same classification and likelihood, different parameters, **after** the path diverged (different start) | reported (F6) |
+
+A changed per-chain failure count is a review item too. Expected MSAR/STAR sensitivity stays visible, with:
+
+- the first divergent origin;
+- counts per category;
+- the number of origins where the re-estimate's likelihood is lower;
+- origin-level rows in `agreement-<session>.csv`;
+- the regime-label permutation and the starting values used by both fits.
+
+It is never called reproduced, and never automatically treated as an implementation error.
+
+**Validated on real data, without estimation.** The two T4.8 AR chains re-estimated in Colab for Tier A were compared with their original records at their effective spans. AR records store the post-lag sample start, so the spans are 174 and 294 instead of 180 and 300. The result: **1,408 of 1,408 origins `reproduced`**, with identical log-likelihoods and parameter differences no larger than 4.9e-10. ARMA, MSAR and STAR records use the nominal span, as the record check above confirms.
 
 ## 8. Final aggregation (an optional cell in any notebook; `RUN_AGGREGATION = False`)
 
@@ -156,86 +231,86 @@ Cell 8 runs `r1_tierb_worker.py certify`. It restores the batch **from Drive onl
 1. **Discovery.** It reads each batch's latest certificate and refuses if any batch is missing or incomplete, has other tasks or other code, or has Drive checkpoints that differ from the certified list.
 2. **Merge.** It combines the Tier A archive and every certified checkpoint into one refit cache, refusing any conflicting payload. It then walks **all 17 chains** (8 Tier A + 9 Tier B): each must be complete, and every payload must be reached.
 3. **Assembly.** It runs the pinned R1 workflow, legacy first, then corrected with the release, with `--approve` for the 17 chains, the merged refit cache and the original cache. This runs inside `no_estimation_allowed()`, so even an approved chain **cannot** estimate.
-4. **Gates.**
+4. **Gates.** Every certificate must be internally consistent. Its `scientific_status` must follow from its own review items, every changed failure count and review-required chain must be listed, and no certificate may claim approval; otherwise aggregation is refused.
    - `estimations_performed` is empty;
    - 17 re-estimated chains, 17 from the cache, and exactly the 26 unaffected unavailable chains;
    - no `original_retained_pending_estimation` row remains;
    - the legacy reproduction holds for every file not fed by a re-estimated chain;
    - the files a re-estimated chain feeds (T4.1, T4.8) are reported separately as agreement, not reproduction;
    - T4.2 is identical to the Tier A release `292227e`.
-5. **Plan.** It writes a dry-run plan to `baseline/r1_tierb_aggregation/<stamp>/`. **There is no publication code.**
+5. **Status.** `aggregation_status` is one of:
+   - **`AGGREGATION_REFUSED`**: a gate failed;
+   - **`COMPUTATION_COMPLETE_REVIEW_REQUIRED`**: a review item in any batch, or a table difference from a re-estimated chain that no chain report explains;
+   - **`COMPUTATION_COMPLETE_SENSITIVITY_REPORTED`**;
+   - **`COMPUTATION_COMPLETE_REPRODUCED`**.
+
+   The plan carries `scientific_approval: not granted`, every review item and every sensitivity item, prefixed by batch, plus the interrupted sessions. Nothing is suppressed. Exit codes: 1 refused, 4 review required, 0 otherwise. The notebook prints the `AGGREGATION_STATUS` line and never "passed".
+6. **Plan.** It writes a dry-run plan to `baseline/r1_tierb_aggregation/<stamp>/`. **There is no publication code.**
 
 ## 9. Tests
 
-All run without estimation, apart from tiny synthetic chains.
+None estimates real models; the resume tests use tiny synthetic chains with the pinned engine.
 
 | File | Tests |
 |---|---|
-| `test_r1_tierb_checkpoints.py` | 15 |
+| `test_r1_tierb_checkpoints.py` | 20 |
+| `test_r1_tierb_agreement.py` | 18 |
+| `test_r1_tierb_drive_check.py` | 5 |
+| `test_r1_tierb_supervisor.py` | 4 (stand-in worker) |
+| `test_r1_tierb_aggregate.py` | 20 |
+| `test_r1_tierb_notebooks.py` | 16 |
 | `test_r1_tierb_resume.py` | 7 (pinned engine, synthetic STAR chain) |
-| `test_r1_tierb_aggregate.py` | 13 |
-| `test_r1_tierb_notebooks.py` | 14 |
-| `test_r1_tierb_supervisor.py` | 2 (stand-in worker) |
+| **Total** | **90** |
 
-**Checkpoints:**
+What is new since the first review:
 
-- partition: nine chains, 6,041 origins;
-- incremental commit and restore;
-- `.tmp` files never committed;
-- **interrupted backup preserves the previous commit**;
-- corrupted or missing archives detected;
-- conflicting payloads and forked histories refused;
-- unmarked payloads never committed;
-- unsafe archive members refused;
-- **concurrent commits by 3 batches × their chains never collide**;
-- writes confined to the batch;
-- leases;
-- Tier A archive checks: sha256, marker, count;
-- budget arithmetic.
-
-**Recovery:**
-
-- the stoppable cache writes exactly the pinned estimates;
-- **budget stop, then resume from Drive-only in a fresh "VM", equals the uninterrupted run**;
-- the budget refuses an origin it cannot finish;
-- **SIGKILL mid-chain, then commit, wipe, restore and resume, equals the uninterrupted run**;
-- unreachable payloads detected;
-- a worker refuses a task outside its batch;
-- `no_estimation_allowed()` blocks even approved blocks.
-
-**Aggregation refuses:**
-
-- a missing batch;
-- an incomplete certificate, a short origin count, wrong tasks or wrong provenance;
-- checkpoints added after certification;
-- a conflicting payload between batches or with Tier A;
-- an assembly that estimated;
-- remaining pending rows;
-- a legacy-reproduction failure;
-- a T4.2 difference from Tier A.
-
-**Notebooks:**
-
-- exactly three notebooks, matching their generator; plain Python;
-- safe, pinned defaults;
-- the union of task lists is exactly the nine chains;
-- **Setup runs independently in all 6 orders**;
-- disjoint write locations; no code that pushes;
-- **default Run all launches nothing and runs no subprocess**;
-- `RUN_TIER_B = True` launches only that batch's supervisor;
-- **no change to scientific code, configuration, data, specifications or outputs since the pin**.
-
-**Supervisor:**
-
-- every chain committed and verified, the lease released, and no other batch touched;
-- with no budget, nothing starts and the exit code is 3, not "complete".
+- **Checkpoints:**
+  - a marker cut mid-write leaves the checkpoint uncommitted, and the retry commits;
+  - the protocol never renames a directory;
+  - tampered manifests and markers are detected;
+  - legacy `.partial` folders and foreign markers are ignored;
+  - the session ledger separates interrupted from terminated sessions, including a session known only from its checkpoints.
+- **Agreement:**
+  - identical ARMA reproduced;
+  - stored-parameter rounding within tolerance;
+  - ARMA loglik or parameter differences require review;
+  - a changed status requires review for MSAR, STAR and ARMA alike;
+  - a changed reason code with the same status requires review;
+  - missing and unmatched records require review;
+  - parameter-name coverage is checked;
+  - MSAR label switching is recognised, and a shared parameter is not relabelled;
+  - MSAR/STAR optimizer sensitivity is reported, not escalated;
+  - equal-likelihood parameter discrepancies are unexplained before divergence and flat-likelihood after;
+  - ambiguous original records are refused.
+- **Certificates:**
+  - a reproduced batch is still "not granted";
+  - a changed failure count gives review required;
+  - review and sensitivity items are both kept;
+  - there is no certificate without agreement for every chain.
+- **Supervisor:**
+  - **a real SIGKILL of a running session** after its first commit: no summary exists, yet the session, its payloads and its unreleased lease are on record, it is classified as interrupted, and its manifests carry the commits;
+  - a second session is then refused and leaves no record;
+  - a normal session is classified as terminated.
+- **Drive check (local stand-in for the mount):**
+  - all seven checks pass and only the check folder is written;
+  - cross-runtime verification works;
+  - a change to a protected namespace fails the check;
+  - a broken step is reported, not hidden;
+  - a namespace is never reused.
+- **Aggregation:**
+  - inconsistent certificate statuses, claimed approval, an incomplete computation, and an unlisted failure-count change or review-required chain are refused;
+  - the status is review required, sensitivity reported, reproduced or refused, as appropriate;
+  - unexplained table differences require review.
+- **Notebooks:**
+  - the Drive-check cell writes only its namespace and verifies across runtimes;
+  - the aggregation cell never prints "passed".
 
 **Real-data checks (no estimation).**
 
-- The real Tier A archive from Drive: sha256 `df73c295…`, 5,597 marked payloads.
-- The worker preflight for B1, B2 and B3 with the pinned jobs: cache identity `3413465b508bb844`.
-- All eight Tier A chains walk complete: failed fits 2, 71, 0, 0, 0, 1, 1, 1, with no unreachable payload.
-- All nine Tier B task IDs resolve, with the planned origins 644, 764, 626, 764, 703, 644, 644, 626, 626.
+- Preflight for B1, B2 and B3: cache identity `3413465b508bb844`; all eight Tier A chains complete with the expected failure counts; one original record per planned origin for all nine chains (644, 764, 626, 764, 703, 644, 644, 626, 626), with failures 3, 5, 52, 22, 7, 13, 6, 0, 0 as declared.
+- The AR agreement validation in §7.
+
+**Not testable here:** the actual Google Drive mount. Section 3b runs the Drive check there; it is part of the preflight procedure in §11.
 
 ## 10. Remaining risks and approvals
 
@@ -245,10 +320,29 @@ All run without estimation, apart from tiny synthetic chains.
 4. **Failure classifications** can differ from the original. They are listed in the certificate for your review.
 5. **Speed:** ±30% around the historical per-fit times.
 6. **Figure bytes** in the legacy reproduction can depend on runtime fonts; tables decide.
-7. **The supervisor and the end-to-end Colab flow have not been run against real Drive and real estimation.** They were tested with stand-ins and synthetic chains only.
+7. **The supervisor and the end-to-end Colab flow have not been run against real Drive and real estimation.** They were tested with stand-ins and synthetic chains only. The Drive protocol is validated on the real mount only when you run section 3b (§11).
+8. **ARMA reproduction across VMs.** The parameter tolerance is 1e-8. If a Colab VM's CPU or BLAS produces last-digit differences that an optimizer amplifies, ARMA origins will be flagged `reproduction_failure` and the batch will be review required, never silently accepted. The rows show the magnitude.
 
 **Approvals needed:**
 
 - (a) authorisation to run each batch, i.e. set `RUN_TIER_B = True`;
 - (b) later, authorisation to run the aggregation;
 - (c) separately, authorisation to publish (not implemented).
+
+## 11. Ready-to-run non-estimating Colab preflight (do this before authorising any batch)
+
+For **each** of B1, B2 and B3, in a fresh runtime (CPU, High-RAM), with the Colab secret `GITHUB_TOKEN`:
+
+1. Open the notebook at the pinned commit (links in the final report). Leave every default: `RUN_TIER_B = False`, `RUN_AGGREGATION = False`, `RUN_DRIVE_CHECK = True`, `DRIVE_CHECK_VERIFY_ID = ""`.
+2. **Runtime → Run all.** Expected, in order:
+   - §1: Drive mounted, settings valid, a session id `B<n>-<utc>-<hex>`;
+   - §2: orchestration and pinned commits checked out, clean, the pin an ancestor;
+   - §3: environment verified against the lock, frozen data verified, cache identity `3413465b508bb844`;
+   - §3b: `Drive checkpoint check <session>: ALL CHECKS PASSED`, with seven `ok` lines, and the check id to note;
+   - §4: 18,964 original payloads, Tier A archive sha256 `df73c295…` with 5,597 payloads, this batch's committed checkpoints (none yet);
+   - §5: `problems: []`, `original_records: one per planned origin; failures as declared`, and every chain at 0/planned;
+   - §6: `RUN_TIER_B is False: no estimation`; §8: nothing to certify; §9: `RUN_AGGREGATION is False`.
+3. **Persistence:** in another new runtime, open any batch notebook, set `DRIVE_CHECK_VERIFY_ID` to the noted check id, and run to §3b. Expected: `cross-runtime persistence of <id> OK`. (It also runs a fresh check of its own.)
+4. Send me, or your reviewer, for each notebook: the §3b summary, the §5 preflight JSON (`/content/r1tierb_<B>/preflight-<session>.json`), and the persistence line.
+
+Nothing in this procedure estimates a model, writes outside `baseline/r1_tierb_drive_check/<session>/`, or pushes to GitHub. Estimation starts only when you set `RUN_TIER_B = True` for a batch you have authorised.
