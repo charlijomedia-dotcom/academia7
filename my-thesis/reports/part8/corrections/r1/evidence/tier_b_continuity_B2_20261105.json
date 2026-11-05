@@ -1,0 +1,385 @@
+{
+ "batch": "B2",
+ "batch_root": "/tmp/claude-0/-home-user-academia7/84fe7cf0-4302-525f-9944-b196d02fbce5/scratchpad/b2_evidence/drive_layout/baseline/r1_tierb_batches/B2",
+ "created_utc": "20261105T102119Z",
+ "estimation": "none (refused by the guard)",
+ "chains": {
+  "T4.1:FEDFUNDS|MSAR": {
+   "checkpoints": 12,
+   "restored": {
+    "payloads": 626,
+    "checkpoints": 12,
+    "ignored_incomplete_writes": []
+   },
+   "sessions": [
+    "B2-20261105T071915Z-d12923"
+   ],
+   "continuity": {
+    "task_id": "T4.1:FEDFUNDS|MSAR",
+    "payloads": 626,
+    "live": {
+     "planned": 626,
+     "completed": 626,
+     "complete": true,
+     "statuses": {
+      "fragile": 453,
+      "failed": 49,
+      "adequate": 124
+     },
+     "unreachable": 0
+    },
+    "cache_hit": {
+     "planned": 626,
+     "completed": 2,
+     "complete": false,
+     "unreachable": 624
+    },
+    "first_mismatch": {
+     "origin_index": 3,
+     "refit_date": "1974-08-01",
+     "keys": {
+      "cache_hit_rule": {
+       "predecessor_hash": "",
+       "key_digest": "b8b81cbb33297ebf395968b022785c42ec12923bfc4d4f7827ec7007578fa8bf",
+       "payload_exists": false
+      },
+      "live_rule": {
+       "predecessor_hash": "[3.1639985677, 4.3387361434, 0.9999999805, -1.0017835893, -2.3981201864, -2.3559026741]",
+       "key_digest": "f583176c55744807dea438f0f17cf2ab8d714ae53f7d502312780f02f1185605",
+       "payload_exists": true
+      }
+     },
+     "preceding": [
+      {
+       "refit_date": "1974-06-01",
+       "status": "fragile",
+       "reason_codes": [
+        "SINGULAR_COV"
+       ],
+       "stores_warm_payload": true
+      },
+      {
+       "refit_date": "1974-07-01",
+       "status": "failed",
+       "reason_codes": [
+        "SINGULAR_COV",
+        "NONCONVERGENCE"
+       ],
+       "stores_warm_payload": false
+      }
+     ],
+     "live_warm_state_from": "1974-06-01",
+     "live_warm_state": [
+      3.163998567674704,
+      4.33873614338142,
+      0.9999999804939922,
+      -1.001783589325224,
+      -2.398120186418367,
+      -2.3559026741020954
+     ]
+    }
+   },
+   "replay": {
+    "origins": 626,
+    "from_cache": 626,
+    "estimations": 0,
+    "failed": 49,
+    "valid": 577,
+    "payloads_unchanged": true,
+    "records_differing_from_payloads": []
+   },
+   "agreement": {
+    "task": "T4.1:FEDFUNDS|MSAR",
+    "model": "MSAR",
+    "warm_started": true,
+    "loglik_tolerance": 1e-06,
+    "param_tolerance": 1e-08,
+    "origins_compared": 626,
+    "categories": {
+     "reproduced": 583,
+     "optimizer_sensitivity": 29,
+     "classification_changed": 14
+    },
+    "first_divergence": "1974-08-01",
+    "status": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+    "requires_review": true,
+    "review_items": [
+     "T4.1:FEDFUNDS|MSAR: 14 origins classification_changed (status or reason codes differ from the original fit)"
+    ],
+    "sensitivity_items": [
+     "T4.1:FEDFUNDS|MSAR: 29 origins optimizer_sensitivity (warm-started model, same classification, different log-likelihood (another optimum or different start))",
+     "T4.1:FEDFUNDS|MSAR: re-estimated log-likelihood lower than the original at 0 of the sensitivity origins"
+    ],
+    "warnings": [
+     "T4.1:FEDFUNDS|MSAR: 14 origins classification_changed (status or reason codes differ from the original fit)",
+     "T4.1:FEDFUNDS|MSAR: 29 origins optimizer_sensitivity (warm-started model, same classification, different log-likelihood (another optimum or different start))",
+     "T4.1:FEDFUNDS|MSAR: re-estimated log-likelihood lower than the original at 0 of the sensitivity origins"
+    ]
+   },
+   "original_failed_over_same_origins": 52,
+   "original_failed_whole_chain": 52,
+   "classification_changes": [
+    {
+     "refit_date": "1980-01-01",
+     "status_original": "failed",
+     "status_new": "fragile",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "SINGULAR_COV"
+    },
+    {
+     "refit_date": "1980-05-01",
+     "status_original": "failed",
+     "status_new": "failed",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;NONCONVERGENCE;SINGULAR_COV"
+    },
+    {
+     "refit_date": "1981-02-01",
+     "status_original": "failed",
+     "status_new": "failed",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;NONCONVERGENCE"
+    },
+    {
+     "refit_date": "1981-03-01",
+     "status_original": "fragile",
+     "status_new": "fragile",
+     "reason_codes_original": "SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY"
+    },
+    {
+     "refit_date": "1981-04-01",
+     "status_original": "failed",
+     "status_new": "failed",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;NONCONVERGENCE"
+    },
+    {
+     "refit_date": "1981-05-01",
+     "status_original": "failed",
+     "status_new": "fragile",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY"
+    },
+    {
+     "refit_date": "1981-06-01",
+     "status_original": "failed",
+     "status_new": "fragile",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY"
+    },
+    {
+     "refit_date": "1981-07-01",
+     "status_original": "failed",
+     "status_new": "failed",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;NONCONVERGENCE;SINGULAR_COV"
+    },
+    {
+     "refit_date": "2011-01-01",
+     "status_original": "fragile",
+     "status_new": "fragile",
+     "reason_codes_original": "LOW_OCCUPANCY;SINGULAR_COV;TRANSITION_BOUNDARY",
+     "reason_codes_new": "ILL_CONDITIONED_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY"
+    },
+    {
+     "refit_date": "2011-02-01",
+     "status_original": "fragile",
+     "status_new": "fragile",
+     "reason_codes_original": "SINGULAR_COV",
+     "reason_codes_new": "ILL_CONDITIONED_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY"
+    },
+    {
+     "refit_date": "2011-03-01",
+     "status_original": "fragile",
+     "status_new": "fragile",
+     "reason_codes_original": "SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;SINGULAR_COV;TRANSITION_BOUNDARY"
+    },
+    {
+     "refit_date": "2011-04-01",
+     "status_original": "fragile",
+     "status_new": "fragile",
+     "reason_codes_original": "SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;SINGULAR_COV;TRANSITION_BOUNDARY"
+    },
+    {
+     "refit_date": "2011-05-01",
+     "status_original": "fragile",
+     "status_new": "fragile",
+     "reason_codes_original": "SINGULAR_COV",
+     "reason_codes_new": "ILL_CONDITIONED_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY"
+    },
+    {
+     "refit_date": "2011-06-01",
+     "status_original": "failed",
+     "status_new": "failed",
+     "reason_codes_original": "NONCONVERGENCE;SINGULAR_COV",
+     "reason_codes_new": "LOW_OCCUPANCY;NONCONVERGENCE;SINGULAR_COV;TRANSITION_BOUNDARY"
+    }
+   ]
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "checkpoints": 12,
+   "restored": {
+    "payloads": 257,
+    "checkpoints": 12,
+    "ignored_incomplete_writes": []
+   },
+   "sessions": [
+    "B2-20261105T071915Z-d12923"
+   ],
+   "continuity": {
+    "task_id": "T4.8:UNRATE|180:MSAR",
+    "payloads": 257,
+    "live": {
+     "planned": 764,
+     "completed": 257,
+     "complete": false,
+     "statuses": {
+      "fragile": 131,
+      "adequate": 124,
+      "failed": 2
+     },
+     "unreachable": 0
+    },
+    "cache_hit": {
+     "planned": 764,
+     "completed": 229,
+     "complete": false,
+     "unreachable": 28
+    },
+    "first_mismatch": {
+     "origin_index": 230,
+     "refit_date": "1982-01-01",
+     "keys": {
+      "cache_hit_rule": {
+       "predecessor_hash": "",
+       "key_digest": "23f6f0db6fc91822bddb825c2b2b5b697154368630368015519fc03684895bf7",
+       "payload_exists": false
+      },
+      "live_rule": {
+       "predecessor_hash": "[6.6582567624, 6.8499527641, 1.2498841908, 0.1116209441, -0.4002080443, 0.0269458171, -1.9022477587, -1.5914457575, -0.1...",
+       "key_digest": "10e981bd68a4ff07ab3df4dca79c6815bf61395bc41deceb8358886b212b69eb",
+       "payload_exists": true
+      }
+     },
+     "preceding": [
+      {
+       "refit_date": "1981-10-01",
+       "status": "adequate",
+       "reason_codes": [],
+       "stores_warm_payload": true
+      },
+      {
+       "refit_date": "1981-11-01",
+       "status": "adequate",
+       "reason_codes": [],
+       "stores_warm_payload": true
+      },
+      {
+       "refit_date": "1981-12-01",
+       "status": "failed",
+       "reason_codes": [
+        "NONCONVERGENCE"
+       ],
+       "stores_warm_payload": false
+      }
+     ],
+     "live_warm_state_from": "1981-11-01",
+     "live_warm_state": [
+      6.658256762374808,
+      6.849952764103281,
+      1.249884190837283,
+      0.11162094406201808,
+      -0.4002080442688116,
+      0.026945817130110853,
+      -1.902247758707144,
+      -1.5914457574900962,
+      -0.1979757707179818
+     ]
+    }
+   },
+   "replay": {
+    "origins": 257,
+    "from_cache": 257,
+    "estimations": 0,
+    "failed": 2,
+    "valid": 255,
+    "payloads_unchanged": true,
+    "records_differing_from_payloads": []
+   },
+   "agreement": {
+    "task": "T4.8:UNRATE|180:MSAR",
+    "model": "MSAR",
+    "warm_started": true,
+    "loglik_tolerance": 1e-06,
+    "param_tolerance": 1e-08,
+    "origins_compared": 257,
+    "categories": {
+     "reproduced": 251,
+     "classification_changed": 6,
+     "original_origin_not_reestimated": 507
+    },
+    "first_divergence": "1982-01-01",
+    "status": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+    "requires_review": true,
+    "review_items": [
+     "T4.8:UNRATE|180:MSAR: 6 origins classification_changed (status or reason codes differ from the original fit)",
+     "T4.8:UNRATE|180:MSAR: 507 origins original_origin_not_reestimated (an original fit record with no re-estimated origin)"
+    ],
+    "sensitivity_items": [],
+    "warnings": [
+     "T4.8:UNRATE|180:MSAR: 6 origins classification_changed (status or reason codes differ from the original fit)",
+     "T4.8:UNRATE|180:MSAR: 507 origins original_origin_not_reestimated (an original fit record with no re-estimated origin)"
+    ]
+   },
+   "original_failed_over_same_origins": 2,
+   "original_failed_whole_chain": 5,
+   "classification_changes": [
+    {
+     "refit_date": "1982-01-01",
+     "status_original": "fragile",
+     "status_new": "adequate",
+     "reason_codes_original": "LOW_OCCUPANCY;TRANSITION_BOUNDARY",
+     "reason_codes_new": ""
+    },
+    {
+     "refit_date": "1982-02-01",
+     "status_original": "fragile",
+     "status_new": "adequate",
+     "reason_codes_original": "LOW_OCCUPANCY;TRANSITION_BOUNDARY",
+     "reason_codes_new": ""
+    },
+    {
+     "refit_date": "1982-03-01",
+     "status_original": "fragile",
+     "status_new": "adequate",
+     "reason_codes_original": "LOW_OCCUPANCY;TRANSITION_BOUNDARY",
+     "reason_codes_new": ""
+    },
+    {
+     "refit_date": "1982-04-01",
+     "status_original": "fragile",
+     "status_new": "adequate",
+     "reason_codes_original": "LOW_OCCUPANCY;TRANSITION_BOUNDARY",
+     "reason_codes_new": ""
+    },
+    {
+     "refit_date": "1982-05-01",
+     "status_original": "fragile",
+     "status_new": "adequate",
+     "reason_codes_original": "LOW_OCCUPANCY;TRANSITION_BOUNDARY",
+     "reason_codes_new": ""
+    },
+    {
+     "refit_date": "1982-06-01",
+     "status_original": "failed",
+     "status_new": "failed",
+     "reason_codes_original": "LOW_OCCUPANCY;NONCONVERGENCE;TRANSITION_BOUNDARY",
+     "reason_codes_new": "NONCONVERGENCE"
+    }
+   ]
+  }
+ }
+}

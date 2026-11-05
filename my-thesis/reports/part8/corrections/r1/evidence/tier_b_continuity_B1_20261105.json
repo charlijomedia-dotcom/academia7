@@ -1,0 +1,75 @@
+{
+ "batch": "B1",
+ "batch_root": "/tmp/claude-0/-home-user-academia7/84fe7cf0-4302-525f-9944-b196d02fbce5/scratchpad/b2_evidence/drive_layout/baseline/r1_tierb_batches/B1",
+ "created_utc": "20261105T102127Z",
+ "estimation": "none (refused by the guard)",
+ "chains": {
+  "T4.8:UNRATE|300:MSAR": {
+   "checkpoints": 6,
+   "restored": {
+    "payloads": 86,
+    "checkpoints": 6,
+    "ignored_incomplete_writes": []
+   },
+   "sessions": [
+    "B1-20261105T071423Z-3706dd",
+    "B1-20261105T094638Z-601058"
+   ],
+   "continuity": {
+    "task_id": "T4.8:UNRATE|300:MSAR",
+    "payloads": 86,
+    "live": {
+     "planned": 644,
+     "completed": 86,
+     "complete": false,
+     "statuses": {
+      "adequate": 84,
+      "fragile": 2
+     },
+     "unreachable": 0
+    },
+    "cache_hit": {
+     "planned": 644,
+     "completed": 86,
+     "complete": false,
+     "unreachable": 0
+    },
+    "first_mismatch": null
+   },
+   "replay": {
+    "origins": 86,
+    "from_cache": 86,
+    "estimations": 0,
+    "failed": 0,
+    "valid": 86,
+    "payloads_unchanged": true,
+    "records_differing_from_payloads": []
+   },
+   "agreement": {
+    "task": "T4.8:UNRATE|300:MSAR",
+    "model": "MSAR",
+    "warm_started": true,
+    "loglik_tolerance": 1e-06,
+    "param_tolerance": 1e-08,
+    "origins_compared": 86,
+    "categories": {
+     "reproduced": 86,
+     "original_origin_not_reestimated": 558
+    },
+    "first_divergence": null,
+    "status": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+    "requires_review": true,
+    "review_items": [
+     "T4.8:UNRATE|300:MSAR: 558 origins original_origin_not_reestimated (an original fit record with no re-estimated origin)"
+    ],
+    "sensitivity_items": [],
+    "warnings": [
+     "T4.8:UNRATE|300:MSAR: 558 origins original_origin_not_reestimated (an original fit record with no re-estimated origin)"
+    ]
+   },
+   "original_failed_over_same_origins": 0,
+   "original_failed_whole_chain": 3,
+   "classification_changes": []
+  }
+ }
+}

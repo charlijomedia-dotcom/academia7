@@ -135,7 +135,7 @@ baseline/r1_tierb_batches/<B>/
 - a linear parent chain, with no fork and no gap;
 - no conflicting duplicate.
 
-The worker then **walks** each chain through the restored payloads with the pinned key function, including the warm-start predecessor hash. It requires a contiguous prefix and that **no payload is unreachable**. A resumed chain serves its verified origins from the restored payloads, reading only, and estimates from the first missing origin onwards.
+The worker then **walks** each chain through the restored payloads with the pinned key function, including the warm-start predecessor hash, carried by the pinned **live** rule: a failed fit keeps the previous usable warm start. A resumed or assembled chain is served through the live-replay cache. See `tier_b_warm_start_continuity.md` (5 November 2026) for the B2 defect this corrects. It requires a contiguous prefix and that **no payload is unreachable**. A resumed chain serves its verified origins from the restored payloads, reading only, and estimates from the first missing origin onwards.
 
 **Lost work.** Only committed checkpoints survive the loss of a VM. By design, what can be lost is what was estimated since the last successful commit, plus the origin in progress. **I do not claim a guaranteed maximum.** The tests prove recovery to the last commit and identical estimates after resuming; they do not prove a bound on Drive latency.
 
