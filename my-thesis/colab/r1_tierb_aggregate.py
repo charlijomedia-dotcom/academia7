@@ -176,7 +176,9 @@ def assemble(code_dir: Path, original: Path, cache_root: Path, refit_root: Path,
                for a in ("--approve", t)]
     common = ["--original", str(original), "--cache-root", str(cache_root),
               "--refit-cache", str(refit_root), *approve]
-    with tb.no_estimation_allowed():
+    # estimation refused; approved chains replayed from the refit cache by the live
+    # warm-start rule (r1_tierb.live_replay_class), so a failed origin does not break them
+    with tb.no_estimation_allowed(), tb.live_replay_in_pinned_workflow():
         legacy_code = cli.main([*common, "--staging", str(out / "legacy"), "--legacy"])
         corrected_code = cli.main([*common, "--staging", str(out / "corrected"),
                                    "--legacy-staging", str(out / "legacy"),

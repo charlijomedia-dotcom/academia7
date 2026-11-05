@@ -481,14 +481,52 @@ def cache_identity_string(config, frozen_csv: Path | str) -> str:
     return sha256_bytes(json.dumps(parts, sort_keys=True).encode())[:16]
 
 
-def walk_chain(job, fits: Path | str, identity, config, *,
-               require_marker: bool = True) -> dict:
-    """Follow a chain's keys through a refit cache exactly as the pinned engine replays it.
+# -- warm-start continuity: the pinned LIVE rule ------------------------------------------
+#
+# The pinned `rolling.run_chain` has two branches. LIVE estimation keeps the warm start of
+# the last USABLE fit: `if outcome.usable and outcome.warm_payload is not None:
+# warm_payload = outcome.warm_payload` (usable = status is not "failed"); a failed fit
+# leaves the warm start unchanged. A CACHE HIT instead sets `warm_payload` to whatever the
+# payload stores - None for a failed fit. The successor's cache key embeds the predecessor
+# hash of that warm start, so after a failed origin the cache-hit rule asks for a key
+# the live run never wrote: replay stops, and a resumed run would re-estimate from a
+# different (cold) start. Every payload of an uninterrupted chain is keyed by the LIVE
+# rule. The functions below apply the live rule; the pinned code is not changed.
 
-    Mirrors the cache branch of the pinned `rolling.run_chain`: same keys, same horizon
-    check, same predecessor (warm-start) hash from each payload's `warm_payload`. Returns
-    the contiguous completed prefix, the payloads it reached, and every payload in the
-    directory it did not reach (which would mean an inconsistent cache).
+def live_warm_after(previous, payload: dict):
+    """Warm start after an origin, by the pinned live rule (status not failed + warm)."""
+    if payload.get("status") != "failed" and payload.get("warm_payload") is not None:
+        return payload["warm_payload"]
+    return previous
+
+
+def predecessor_hash(warm, use_warm: bool = True) -> str:
+    """Exactly the pinned `run_chain` expression for the successor's predecessor hash."""
+    import numpy as np
+    if not use_warm or warm is None:
+        return ""
+    return f"{np.round(np.asarray(warm, float).ravel(), 10).tolist()}"
+
+
+def chain_identity(key) -> tuple:
+    """Every cache-key field that is constant along one chain (plus the window span)."""
+    start, end = key.window_start, key.window_end
+    span = (int(end[:4]) - int(start[:4])) * 12 + int(end[5:7]) - int(start[5:7]) + 1
+    return (key.data_input_hash, key.source_manifest_hash, key.series, key.transformation,
+            key.model, json.dumps(key.specification, sort_keys=True), key.code_hash,
+            key.config_hash, span)
+
+
+def walk_chain(job, fits: Path | str, identity, config, *,
+               require_marker: bool = True, semantics: str = "live") -> dict:
+    """Follow a chain's keys through a refit cache.
+
+    Same keys and horizon check as the pinned `rolling.run_chain`. `semantics="live"`
+    (default) carries the warm start by the pinned LIVE rule (`live_warm_after`): the key
+    sequence an uninterrupted estimation actually wrote. `semantics="cache_hit"` resets it
+    from every payload, as the pinned cache-hit branch does (diagnostics only: it breaks
+    after a failed origin of a warm-started chain). Returns the contiguous completed
+    prefix, the payloads it reached, and every payload it did not reach.
     """
     import numpy as np
     from thesis.core.cache import FitCache
@@ -500,8 +538,10 @@ def walk_chain(job, fits: Path | str, identity, config, *,
     horizons = sorted(set(int(h) for h in job.horizons))
     origins = estimation_origins(job.y.index, job.window_length, horizons,
                                  max_origins=job.max_origins)
+    if semantics not in ("live", "cache_hit"):
+        raise ValueError(f"unknown semantics {semantics!r}")
     use_warm = bool(config.get("forecasting.warm_starts", True))
-    predecessor, completed, gaps = "", 0, 0
+    predecessor, completed, gaps, warm = "", 0, 0, None
     reached: set[str] = set()
     statuses: dict[str, int] = {}
     sequence: list[tuple[str, str]] = []
@@ -525,15 +565,72 @@ def walk_chain(job, fits: Path | str, identity, config, *,
                          path.relative_to(fits).as_posix()))
         statuses[payload["status"]] = statuses.get(payload["status"], 0) + 1
         completed += 1
-        warm = payload.get("warm_payload")
-        predecessor = ""
-        if use_warm and warm is not None:
-            predecessor = f"{np.round(np.asarray(warm, float).ravel(), 10).tolist()}"
+        if semantics == "live":
+            warm = live_warm_after(warm, payload)
+        else:
+            warm = payload.get("warm_payload")
+        predecessor = predecessor_hash(warm, use_warm)
     present = {p.relative_to(fits).as_posix() for p in payload_files(fits)}
-    return {"task_id": job.task_id, "planned": len(origins) - gaps, "gaps": gaps,
+    return {"task_id": job.task_id, "semantics": semantics,
+            "planned": len(origins) - gaps, "gaps": gaps,
             "completed": completed, "complete": completed == len(origins) - gaps,
             "first_missing": first_missing, "statuses": statuses, "sequence": sequence,
             "reached": sorted(reached), "unreachable": sorted(present - reached)}
+
+
+def continuity_report(job, fits: Path | str, identity, config, *, context: int = 3) -> dict:
+    """Both walks of one chain and, if they differ, the exact first mismatch.
+
+    At the first origin where the cache-hit rule and the live rule ask for different keys:
+    both predecessor hashes and key digests (and whether each file exists), the preceding
+    origins' statuses, reason codes and whether their payload stores a warm start, and
+    the live warm-start state (the last usable fit's) the original estimation used.
+    """
+    from thesis.core.cache import FitCache
+    from thesis.forecasting.rolling import _cache_key
+    from thesis.forecasting.windows import estimation_origins
+    fits = Path(fits)
+    live = walk_chain(job, fits, identity, config, semantics="live")
+    hit = walk_chain(job, fits, identity, config, semantics="cache_hit")
+    report = {"task_id": job.task_id, "payloads": len(payload_files(fits)),
+              "live": {k: live[k] for k in ("planned", "completed", "complete", "statuses")}
+              | {"unreachable": len(live["unreachable"])},
+              "cache_hit": {k: hit[k] for k in ("planned", "completed", "complete")}
+              | {"unreachable": len(hit["unreachable"])},
+              "first_mismatch": None}
+    if hit["completed"] >= live["completed"]:
+        return report
+    cache = FitCache(fits, enabled=True)
+    use_warm = bool(config.get("forecasting.warm_starts", True))
+    origins = {o.origin_date.strftime("%Y-%m-%d"): o for o in estimation_origins(
+        job.y.index, job.window_length, sorted(set(int(h) for h in job.horizons)),
+        max_origins=job.max_origins)}
+    sequence = live["sequence"]
+    position = hit["completed"]                       # index of the first origin hit misses
+    date = sequence[position][0]
+    previous = [read_payload(fits / rel) for _, rel in sequence[:position]]
+    live_warm = None
+    for payload in previous:
+        live_warm = live_warm_after(live_warm, payload)
+    hit_warm = previous[-1].get("warm_payload") if previous else None
+    keys = {}
+    for name, warm in (("cache_hit_rule", hit_warm), ("live_rule", live_warm)):
+        key = _cache_key(identity, job.series_name, job.transformation, job.spec,
+                         origins[date], predecessor_hash(warm, use_warm))
+        path = cache.path_for(key)
+        keys[name] = {"predecessor_hash": key.predecessor_hash[:120]
+                      + ("..." if len(key.predecessor_hash) > 120 else ""),
+                      "key_digest": key.digest(), "payload_exists": path.is_file()}
+    usable = [i for i, p in enumerate(previous) if live_warm_after(None, p) is not None]
+    report["first_mismatch"] = {
+        "origin_index": position + 1, "refit_date": date, "keys": keys,
+        "preceding": [{"refit_date": sequence[i][0], "status": previous[i]["status"],
+                       "reason_codes": previous[i].get("reason_codes"),
+                       "stores_warm_payload": previous[i].get("warm_payload") is not None}
+                      for i in range(max(0, position - context), position)],
+        "live_warm_state_from": (sequence[usable[-1]][0] if usable else None),
+        "live_warm_state": live_warm}
+    return report
 
 
 # -- runtime budget ----------------------------------------------------------------------
@@ -569,6 +666,76 @@ def _pinned_refit_cache():
     return RefitCache
 
 
+def live_replay_class(base=None):
+    """The pinned RefitCache, serving cache hits with the LIVE warm-start state.
+
+    An orchestration compatibility layer; the pinned engine and the stored payloads are
+    unchanged. For each chain (identified by `chain_identity` of its keys, in origin
+    order) it tracks the warm start the pinned LIVE branch would hold, at full precision.
+    On a hit it returns the stored payload, unchanged except that `warm_payload` is the
+    live warm state after that origin (the previous usable fit's, if this fit failed);
+    the pinned `run_chain` then derives exactly the live successor key, and a refit after
+    a resume starts from exactly the live warm start. On a miss followed by `put` (a fit
+    estimated now) the state advances by the same live rule. A requested key whose
+    predecessor hash is not the live one raises: a chain is never silently forked.
+    Records, parameters, forecasts, statuses and reason codes are served as stored.
+    """
+    base = base or _pinned_refit_cache()
+
+    class LiveReplayRefitCache(base):
+        use_warm = True
+
+        def _chain(self, key) -> dict:
+            chains = self.__dict__.setdefault("_live_chains", {})
+            cid = chain_identity(key)
+            state = chains.get(cid)
+            if state is None or key.refit_date <= state["date"]:
+                state = chains[cid] = {"warm": None, "before": None, "date": ""}
+            return state
+
+        def get(self, key):
+            state = self._chain(key)
+            expected = predecessor_hash(state["warm"], self.use_warm)
+            if key.predecessor_hash != expected:
+                raise TierBError(f"{key.series} {key.model} {key.refit_date}: requested "
+                                 "predecessor is not the live warm-start state")
+            state["before"], state["date"] = state["warm"], key.refit_date
+            payload = super().get(key)
+            if payload is None:
+                return None
+            state["warm"] = live_warm_after(state["before"], payload)
+            if state["warm"] is payload.get("warm_payload"):
+                return payload
+            return {**payload, "warm_payload": state["warm"]}
+
+        def put(self, key, payload):
+            super().put(key, payload)
+            state = self.__dict__.get("_live_chains", {}).get(chain_identity(key))
+            if state is None or state["date"] != key.refit_date:
+                raise TierBError(f"{key.series} {key.model} {key.refit_date}: a fit was "
+                                 "stored without the preceding cache lookup")
+            state["warm"] = live_warm_after(state["before"], payload)
+
+    return LiveReplayRefitCache
+
+
+@contextmanager
+def live_replay_in_pinned_workflow():
+    """During R1 assembly, the pinned workflow's refit cache follows the live rule.
+
+    `PublishedRescorer` builds `rescore.RefitCache(<refit cache>/fits)` for approved
+    chains; for the duration of this block that name is the live-replay subclass. The
+    original-cache replay (`_OriginalOnly`) is not touched.
+    """
+    from thesis.correction import rescore
+    original = rescore.RefitCache
+    rescore.RefitCache = live_replay_class(original)
+    try:
+        yield
+    finally:
+        rescore.RefitCache = original
+
+
 def stoppable_refit_cache(fits: Path | str, *, task: str, budget: Budget,
                           historical_seconds: float, stop_file: Path | str,
                           progress: Path | str, safety: float = 3.0):
@@ -580,7 +747,7 @@ def stoppable_refit_cache(fits: Path | str, *, task: str, budget: Budget,
     remaining budget cannot cover `safety` times the expected fit time, or when the
     stop file exists. Hits are always served: replaying verified origins costs nothing.
     """
-    RefitCache = _pinned_refit_cache()
+    RefitCache = live_replay_class()          # resumes follow the live warm-start rule
 
     class StoppableRefitCache(RefitCache):
         def configure(self):
