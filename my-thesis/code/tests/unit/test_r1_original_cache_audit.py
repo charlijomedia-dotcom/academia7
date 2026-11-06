@@ -145,3 +145,32 @@ def test_chain_sources_are_fetched_from_the_evidence_commit_and_verified(tmp_pat
     (tmp_path / "corrected_r1_summary.json").write_bytes(b"{}")
     with pytest.raises(AssertionError, match="evidence commit"):
         exec(compile(block, "run-cell", "exec"), namespace)
+
+
+def test_export_also_compresses_large_files(tmp_path):
+    """Stage 2 could not retrieve three exported files over the connector's size limit."""
+    import gzip
+    import hashlib
+    export = next(c for c in _code() if "export_manifest.json" in c)
+    assert "st_size > 5_000_000" in export and export.count('".gz"') >= 2
+    out, drive = tmp_path / "audit_out", tmp_path / "drive" / "baseline" / "r1_original_cache_audit" / "s"
+    (out / "audit").mkdir(parents=True)
+    big = out / "audit" / "origins.csv"
+    big.write_bytes(b"a,b\n" + b"1,2\n" * 1_400_000)
+    (out / "verify").mkdir()
+    (out / "verify" / "verify.json").write_text("{}")
+
+    class FakeTC:
+        @staticmethod
+        def sha256(path):
+            return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    import shutil as sh
+    namespace = {"OUT": out, "AUDIT_DRIVE": drive, "DRIVE_ROOT": str(tmp_path / "drive"),
+                 "Path": Path, "shutil": sh, "json": json, "tc": FakeTC, "SESSION": "s",
+                 "ORCH_COMMIT": "o", "PIN_COMMIT": "p", "IDENTITY": "i", "PAYLOADS": 1,
+                 "FROZEN_SHA": "f", "FOUND": {"python": "3.11"}}
+    exec(compile(export, "export-cell", "exec"), namespace)
+    packed = drive / "audit" / "origins.csv.gz"
+    assert gzip.decompress(packed.read_bytes()) == big.read_bytes()
+    manifest = json.loads((drive / "export_manifest.json").read_text())
+    assert {"audit/origins.csv", "audit/origins.csv.gz", "verify/verify.json"} <= {f["path"] for f in manifest["files"]}

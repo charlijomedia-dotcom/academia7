@@ -1,0 +1,860 @@
+[
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00001.tar.gz",
+  "bytes": 27832,
+  "sha256": "2a1c016bec6c70456752130a8838002db46b05b95f7eba82c68c13ae9e36127d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00002.tar.gz",
+  "bytes": 35753,
+  "sha256": "63c99e5a9a39dbc705e43edc46d4efa627bade6ec91463affee375535c43a4bd"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00003.tar.gz",
+  "bytes": 42376,
+  "sha256": "428973e08da87b784d4d76c55e22b9023e1bcc809fa07be508f131511fedc240"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00004.tar.gz",
+  "bytes": 37937,
+  "sha256": "963d0746100a30f477e9247542487b98e64ac21c07903c72c9e0c1a1cce472f8"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00005.tar.gz",
+  "bytes": 31594,
+  "sha256": "80de930b5184942f1d32806765d322036457abc4a1d396a688fb1c76c4bac395"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00006.tar.gz",
+  "bytes": 31928,
+  "sha256": "76ea89869b3a17dbbc95f486b77eeeb59228c3c1504f77a67bda2653eccb2e66"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00007.tar.gz",
+  "bytes": 34379,
+  "sha256": "57dd9210d085271857f8b38d3d81a1a8f590a912e5652e498fb2e7969675c7d9"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00008.tar.gz",
+  "bytes": 37366,
+  "sha256": "a7fb91b8a63f2d3eaab2b2c57e2e65bbf25019ed8408b447de42420934ab8d5a"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00009.tar.gz",
+  "bytes": 42370,
+  "sha256": "123be0eaeb660dabf012661b9fabca0066e151da702703ca6e9f1ae2e77ea357"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00010.tar.gz",
+  "bytes": 49375,
+  "sha256": "2dd8f43c857415f88fcdb479eb7045dc12cef441a34de8976e04be66cd93449c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00011.tar.gz",
+  "bytes": 44650,
+  "sha256": "79bab1665c3d2ad73761514da9af256b926f14270e9bf4b140407a6bef82df6c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00012.tar.gz",
+  "bytes": 42730,
+  "sha256": "9334ef67462cdc1309270d39c432edc121331d3f5b02a7b5e6f1ed9bae340eac"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00013.tar.gz",
+  "bytes": 43586,
+  "sha256": "6a871ac98cbe09612a04544f6b8b0f2645cfafc22eea1445e25ec8db16e6f7b9"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00014.tar.gz",
+  "bytes": 47416,
+  "sha256": "b0cacbb5b7937239141658a2b9ec49c7fc95e662ba71b20bcaea2c8c5fbb9958"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00015.tar.gz",
+  "bytes": 46542,
+  "sha256": "0999f65c54a4d1bae80854ef672476752512b10aa60ad89f36e7cb4629d1d445"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00016.tar.gz",
+  "bytes": 40943,
+  "sha256": "118f75f68007487817f728acf59e23e40c31929e164091ab8bc4dde86ba9e439"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00017.tar.gz",
+  "bytes": 41248,
+  "sha256": "72eb067d903c0f25353ec92cd2c66676ef6a8e31ffd8d4142b7006737892d638"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00018.tar.gz",
+  "bytes": 45427,
+  "sha256": "0ef2f493487f2e80cade987086f714c71a0a386cdb6f2257521ed76553d230b8"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00019.tar.gz",
+  "bytes": 55313,
+  "sha256": "6c27fbd3c1a794b8c3dbdbb31d2aafc0ca7c1ad401be6ca6ddc3a5fe465efb78"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00020.tar.gz",
+  "bytes": 56489,
+  "sha256": "62ee51a588415cce7b1c48ac784d94ea44b06f95b308c8c776a63dd2a7ad124b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00021.tar.gz",
+  "bytes": 61845,
+  "sha256": "69a518ddb44665cdcec8b7101403fca7a75dc308f2a6591a1f2505e3ff783956"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00022.tar.gz",
+  "bytes": 56822,
+  "sha256": "e384189f2b28a74f410831bd8942e0058c885d60a672e1640d037e731bed790b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00023.tar.gz",
+  "bytes": 50211,
+  "sha256": "1b858c0e32d67b54701c158e9304a12dff0cd62c479522f85c0d459b5047d2a7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00024.tar.gz",
+  "bytes": 44321,
+  "sha256": "947b7bbea6b2308af498790feafa16337e009437ddc63bd9f29e66ddd0417d2a"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00025.tar.gz",
+  "bytes": 38395,
+  "sha256": "8c9d8a92576b8864ac2ae6907223c997893eb78826d9ba369080e0bf8b6534ab"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00026.tar.gz",
+  "bytes": 30230,
+  "sha256": "436d88a2529983e35888be731c87cbccb55875e8d8d82f25f9a4c48e7e2046b7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00027.tar.gz",
+  "bytes": 34849,
+  "sha256": "e7b98412ba9e3f4d1f77fcbbf6ca528b382b81f8a9c80457465dfd9a5331a52a"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00028.tar.gz",
+  "bytes": 31783,
+  "sha256": "214e93ed7891db7c122c29ba36308890ea0a17428bad9786167ee8b14340e4f7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00029.tar.gz",
+  "bytes": 30733,
+  "sha256": "82859efdcfdebc35bdf116b96a0fa52458130131fb15d5adc4b65ad149641833"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00030.tar.gz",
+  "bytes": 29343,
+  "sha256": "9f3e3e88c6823a7d8b30ed1ddef05e4185e79cc5ba2cbd076c6f4ac5edc5a21c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00031.tar.gz",
+  "bytes": 29891,
+  "sha256": "1abb7d65e9b709dbfaf8761c959b84412d9950428daee713eebba635205b6886"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00032.tar.gz",
+  "bytes": 26199,
+  "sha256": "47dde9a6b62e58c3b414cf8b137d6852aa87e26406cede63ab93dde9ca71431f"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00033.tar.gz",
+  "bytes": 30626,
+  "sha256": "789323dfe615346aa35397620b5d6e7baa62b43d0438f8eb060de4ebc12404ee"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00034.tar.gz",
+  "bytes": 35283,
+  "sha256": "114f67bd3483041e47f890a3b204d30b6662e4c06e2b381e2ff1036a0ebcb401"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00035.tar.gz",
+  "bytes": 48111,
+  "sha256": "1df913ff9815e06a6085ff1515904559f0ce022d3afadaeca8d843cffea3dfba"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00036.tar.gz",
+  "bytes": 44742,
+  "sha256": "43f3ed6ea1a0c2befc851a4390bbf51e232709c89ead843f21e42579a861845c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00037.tar.gz",
+  "bytes": 39920,
+  "sha256": "f498979c615fb9311f6d17419baac6bd314d34aa103ff9b4fd8aa9d7a40b32cf"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00038.tar.gz",
+  "bytes": 35859,
+  "sha256": "0b0572a3deec2f143a1166920d92fe52cabb503387ae1247d7aa401f8303c854"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00039.tar.gz",
+  "bytes": 32911,
+  "sha256": "a3ef9e025fca6b33056f39f37593605944b8d41d4d353ba80fce14ea2fb17847"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00040.tar.gz",
+  "bytes": 31319,
+  "sha256": "61969ca42f6a09ba40788144d7d62b50fa5de6fe2dbc4b9785d44a193bd12d66"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00041.tar.gz",
+  "bytes": 31663,
+  "sha256": "da7596b5834098ccef1b8f8710b45022e502115f76d40c5aaa666b097bcdc160"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00042.tar.gz",
+  "bytes": 33934,
+  "sha256": "08017f097aedfbc6871f8eaa471b52211abac57ad449f14117f48c73a2ac34f5"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00043.tar.gz",
+  "bytes": 38725,
+  "sha256": "1f854d7766f53ec2c8217687596ac04fec14cc918fe1738d878d509371c5687d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00044.tar.gz",
+  "bytes": 37615,
+  "sha256": "5501513073a58df417eba0103da3313a27231ff49b502186f05e6047ad2d2b50"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00045.tar.gz",
+  "bytes": 46355,
+  "sha256": "972d33e50fb64132a9a206999842fa3dace1f5a6a2a348215df80f9e71e62356"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00046.tar.gz",
+  "bytes": 48636,
+  "sha256": "40fa2175244c04975fdc8a8dd02954667a49fa0e651ba39759c13d0b6ccc9984"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00047.tar.gz",
+  "bytes": 38202,
+  "sha256": "0d2ec026966121304ad186a86e958444f7fd5cd763299b9f09746afe4112dd97"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00048.tar.gz",
+  "bytes": 35089,
+  "sha256": "e03caaca7bfc8c8e65226ced2f6872359bc06fe68dff89d1b5367fc8ee28b79b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00049.tar.gz",
+  "bytes": 33974,
+  "sha256": "1e821fcf5782e763790e73d7761db6df251b942be0cb19881a3c0ad049cbfb87"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00050.tar.gz",
+  "bytes": 34013,
+  "sha256": "22f16750f8d2694be94aa5972bd3469a0ff082b26c77d1956be6b82fff9726bf"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00051.tar.gz",
+  "bytes": 39367,
+  "sha256": "ee6529f3a28480a0b4944fa05c012f31ac4e06a90319945efed505a33a4d0b74"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00052.tar.gz",
+  "bytes": 39685,
+  "sha256": "367a2dd3a450970a930d97d5d4621302cbb277334ff572b2dc444e4f9255faca"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00053.tar.gz",
+  "bytes": 49266,
+  "sha256": "7b3d5ab595449fdf6422c24fedd724cc5a97127b4919dda39acdb45a429e7c86"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00054.tar.gz",
+  "bytes": 50119,
+  "sha256": "ed1ed48d3ff30e3e99b9c01e923681e8111c4c3b4ee1a80563bf302de2806852"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00055.tar.gz",
+  "bytes": 40829,
+  "sha256": "55be3727d3d9ddbd6c488ae119884f5627c3ad433667e131de4373533d772813"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00056.tar.gz",
+  "bytes": 50049,
+  "sha256": "77576ec338e260b8f4ff22a08db02b7ab6e83b25104bad70ef6471a0d64c7492"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00057.tar.gz",
+  "bytes": 75707,
+  "sha256": "2e8e69be78bf4298adbb37eabd83d1dc09ca24b072038c147e34667e86f17efd"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00058.tar.gz",
+  "bytes": 44003,
+  "sha256": "8e28a32c5f143e1f594afc1a91f0d5a032614588387333a8da208f4e1c8e4cc8"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00059.tar.gz",
+  "bytes": 37383,
+  "sha256": "95e1f14a274fdacd9ef56b88356cc2208b74fb6c9943ecb853b0fb359aa3e68a"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00060.tar.gz",
+  "bytes": 36304,
+  "sha256": "f4cdb3c2fe7430b4bc386e592a5a0de8845ddca2eaac3847a5c7a26054a75260"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00061.tar.gz",
+  "bytes": 39985,
+  "sha256": "9ebe68c5e75e4254f6a37071392ad334e86c4ca5bd2d75cd94e01ca57dfa1c70"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00062.tar.gz",
+  "bytes": 40752,
+  "sha256": "af4c114e20d4e41cc8cb97f74a30994d9a3b20854ab4ac29191b0e153d33b060"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00063.tar.gz",
+  "bytes": 37834,
+  "sha256": "6d790cd5da651b7608d3e603aa10c318b91c8b5f93a2e01715564fb1e904cde6"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00064.tar.gz",
+  "bytes": 38506,
+  "sha256": "b0c6d01088b9ebca6183b2316c23da8fa741312656199bb534b91dd454299941"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00065.tar.gz",
+  "bytes": 32521,
+  "sha256": "459cf68e7a3ebef01011734a16353870aee365c73e960144f13772d605b3383c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00066.tar.gz",
+  "bytes": 33780,
+  "sha256": "994e694ce6fdf0c6ecba9883aa180c6420047fb3c8eba24ac30cf458fdf8b462"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00067.tar.gz",
+  "bytes": 30475,
+  "sha256": "f61b5a8754dabbf71d82594f3ccbc357e4147dc83748c0836916b6cf5bcffe08"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00068.tar.gz",
+  "bytes": 31388,
+  "sha256": "593a58ec7cc6d58546685bf69dde1f523ea29fc2a95b8287b5648b047356f99f"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00069.tar.gz",
+  "bytes": 32233,
+  "sha256": "c26fe5a6a093111440bc0001d504bc1aac105b621e9071bcc21d2c0c25a9d389"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00070.tar.gz",
+  "bytes": 35143,
+  "sha256": "73004dfdeb2b6835dfcfaacf0bbdaf9a6a935ca75301627695df88f2bdc7ddb7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00071.tar.gz",
+  "bytes": 31202,
+  "sha256": "77650d52bee6b2fba3c210fb6c8999a20350c8b2b04431dc2ce84cecfe03e49b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00072.tar.gz",
+  "bytes": 29139,
+  "sha256": "d82aef73d26268e75ee2fac14770739491e8835b0e702f725e26488c995a227b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00073.tar.gz",
+  "bytes": 31210,
+  "sha256": "d7198b8835a922944087a0e8a149aa359e42d4fd07bd5b2663172c5925b9a30d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00074.tar.gz",
+  "bytes": 34434,
+  "sha256": "2c49b2d233e96f1e722eeda18bdf097e738be600e14317968866a0c38661784b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00075.tar.gz",
+  "bytes": 29925,
+  "sha256": "66363d7840629e5975c357fcfb0d3ab70954c3f57b286417d77dfb94cc922e99"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00076.tar.gz",
+  "bytes": 31958,
+  "sha256": "f4a3fb4a23710101a74ac347b06f03d85682e01189661c8593157cf312d8f61b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00077.tar.gz",
+  "bytes": 29347,
+  "sha256": "25f43936a7da949b970d09fb48fe7cec26f2f26a54cda5b29a598d74143a91ff"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00078.tar.gz",
+  "bytes": 36472,
+  "sha256": "6b232036be4faf454e0cab4fa2281057a9a540755e8787faab7ac4aa2e186a7f"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00079.tar.gz",
+  "bytes": 39732,
+  "sha256": "d6080f2681c5aa7bb582065760990025369ddcc9dc335278333747983079cc2e"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00080.tar.gz",
+  "bytes": 30353,
+  "sha256": "45ba818b90599f653d8e7e32a6461a7706a9885b5ff636a5beb257ad88ee9fb0"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00081.tar.gz",
+  "bytes": 30329,
+  "sha256": "b8915abbe9d8f5b8942f57ed3a4c6e6463f1c17a7bcbae5191d5297b0cf2e9cb"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00082.tar.gz",
+  "bytes": 29890,
+  "sha256": "79444043edf81a11fedfcf190eba73af7ace13527ce6b3219512e71a64107ca4"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00083.tar.gz",
+  "bytes": 31982,
+  "sha256": "69d7f79e3e1786df1699b8aed737df4085c3f94887471da78c7060b69b385f36"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00084.tar.gz",
+  "bytes": 33994,
+  "sha256": "a7c5983ef9c46e4d28bf799ccbf1e4f02e68cd8670a5caab4af8734ff28b0fe7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00085.tar.gz",
+  "bytes": 31390,
+  "sha256": "e7d5340c3b1b14f2a231ccf78d4fcfc208a73bc4985cd687991127116f1dffca"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00086.tar.gz",
+  "bytes": 31472,
+  "sha256": "f4e258f9237fc76c6cc4dac74246edb4bbc2bb7a8d7eaa0c52f04ea1b1096d1d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00087.tar.gz",
+  "bytes": 31362,
+  "sha256": "ade78bcda01445774ca06b6568495aa2306b13ae2f3bd97450d79ac3e1c0a1e2"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00088.tar.gz",
+  "bytes": 29062,
+  "sha256": "1df7d54c045a46813a0d5279022644ed67773fcd13469b95a14d2c3b2d2fbaa3"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00089.tar.gz",
+  "bytes": 27790,
+  "sha256": "4892ee1a179dd0ebc4bdadea1924dde3c37d391edd414b5bae07195a87ba57c5"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00090.tar.gz",
+  "bytes": 28320,
+  "sha256": "7f32a41c075d9e1c0aee3d2b8d1dae465e475c16114786cc40f70041e401aad4"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00091.tar.gz",
+  "bytes": 29077,
+  "sha256": "8c43330b9bf69624987b7728d4ed79d539624a2495cf64fa5a0eb523eaaa06e3"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00092.tar.gz",
+  "bytes": 30084,
+  "sha256": "eb80fb77aa618655927306a8b79dd441489813eba8d9753e1a4fe43817b0535d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00093.tar.gz",
+  "bytes": 29628,
+  "sha256": "bfdacbba897af0b585c77dfd091fcde862a49233c8a7bf9550fb1154ba11b634"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00094.tar.gz",
+  "bytes": 32294,
+  "sha256": "79b149849f9342e4dd56c2217f0e07ae79134cdd061e25341e9ec8ee8eac53c2"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00095.tar.gz",
+  "bytes": 33047,
+  "sha256": "a52fdd16d206dba8fa327ad0fcc7e6bae6b9c12399fc9438a6388e8494013c6b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00096.tar.gz",
+  "bytes": 30363,
+  "sha256": "a1a620b89a7455150f694f21d2b2b407bf26e67b133f2f9585133b89986d7b5c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00097.tar.gz",
+  "bytes": 29367,
+  "sha256": "fc400ac3850003038d5a306992ae04f7d4031a7f9b1bd49bf74a8d85659655e7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00098.tar.gz",
+  "bytes": 27803,
+  "sha256": "4668ce44d324773bfd52f2f44e180de3109d4efa805637c3939705074461c0b9"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00099.tar.gz",
+  "bytes": 27813,
+  "sha256": "1d3860008a986c0667d74a4a9e18b3be57efd520d42648ce53d0d91d9f002807"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00100.tar.gz",
+  "bytes": 32473,
+  "sha256": "afb651a28b778fe80758dd09ca57b9bd776d7f8ce6b6db62522acd234f8ef527"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00101.tar.gz",
+  "bytes": 27353,
+  "sha256": "8983c5a82b5f5b7db10c92de56719e70ac3106ac4c57938326f80f83fae6054d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00102.tar.gz",
+  "bytes": 33648,
+  "sha256": "7815fb5ef9512583b0425030dd7bb6515d377e1dfad4e962b839517d443485e3"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00103.tar.gz",
+  "bytes": 62921,
+  "sha256": "16537e2f52d81d9173984b5693f11e6fa01ae39aef7d3712d4b32074ba81a7e6"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00104.tar.gz",
+  "bytes": 76299,
+  "sha256": "37c408a817112866656993379493d09fb165be0644d30fd58ea360487a40c165"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00105.tar.gz",
+  "bytes": 58752,
+  "sha256": "b4bf1c000ebac5a0a421cfb52070162b2da4747d4fc50c03087f593601d815dd"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00106.tar.gz",
+  "bytes": 40801,
+  "sha256": "0395f93de739b663ee07fb7ba32c28fc1d3f74e873e375036d4d2a884d0e9e1b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00107.tar.gz",
+  "bytes": 38337,
+  "sha256": "19e5dfe985af9afa2ede38c9f9a2aa16475eddac4b44b336be8abdbe430ee267"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00108.tar.gz",
+  "bytes": 37751,
+  "sha256": "44672f9137d15851f2e878f40bc7d5079723b369c2634f9ea7c163741ee155c7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00109.tar.gz",
+  "bytes": 39191,
+  "sha256": "dc32543dc11b2087f94726489ab428b4254d87f4f379dcdaaea9ce5bd9c0781b"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00110.tar.gz",
+  "bytes": 40009,
+  "sha256": "3ded83e5d3b78d215cf7ee6ecdcdf735c2db067da313999a5403f7aca043be58"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00111.tar.gz",
+  "bytes": 33571,
+  "sha256": "43022e61ecd90651841c4bdb491b15c9b55305578a60299f1938c6b94300f078"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00112.tar.gz",
+  "bytes": 32092,
+  "sha256": "d2a8a8960177dac713f44a875dc866b938ca282de3cbba2fc5af485c517c9fc8"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00113.tar.gz",
+  "bytes": 32486,
+  "sha256": "342f0be8c90549918bc920fea5b9784cbb3e2e989bc235c3d9216e1ce6570063"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00114.tar.gz",
+  "bytes": 54392,
+  "sha256": "7b46519fad79eb808203f385d263015174a2799653bb58e63f35f95645e5af01"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00115.tar.gz",
+  "bytes": 65762,
+  "sha256": "d508f9809dd4306b67b577a613cb28899db9916a2e25bd477ef6a923290e903d"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00116.tar.gz",
+  "bytes": 72750,
+  "sha256": "c2d567df5896fa207ff7a0e9f94505bb2bed7775948fc82ff23713b2881cbfe8"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00117.tar.gz",
+  "bytes": 38702,
+  "sha256": "13fab3077f6670cbf6cc9a44e0073a9ffc0ac1356d258676d3755e2d8638365f"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00118.tar.gz",
+  "bytes": 37920,
+  "sha256": "b7b128b5bf376fbafb8ce3f8e4a99a98fbcd7b7b27b8062ad45e5f13a0a00e49"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00119.tar.gz",
+  "bytes": 37979,
+  "sha256": "3068911bf777f76a5912aaf332d2ebff2e143c776b9d0f4956cd4404d2c62848"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00120.tar.gz",
+  "bytes": 40682,
+  "sha256": "50413e451a8b9292726a136e641aed5051ce21e18f831fa1ef1db71d5ac653b7"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00121.tar.gz",
+  "bytes": 40176,
+  "sha256": "2511fc1110c534e67cfec7ab5f4d7174f6d94b7237ce18206f9f152882686ac8"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00122.tar.gz",
+  "bytes": 37195,
+  "sha256": "157828031471c96832f2671c687f5486ac6e2e2ca20f932eff6350a3ec65cc5f"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00123.tar.gz",
+  "bytes": 42626,
+  "sha256": "2cdb1e28e91ca7295a0dd1485115fa7596c64e63a575b9bddfbe3aabae493535"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00124.tar.gz",
+  "bytes": 63142,
+  "sha256": "37674d4c34b1d41148b0332c02e1e26c8b1d08e5f07fbdbba1c3f143caec1af0"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00125.tar.gz",
+  "bytes": 59491,
+  "sha256": "dbc2243dedbdf822dcdb2572b2dde3c4ba5f2c9fcc042e3860faf9644fc52561"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00126.tar.gz",
+  "bytes": 60011,
+  "sha256": "6256b47b3942b4a02ba68d170384f0f4cea387a25c6543a72ebf247a8f32b9e9"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00127.tar.gz",
+  "bytes": 60018,
+  "sha256": "193df324b529262f4a29684b123243aede4e0ef1b19aaa3564c9a7b6dffef33c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00128.tar.gz",
+  "bytes": 54998,
+  "sha256": "b5501bf39bd8b7f6578f198d350436775b6419fe2b410c3d09c0efdc6a50020f"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00129.tar.gz",
+  "bytes": 53286,
+  "sha256": "0e24a19df62370049ff26c0eec140789fd82aeccd3342740b0d9590c52d6fc25"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00130.tar.gz",
+  "bytes": 50476,
+  "sha256": "0c60b9ee04e3a14e8145d682addfbdd5ce79acd525fb9ae2ac4aa0ef7ffd7b2e"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00131.tar.gz",
+  "bytes": 188906,
+  "sha256": "dc572b03149754897f3193652a2dbf23c859241d59e8ce22352983955a9897cc"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00132.tar.gz",
+  "bytes": 170973,
+  "sha256": "5e30eb4f50332cd685492d38e760e9904a03cbeedb299aae23d785427df8da15"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00133.tar.gz",
+  "bytes": 306748,
+  "sha256": "c55019490550138fa84b9196146eb431a7a5abdeca8f992e66c6f3c34a26a370"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00134.tar.gz",
+  "bytes": 367484,
+  "sha256": "ff70c1bf70cf84ad089021503510e38749de03d9bbf1e7eb952e603eae059b82"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00135.tar.gz",
+  "bytes": 244412,
+  "sha256": "e34d2fde211eb4af69a326d8a665bb3688edc923d0ccd94cc7c87948c5a09690"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00136.tar.gz",
+  "bytes": 224141,
+  "sha256": "56110baa197632e7817c95b9afff11ce6bade7033fed05007a26bdc23dfa21bb"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00137.tar.gz",
+  "bytes": 341896,
+  "sha256": "56a702bf2e271983542b2d46941c6939f48659f1f420d542ab3975cb7d697fea"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00138.tar.gz",
+  "bytes": 451734,
+  "sha256": "eccc781d54709a9405f4400c88486fe9a2ae2ed4d3c95309954d7af07c30084c"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00139.tar.gz",
+  "bytes": 412371,
+  "sha256": "1f93d8945a150e980c553492ae3b05576e1051ed5337d6934cc9e71db0e975ba"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00140.tar.gz",
+  "bytes": 418942,
+  "sha256": "84c923b8c9f15e486bbfa8bc170142d3bfb4b5c94e8cc796c4992d04a432df7e"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00141.tar.gz",
+  "bytes": 412957,
+  "sha256": "8efb641c5a3dccf917a4338876e9f72f956f362b2d17a30d9ccfaf334074e56e"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00142.tar.gz",
+  "bytes": 455488,
+  "sha256": "b03bcd6e0a5f11687b63befe9262f0f0f54213fbce238855af621b9208d82640"
+ },
+ {
+  "folder": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "part": "part-00143.tar.gz",
+  "bytes": 405448,
+  "sha256": "c07f5565b29aa31b35c03c649af471979b50f8fa041fdf0a814672f57d47ccb9"
+ }
+]

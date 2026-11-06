@@ -154,6 +154,8 @@ else:
     assert audit.returncode == 0, "the audit failed; see audit_console.log"'''
 
 EXPORT = '''# Copy the machine-readable results (not the full regenerated output trees) to Drive.
+# Files over 5 MB are also written gzip-compressed (the Drive connector cannot fetch them).
+import gzip
 KEEP = ("verify/", "audit/", "candidate/", "impact/impact.json", "impact/reference_vs_published.csv",
         "impact/candidate_vs_reference.csv", "impact/changed_cells.csv", "report-", "original_cache_parts",
         "audit_console")
@@ -168,6 +170,12 @@ for path in sorted(OUT.rglob("*")):
         shutil.copyfile(path, target)
         assert tc.sha256(target) == tc.sha256(path)
         exported.append({"path": relative, "bytes": path.stat().st_size, "sha256": tc.sha256(path)})
+        if path.stat().st_size > 5_000_000:      # retrievable through the Drive connector
+            packed = target.with_name(target.name + ".gz")
+            with open(path, "rb") as raw, gzip.GzipFile(packed, "wb", 9, mtime=0) as gz:
+                shutil.copyfileobj(raw, gz)
+            exported.append({"path": relative + ".gz", "bytes": packed.stat().st_size,
+                             "sha256": tc.sha256(packed), "gzip_of": relative})
 # the changed files of both legacy passes, for inspection (tables only)
 impact = OUT / "impact" / "impact.json"
 if impact.exists() and json.loads(impact.read_text()).get("performed"):
@@ -180,6 +188,13 @@ if impact.exists() and json.loads(impact.read_text()).get("performed"):
                 shutil.copyfile(source, target)
                 exported.append({"path": f"impact/{side}_tables/{relative}",
                                  "bytes": source.stat().st_size, "sha256": tc.sha256(source)})
+                if source.stat().st_size > 5_000_000:
+                    packed = target.with_name(target.name + ".gz")
+                    with open(source, "rb") as raw, gzip.GzipFile(packed, "wb", 9, mtime=0) as gz:
+                        shutil.copyfileobj(raw, gz)
+                    exported.append({"path": f"impact/{side}_tables/{relative}.gz",
+                                     "bytes": packed.stat().st_size, "sha256": tc.sha256(packed),
+                                     "gzip_of": f"impact/{side}_tables/{relative}"})
 manifest = {"session": SESSION, "orchestration_commit": ORCH_COMMIT, "scientific_commit": PIN_COMMIT,
             "cache_identity": IDENTITY, "original_payloads": PAYLOADS, "frozen_data_sha256": FROZEN_SHA,
             "python": FOUND["python"], "estimation": "none (refused)", "files": exported}

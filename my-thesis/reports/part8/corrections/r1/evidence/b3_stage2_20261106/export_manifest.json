@@ -1,0 +1,297 @@
+{
+ "session": "audit-20261106T081950Z-9c9ba2",
+ "orchestration_commit": "63670e458310689b9894d7c7d8536713791fa76b",
+ "scientific_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+ "cache_identity": "3413465b508bb844",
+ "original_payloads": 18964,
+ "frozen_data_sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+ "python": "3.11.18",
+ "estimation": "none (refused)",
+ "files": [
+  {
+   "path": "audit/audit.json",
+   "bytes": 1289,
+   "sha256": "7b5025de9e96d4665aa493847aad11713c91596103b08c038a08fb70b2909b7b"
+  },
+  {
+   "path": "audit/chains.csv",
+   "bytes": 16918,
+   "sha256": "fdf87c27f3daa05b2e369b4a6d8ad4130028b14e7866cd66b0816fd95c48aaa4"
+  },
+  {
+   "path": "audit/origins.csv",
+   "bytes": 7447814,
+   "sha256": "4d1ae072055f081184cd8dea2d0ae83acfe3e06e6b472020971ba6fe94e204c2"
+  },
+  {
+   "path": "audit_console.log",
+   "bytes": 29677,
+   "sha256": "0aeb0f23361e0ec63a17ae8f1603226fb64144e972aa5e3549dbbbb1b59dac1d"
+  },
+  {
+   "path": "candidate/candidate.json",
+   "bytes": 265,
+   "sha256": "459d839c1d7f4c3f9d067a624de92cd967776b2682fd812c1b1f9b7f343e8960"
+  },
+  {
+   "path": "candidate/candidate_fit_records.csv",
+   "bytes": 279180,
+   "sha256": "018b223db014ce97b17e9ef51b093fa0b17521d6335f4c6a4aea608f8f2aaece"
+  },
+  {
+   "path": "candidate/candidate_forecasts.parquet",
+   "bytes": 81691,
+   "sha256": "b477d705a79b978ad177e6c67c4a496f0edc0ea83961b308927f179cf95260d1"
+  },
+  {
+   "path": "impact/candidate_vs_reference.csv",
+   "bytes": 10259,
+   "sha256": "7774ec7508a0be7242a0d71e01735394eb46ad4be81654bbeefae0bd750d876c"
+  },
+  {
+   "path": "impact/changed_cells.csv",
+   "bytes": 243894,
+   "sha256": "781cbf45db2ec67181746a846093bb9e2f52a24638d99357c8d5fa0fdaa57b18"
+  },
+  {
+   "path": "impact/impact.json",
+   "bytes": 2107,
+   "sha256": "ef7b4197111dd3ab715ae565bef5b9e5c003280ceac74d92a74ed0a75e3bcff2"
+  },
+  {
+   "path": "impact/reference_vs_published.csv",
+   "bytes": 7171,
+   "sha256": "1af05e8fc56bb0e4cc876f63bcbae3283abc2a791f9e4da5cecc036f643dd2cf"
+  },
+  {
+   "path": "original_cache_parts.json",
+   "bytes": 35336,
+   "sha256": "af3b8bf6b8a40cdff107d188a766a599378ff64da4716268fe09a0f6a4bd213e"
+  },
+  {
+   "path": "report-all.json",
+   "bytes": 4479,
+   "sha256": "f9abaca39f220e8d510630297ce88759a93f1e9a1f720c30cffa6cd6b3f83d2f"
+  },
+  {
+   "path": "verify/payload_sha256.csv",
+   "bytes": 2636012,
+   "sha256": "31e10c92cd66bb6a4e194b8bfe89700789ee8457fdbeeb5bc27140d220bcaecf"
+  },
+  {
+   "path": "verify/verify.json",
+   "bytes": 302,
+   "sha256": "06697e01d5c111bd6b4f3ae26565156a7978737621cd2718495c2624b8d84650"
+  },
+  {
+   "path": "impact/reference_tables/data_audit/T4.9_locf_sample_comparison.csv",
+   "bytes": 24537,
+   "sha256": "da14e8c1e219652f83a218d6cec75b65448521ead6b73020a70b90b471741e8f"
+  },
+  {
+   "path": "impact/candidate_tables/data_audit/T4.9_locf_sample_comparison.csv",
+   "bytes": 24534,
+   "sha256": "007b81fbac46fc4c043b8535fd4b15efe4aa94288f34339d4360a8e1de097355"
+  },
+  {
+   "path": "impact/reference_tables/data_audit/locf_forecast_exposure.csv",
+   "bytes": 23783934,
+   "sha256": "ff5e44f4903fd60d87c0817731277bd83429db707ac6928ce8f370d435e442b0"
+  },
+  {
+   "path": "impact/candidate_tables/data_audit/locf_forecast_exposure.csv",
+   "bytes": 23784674,
+   "sha256": "ce6ab8aacbb6211a0aa1f729228926b8c4f77a042e970b910001421075ea5fff"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.3A_hlz_pairwise.csv",
+   "bytes": 191191,
+   "sha256": "013965e4680f39b90ab853d2f1121a42812fb0b4ee5de1c72de8d8a9ae53b3bd"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.3A_hlz_pairwise.csv",
+   "bytes": 191180,
+   "sha256": "3ba2c091c79c959a1b0c2f204a057a538c920dad3dfd1f30aef33ec13c374644"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.3B_dm_hln_pairwise.csv",
+   "bytes": 108680,
+   "sha256": "74c45b413ef88462fced2e27815237473d81b3ba43208078aa8c74bbbedc7906"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.3B_dm_hln_pairwise.csv",
+   "bytes": 108674,
+   "sha256": "035ab1ee7809be6eaa121262a5742b04e28e81d89fdac79134555023b6cb49a4"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.3_main_forecast_table.csv",
+   "bytes": 52434,
+   "sha256": "90d29604aba0f68b7d30e71fc0bad60a0240becdc9584b8a7daf3d22944ece36"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.3_main_forecast_table.csv",
+   "bytes": 52375,
+   "sha256": "9959798b7b81d0b119f84df4fa04c3ba611215c66148e2055b775f50de328bf9"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.4_model_confidence_set.csv",
+   "bytes": 96904,
+   "sha256": "887531617ff7328bc0d03b832f7f72f1698ad18ca7f600dcc3191f94d0257ee3"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.4_model_confidence_set.csv",
+   "bytes": 96900,
+   "sha256": "455eadb800cd5b242e2083ed421267dc4658e39bfa54d3de1cd786a26b24c03d"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.5_state_loss_regression.csv",
+   "bytes": 49128,
+   "sha256": "36302fec6376c66dd87e1bad2c0441a8d37df8daec32704b4a8eb6184312dfee"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.5_state_loss_regression.csv",
+   "bytes": 49128,
+   "sha256": "e9f7032588443f56681a937df062ad17f57a926c27f19585767ce90e04e7b4e8"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.5_state_performance.csv",
+   "bytes": 155125,
+   "sha256": "6bb6431ec7d0357f42c1693e102b7b5c1d4f43abfe9d1ef5130a907b83258ab5"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.5_state_performance.csv",
+   "bytes": 155126,
+   "sha256": "df7e899943b3ccf48efa4f723b7dc92c57f9b3ea2e92443bb943cc5ee6839b1c"
+  },
+  {
+   "path": "impact/reference_tables/forecast_tests/T3.6_peak_trough_detail.csv",
+   "bytes": 14966,
+   "sha256": "08e994d06846ea42a23b484a2d6280db8818d2d1c4e37cfa42d726d6b5594b05"
+  },
+  {
+   "path": "impact/candidate_tables/forecast_tests/T3.6_peak_trough_detail.csv",
+   "bytes": 14966,
+   "sha256": "f392ca33fe5004f4f17c87bd4d37928a9f7919b1285d9260d43969820fb8df58"
+  },
+  {
+   "path": "impact/reference_tables/forecasts/forecast_horizon_coverage.csv",
+   "bytes": 29423,
+   "sha256": "a013575dd958c9fb5ad363a7b798c2a12b58ee7e5a5f74ef151e3a61382856b3"
+  },
+  {
+   "path": "impact/candidate_tables/forecasts/forecast_horizon_coverage.csv",
+   "bytes": 29423,
+   "sha256": "d78850d2648b09e3cf75b169b8b8fa1cb512c44ce10f4317cb6b704ded8d0eb3"
+  },
+  {
+   "path": "impact/reference_tables/forecasts/forecasts_UNRATE.csv",
+   "bytes": 3915657,
+   "sha256": "ef345d06f930e82de613578aa26e5e113089bff21eec1a3f7cf88115404ff650"
+  },
+  {
+   "path": "impact/candidate_tables/forecasts/forecasts_UNRATE.csv",
+   "bytes": 3915694,
+   "sha256": "3fcd38e6e5d5688c1960fbf0a2cbb4ca508ab1b5b3e0002873caee3810647dd1"
+  },
+  {
+   "path": "impact/reference_tables/robustness/T4.1_transformation_robustness.csv",
+   "bytes": 15113,
+   "sha256": "9b9530cbe5ff9845825821af7df6e864bf57ae6fad7130ad0895d1a49929224d"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/T4.1_transformation_robustness.csv",
+   "bytes": 15112,
+   "sha256": "938d93aa98c6d4fd5558f6b62476d8d29f545e4521eb49a4a5d900fca5220c70"
+  },
+  {
+   "path": "impact/reference_tables/robustness/T4.4_horizon_predictive_tests.csv",
+   "bytes": 100296,
+   "sha256": "e969ba33b5973cbc6d97ed4be92135c97ff72c8ec28e92f7377dbabcf8623f65"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/T4.4_horizon_predictive_tests.csv",
+   "bytes": 100301,
+   "sha256": "f03ce723fc5a97c2a5e9c5ddb22225017f128f3c5cec30d505887393846f8ddd"
+  },
+  {
+   "path": "impact/reference_tables/robustness/T4.4_horizon_robustness.csv",
+   "bytes": 57858,
+   "sha256": "efa59a4e9b8048310c90e075b7887b9798851728d36fbd255efcbb404a24f382"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/T4.4_horizon_robustness.csv",
+   "bytes": 57859,
+   "sha256": "4710f68c474082db95ca854cdaec94728b7e2d21e9aecd284700fa38b16815b6"
+  },
+  {
+   "path": "impact/reference_tables/robustness/T4.5_var_comparison.csv",
+   "bytes": 13099,
+   "sha256": "1f84e674ce96fc64d3375e5bbf1d7f20530c0d5d97cc5b0022a8fa308e0050db"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/T4.5_var_comparison.csv",
+   "bytes": 13099,
+   "sha256": "582b968028cd508800d21d85f193851fb12e59874ceedeb3ad0ead2474be5b29"
+  },
+  {
+   "path": "impact/reference_tables/robustness/T4.5_var_predictive_tests.csv",
+   "bytes": 24104,
+   "sha256": "86253af1de3bece60831d6b8bea400e1ea771e31b742300153a2e509a0eb5fba"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/T4.5_var_predictive_tests.csv",
+   "bytes": 24103,
+   "sha256": "a13c5eb0553099f126cfe957044f960f60c5c3b3270ce1dcd3ae08e78941cb43"
+  },
+  {
+   "path": "impact/reference_tables/robustness/T4.TP1_turning_window_sensitivity.csv",
+   "bytes": 289484,
+   "sha256": "e383192bec1a68479bc9e34cb7f7da7e1e22ebf69c375cce7ae5b2e89b7662db"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/T4.TP1_turning_window_sensitivity.csv",
+   "bytes": 289484,
+   "sha256": "84c372ce576723a4504885bf3fcfe6c80f0caa87e21a0082396b4cf32617f735"
+  },
+  {
+   "path": "impact/reference_tables/robustness/window_length_comparison.csv",
+   "bytes": 39683,
+   "sha256": "76afecd3b6e4ba1cd19247c923d990e8bd94263e5c8a91c59a66fd5eeef341e4"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/window_length_comparison.csv",
+   "bytes": 39688,
+   "sha256": "cd105a290064790795464c6e64309c098a4ee1264bd8d9166c9c214c2d387d25"
+  },
+  {
+   "path": "impact/reference_tables/robustness/window_length_mcs.csv",
+   "bytes": 112179,
+   "sha256": "005149a39f948be6153393570de1779ecda0f376d318c2203cf31402c5bad53c"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/window_length_mcs.csv",
+   "bytes": 112175,
+   "sha256": "3090b0e53f47bec4c4e9f30764ca40729d70222e93b619474a41e4b7fe8a64ad"
+  },
+  {
+   "path": "impact/reference_tables/robustness/window_length_origin_audit.csv",
+   "bytes": 41746,
+   "sha256": "3de4ee68c5865c403c5f9a38e2f6b0f610e23ad016ab88d8020e9b51a47f28f4"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/window_length_origin_audit.csv",
+   "bytes": 41742,
+   "sha256": "4d629c75bccc8c3b392996a76ce277550c13e1e1197060072a7930e37fd23c6b"
+  },
+  {
+   "path": "impact/reference_tables/robustness/window_length_predictive_tests.csv",
+   "bytes": 78852,
+   "sha256": "d8834544b5c872c5aa94a8c5315bcaecaea9e9d628c7047a5953e7ca5312f9ce"
+  },
+  {
+   "path": "impact/candidate_tables/robustness/window_length_predictive_tests.csv",
+   "bytes": 78855,
+   "sha256": "fc86afc2c00ed99d3d16b6c7d33ff3d7444590455b2824f350a4a50930ecc076"
+  }
+ ]
+}
