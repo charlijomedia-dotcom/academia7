@@ -116,19 +116,33 @@ for folder in FOLDERS:
 (WORK_DIR / "audit_out" / "original_cache_parts.json").write_text(json.dumps(PARTS, indent=1))
 print(f"{PAYLOADS} payloads restored from {len(FOLDERS)} archive folder(s), {len(PARTS)} parts")'''
 
-RUN = '''# Read-only and non-estimating: every estimator is refused inside the audit script.
+# The R1 chain sources (which chains R1 served from the cache) live only on the evidence
+# branch, not on the orchestration branch: fetched read-only and verified by sha256.
+CHAIN_SOURCES_BRANCH = "part8-r1-replay/20261103T063749Z"
+CHAIN_SOURCES_COMMIT = tb.TIER_A_EVIDENCE_COMMIT
+CHAIN_SOURCES_PATH = ("my-thesis/reports/part8/corrections/r1/replay_20261103T063749Z/"
+                      "corrected_r1_summary.json")
+CHAIN_SOURCES_SHA256 = "f3b7c1fb53b153cc89cdc657b548749a9760d4f7e5d5ee2fd64d4c723a8e2ff3"
+
+RUN = f'''# Read-only and non-estimating: every estimator is refused inside the audit script.
 OUT = WORK_DIR / "audit_out"
+# R1 chain sources: only on the evidence branch, so fetched from its commit and verified.
+CHAIN_SOURCES = WORK_DIR / "corrected_r1_summary.json"
+if not CHAIN_SOURCES.exists():
+    subprocess.run(["git", "fetch", "origin", "{CHAIN_SOURCES_BRANCH}"], cwd=REPO, check=True, env=GIT_ENV)
+    blob = subprocess.run(["git", "show", "{CHAIN_SOURCES_COMMIT}:{CHAIN_SOURCES_PATH}"],
+                          cwd=REPO, check=True, capture_output=True).stdout
+    CHAIN_SOURCES.write_bytes(blob)
+assert tc.sha256(CHAIN_SOURCES) == "{CHAIN_SOURCES_SHA256}", "R1 chain sources do not match the evidence commit"
+INVENTORY = REPO / "my-thesis" / "reports" / "part8" / "corrections" / "r1" / "evidence" / "original_cache_audit_20261105" / "original_fit_cache_inventory.csv.gz"
+assert INVENTORY.is_file(), f"missing {{INVENTORY}}"
 if not RUN_AUDIT:
     print("RUN_AUDIT is False")
 else:
     command = [str(PY), "-u", str(ORCH / "r1_original_cache_audit.py"),
                "--cache-fits", str(ORIGINAL_CACHE / "fits"), "--code-dir", str(CODE),
                "--original", str(ORIGINAL),
-               "--inventory", str(REPO / "my-thesis" / "reports" / "part8" / "corrections" / "r1"
-                                  / "evidence" / "original_cache_audit_20261105"
-                                  / "original_fit_cache_inventory.csv.gz"),
-               "--chain-sources", str(REPO / "my-thesis" / "reports" / "part8" / "corrections"
-                                      / "r1" / "replay_20261103T063749Z" / "corrected_r1_summary.json"),
+               "--inventory", str(INVENTORY), "--chain-sources", str(CHAIN_SOURCES),
                "--candidate-task", CANDIDATE_TASK, "--out", str(OUT), "--stage", "all"]
     if IMPACT_WITH_CACHE:
         command.append("--impact-with-cache")
@@ -136,7 +150,7 @@ else:
     audit = subprocess.run(command, cwd=str(CODE), env=RUN_ENV, capture_output=True, text=True)
     (OUT / "audit_console.log").write_text(audit.stdout + "\\n--- stderr ---\\n" + audit.stderr)
     print(audit.stdout[-6000:], audit.stderr[-3000:])
-    print(f"audit exit {audit.returncode} after {(time.time() - started) / 60:.1f} min")
+    print(f"audit exit {{audit.returncode}} after {{(time.time() - started) / 60:.1f}} min")
     assert audit.returncode == 0, "the audit failed; see audit_console.log"'''
 
 EXPORT = '''# Copy the machine-readable results (not the full regenerated output trees) to Drive.

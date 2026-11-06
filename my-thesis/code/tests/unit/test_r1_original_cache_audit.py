@@ -91,3 +91,57 @@ def test_start_sets_are_parsed_from_both_formats():
             "deterministic_p0.95:obj=255.827,conv=False")
     assert audit.start_set(text) == {"deterministic_p0.9": 109.075, "deterministic_p0.95": 255.827}
     assert audit.start_set({"starts": "warm:obj=-47.3852,conv=True"}) == {"warm": -47.3852}
+
+
+def test_every_repository_path_the_notebook_reads_exists():
+    """Regression: the first Colab run failed because a path read from the orchestration
+    checkout (the R1 chain sources) exists only on the evidence branch."""
+    repo_root = ROOT.parent
+    found = []
+    for source in _code():
+        for chain in re.findall(r'REPO((?:\s*/\s*"[^"]+")+)', source):
+            parts = re.findall(r'"([^"]+)"', chain)
+            found.append(parts)
+            assert (repo_root.joinpath(*parts)).exists(), f"notebook reads REPO/{'/'.join(parts)}"
+    assert any(p[-1] == "original_fit_cache_inventory.csv.gz" for p in found)
+    assert not any(p[-1] == "corrected_r1_summary.json" for p in found)
+
+
+def test_chain_sources_are_fetched_from_the_evidence_commit_and_verified(tmp_path):
+    import hashlib
+    import subprocess as sp
+    run = next(c for c in _code() if "CHAIN_SOURCES" in c)
+    assert f"{tb.TIER_A_EVIDENCE_COMMIT}:{gen.CHAIN_SOURCES_PATH}" in run
+    assert '"--chain-sources", str(CHAIN_SOURCES)' in run
+    try:
+        blob = sp.run(["git", "show", f"{tb.TIER_A_EVIDENCE_COMMIT}:{gen.CHAIN_SOURCES_PATH}"],
+                      cwd=ROOT.parent, check=True, capture_output=True).stdout
+    except (sp.CalledProcessError, FileNotFoundError):
+        pytest.skip("evidence commit not in this clone")
+    assert hashlib.sha256(blob).hexdigest() == gen.CHAIN_SOURCES_SHA256
+    block = run.split("if not RUN_AUDIT:")[0]
+    calls = []
+
+    class Done:
+        def __init__(self, stdout=b""):
+            self.stdout, self.returncode = stdout, 0
+
+    class FakeSubprocess:
+        @staticmethod
+        def run(command, **kwargs):
+            calls.append(command)
+            return Done(blob if command[:2] == ["git", "show"] else b"")
+
+    class FakeTC:
+        @staticmethod
+        def sha256(path):
+            return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    namespace = {"WORK_DIR": tmp_path, "REPO": ROOT.parent, "GIT_ENV": {}, "Path": Path,
+                 "subprocess": FakeSubprocess, "tc": FakeTC}
+    exec(compile(block, "run-cell", "exec"), namespace)
+    assert (tmp_path / "corrected_r1_summary.json").read_bytes() == blob
+    assert calls[0][:3] == ["git", "fetch", "origin"]
+    # a tampered or different file is refused
+    (tmp_path / "corrected_r1_summary.json").write_bytes(b"{}")
+    with pytest.raises(AssertionError, match="evidence commit"):
+        exec(compile(block, "run-cell", "exec"), namespace)
