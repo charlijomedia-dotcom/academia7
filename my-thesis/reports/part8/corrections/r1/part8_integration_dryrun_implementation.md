@@ -178,7 +178,18 @@ The T4.6 ARMA comparison columns depend on the baseline ARMA forecasts. Stage 3 
 - `test_r1_integration_dependents.py`: record rule, T4.7 counts, Wald, T4.6, F4.8, block location;
 - `test_r1_integration_claims.py`: claims, jury, report lines, notebook.
 
-**Full unit suite:** see the commit message.
+**Full unit suite.** Run in the container's default environment:
+- 587 passed (the notebook test included, once the notebook was generated);
+- the slow legacy-reproduction test passed separately (147 s).
+
+**Preflight smoke test [C].** `stage_preflight` was run against a clean checkout of `43903d4` and a clean pinned worktree. Everything passed:
+- pins, data hash, config hash, rendering;
+- all three certificate hashes;
+- the original-cache digest `7e283de3…` (18,964 payloads);
+- the Tier A archive;
+- both reference releases.
+
+Only the aggregator's Drive checkpoint cross-check was stubbed, because it needs the real Drive.
 
 ## 9. Preflight and launch instructions
 
@@ -188,7 +199,7 @@ The T4.6 ARMA comparison columns depend on the baseline ARMA forecasts. Stage 3 
 3. Expected time: about 1–2 hours (two workflow passes, stage 3 replays, hashing of protected inputs).
 
 **Launch.**
-1. Open the notebook. The link and commit are in the final message of this round.
+1. Open the notebook from GitHub in Colab: `colab/r1_part8_integration_dryrun.ipynb` on branch `part8-r1-rescore`. It is pinned to the orchestration commit `43903d470be83c9995d5daa7de615857c093b693` (it checks out that commit itself) and to the scientific commit `8aaa4217536ab3cb942dd248dd19ece7838a8d60`.
 2. Keep the defaults: `RUN_DRY_RUN = True`, `EXPORT_TO_DRIVE = True`, `CONFIRM_PUBLISH = False`.
 3. Check `DRIVE_ROOT`.
 4. *Runtime → Run all.* Cell 1 mounts Drive. If a Colab secret `GITHUB_TOKEN` exists, it is used for read-only `git clone`/`fetch` only. The repository is private, so a read token is needed.
