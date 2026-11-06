@@ -1,0 +1,72 @@
+{
+  "performed": true,
+  "task": "forecasting:UNRATE|MSAR",
+  "runs": {
+    "reference": {
+      "seconds": 147.2,
+      "files": 92,
+      "chain_sources": {
+        "published": 48,
+        "cache": 17,
+        "unavailable": 43
+      }
+    },
+    "candidate": {
+      "seconds": 95.2,
+      "files": 92,
+      "chain_sources": {
+        "published": 48,
+        "cache": 17,
+        "unavailable": 43
+      }
+    }
+  },
+  "audit_row_before": [
+    {
+      "attempted_origins": 704,
+      "valid_origins": 693,
+      "failed_origins": 11
+    }
+  ],
+  "audit_row_after": {
+    "valid_origins": 698,
+    "failed_origins": 6
+  },
+  "reference_reproduces_published": {
+    "identical": 83,
+    "equal_within_fp_tolerance": 9
+  },
+  "files_compared": 92,
+  "files_changed_by_candidate": [
+    "data_audit/T4.9_locf_sample_comparison.csv",
+    "data_audit/locf_forecast_exposure.csv",
+    "data_audit/locf_forecast_exposure.parquet",
+    "figures/F3.4_UNRATE.pdf",
+    "figures/F3.4_UNRATE.png",
+    "figures/F3.5_UNRATE.pdf",
+    "figures/F3.5_UNRATE.png",
+    "figures/F3.6_UNRATE.pdf",
+    "figures/F3.6_UNRATE.png",
+    "forecast_tests/T3.3A_hlz_pairwise.csv",
+    "forecast_tests/T3.3B_dm_hln_pairwise.csv",
+    "forecast_tests/T3.3_main_forecast_table.csv",
+    "forecast_tests/T3.4_model_confidence_set.csv",
+    "forecast_tests/T3.5_state_loss_regression.csv",
+    "forecast_tests/T3.5_state_performance.csv",
+    "forecast_tests/T3.6_peak_trough_detail.csv",
+    "forecasts/forecast_horizon_coverage.csv",
+    "forecasts/forecasts_UNRATE.csv",
+    "forecasts/forecasts_UNRATE.parquet",
+    "robustness/T4.1_transformation_robustness.csv",
+    "robustness/T4.4_horizon_predictive_tests.csv",
+    "robustness/T4.4_horizon_robustness.csv",
+    "robustness/T4.5_var_comparison.csv",
+    "robustness/T4.5_var_predictive_tests.csv",
+    "robustness/T4.TP1_turning_window_sensitivity.csv",
+    "robustness/window_length_comparison.csv",
+    "robustness/window_length_mcs.csv",
+    "robustness/window_length_origin_audit.csv",
+    "robustness/window_length_predictive_tests.csv"
+  ],
+  "changed_cells": 1409
+}

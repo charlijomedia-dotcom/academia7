@@ -1,0 +1,11 @@
+{
+  "task": "forecasting:UNRATE|MSAR",
+  "available": true,
+  "origins": 704,
+  "from_cache": 704,
+  "estimations": 0,
+  "valid": 698,
+  "failed": 6,
+  "forecast_rows": 2798,
+  "forecasts_sha256": "b477d705a79b978ad177e6c67c4a496f0edc0ea83961b308927f179cf95260d1"
+}

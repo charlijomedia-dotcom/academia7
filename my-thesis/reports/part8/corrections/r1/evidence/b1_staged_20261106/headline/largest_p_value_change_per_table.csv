@@ -1,0 +1,11 @@
+table,column,key_series,key_model,key_horizon,key_window_length,key_exercise,key_loss,key_model_a,key_model_b,key_role,key_confidence_level,key_turning_window_width,key_state,key_window,key_frequency,reference,candidate,abs_change
+forecast_tests/T3.4_model_confidence_set.csv,mcs_p_value,UNRATE,ARMA,3.0,,,squared,,,,0.95,,,,,0.3526,0.5006,0.14800000000000002
+forecast_tests/T3.3A_hlz_pairwise.csv,p_value_two_sided,UNRATE,,6.0,,,absolute,ARMA,MSAR,primary,,,,,,0.51752,0.64094,0.12341999999999997
+forecast_tests/T3.3B_dm_hln_pairwise.csv,p_value,UNRATE,,6.0,,,absolute,ARMA,MSAR,secondary,,,,,,0.6320082298003364,0.7198149295849461,0.08780669978460964
+robustness/window_length_mcs.csv,mcs_p_value,UNRATE,ARMA,1.0,240.0,T4.8 estimation-window-length robustness,absolute,,,baseline,0.95,,,,,0.4142,0.4444,0.030200000000000005
+forecast_tests/T3.3_main_forecast_table.csv,hlz_absolute_p_value,UNRATE,MSAR,3.0,240.0,,,,,competitor,,,,,,0.3196,0.32692,0.007319999999999993
+robustness/T4.4_horizon_predictive_tests.csv,hlz_p_value_two_sided,UNRATE,MSAR,3.0,,T4.4 horizon robustness,absolute,,,robustness,,,,,M,0.3196,0.32692,0.007319999999999993
+robustness/T4.5_var_predictive_tests.csv,dm_hln_p_value,UNRATE,STAR,1.0,,T4.5 monthly VAR cross-variable comparison,absolute,,,,,,,,,0.5457376813945671,0.5396396872057617,0.006097994188805411
+robustness/window_length_predictive_tests.csv,hlz_p_value_two_sided,UNRATE,MSAR,1.0,240.0,T4.8 estimation-window-length robustness,absolute,,,baseline,,,,,M,0.28606,0.29206,0.006000000000000005
+forecast_tests/T3.5_state_loss_regression.csv,slopes_wald_p,UNRATE,MSAR vs AR,1.0,,,squared,,,,,3.0,,,,0.40032731127223214,0.39846484608562066,0.0018624651866114839
+diagnostics/all_test_results.csv,p_value,UNRATE,MSAR vs AR,,,,,,,,,,,,,0.40032731127223214,0.39846484608562066,0.0018624651866114839

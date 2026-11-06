@@ -1,0 +1,418 @@
+{
+ "report": "R1 Option B1 (staged) baseline UNRATE MSAR correction; B2 review; validation",
+ "date": "2026-11-06",
+ "estimation": "none",
+ "published_output_unchanged": true,
+ "scientific_pin": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+ "supplementary_session": "audit-20261106T081950Z-9c9ba2_supplementary",
+ "task1_mcs_fix": {
+  "t34_rows": 64,
+  "membership_changes": 0,
+  "window_length_mcs_rows": 48,
+  "window_length_membership_changes": 0
+ },
+ "task2_recovery": {
+  "session": "audit-20261106T081950Z-9c9ba2_supplementary",
+  "drive_folder_id": "12pGoPrW3HpKGMw6PhuZ-Faom80T5zfDX",
+  "downloaded": [
+   {
+    "drive_id": "13Q8W1xZ_hCPIa5M1IbmHNNun0vOd1B4D",
+    "bytes": 3471360,
+    "sha256": "03ffff4a5c960779fff32fd2ac5b4634c418cdc76ced16abee2472c96befc14b"
+   },
+   {
+    "drive_id": "1M8D4BmHQlpUfltTlSo8gx20Y7bE9RsrT",
+    "bytes": 2908160,
+    "sha256": "160b7ea093e1d572c441dca4e8d81f9eeedfc8380c592c7912f97c74035f0163"
+   },
+   {
+    "drive_id": "1VGDTdlPP24AnM-iD76N_7Wior-8KP2ac",
+    "bytes": 1922251,
+    "sha256": "0f4f7706f5e4344f797e05d33d50af2aa3f8dc76e7b6c9703b9a330044a328da"
+   },
+   {
+    "drive_id": "1b5i_Nyqx_2KAZ4jbc57DHXtLv-dXdExp",
+    "bytes": 2459392,
+    "sha256": "b6eb60c33fc72d552dd833c7506c009a340592802dbaf97373c751219ac27ea8"
+   },
+   {
+    "drive_id": "1dUVmEMUuJyDMU6LmTorbSyQv1ibBFhfq",
+    "bytes": 3297280,
+    "sha256": "ee3cf1191278e16caa58ac82b9658dd6c7d71dd13964d2c1fb0f620dd0204a22"
+   },
+   {
+    "drive_id": "1vrGJlXSwQc-sbPc04vQWZ-MLzUlTa-pC",
+    "bytes": 2458795,
+    "sha256": "adec939b2a7105e4010c1f4712db4fbd2167f2ee517b11c0d6d371507d54f52a"
+   }
+  ],
+  "bundles_sha256_match_manifest": true,
+  "bundle_member_lists_match_manifest": true,
+  "parts_restored": 143,
+  "parts_bytes": 9547811,
+  "every_part_sha256_matches_supplementary_parts_json_and_audit_export": true,
+  "parts_sha256_digest_matches_manifest": true,
+  "payloads_restored": 18964,
+  "payload_verify_against_committed_inventory": {
+   "expected_payloads": 18964,
+   "present_payloads": 18964,
+   "missing": 0,
+   "extra": 0,
+   "size_mismatch": 0,
+   "missing_sample": [],
+   "extra_sample": [],
+   "refit_marker_in_first_200": 0,
+   "manifest_sha256": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+   "complete": true
+  },
+  "export_files": [
+   {
+    "path": "audit/origins.csv",
+    "bytes": 7447814,
+    "sha256": "4d1ae072055f081184cd8dea2d0ae83acfe3e06e6b472020971ba6fe94e204c2",
+    "verified_against_audit_export_manifest": true,
+    "gzip_sha256_verified": true
+   },
+   {
+    "path": "impact/reference_tables/data_audit/locf_forecast_exposure.csv",
+    "bytes": 23783934,
+    "sha256": "ff5e44f4903fd60d87c0817731277bd83429db707ac6928ce8f370d435e442b0",
+    "verified_against_audit_export_manifest": true,
+    "gzip_sha256_verified": true
+   },
+   {
+    "path": "impact/candidate_tables/data_audit/locf_forecast_exposure.csv",
+    "bytes": 23784674,
+    "sha256": "ce6ab8aacbb6211a0aa1f729228926b8c4f77a042e970b910001421075ea5fff",
+    "verified_against_audit_export_manifest": true,
+    "gzip_sha256_verified": true
+   }
+  ],
+  "export_manifest_sha256_matches": true
+ },
+ "local_reproduction": {
+  "origins_csv_byte_identical_to_colab": true,
+  "origins_csv_sha256": "4d1ae072055f081184cd8dea2d0ae83acfe3e06e6b472020971ba6fe94e204c2",
+  "chains_csv_identical_except_r1_source_column": true,
+  "r1_source_column_equals_committed_merge": true,
+  "candidate_forecasts_sha256": "b477d705a79b978ad177e6c67c4a496f0edc0ea83961b308927f179cf95260d1",
+  "candidate_fit_records_byte_identical": true,
+  "payload_manifest_digest": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+  "impact_files_changed_by_candidate_identical_list": true,
+  "impact_changed_cell_positions_identical": true,
+  "impact_max_relative_difference_vs_colab": "<=1e-12",
+  "renderer_note": "this container ships /etc/matplotlib/matplotlibrc (font Inter); with matplotlib's default rc (MATPLOTLIBRC pointing at an empty file), as in Colab, every figure of the reference reproduces the published bytes; a first run with the container default did not (50 files: 41 figures differed, all tables identical or within 1e-11)",
+  "reference_reproduces_published_local": {
+   "identical": 83,
+   "equal_within_fp_tolerance": 9
+  }
+ },
+ "task3_chain": {
+  "origins": 704,
+  "from_cache": 704,
+  "estimations": 0,
+  "valid": 698,
+  "failed": 6,
+  "statuses": {
+   "adequate": 440,
+   "fragile": 258,
+   "failed": 6
+  },
+  "t48_240_records_identical": true
+ },
+ "task4_dependents": {
+  "fit_records": {
+   "forecasting:UNRATE|MSAR": {
+    "published_block": "first block (forecasting stage); rows 5086-5789 of 3 block(s)",
+    "records": 704,
+    "records_replaced": 13,
+    "replaced_origins": [
+     "1982-10-01",
+     "1982-11-01",
+     "1982-12-01",
+     "1983-01-01",
+     "1983-02-01",
+     "1983-03-01",
+     "1983-04-01",
+     "1983-05-01",
+     "1983-06-01",
+     "1983-07-01",
+     "1989-11-01",
+     "2017-03-01",
+     "2020-07-01"
+    ]
+   },
+   "T4.8:UNRATE|240:MSAR": {
+    "published_block": "last block (robustness T4.8 stage); rows 40337-41040 of 3 block(s)",
+    "records": 704,
+    "records_replaced": 13,
+    "replaced_origins": [
+     "1982-10-01",
+     "1982-11-01",
+     "1982-12-01",
+     "1983-01-01",
+     "1983-02-01",
+     "1983-03-01",
+     "1983-04-01",
+     "1983-05-01",
+     "1983-06-01",
+     "1983-07-01",
+     "1989-11-01",
+     "2017-03-01",
+     "2020-07-01"
+    ]
+   }
+  },
+  "forecast_origin_audit": {
+   "before": {
+    "attempted_origins": "704",
+    "valid_origins": "693",
+    "failed_origins": "11",
+    "origins_from_cache": "691",
+    "cache_horizon_misses": "13"
+   },
+   "after": {
+    "attempted_origins": 704,
+    "valid_origins": 698,
+    "failed_origins": 6,
+    "origins_from_cache": 704,
+    "cache_horizon_misses": 0
+   }
+  },
+  "t47_failure_registry": {
+   "forecasting:UNRATE|MSAR": {
+    "published_rows": "2012-2448",
+    "published_events": 437,
+    "corrected_events": 423,
+    "events_kept_verbatim": 423,
+    "events_removed": 14,
+    "events_added": 0,
+    "candidate_blocks_with_same_signature": 2
+   },
+   "T4.8:UNRATE|240:MSAR": {
+    "published_rows": "18793-19229",
+    "published_events": 437,
+    "corrected_events": 423,
+    "events_kept_verbatim": 423,
+    "events_removed": 14,
+    "events_added": 0,
+    "candidate_blocks_with_same_signature": 1
+   }
+  },
+  "all_test_results_wald": {
+   "rows": [
+    252,
+    253,
+    258,
+    259,
+    264,
+    265,
+    270,
+    271
+   ],
+   "validated_against_published_t35": true,
+   "rows_changed": [
+    252,
+    253,
+    258,
+    259,
+    264,
+    265,
+    270,
+    271
+   ]
+  },
+  "f48": {
+   "published_reproduced_from_published_table": {
+    "F4.8_UNRATE.png": true,
+    "F4.8_UNRATE.pdf": true
+   },
+   "re_rendered": [
+    "F4.8_UNRATE.png",
+    "F4.8_UNRATE.pdf"
+   ],
+   "changed": {
+    "F4.8_UNRATE.png": true,
+    "F4.8_UNRATE.pdf": true
+   }
+  },
+  "inventory": {
+   "rows_updated": 34,
+   "changed_files_not_in_inventory": [
+    "data_audit/locf_forecast_exposure.parquet",
+    "forecasts/forecasts_UNRATE.parquet",
+    "models/fit_records.parquet"
+   ]
+  }
+ },
+ "staging_run_id": "b1-staged-20261106T154902Z",
+ "task5_b2": {
+  "T4.1:FEDFUNDS|MSAR": {
+   "compared_directly": 626,
+   "compared_transitively": 0,
+   "same_cache_key_direct": 626,
+   "categories_b2_vs_cache": {
+    "identical_estimate": 626
+   },
+   "b2_vs_published": {
+    "reproduced": 583,
+    "optimizer_sensitivity": 29,
+    "classification_changed": 14
+   },
+   "cache_vs_published": {
+    "identical": 583,
+    "differs": 43
+   },
+   "agreement_table_consistent_with_payloads": true,
+   "max_forecast_abs_diff_direct": 0.0,
+   "status_counts_b2_vs_cache": {
+    "b2": {
+     "fragile": 453,
+     "failed": 49,
+     "adequate": 124
+    },
+    "original_cache_live": {
+     "fragile": 453,
+     "failed": 49,
+     "adequate": 124
+    },
+    "published": {
+     "fragile": 450,
+     "failed": 52,
+     "adequate": 124
+    }
+   }
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "compared_directly": 257,
+   "compared_transitively": 507,
+   "same_cache_key_direct": 257,
+   "categories_b2_vs_cache": {
+    "identical_estimate": 257,
+    "identical_estimate (transitive)": 507
+   },
+   "b2_vs_published": {
+    "reproduced": 758,
+    "classification_changed": 6
+   },
+   "cache_vs_published": {
+    "identical": 758,
+    "differs": 6
+   },
+   "agreement_table_consistent_with_payloads": true,
+   "max_forecast_abs_diff_direct": 0.0,
+   "status_counts_b2_vs_cache": {
+    "b2": {
+     "fragile": 391,
+     "adequate": 368,
+     "failed": 5
+    },
+    "original_cache_live": {
+     "fragile": 391,
+     "adequate": 368,
+     "failed": 5
+    },
+    "published": {
+     "fragile": 396,
+     "adequate": 363,
+     "failed": 5
+    }
+   }
+  }
+ },
+ "task6_validation": {
+  "same_file_set": true,
+  "files_published": 461,
+  "files_byte_identical": 415,
+  "files_changed": 38,
+  "figure_sidecars_changed": [
+   "figures/F3.4_UNRATE.pdf.provenance.json",
+   "figures/F3.4_UNRATE.png.provenance.json",
+   "figures/F3.5_UNRATE.pdf.provenance.json",
+   "figures/F3.5_UNRATE.png.provenance.json",
+   "figures/F3.6_UNRATE.pdf.provenance.json",
+   "figures/F3.6_UNRATE.png.provenance.json",
+   "figures/F4.8_UNRATE.pdf.provenance.json",
+   "figures/F4.8_UNRATE.png.provenance.json"
+  ],
+  "unexpected_changes": [],
+  "expected_but_unchanged": [],
+  "sidecars_only_for_changed_figures": true,
+  "changed_cells_non_provenance": 1705,
+  "decision_like_cells_changed": 4,
+  "decision_like_changes_by_column": {
+   "model_status": 4
+  },
+  "consistency": {
+   "fit_records_csv_equals_parquet_status_loglik": true,
+   "blocks_are_unrate_msar": true,
+   "forecasting_and_t48_blocks_identical_records": true,
+   "chain_statuses": {
+    "adequate": 440,
+    "fragile": 258,
+    "failed": 6
+   },
+   "forecast_status_equals_fit_record_status": true,
+   "forecasts_csv_equals_parquet": true,
+   "t33_counts_equal_fit_records": true,
+   "origin_audit_equals_fit_records": true,
+   "t47_status_counts_equal_fit_records": true,
+   "registry_failed_origins_in_chain_blocks": true,
+   "wald_rows_equal_t35": true,
+   "inventory_hashes_match_staged_files": true,
+   "inventory_mismatches_staged": [],
+   "inventory_mismatches_in_published_tree_for_reference": []
+  },
+  "colab_candidate_agreement": {
+   "numeric_cells_compared": 1258,
+   "max_relative_difference": 8.504011931448351e-14,
+   "within_1e-9": true
+  },
+  "all_checks_passed": true
+ },
+ "decisions_changed": "only the descriptive T3.3 UNRATE MSAR model_status (4 horizons); no test decision, MCS membership, rank, stars, support flag or conclusion changed",
+ "evidence_sha256": {
+  "b2_review/COMPLETE-20261105T151645Z-B2-20261105T110347Z-505e21.json": "c8c90ba079abf5bd4256bb1be244dcc7116ae218a28206e75f44660c644f83c4",
+  "b2_review/agreement-B2-20261105T110347Z-505e21.csv": "a95c343cfaef8a227549fc2bf7ae20bfa01e8c633ec2a9a3281e4ff563bb398d",
+  "b2_review/b2_vs_original_cache_by_origin.csv.gz": "f8bc7e2b832df0d2e76811e54ed73d1181ffb9a4b6a0cea92e32772d9297ae8f",
+  "b2_review/b2_vs_original_cache_summary.json": "044d7034f9d17a4f4e864aa04858062cb9d9e50e53f04695b2b1834c0a00dd3e",
+  "baseline_unrate_msar_dependency_map_v3.csv": "9010e0756980d48bbae7d0ed6ee64eae36eb14dce88e4c9cd11c5f489b925697",
+  "headline/T3.3_unrate_published_vs_corrected.csv": "0f5538662f9f7e939e96159a714cc17949b3a2276f4d063dec5d4a3f6ea46544",
+  "headline/T3.4_unrate_mcs_published_vs_corrected.csv": "86451e189a8074713525df6bc9d9888cd98b6782a286b5b5853841f9286989e2",
+  "headline/largest_p_value_change_per_table.csv": "097738c482b0b070f875937772166a0feb788c7456b3a97fe3415ad1c97b4fac",
+  "headline/window_length_mcs_unrate_published_vs_corrected.csv": "b145c24a36f123638d8e0f3e2c2cb7a2597164333d1ef820da8cf0ac87e61619",
+  "local_reproduction/audit.json": "7b5025de9e96d4665aa493847aad11713c91596103b08c038a08fb70b2909b7b",
+  "local_reproduction/candidate.json": "459d839c1d7f4c3f9d067a624de92cd967776b2682fd812c1b1f9b7f343e8960",
+  "local_reproduction/chains_local.csv": "b7852275f0cf242a145eda54114df0a8bc7cb87cbab37727dadb858423431777",
+  "local_reproduction/comparison_with_colab.json": "e344e32fe045a008636c570142ca686695c3aaefe00655b5bbc9618471b09654",
+  "local_reproduction/impact_candidate_vs_reference.csv": "c1634ee37d6afd64bde228842834e53cc022db6545b24acef228df58ddeeba6c",
+  "local_reproduction/impact_impact.json": "2fa7be005d39b7aa9037c45c3a49547ba52f8c1fba101df8d4258383874d02be",
+  "local_reproduction/impact_reference_vs_published.csv": "a0d43e0e5454d09e85901f4a08a2ef5a78a866ec8532efe7b64881024740d6ed",
+  "local_reproduction/verify.json": "06697e01d5c111bd6b4f3ae26565156a7978737621cd2718495c2624b8d84650",
+  "stage2_rev2/T3.3_unrate_reference_vs_candidate.csv": "f3df9fb597d8067eaecdfde98775778a6dce68775748feda9e19d83323bcfe1c",
+  "stage2_rev2/T3.4_unrate_mcs_reference_vs_candidate.csv": "86451e189a8074713525df6bc9d9888cd98b6782a286b5b5853841f9286989e2",
+  "stage2_rev2/decision_flips.csv": "9ca803092cb56a20efecf80e0e34029b25b947f6d477fd8eb92cac1f89193c7f",
+  "stage2_rev2/stage2_summary.json": "9cd10b61eba01f96dd7c50b86afb199c9ebe9f79e9788ef7764e52e0b5771f19",
+  "stage2_rev2/window_length_mcs_unrate_reference_vs_candidate.csv": "b145c24a36f123638d8e0f3e2c2cb7a2597164333d1ef820da8cf0ac87e61619",
+  "staging/b1_cell_changes.csv.gz": "7ce7ff80d3fc709c8658fb2af659d66deb524f0c7f2a07341d17b3befb26f596",
+  "staging/b1_changed_files.csv": "5d76a920b01ca1f6ed95b3ed810e2d66b8938d24d39d1ada197f721bff823fad",
+  "staging/b1_staging_report.json": "cb59b5d58e400530a5f3dbfa85f220e8dc140963a155c462cb2248bd51f6fec2",
+  "supplementary/locf_row_level_comparison.json": "89d7a1dbf877ea3ceab9349847a4f5415093bf57eb78c33da5afebbe8c43930d",
+  "supplementary/original_cache_parts.json": "bf4646d043fada7c311cc0deb5e6e3ca0bcd7778b74ff73645410ee4cddb1586",
+  "supplementary/origins.csv.gz": "95f9553035e766cc7d123114c927db12a2ca0d2d02d50fe291a3ca7f0245dd8b",
+  "supplementary/supplementary_manifest.json": "c589d2df057e165024ee612634028e62c329c7167928b3120e45b8ab348e24fe",
+  "supplementary/verification.json": "c253c352cca84b201d4c6bdcb98be07f21f94fc87fe8194071233f6c8e26576f",
+  "validation/staged_vs_published_cells.csv.gz": "08fa66c5803980cee385868301bafbc7599a53ac4b4ca0173bbf09a199efbc18",
+  "validation/staged_vs_published_decision_cells.csv": "2871cf2b592ee9aa7bcd5de7442285592dae9944d1680aae09d212517939037d",
+  "validation/validation.json": "f33332f3847eef708e9312e038c3d62b9c30d1e58d2f2f482704b7cbfd587b15"
+ },
+ "staged_files": "output_staging/r1_b1_unrate_msar_20261106/STAGED_FILES.csv",
+ "staged_files_sha256": "2c0c1b740b271ce60eb67dec591fc6bed113081c234abbf232345a3f7221b8a5",
+ "code": [
+  "colab/r1_b1_staged_correction.py",
+  "colab/r1_b1_validate_staged.py",
+  "reports/part8/corrections/r1/b2_scientific_review.py",
+  "reports/part8/corrections/r1/b3_stage2_analysis.py",
+  "colab/r1_b3_supplementary_recovery_cell.py"
+ ]
+}

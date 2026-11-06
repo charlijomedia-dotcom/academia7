@@ -1,0 +1,32 @@
+{
+ "files": "impact/{reference,candidate}_tables/data_audit/locf_forecast_exposure.csv (Colab audit export, recovered and sha256-verified)",
+ "rows": 55268,
+ "rows_differing_non_provenance": 36,
+ "rows_by_series_model_horizon": {
+  "UNRATE|MSAR|1": 9,
+  "UNRATE|MSAR|3": 9,
+  "UNRATE|MSAR|6": 9,
+  "UNRATE|MSAR|12": 9
+ },
+ "origins": [
+  "1982-10-01",
+  "1982-11-01",
+  "1982-12-01",
+  "1983-01-01",
+  "1983-02-01",
+  "1983-03-01",
+  "1983-04-01",
+  "1983-05-01",
+  "1983-06-01"
+ ],
+ "cells_by_column": {
+  "forecast": 28,
+  "error": 28,
+  "squared_loss": 28,
+  "absolute_loss": 28,
+  "forecast_status": 28,
+  "forecast_valid": 20,
+  "reason_codes": 36
+ },
+ "note": "cells counted with numeric equality; the staged tree's locf_forecast_exposure.csv differs from the published file in exactly these rows"
+}

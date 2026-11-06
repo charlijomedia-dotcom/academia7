@@ -1,0 +1,199 @@
+{
+  "estimation": "none (estimators refused; fit calls counted)",
+  "scientific_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "started_utc": "20261106T154857Z",
+  "tasks": [
+    "forecasting:UNRATE|MSAR",
+    "T4.8:UNRATE|240:MSAR"
+  ],
+  "reference_reproduces_published": {
+    "identical": 83,
+    "equal_within_fp_tolerance": 9
+  },
+  "chain": {
+    "origins": 704,
+    "from_cache": 704,
+    "estimations": 0,
+    "valid": 698,
+    "failed": 6,
+    "statuses": {
+      "adequate": 440,
+      "fragile": 258,
+      "failed": 6
+    },
+    "t48_240_records_identical": true
+  },
+  "provenance": {
+    "run_id": "b1-staged-20261106T154902Z",
+    "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+    "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+    "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+    "created_utc": "2026-11-06T15:49:02Z",
+    "note": "rows/files changed by this correction carry this provenance; every other row keeps the published provenance"
+  },
+  "fit_records": {
+    "forecasting:UNRATE|MSAR": {
+      "published_block": "first block (forecasting stage); rows 5086-5789 of 3 block(s)",
+      "records": 704,
+      "records_replaced": 13,
+      "replaced_origins": [
+        "1982-10-01",
+        "1982-11-01",
+        "1982-12-01",
+        "1983-01-01",
+        "1983-02-01",
+        "1983-03-01",
+        "1983-04-01",
+        "1983-05-01",
+        "1983-06-01",
+        "1983-07-01",
+        "1989-11-01",
+        "2017-03-01",
+        "2020-07-01"
+      ]
+    },
+    "T4.8:UNRATE|240:MSAR": {
+      "published_block": "last block (robustness T4.8 stage); rows 40337-41040 of 3 block(s)",
+      "records": 704,
+      "records_replaced": 13,
+      "replaced_origins": [
+        "1982-10-01",
+        "1982-11-01",
+        "1982-12-01",
+        "1983-01-01",
+        "1983-02-01",
+        "1983-03-01",
+        "1983-04-01",
+        "1983-05-01",
+        "1983-06-01",
+        "1983-07-01",
+        "1989-11-01",
+        "2017-03-01",
+        "2020-07-01"
+      ]
+    }
+  },
+  "forecast_origin_audit": {
+    "before": {
+      "attempted_origins": "704",
+      "valid_origins": "693",
+      "failed_origins": "11",
+      "origins_from_cache": "691",
+      "cache_horizon_misses": "13"
+    },
+    "after": {
+      "attempted_origins": 704,
+      "valid_origins": 698,
+      "failed_origins": 6,
+      "origins_from_cache": 704,
+      "cache_horizon_misses": 0
+    }
+  },
+  "t47_failure_registry": {
+    "forecasting:UNRATE|MSAR": {
+      "published_rows": "2012-2448",
+      "published_events": 437,
+      "corrected_events": 423,
+      "events_kept_verbatim": 423,
+      "events_removed": 14,
+      "events_added": 0,
+      "candidate_blocks_with_same_signature": 2
+    },
+    "T4.8:UNRATE|240:MSAR": {
+      "published_rows": "18793-19229",
+      "published_events": 437,
+      "corrected_events": 423,
+      "events_kept_verbatim": 423,
+      "events_removed": 14,
+      "events_added": 0,
+      "candidate_blocks_with_same_signature": 1
+    }
+  },
+  "all_test_results_wald": {
+    "rows": [
+      252,
+      253,
+      258,
+      259,
+      264,
+      265,
+      270,
+      271
+    ],
+    "validated_against_published_t35": true,
+    "rows_changed": [
+      252,
+      253,
+      258,
+      259,
+      264,
+      265,
+      270,
+      271
+    ]
+  },
+  "f48": {
+    "published_reproduced_from_published_table": {
+      "F4.8_UNRATE.png": true,
+      "F4.8_UNRATE.pdf": true
+    },
+    "re_rendered": [
+      "F4.8_UNRATE.png",
+      "F4.8_UNRATE.pdf"
+    ],
+    "changed": {
+      "F4.8_UNRATE.png": true,
+      "F4.8_UNRATE.pdf": true
+    }
+  },
+  "inventory": {
+    "rows_updated": 34,
+    "changed_files_not_in_inventory": [
+      "data_audit/locf_forecast_exposure.parquet",
+      "forecasts/forecasts_UNRATE.parquet",
+      "models/fit_records.parquet"
+    ]
+  },
+  "files_total": 461,
+  "files_changed": 46,
+  "files_added": [],
+  "files_unchanged_byte_identical": 415,
+  "cell_changes": 1432,
+  "parquet_rows_patched": {
+    "data_audit/locf_forecast_exposure.parquet": 36,
+    "forecasts/forecasts_CPIAUCSL.parquet": 0,
+    "forecasts/forecasts_FEDFUNDS.parquet": 0,
+    "forecasts/forecasts_GDPC1.parquet": 0,
+    "forecasts/forecasts_INDPRO.parquet": 0,
+    "forecasts/forecasts_M2SL.parquet": 0,
+    "forecasts/forecasts_UNRATE.parquet": 36
+  },
+  "figures": [
+    {
+      "path": "figures/F3.4_UNRATE.pdf",
+      "reference_rendering_equals_published": true
+    },
+    {
+      "path": "figures/F3.4_UNRATE.png",
+      "reference_rendering_equals_published": true
+    },
+    {
+      "path": "figures/F3.5_UNRATE.pdf",
+      "reference_rendering_equals_published": true
+    },
+    {
+      "path": "figures/F3.5_UNRATE.png",
+      "reference_rendering_equals_published": true
+    },
+    {
+      "path": "figures/F3.6_UNRATE.pdf",
+      "reference_rendering_equals_published": true
+    },
+    {
+      "path": "figures/F3.6_UNRATE.png",
+      "reference_rendering_equals_published": true
+    }
+  ],
+  "finished_utc": "20261106T154920Z",
+  "published_tree_unchanged": true
+}

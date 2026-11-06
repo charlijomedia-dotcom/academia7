@@ -1,0 +1,12 @@
+{
+  "expected_payloads": 18964,
+  "present_payloads": 18964,
+  "missing": 0,
+  "extra": 0,
+  "size_mismatch": 0,
+  "missing_sample": [],
+  "extra_sample": [],
+  "refit_marker_in_first_200": 0,
+  "manifest_sha256": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+  "complete": true
+}

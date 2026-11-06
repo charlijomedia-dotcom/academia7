@@ -1,0 +1,79 @@
+{
+ "session": "audit-20261106T081950Z-9c9ba2_supplementary",
+ "drive_folder_id": "12pGoPrW3HpKGMw6PhuZ-Faom80T5zfDX",
+ "downloaded": [
+  {
+   "drive_id": "13Q8W1xZ_hCPIa5M1IbmHNNun0vOd1B4D",
+   "bytes": 3471360,
+   "sha256": "03ffff4a5c960779fff32fd2ac5b4634c418cdc76ced16abee2472c96befc14b"
+  },
+  {
+   "drive_id": "1M8D4BmHQlpUfltTlSo8gx20Y7bE9RsrT",
+   "bytes": 2908160,
+   "sha256": "160b7ea093e1d572c441dca4e8d81f9eeedfc8380c592c7912f97c74035f0163"
+  },
+  {
+   "drive_id": "1VGDTdlPP24AnM-iD76N_7Wior-8KP2ac",
+   "bytes": 1922251,
+   "sha256": "0f4f7706f5e4344f797e05d33d50af2aa3f8dc76e7b6c9703b9a330044a328da"
+  },
+  {
+   "drive_id": "1b5i_Nyqx_2KAZ4jbc57DHXtLv-dXdExp",
+   "bytes": 2459392,
+   "sha256": "b6eb60c33fc72d552dd833c7506c009a340592802dbaf97373c751219ac27ea8"
+  },
+  {
+   "drive_id": "1dUVmEMUuJyDMU6LmTorbSyQv1ibBFhfq",
+   "bytes": 3297280,
+   "sha256": "ee3cf1191278e16caa58ac82b9658dd6c7d71dd13964d2c1fb0f620dd0204a22"
+  },
+  {
+   "drive_id": "1vrGJlXSwQc-sbPc04vQWZ-MLzUlTa-pC",
+   "bytes": 2458795,
+   "sha256": "adec939b2a7105e4010c1f4712db4fbd2167f2ee517b11c0d6d371507d54f52a"
+  }
+ ],
+ "bundles_sha256_match_manifest": true,
+ "bundle_member_lists_match_manifest": true,
+ "parts_restored": 143,
+ "parts_bytes": 9547811,
+ "every_part_sha256_matches_supplementary_parts_json_and_audit_export": true,
+ "parts_sha256_digest_matches_manifest": true,
+ "payloads_restored": 18964,
+ "payload_verify_against_committed_inventory": {
+  "expected_payloads": 18964,
+  "present_payloads": 18964,
+  "missing": 0,
+  "extra": 0,
+  "size_mismatch": 0,
+  "missing_sample": [],
+  "extra_sample": [],
+  "refit_marker_in_first_200": 0,
+  "manifest_sha256": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+  "complete": true
+ },
+ "export_files": [
+  {
+   "path": "audit/origins.csv",
+   "bytes": 7447814,
+   "sha256": "4d1ae072055f081184cd8dea2d0ae83acfe3e06e6b472020971ba6fe94e204c2",
+   "verified_against_audit_export_manifest": true,
+   "gzip_sha256_verified": true
+  },
+  {
+   "path": "impact/reference_tables/data_audit/locf_forecast_exposure.csv",
+   "bytes": 23783934,
+   "sha256": "ff5e44f4903fd60d87c0817731277bd83429db707ac6928ce8f370d435e442b0",
+   "verified_against_audit_export_manifest": true,
+   "gzip_sha256_verified": true
+  },
+  {
+   "path": "impact/candidate_tables/data_audit/locf_forecast_exposure.csv",
+   "bytes": 23784674,
+   "sha256": "ce6ab8aacbb6211a0aa1f729228926b8c4f77a042e970b910001421075ea5fff",
+   "verified_against_audit_export_manifest": true,
+   "gzip_sha256_verified": true
+  }
+ ],
+ "export_manifest_sha256_matches": true
+}

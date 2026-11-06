@@ -1,0 +1,17 @@
+{
+ "origins_csv_byte_identical_to_colab": true,
+ "origins_csv_sha256": "4d1ae072055f081184cd8dea2d0ae83acfe3e06e6b472020971ba6fe94e204c2",
+ "chains_csv_identical_except_r1_source_column": true,
+ "r1_source_column_equals_committed_merge": true,
+ "candidate_forecasts_sha256": "b477d705a79b978ad177e6c67c4a496f0edc0ea83961b308927f179cf95260d1",
+ "candidate_fit_records_byte_identical": true,
+ "payload_manifest_digest": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+ "impact_files_changed_by_candidate_identical_list": true,
+ "impact_changed_cell_positions_identical": true,
+ "impact_max_relative_difference_vs_colab": "<=1e-12",
+ "renderer_note": "this container ships /etc/matplotlib/matplotlibrc (font Inter); with matplotlib's default rc (MATPLOTLIBRC pointing at an empty file), as in Colab, every figure of the reference reproduces the published bytes; a first run with the container default did not (50 files: 41 figures differed, all tables identical or within 1e-11)",
+ "reference_reproduces_published_local": {
+  "identical": 83,
+  "equal_within_fp_tolerance": 9
+ }
+}

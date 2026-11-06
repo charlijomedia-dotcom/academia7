@@ -1,0 +1,12 @@
+{
+  "artifact": "F3.4_UNRATE.pdf",
+  "b1_correction": "re-rendered by the pinned code from the corrected chain",
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "2026-11-06T15:49:02Z",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "figure_id": "F3.4",
+  "horizon": 1,
+  "run_id": "b1-staged-20261106T154902Z",
+  "series": "UNRATE"
+}
