@@ -112,6 +112,9 @@ Full table: `chains_with_r1_source.csv`, which covers all MSAR, STAR and ARMA jo
 | T3.3A HLZ p-value | ARMA vs MSAR, h=6: 0.518→0.641 (both do not reject) |
 | T3.3B DM/HLN p-value | ARMA vs MSAR, h=6: 0.632→0.720 (both do not reject) |
 | T3.4 MCS p-value | ARMA, h=3: 0.353→0.501 (membership unchanged) |
+
+> **Erratum (6 November 2026, B1 preparation).** The extract `T3.4_unrate_mcs_reference_vs_candidate.csv` in this evidence folder was produced by a merge that omitted `confidence_level`: a many-to-many join with 128 rows instead of 64. The cell-level comparison and `decision_flips.csv` were positional and unaffected. The corrected keyed extract (64 unique rows; 0 membership changes; 64 of 64 UNRATE rows in the MCS in both versions; largest p-value change ARMA, h=3, 90%, squared loss, 0.3526→0.5006) and the window-length MCS extract (48 rows, 0 changes) are in `evidence/b1_staged_20261106/stage2_rev2/`. See `tier_b_b1_staged_correction.md` §1.
+
 | T3.5 / T3.6 state and peak-trough RMSE | at most 0.009 / 0.016 |
 | T4.TP1 turning-window RMSE | at most 0.019 |
 | T4.4, T4.1, T4.5, T4.9, window-length tables | RMSE changes at most 0.006; test p-values at most 0.0061; window-length MCS p-values at most 0.030 |

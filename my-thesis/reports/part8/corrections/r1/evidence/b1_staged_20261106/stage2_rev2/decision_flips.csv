@@ -1,0 +1,5 @@
+table,row,key_series,key_model,key_horizon,key_window_length,key_role,column,reference,candidate,difference
+forecast_tests/T3.3_main_forecast_table.csv,30,UNRATE,MSAR,1,240,competitor,model_status,adequate 433/704; fragile 260; failed 11,adequate 440/704; fragile 258; failed 6,
+forecast_tests/T3.3_main_forecast_table.csv,34,UNRATE,MSAR,3,240,competitor,model_status,adequate 433/704; fragile 260; failed 11,adequate 440/704; fragile 258; failed 6,
+forecast_tests/T3.3_main_forecast_table.csv,38,UNRATE,MSAR,6,240,competitor,model_status,adequate 433/704; fragile 260; failed 11,adequate 440/704; fragile 258; failed 6,
+forecast_tests/T3.3_main_forecast_table.csv,42,UNRATE,MSAR,12,240,competitor,model_status,adequate 433/704; fragile 260; failed 11,adequate 440/704; fragile 258; failed 6,

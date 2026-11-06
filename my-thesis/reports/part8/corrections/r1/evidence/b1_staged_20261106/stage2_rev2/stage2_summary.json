@@ -1,0 +1,395 @@
+{
+ "analysis_revision": 2,
+ "export_session": "audit-20261106T081950Z-9c9ba2",
+ "tables_compared": 20,
+ "tables": {
+  "data_audit/T4.9_locf_sample_comparison.csv": {
+   "rows": 32,
+   "shape_equal": true,
+   "changed_cells": 20,
+   "changed_rows": 2,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "exercise"
+   ],
+   "keys_unique": false
+  },
+  "forecast_tests/T3.3A_hlz_pairwise.csv": {
+   "rows": 230,
+   "shape_equal": true,
+   "changed_cells": 208,
+   "changed_rows": 16,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "horizon",
+    "loss",
+    "model_a",
+    "model_b",
+    "role"
+   ],
+   "keys_unique": true
+  },
+  "forecast_tests/T3.3B_dm_hln_pairwise.csv": {
+   "rows": 230,
+   "shape_equal": true,
+   "changed_cells": 64,
+   "changed_rows": 16,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "horizon",
+    "loss",
+    "model_a",
+    "model_b",
+    "role"
+   ],
+   "keys_unique": true
+  },
+  "forecast_tests/T3.3_main_forecast_table.csv": {
+   "rows": 92,
+   "shape_equal": true,
+   "changed_cells": 84,
+   "changed_rows": 4,
+   "decision_flips": 4,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "role"
+   ],
+   "keys_unique": true
+  },
+  "forecast_tests/T3.4_model_confidence_set.csv": {
+   "rows": 302,
+   "shape_equal": true,
+   "changed_cells": 192,
+   "changed_rows": 64,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "loss",
+    "confidence_level"
+   ],
+   "keys_unique": true
+  },
+  "forecast_tests/T3.5_state_loss_regression.csv": {
+   "rows": 69,
+   "shape_equal": true,
+   "changed_cells": 58,
+   "changed_rows": 4,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "loss",
+    "turning_window_width"
+   ],
+   "keys_unique": true
+  },
+  "forecast_tests/T3.5_state_performance.csv": {
+   "rows": 368,
+   "shape_equal": true,
+   "changed_cells": 60,
+   "changed_rows": 10,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "state",
+    "turning_window_width"
+   ],
+   "keys_unique": true
+  },
+  "forecast_tests/T3.6_peak_trough_detail.csv": {
+   "rows": 48,
+   "shape_equal": true,
+   "changed_cells": 3,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window",
+    "turning_window_width"
+   ],
+   "keys_unique": true
+  },
+  "forecasts/forecast_horizon_coverage.csv": {
+   "rows": 92,
+   "shape_equal": true,
+   "changed_cells": 4,
+   "changed_rows": 4,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length"
+   ],
+   "keys_unique": true
+  },
+  "forecasts/forecasts_UNRATE.csv": {
+   "rows": 11192,
+   "shape_equal": true,
+   "changed_cells": 120,
+   "changed_rows": 36,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length"
+   ],
+   "keys_unique": false
+  },
+  "robustness/T4.1_transformation_robustness.csv": {
+   "rows": 32,
+   "shape_equal": true,
+   "changed_cells": 13,
+   "changed_rows": 2,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "exercise",
+    "role"
+   ],
+   "keys_unique": true
+  },
+  "robustness/T4.4_horizon_predictive_tests.csv": {
+   "rows": 138,
+   "shape_equal": true,
+   "changed_cells": 72,
+   "changed_rows": 8,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "loss",
+    "exercise",
+    "role",
+    "frequency"
+   ],
+   "keys_unique": true
+  },
+  "robustness/T4.4_horizon_robustness.csv": {
+   "rows": 92,
+   "shape_equal": true,
+   "changed_cells": 40,
+   "changed_rows": 4,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "exercise",
+    "role",
+    "frequency"
+   ],
+   "keys_unique": true
+  },
+  "robustness/T4.5_var_comparison.csv": {
+   "rows": 25,
+   "shape_equal": true,
+   "changed_cells": 50,
+   "changed_rows": 5,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "exercise"
+   ],
+   "keys_unique": true
+  },
+  "robustness/T4.5_var_predictive_tests.csv": {
+   "rows": 40,
+   "shape_equal": true,
+   "changed_cells": 80,
+   "changed_rows": 8,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "loss",
+    "exercise"
+   ],
+   "keys_unique": true
+  },
+  "robustness/T4.TP1_turning_window_sensitivity.csv": {
+   "rows": 552,
+   "shape_equal": true,
+   "changed_cells": 68,
+   "changed_rows": 19,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "state",
+    "turning_window_width"
+   ],
+   "keys_unique": true
+  },
+  "robustness/window_length_comparison.csv": {
+   "rows": 72,
+   "shape_equal": true,
+   "changed_cells": 10,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "exercise",
+    "role",
+    "frequency"
+   ],
+   "keys_unique": true
+  },
+  "robustness/window_length_mcs.csv": {
+   "rows": 282,
+   "shape_equal": true,
+   "changed_cells": 40,
+   "changed_rows": 16,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "loss",
+    "window_length",
+    "confidence_level",
+    "exercise",
+    "role"
+   ],
+   "keys_unique": true
+  },
+  "robustness/window_length_origin_audit.csv": {
+   "rows": 72,
+   "shape_equal": true,
+   "changed_cells": 9,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "window_length",
+    "role",
+    "frequency"
+   ],
+   "keys_unique": true
+  },
+  "robustness/window_length_predictive_tests.csv": {
+   "rows": 108,
+   "shape_equal": true,
+   "changed_cells": 18,
+   "changed_rows": 2,
+   "decision_flips": 0,
+   "keys": [
+    "series",
+    "model",
+    "horizon",
+    "loss",
+    "window_length",
+    "exercise",
+    "role",
+    "frequency"
+   ],
+   "keys_unique": true
+  }
+ },
+ "changed_cells": 1213,
+ "decision_flips": 4,
+ "decision_flips_by_table": {
+  "forecast_tests/T3.3_main_forecast_table.csv": 4
+ },
+ "forecasts": {
+  "other_models_unchanged": true,
+  "rows": 2798,
+  "rows_changed": 36,
+  "origins_changed": 9,
+  "origin_dates": [
+   "1982-10-01",
+   "1982-11-01",
+   "1982-12-01",
+   "1983-01-01",
+   "1983-02-01",
+   "1983-03-01",
+   "1983-04-01",
+   "1983-05-01",
+   "1983-06-01"
+  ],
+  "status_changes": {
+   "failed->adequate": 20,
+   "fragile->adequate": 8
+  },
+  "forecast_rows_changed_by_horizon": {
+   "1": 7,
+   "3": 7,
+   "6": 7,
+   "12": 7
+  },
+  "max_abs_forecast_change_where_both_finite": 0.5737477484531084
+ },
+ "published_block": "first block (forecasting stage); rows 5086-5789 of 3 block(s)",
+ "origin_level_differences": 9,
+ "origin_level_categories": {
+  "inherited divergence: warm start offered in both, from a different previous fit": 5,
+  "both failed (genuine failure in both); different failed optimum": 2,
+  "implementation artifact: published fit had no warm start (D6) after a failed fit; candidate's best start is the warm start": 2
+ },
+ "t3_3_unrate_rows": 16,
+ "t3_4_unrate_mcs": {
+  "rows": 64,
+  "membership_changes": 0,
+  "in_mcs_reference": 64,
+  "in_mcs_candidate": 64,
+  "max_abs_p_value_change": 0.14800000000000002,
+  "max_at": {
+   "series": "UNRATE",
+   "horizon": 3,
+   "loss": "squared",
+   "confidence_level": 0.9,
+   "model": "ARMA",
+   "mcs_p_value_ref": 0.3526,
+   "mcs_p_value_cand": 0.5006
+  }
+ },
+ "window_length_mcs_unrate": {
+  "rows": 48,
+  "membership_changes": 0,
+  "in_mcs_reference": 48,
+  "in_mcs_candidate": 48,
+  "max_abs_p_value_change": 0.030200000000000005,
+  "max_at": {
+   "series": "UNRATE",
+   "window_length": 240,
+   "horizon": 1,
+   "loss": "absolute",
+   "confidence_level": 0.9,
+   "model": "ARMA",
+   "mcs_p_value_ref": 0.4142,
+   "mcs_p_value_cand": 0.4444
+  }
+ }
+}
