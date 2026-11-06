@@ -1,0 +1,35 @@
+{
+ "identity": {
+  "files_changed": 0,
+  "changed_cells": 0,
+  "reference_reproduces_published": {
+   "identical": 33,
+   "equal_within_fp_tolerance": 9,
+   "changed": 50
+  }
+ },
+ "perturbed": {
+  "files_changed": 24,
+  "changed_cells": 177,
+  "reference_reproduces_published": {
+   "identical": 33,
+   "equal_within_fp_tolerance": 9,
+   "changed": 50
+  }
+ },
+ "status": {
+  "files_changed": 27,
+  "changed_cells": 954,
+  "reference_reproduces_published": {
+   "identical": 33,
+   "equal_within_fp_tolerance": 9,
+   "changed": 50
+  }
+ },
+ "design": {
+  "identity": "candidate = published UNRATE MSAR rows: must change nothing",
+  "perturbed": "one h=1 forecast +0.5: must reach every forecast-value consumer",
+  "status": "first failed origin set fragile with a forecast: must reach status consumers"
+ },
+ "reference_vs_published_changed_files": "figures only (font/byte rendering in this sandbox); every table identical or within fp tolerance"
+}

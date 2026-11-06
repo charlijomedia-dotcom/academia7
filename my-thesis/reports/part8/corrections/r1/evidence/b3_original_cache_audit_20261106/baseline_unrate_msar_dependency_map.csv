@@ -1,0 +1,40 @@
+output,depends_on_chain,via,regenerated_by_pinned_R1_workflow,recomputable_without_estimation
+data_audit/T4.9_locf_sample_comparison.csv,True,forecast values,True,True
+data_audit/locf_forecast_exposure.csv,True,forecast values,True,True
+data_audit/locf_forecast_exposure.parquet,True,forecast values,True,True
+figures/F3.4_UNRATE.pdf,True,forecast values,True,True
+figures/F3.4_UNRATE.png,True,forecast values,True,True
+figures/F3.5_UNRATE.pdf,True,forecast values,True,True
+figures/F3.5_UNRATE.png,True,forecast values,True,True
+figures/F3.6_UNRATE.pdf,True,forecast values,True,True
+figures/F3.6_UNRATE.png,True,forecast values,True,True
+forecast_tests/T3.3A_hlz_pairwise.csv,True,forecast values,True,True
+forecast_tests/T3.3B_dm_hln_pairwise.csv,True,forecast values,True,True
+forecast_tests/T3.3_main_forecast_table.csv,True,forecast values,True,True
+forecast_tests/T3.4_model_confidence_set.csv,True,forecast values,True,True
+forecast_tests/T3.5_state_loss_regression.csv,True,forecast values,True,True
+forecast_tests/T3.5_state_performance.csv,True,forecast values,True,True
+forecast_tests/T3.6_peak_trough_detail.csv,True,fit status only,True,True
+forecasts/forecast_horizon_coverage.csv,True,fit status only,True,True
+forecasts/forecasts_UNRATE.csv,True,forecast values,True,True
+forecasts/forecasts_UNRATE.parquet,True,forecast values,True,True
+robustness/T4.1_transformation_robustness.csv,True,forecast values,True,True
+robustness/T4.4_horizon_predictive_tests.csv,True,forecast values,True,True
+robustness/T4.4_horizon_robustness.csv,True,forecast values,True,True
+robustness/T4.TP1_turning_window_sensitivity.csv,True,forecast values,True,True
+robustness/window_length_comparison.csv,True,forecast values,True,True
+robustness/window_length_mcs.csv,True,forecast values,True,True
+robustness/window_length_origin_audit.csv,True,fit status only,True,True
+robustness/window_length_predictive_tests.csv,True,forecast values,True,True
+forecasts/forecast_origin_audit.csv,True,chain counts (attempted/valid/failed/from_cache),False,requires new aggregation code (no estimation)
+models/fit_records.csv,True,per-origin fit records,False,candidate records exist; publishing them requires new code (no estimation)
+models/fit_records.parquet,True,per-origin fit records,False,as above
+robustness/T4.7_failure_registry.csv,True,failure events of the chain,False,requires new aggregation code (no estimation)
+robustness/T4.7_status_counts.csv,True,status counts of the chain,False,requires new aggregation code (no estimation)
+diagnostics/all_test_results.csv,True,"8 state-dependence/joint Wald rows (same statistics as T3.5_state_loss_regression, which the workflow regenerates); its residual tests are full-sample and unaffected",False,requires merging the regenerated T3.5 statistics (no estimation)
+manifests/output_inventory.csv,True,file hashes,False,regenerated with any release
+models/T3.1_in_sample_adequacy.csv,False,"full-sample (in-sample) estimates, pipeline.adequacy_stage; not the rolling chain",False,not affected
+models/T3.2_nonlinear_credibility.csv,False,"full-sample (in-sample) estimates, pipeline.adequacy_stage; not the rolling chain",False,not affected
+diagnostics/T3.2_residual_tests.csv,False,"full-sample (in-sample) estimates, pipeline.adequacy_stage; not the rolling chain",False,not affected
+robustness/T4.3_regime_count.csv,False,"full-sample (in-sample) estimates, pipeline.adequacy_stage; not the rolling chain",False,not affected
+robustness/T4.3_regime_parameters.csv,False,"full-sample (in-sample) estimates, pipeline.adequacy_stage; not the rolling chain",False,not affected

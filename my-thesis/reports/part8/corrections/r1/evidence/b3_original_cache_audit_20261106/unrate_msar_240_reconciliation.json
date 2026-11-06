@@ -1,0 +1,124 @@
+{
+ "same_specification": true,
+ "specification": "ModelSpec(model='MSAR', order=4, ma_order=0, k_regimes=2, kind='LSTAR', delay=1)",
+ "same_transformation": true,
+ "transformation": "percent",
+ "same_window_length": true,
+ "window_length": 240,
+ "same_data": true,
+ "frequency": [
+  "M",
+  "M"
+ ],
+ "horizons": {
+  "forecasting:UNRATE|MSAR": [
+   1,
+   3,
+   6,
+   12
+  ],
+  "T4.8:UNRATE|240:MSAR": [
+   1
+  ]
+ },
+ "origins": [
+  704,
+  704
+ ],
+ "same_origin_dates_and_windows": true,
+ "same_cache_keys_all_origins_empty_predecessor": true,
+ "published_record_blocks": {
+  "forecasting:UNRATE|MSAR": "first block (forecasting stage); rows 5086-5789 of 3 block(s)",
+  "T4.8:UNRATE|240:MSAR": "last block (robustness T4.8 stage); rows 40337-41040 of 3 block(s)",
+  "T4.1:UNRATE|MSAR": "block sharing no record with the others (T4.1); rows 15544-16246 of 3 block(s)"
+ },
+ "records_per_chain": {
+  "forecasting": 704,
+  "T4.8_240": 704,
+  "T4.1": 703
+ },
+ "why_701": "deduplicating identical (date, params) pairs across the baseline and T4.8-240 blocks leaves 701 dates; at 3 dates the two blocks hold different fits, so they were not duplicates. Both chains have 704 records.",
+ "dates_where_the_two_runs_differ": [
+  "1983-04-01",
+  "1983-05-01",
+  "1983-06-01"
+ ],
+ "conflicting_records": {
+  "1983-04-01": {
+   "forecasting": {
+    "status": "failed",
+    "codes": "SINGULAR_COV;NONCONVERGENCE",
+    "loglik": 54.37476841305779,
+    "start_used": "warm",
+    "warm_offered": true
+   },
+   "T4.8_240": {
+    "status": "failed",
+    "codes": "SINGULAR_COV;NONCONVERGENCE",
+    "loglik": -299.99636795827394,
+    "start_used": "deterministic_p0.95",
+    "warm_offered": false
+   }
+  },
+  "1983-05-01": {
+   "forecasting": {
+    "status": "failed",
+    "codes": "SINGULAR_COV;NONCONVERGENCE",
+    "loglik": 54.48298520050515,
+    "start_used": "warm",
+    "warm_offered": true
+   },
+   "T4.8_240": {
+    "status": "failed",
+    "codes": "SINGULAR_COV;NONCONVERGENCE",
+    "loglik": -302.8149469769394,
+    "start_used": "deterministic_p0.95",
+    "warm_offered": false
+   }
+  },
+  "1983-06-01": {
+   "forecasting": {
+    "status": "failed",
+    "codes": "SINGULAR_COV;NONCONVERGENCE",
+    "loglik": 54.48087710384925,
+    "start_used": "warm",
+    "warm_offered": true
+   },
+   "T4.8_240": {
+    "status": "failed",
+    "codes": "SINGULAR_COV;NONCONVERGENCE",
+    "loglik": -305.3728518406318,
+    "start_used": "deterministic_p0.95",
+    "warm_offered": false
+   }
+  }
+ },
+ "failed": {
+  "forecasting": 11,
+  "T4.8_240": 11
+ },
+ "post_failure_origins_without_warm_start": {
+  "forecasting": [
+   "1982-10-01",
+   "1982-11-01",
+   "1982-12-01",
+   "1989-11-01",
+   "2017-03-01",
+   "2020-07-01"
+  ],
+  "T4.8_240": [
+   "1982-10-01",
+   "1982-11-01",
+   "1982-12-01",
+   "1983-02-01",
+   "1983-04-01",
+   "1983-05-01",
+   "1983-06-01",
+   "1983-07-01",
+   "1989-11-01",
+   "2017-03-01",
+   "2020-07-01"
+  ]
+ },
+ "published_forecasts_at_conflicting_dates": "status failed, forecast NaN at h=1..12 (failed fits are masked), identical in effect for both runs"
+}
