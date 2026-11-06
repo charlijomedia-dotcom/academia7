@@ -54,3 +54,21 @@ All 38 files were regenerated in staging (`output_staging/r1_b1_unrate_msar_2026
 - *Code:* none changed yet. The checker is `reports/part8/corrections/r1/f48_staleness_check.py`.
 - *Regeneration:* planned in the final integration (stage 3 of `part8_final_integration_plan.md`).
 - *Distinguishing superseded outputs:* the releases are not edited; the stale files are listed in `evidence/integration_prep_20261106/f48_staleness/`.
+
+## 7. Further findings while implementing the integration dry run (6 November 2026)
+
+Full detail: `reports/part8/corrections/r1/part8_integration_dryrun_implementation.md` §5.
+
+**(a) Stale Wald rows in `diagnostics/all_test_results.csv` (§6A).**
+- *Error:* the pinned R1 workflow regenerates T3.5 but copies the state-dependence and joint Wald rows of `all_test_results.csv` unchanged.
+- *Affected:* in releases `0573a8c`, `3bd24c4` and `292227e`, all 24 UNRATE Wald rows still carry the published values, while T3.5 changed under F1.
+- *Code:* `colab/r1_integration_dependents.rebuild_wald` (orchestration; reproduces all 134 base rows first).
+- *Regeneration:* stage 3 of the integration dry run.
+- *Distinguishing superseded outputs:* the releases are not edited.
+
+**(b) Reconciliation with non-reproducing re-estimated chains (orchestration).**
+- *Error:* the pinned `workflow.reconcile` restores the base value wherever the legacy and corrected runs agree. With B2's chains this would print superseded values (for example FEDFUNDS T4.1 MSAR `n_failed` 52 instead of 49).
+- *Prevented by:* `reconcile_chain_aware`, used only in the dry run.
+- *Effect on existing outputs:* no published output was affected. The Tier A release used closed-form AR chains, which reproduce exactly.
+
+**(c) F8 authorisation.** F8 was never confirmed, but the pinned flag is on by default, so it was active in `3bd24c4` and `292227e`. The dry run switches it off.

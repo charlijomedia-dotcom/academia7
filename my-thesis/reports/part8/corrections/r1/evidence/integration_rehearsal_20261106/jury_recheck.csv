@@ -1,0 +1,34 @@
+jury_id,in_part2_registry,in_jury_resolution_status,claims,claim_transitions,status
+P-01,True,True,C17,C17: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+P-02,True,True,C15,C15: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+P-03,True,True,C06; C15; C22,C06: EVIDENCE_UNCHANGED; C15: REVIEW_REQUIRED: evidence values changed (no decision-like change); C22: EVIDENCE_UNCHANGED,REVIEW_REQUIRED
+P-04,True,True,P04-regime-count; C18,P04-regime-count: EVIDENCE_UNCHANGED; C18: EVIDENCE_UNCHANGED,EVIDENCE_UNCHANGED
+P-05,True,True,C02; C13,C02: REVIEW_REQUIRED: decision-like evidence changed; C13: REVIEW_REQUIRED: decision-like evidence changed,REVIEW_REQUIRED
+P-06,True,True,C23,C23: REVIEW_REQUIRED: supporting files not machine-checkable ('(all)'); assess manually,REVIEW_REQUIRED
+R1-01,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-02,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-03,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-04,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-05,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-06,True,True,C08,C08: REVIEW_REQUIRED: decision-like evidence changed,REVIEW_REQUIRED
+R1-07,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-08,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-09,True,True,C01; C03; C04,C01: REVIEW_REQUIRED: decision-like evidence changed; C03: REVIEW_REQUIRED: decision-like evidence changed; C04: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+R1-10,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-11,True,True,C06,C06: EVIDENCE_UNCHANGED,EVIDENCE_UNCHANGED
+R1-12,True,True,C20,C20: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+R1-13,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-14,True,True,C01; C02; C12,C01: REVIEW_REQUIRED: decision-like evidence changed; C02: REVIEW_REQUIRED: decision-like evidence changed; C12: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+R1-15,True,True,C16,C16: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+R1-16,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-17,True,True,C06; C07; C10,C06: EVIDENCE_UNCHANGED; C07: REVIEW_REQUIRED: decision-like evidence changed; C10: EVIDENCE_UNCHANGED,REVIEW_REQUIRED
+R1-18,True,True,C09; C11,C09: EVIDENCE_UNCHANGED; C11: EVIDENCE_UNCHANGED,EVIDENCE_UNCHANGED
+R1-19,True,True,C17,C17: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+R1-20,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-21,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+R1-22,True,True,C01; C04; C07; C08; C20; C21,C01: REVIEW_REQUIRED: decision-like evidence changed; C04: REVIEW_REQUIRED: evidence values changed (no decision-like change); C07: REVIEW_REQUIRED: decision-like evidence changed; C08: REVIEW_REQUIRED: decision-like evidence changed; C20: REVIEW_REQUIRED: evidence values changed (no decision-like change); C21: REVIEW_REQUIRED: decision-like evidence changed,REVIEW_REQUIRED
+R1-23,True,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md
+V-04,False,True,C19,C19: EVIDENCE_UNCHANGED,EVIDENCE_UNCHANGED
+V-05,False,True,C12,C12: REVIEW_REQUIRED: evidence values changed (no decision-like change),REVIEW_REQUIRED
+V-06,False,True,C05,C05: EVIDENCE_UNCHANGED,EVIDENCE_UNCHANGED
+V-07,False,True,,,NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md

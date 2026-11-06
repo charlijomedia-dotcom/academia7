@@ -16,6 +16,8 @@ The original output tree is not modified. The corrected release is a copy of tha
 | F7.1 | reporting error | The data dictionary shows the transformation chosen by the §3.4 rule. | T2.1 |
 | F8 | presentation error (found in the R1 figure review, 2 November 2026; **awaiting your confirmation**) | F3.4's main panel omits flagged values, and the title says so. The diagnostic panel uses a labelled symmetric-log axis when flagged values exceed 100 times the data range. Nothing is clipped (Part 5 §13.1) | F3.4 figures only; no number changes |
 
+**F8 status (6 November 2026).** F8 was raised for your confirmation on 2 November and has not been confirmed. The pinned flag `f8_readable_main_panel` is on by default, so F8 was nevertheless active in the provisional releases `3bd24c4` and `292227e` (their recorded correction flags; `0573a8c` predates F8); their F3.4 main panels therefore show an unconfirmed presentation change. The Part 8 integration dry run applies only the authorised scope (F1, F2, F3, F4, F7.1) and switches F8 off. Turning it on requires your confirmation.
+
 F5: interpretation only, so no code change. F6: not implemented. UNRATE K=3 remains inconclusive, and see the unresolved limitation below.
 
 ## How each number was obtained

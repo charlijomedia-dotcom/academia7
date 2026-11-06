@@ -1,0 +1,127 @@
+path,cause,regenerated_by_r1,regenerated_by_dependents
+data_audit/T2.0_concept_series.csv,provenance_or_fp_only,True,False
+data_audit/T2.1_data_dictionary.csv,cells,True,False
+data_audit/T4.9_locf_sample_comparison.csv,cells,True,False
+data_audit/locf_forecast_exposure.csv,cells,True,False
+data_audit/locf_forecast_exposure.parquet,parquet twin of data_audit/locf_forecast_exposure.csv,True,False
+data_audit/october_2025_imputation_audit.csv,provenance_or_fp_only,True,False
+diagnostics/T2.2_stationarity.csv,cells,True,False
+diagnostics/T2.2_transformation_decisions.csv,cells,True,False
+diagnostics/all_test_results.csv,cells,True,True
+figures/F2.0_sample_timeline.pdf.provenance.json,figure sidecar,False,False
+figures/F2.0_sample_timeline.png.provenance.json,figure sidecar,False,False
+figures/F2.1_CPIAUCSL.pdf.provenance.json,figure sidecar,False,False
+figures/F2.1_CPIAUCSL.png.provenance.json,figure sidecar,False,False
+figures/F2.1_FEDFUNDS.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F2.1_FEDFUNDS.pdf.provenance.json,figure sidecar,False,False
+figures/F2.1_FEDFUNDS.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F2.1_FEDFUNDS.png.provenance.json,figure sidecar,False,False
+figures/F2.1_GDPC1.pdf.provenance.json,figure sidecar,False,False
+figures/F2.1_GDPC1.png.provenance.json,figure sidecar,False,False
+figures/F2.1_INDPRO.pdf.provenance.json,figure sidecar,False,False
+figures/F2.1_INDPRO.png.provenance.json,figure sidecar,False,False
+figures/F2.1_M2SL.pdf.provenance.json,figure sidecar,False,False
+figures/F2.1_M2SL.png.provenance.json,figure sidecar,False,False
+figures/F2.1_UNRATE.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F2.1_UNRATE.pdf.provenance.json,figure sidecar,False,False
+figures/F2.1_UNRATE.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F2.1_UNRATE.png.provenance.json,figure sidecar,False,False
+figures/F3.4_CPIAUCSL.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_CPIAUCSL.pdf.provenance.json,figure sidecar,False,False
+figures/F3.4_CPIAUCSL.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_CPIAUCSL.png.provenance.json,figure sidecar,False,False
+figures/F3.4_FEDFUNDS.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_FEDFUNDS.pdf.provenance.json,figure sidecar,False,False
+figures/F3.4_FEDFUNDS.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_FEDFUNDS.png.provenance.json,figure sidecar,False,False
+figures/F3.4_GDPC1.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_GDPC1.pdf.provenance.json,figure sidecar,False,False
+figures/F3.4_GDPC1.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_GDPC1.png.provenance.json,figure sidecar,False,False
+figures/F3.4_INDPRO.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_INDPRO.pdf.provenance.json,figure sidecar,False,False
+figures/F3.4_INDPRO.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_INDPRO.png.provenance.json,figure sidecar,False,False
+figures/F3.4_M2SL.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_M2SL.pdf.provenance.json,figure sidecar,False,False
+figures/F3.4_M2SL.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_M2SL.png.provenance.json,figure sidecar,False,False
+figures/F3.4_UNRATE.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_UNRATE.pdf.provenance.json,figure sidecar,False,False
+figures/F3.4_UNRATE.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.4_UNRATE.png.provenance.json,figure sidecar,False,False
+figures/F3.5_CPIAUCSL.pdf.provenance.json,figure sidecar,False,False
+figures/F3.5_CPIAUCSL.png.provenance.json,figure sidecar,False,False
+figures/F3.5_FEDFUNDS.pdf.provenance.json,figure sidecar,False,False
+figures/F3.5_FEDFUNDS.png.provenance.json,figure sidecar,False,False
+figures/F3.5_GDPC1.pdf.provenance.json,figure sidecar,False,False
+figures/F3.5_GDPC1.png.provenance.json,figure sidecar,False,False
+figures/F3.5_INDPRO.pdf.provenance.json,figure sidecar,False,False
+figures/F3.5_INDPRO.png.provenance.json,figure sidecar,False,False
+figures/F3.5_M2SL.pdf.provenance.json,figure sidecar,False,False
+figures/F3.5_M2SL.png.provenance.json,figure sidecar,False,False
+figures/F3.5_UNRATE.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.5_UNRATE.pdf.provenance.json,figure sidecar,False,False
+figures/F3.5_UNRATE.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.5_UNRATE.png.provenance.json,figure sidecar,False,False
+figures/F3.6_CPIAUCSL.pdf.provenance.json,figure sidecar,False,False
+figures/F3.6_CPIAUCSL.png.provenance.json,figure sidecar,False,False
+figures/F3.6_FEDFUNDS.pdf.provenance.json,figure sidecar,False,False
+figures/F3.6_FEDFUNDS.png.provenance.json,figure sidecar,False,False
+figures/F3.6_GDPC1.pdf.provenance.json,figure sidecar,False,False
+figures/F3.6_GDPC1.png.provenance.json,figure sidecar,False,False
+figures/F3.6_INDPRO.pdf.provenance.json,figure sidecar,False,False
+figures/F3.6_INDPRO.png.provenance.json,figure sidecar,False,False
+figures/F3.6_M2SL.pdf.provenance.json,figure sidecar,False,False
+figures/F3.6_M2SL.png.provenance.json,figure sidecar,False,False
+figures/F3.6_UNRATE.pdf,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.6_UNRATE.pdf.provenance.json,figure sidecar,False,False
+figures/F3.6_UNRATE.png,correction (figure re-rendered by the workflow; legacy reproduces the base),True,False
+figures/F3.6_UNRATE.png.provenance.json,figure sidecar,False,False
+figures/F4.8_UNRATE.pdf,dependent:F4.8 (D2),False,True
+figures/F4.8_UNRATE.pdf.provenance.json,figure sidecar,False,True
+figures/F4.8_UNRATE.png,dependent:F4.8 (D2),False,True
+figures/F4.8_UNRATE.png.provenance.json,figure sidecar,False,True
+forecast_tests/T3.3A_hlz_pairwise.csv,cells,True,False
+forecast_tests/T3.3B_dm_hln_pairwise.csv,cells,True,False
+forecast_tests/T3.3_main_forecast_table.csv,cells,True,False
+forecast_tests/T3.4_model_confidence_set.csv,cells,True,False
+forecast_tests/T3.5_state_loss_regression.csv,cells,True,False
+forecast_tests/T3.5_state_performance.csv,cells,True,False
+forecast_tests/T3.6_peak_trough_detail.csv,cells,True,False
+forecasts/forecast_horizon_coverage.csv,cells,True,False
+forecasts/forecasts_CPIAUCSL.csv,cells,True,False
+forecasts/forecasts_CPIAUCSL.parquet,parquet twin of forecasts/forecasts_CPIAUCSL.csv,True,False
+forecasts/forecasts_FEDFUNDS.csv,cells,True,False
+forecasts/forecasts_FEDFUNDS.parquet,parquet twin of forecasts/forecasts_FEDFUNDS.csv,True,False
+forecasts/forecasts_GDPC1.csv,cells,True,False
+forecasts/forecasts_GDPC1.parquet,parquet twin of forecasts/forecasts_GDPC1.csv,True,False
+forecasts/forecasts_INDPRO.csv,cells,True,False
+forecasts/forecasts_INDPRO.parquet,parquet twin of forecasts/forecasts_INDPRO.csv,True,False
+forecasts/forecasts_M2SL.csv,cells,True,False
+forecasts/forecasts_M2SL.parquet,parquet twin of forecasts/forecasts_M2SL.csv,True,False
+forecasts/forecasts_UNRATE.csv,cells,True,False
+forecasts/forecasts_UNRATE.parquet,parquet twin of forecasts/forecasts_UNRATE.csv,True,False
+manifests/T2.0A_frozen_manifest.csv,provenance_or_fp_only,True,False
+manifests/correction_file_comparison.csv,record,,
+manifests/correction_run_manifest.json,record,,
+manifests/correction_summary.json,record,,
+manifests/original_output_inventory.csv,record,,
+manifests/output_inventory.csv,record,,
+models/fit_records.csv,cells,False,True
+models/fit_records.parquet,parquet twin of models/fit_records.csv,False,True
+robustness/T4.1_transformation_predictive_tests.csv,provenance_or_fp_only,True,False
+robustness/T4.1_transformation_robustness.csv,cells,True,False
+robustness/T4.2_cpi_lag_predictive_tests.csv,cells,True,False
+robustness/T4.2_cpi_lag_robustness.csv,cells,True,False
+robustness/T4.4_horizon_predictive_tests.csv,cells,True,False
+robustness/T4.4_horizon_robustness.csv,cells,True,False
+robustness/T4.5_var_comparison.csv,cells,True,False
+robustness/T4.5_var_predictive_tests.csv,cells,True,False
+robustness/T4.7_failure_registry.csv,dependent:T4.7 events of the chains whose records changed (block structure verified in A10),False,True
+robustness/T4.7_status_counts.csv,cells,False,True
+robustness/T4.TP1_turning_window_sensitivity.csv,cells,True,False
+robustness/window_length_comparison.csv,cells,True,False
+robustness/window_length_mcs.csv,cells,True,False
+robustness/window_length_origin_audit.csv,provenance_or_fp_only,True,False
+robustness/window_length_predictive_tests.csv,cells,True,False

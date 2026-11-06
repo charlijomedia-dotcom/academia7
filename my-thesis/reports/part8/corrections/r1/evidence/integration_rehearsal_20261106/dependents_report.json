@@ -1,0 +1,638 @@
+{
+ "run_id": "correction-20261106T194242-949fcd76",
+ "estimation": "none (estimators refused; fit calls counted)",
+ "fit_records": {
+  "T4.1:FEDFUNDS|AR": {
+   "block": "run with the chain's specification and refit dates; rows 16950-17575",
+   "records": 626,
+   "categories": {
+    "reproduced": 626
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    16950,
+    17575
+   ],
+   "statuses": {
+    "adequate": 555,
+    "failed": 71
+   },
+   "from_cache": 626,
+   "estimations": 0
+  },
+  "T4.1:FEDFUNDS|MSAR": {
+   "block": "block sharing no record with the others (T4.1); rows 18202-18827 of 3 block(s)",
+   "records": 626,
+   "categories": {
+    "reproduced": 583,
+    "optimizer_sensitivity": 29,
+    "classification_changed": 14
+   },
+   "replaced_origins": [
+    "1974-08-01",
+    "1980-01-01",
+    "1980-02-01",
+    "1980-03-01",
+    "1980-04-01",
+    "1980-05-01",
+    "1981-02-01",
+    "1981-03-01",
+    "1981-04-01",
+    "1981-05-01",
+    "1981-06-01",
+    "1981-07-01",
+    "2011-01-01",
+    "2011-02-01",
+    "2011-03-01",
+    "2011-04-01",
+    "2011-05-01",
+    "2011-06-01",
+    "2011-07-01",
+    "2012-01-01",
+    "2012-02-01",
+    "2012-03-01",
+    "2012-04-01",
+    "2012-05-01",
+    "2012-06-01",
+    "2012-07-01",
+    "2012-08-01",
+    "2012-09-01",
+    "2013-01-01",
+    "2013-02-01",
+    "2013-03-01",
+    "2013-04-01",
+    "2013-05-01",
+    "2013-06-01",
+    "2013-07-01",
+    "2013-08-01",
+    "2013-09-01",
+    "2013-12-01",
+    "2014-01-01",
+    "2014-02-01",
+    "2014-03-01",
+    "2014-04-01",
+    "2014-05-01"
+   ],
+   "replaced_positions": [
+    18204,
+    18269,
+    18270,
+    18271,
+    18272,
+    18273,
+    18282,
+    18283,
+    18284,
+    18285,
+    18286,
+    18287,
+    18641,
+    18642,
+    18643,
+    18644,
+    18645,
+    18646,
+    18647,
+    18653,
+    18654,
+    18655,
+    18656,
+    18657,
+    18658,
+    18659,
+    18660,
+    18661,
+    18665,
+    18666,
+    18667,
+    18668,
+    18669,
+    18670,
+    18671,
+    18672,
+    18673,
+    18676,
+    18677,
+    18678,
+    18679,
+    18680,
+    18681
+   ],
+   "block_positions": [
+    18202,
+    18827
+   ],
+   "statuses": {
+    "fragile": 453,
+    "adequate": 124,
+    "failed": 49
+   },
+   "from_cache": 626,
+   "estimations": 0
+  },
+  "T4.1:UNRATE|AR": {
+   "block": "run with the chain's specification and refit dates; rows 14138-14840",
+   "records": 703,
+   "categories": {
+    "reproduced": 703
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    14138,
+    14840
+   ],
+   "statuses": {
+    "adequate": 700,
+    "failed": 2,
+    "fragile": 1
+   },
+   "from_cache": 703,
+   "estimations": 0
+  },
+  "T4.2:CPIAUCSL|AR(p=1)": {
+   "block": "run with the chain's specification and refit dates; rows 19454-20168",
+   "records": 715,
+   "categories": {
+    "reproduced": 715
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    19454,
+    20168
+   ],
+   "statuses": {
+    "adequate": 715
+   },
+   "from_cache": 715,
+   "estimations": 0
+  },
+  "T4.2:CPIAUCSL|AR(p=12)": {
+   "block": "run with the chain's specification and refit dates; rows 21599-22313",
+   "records": 715,
+   "categories": {
+    "reproduced": 715
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    21599,
+    22313
+   ],
+   "statuses": {
+    "adequate": 714,
+    "failed": 1
+   },
+   "from_cache": 715,
+   "estimations": 0
+  },
+  "T4.2:CPIAUCSL|AR(p=3)": {
+   "block": "run with the chain's specification and refit dates; rows 20169-20883",
+   "records": 715,
+   "categories": {
+    "reproduced": 715
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    20169,
+    20883
+   ],
+   "statuses": {
+    "adequate": 715
+   },
+   "from_cache": 715,
+   "estimations": 0
+  },
+  "T4.2:CPIAUCSL|AR(p=6)": {
+   "block": "run with the chain's specification and refit dates; rows 20884-21598",
+   "records": 715,
+   "categories": {
+    "reproduced": 715
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    20884,
+    21598
+   ],
+   "statuses": {
+    "adequate": 715
+   },
+   "from_cache": 715,
+   "estimations": 0
+  },
+  "T4.8:UNRATE|180:AR": {
+   "block": "run with the chain's specification and refit dates; rows 35873-36636",
+   "records": 764,
+   "categories": {
+    "reproduced": 764
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    35873,
+    36636
+   ],
+   "statuses": {
+    "adequate": 763,
+    "failed": 1
+   },
+   "from_cache": 764,
+   "estimations": 0
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "block": "single block; rows 37401-38164 of 1 block(s)",
+   "records": 764,
+   "categories": {
+    "reproduced": 758,
+    "classification_changed": 6
+   },
+   "replaced_origins": [
+    "1982-01-01",
+    "1982-02-01",
+    "1982-03-01",
+    "1982-04-01",
+    "1982-05-01",
+    "1982-06-01"
+   ],
+   "replaced_positions": [
+    37630,
+    37631,
+    37632,
+    37633,
+    37634,
+    37635
+   ],
+   "block_positions": [
+    37401,
+    38164
+   ],
+   "statuses": {
+    "fragile": 391,
+    "adequate": 368,
+    "failed": 5
+   },
+   "from_cache": 764,
+   "estimations": 0
+  },
+  "T4.8:UNRATE|300:AR": {
+   "block": "run with the chain's specification and refit dates; rows 41745-42388",
+   "records": 644,
+   "categories": {
+    "reproduced": 644
+   },
+   "replaced_origins": [],
+   "replaced_positions": [],
+   "block_positions": [
+    41745,
+    42388
+   ],
+   "statuses": {
+    "adequate": 643,
+    "failed": 1
+   },
+   "from_cache": 644,
+   "estimations": 0
+  }
+ },
+ "t47_registry": {
+  "T4.1:FEDFUNDS|MSAR": {
+   "published_rows": "9106-9837",
+   "events_before": 732,
+   "events_after": 741,
+   "kept_verbatim": 718,
+   "candidate_blocks_with_same_signature": 1
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "published_rows": "17203-17865",
+   "events_before": 663,
+   "events_after": 651,
+   "kept_verbatim": 651,
+   "candidate_blocks_with_same_signature": 1
+  }
+ },
+ "t47_status_counts": {
+  "rows_changed": [
+   {
+    "row": 23,
+    "series": "FEDFUNDS",
+    "model": "MSAR",
+    "status": "failed",
+    "before": "52",
+    "after": "49"
+   },
+   {
+    "row": 24,
+    "series": "FEDFUNDS",
+    "model": "MSAR",
+    "status": "fragile",
+    "before": "2410",
+    "after": "2413"
+   },
+   {
+    "row": 63,
+    "series": "UNRATE",
+    "model": "MSAR",
+    "status": "adequate",
+    "before": "2115",
+    "after": "2120"
+   },
+   {
+    "row": 65,
+    "series": "UNRATE",
+    "model": "MSAR",
+    "status": "fragile",
+    "before": "1385",
+    "after": "1380"
+   }
+  ]
+ },
+ "wald_rows": {
+  "wald_rows": 134,
+  "validated_against_base_t35": true,
+  "rows_changed": [
+   {
+    "row": 250,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value",
+     "decision_5pct",
+     "implication",
+     "stars"
+    ]
+   },
+   {
+    "row": 251,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 256,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 257,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 262,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 263,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 268,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 269,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 252,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 253,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 258,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 259,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 264,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 265,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 270,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 271,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 254,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 255,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 260,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 261,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 266,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 267,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 272,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 273,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   }
+  ]
+ },
+ "t46_summary": {
+  "rows_changed": [],
+  "validated_against_base": true
+ },
+ "f48": {
+  "reproduced_from_base": {
+   "CPIAUCSL": {
+    "F4.8_CPIAUCSL.png": true,
+    "F4.8_CPIAUCSL.pdf": true
+   },
+   "FEDFUNDS": {
+    "F4.8_FEDFUNDS.png": true,
+    "F4.8_FEDFUNDS.pdf": true
+   },
+   "GDPC1": {
+    "F4.8_GDPC1.png": true,
+    "F4.8_GDPC1.pdf": true
+   },
+   "INDPRO": {
+    "F4.8_INDPRO.png": true,
+    "F4.8_INDPRO.pdf": true
+   },
+   "M2SL": {
+    "F4.8_M2SL.png": true,
+    "F4.8_M2SL.pdf": true
+   },
+   "UNRATE": {
+    "F4.8_UNRATE.png": true,
+    "F4.8_UNRATE.pdf": true
+   }
+  },
+  "re_rendered": [
+   "F4.8_UNRATE.png",
+   "F4.8_UNRATE.pdf"
+  ],
+  "inputs_changed": [
+   "UNRATE"
+  ]
+ },
+ "records": {
+  "files": 464,
+  "by_source": {
+   "original_unchanged": 359,
+   "regenerated_r1": 93,
+   "regenerated_integration_dependents": 9,
+   "correction_record": 3
+  }
+ },
+ "dependent_files": [
+  "diagnostics/all_test_results.csv",
+  "figures/F4.8_UNRATE.pdf",
+  "figures/F4.8_UNRATE.pdf.provenance.json",
+  "figures/F4.8_UNRATE.png",
+  "figures/F4.8_UNRATE.png.provenance.json",
+  "models/fit_records.csv",
+  "models/fit_records.parquet",
+  "robustness/T4.6_arma_garch_summary.csv",
+  "robustness/T4.7_failure_registry.csv",
+  "robustness/T4.7_status_counts.csv"
+ ]
+}

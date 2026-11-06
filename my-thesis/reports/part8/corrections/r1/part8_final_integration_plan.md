@@ -19,7 +19,8 @@ The preparation and verification work behind this plan is reported in `part8_int
 | Component | Source | Status | Evidence |
 |---|---|---|---|
 | **Baseline UNRATE MSAR correction (B1 staged)** | `output_staging/r1_b1_unrate_msar_20261106/` (38 content files + 8 sidecars), run `b1-staged-20261106T154902Z` | **approved** as the selected implementation correction (6 Nov), **not** approved for publication | `tier_b_b1_staged_correction.md`; `evidence/b1_staged_20261106/` |
-| **R1 corrections F1, F2, F3, F4, F7.1, F8** | pinned R1 workflow (`thesis.correction`) | approved; provisional releases `0573a8c`, `3bd24c4` | `CORRECTIONS.md` |
+| **R1 corrections F1, F2, F3, F4, F7.1** | pinned R1 workflow (`thesis.correction`) | approved | `CORRECTIONS.md` |
+| **F8** (F3.4 main-panel presentation) | pinned flag `f8_readable_main_panel` (on by default) | **raised for confirmation on 2 November and never confirmed**; it was nevertheless active in releases `3bd24c4` and `292227e` (their recorded flags; `0573a8c` predates it). *Revision, 6 November:* the first version of this table listed it as approved. That was wrong. The dry run applies only the authorised scope, so **F8 is switched off** (§7). | `figure_review.md`, `CORRECTIONS.md` |
 | **Tier A**: 8 AR chains re-estimated | Tier A archive `df73c295…`; release `292227e` (run `correction-20261103T073809-949fcd76`) | complete; closed form, reproduces published records | `tier_a_review.md` |
 | **Tier B batch B1**: T4.8:UNRATE\|300:MSAR | certificate `COMPLETE-20261106T070356Z-B1-20261105T125151Z-df107f` | `COMPUTATION_COMPLETE_REPRODUCED`: 644/644, no review items | `evidence/integration_prep_20261106/certificates/` |
 | **Tier B batch B2**: T4.8:UNRATE\|180:MSAR and T4.1:FEDFUNDS\|MSAR | certificate `COMPLETE-20261105T151645Z-B2-20261105T110347Z-505e21` | `COMPUTATION_COMPLETE_REVIEW_REQUIRED`: 20 classification changes, 29 optimiser sensitivities | same, and `b2_direct_review/` |
@@ -109,7 +110,7 @@ The order fixes the precedence: **published → B1 staged overlay → R1 workflo
 | 0 | **Preflight** | Checks the code checkout is at the pin with `code/src` and `code/config` clean; the frozen-data hash is `7e7dc769…`; matplotlib renders with defaults (`r1_render_guard`, matplotlib 3.11.2); the three certificates have the sha256 values in `certificates/MANIFEST.csv`; the original cache matches `3413465b508bb844` (143 parts, payload digest `7e283de3…`); the Tier A archive matches `df73c295…`. Records a hash listing of every protected input. | to write: `colab/r1_part8_integration.py --stage preflight` |
 | 1 | **Base tree** | Materialises `WORK/base = output/ + output_staging/r1_b1_unrate_msar_20261106/`. Each overlay file is verified against `STAGED_FILES.csv`, and `.gz` files are decompressed and verified uncompressed. Every other file must match the published sha256. Refuses extra or missing files. The counter-provenance sidecar travels as metadata, not as an output file. | to write (`--stage base`) |
 | 2 | **Aggregation** | `r1_tierb_aggregate.py` with `--original WORK/base`. Runs `discover → merge → walk_all → assemble → gates` exactly as implemented and tested (20 tests), with two changes: the plan is written **only** under `WORK/` (never to Drive), and every certificate is checked against `certificates/MANIFEST.csv`. Estimation is refused throughout. | existing, plus a `--plan-dir` option (to write) |
-| 3 | **Non-workflow dependents** | On `WORK/assembly/release`, for each of the 9 Tier B chains (and the 8 Tier A chains as a no-change check): replace the chain's fit-record block with the re-estimated records. `spec_hash` is empty in the published fit records, so a block is located as in B1 (`find_blocks`): the contiguous run of records whose refit dates, windows and values equal the chain's published records, which the workflow re-derives. Exactly one match is required; then rebuild the T4.7 registry and status counts, F4.8 for every series whose plotted inputs changed, and the inventory. Every builder first **reproduces the published values from published inputs**, as in B1. | generalise `colab/r1_b1_staged_correction.py` §2a, 2c, 2f, 2g (to write) |
+| 3 | **Non-workflow dependents** | On `WORK/assembly/release`, for each of the 9 Tier B chains (and the 8 Tier A chains as a no-change check): replace the chain's fit-record block with the re-estimated records. `spec_hash` is empty in the published fit records, so a block is located as in B1 (`find_blocks`): the contiguous run of records whose refit dates, windows and values equal the chain's published records, which the workflow re-derives. Exactly one match is required; then rebuild the T4.7 registry and status counts, the Wald rows of `all_test_results` (stale in the provisional releases), the T4.6 summary, F4.8 for every series whose plotted inputs changed, and the inventory. Every builder first **reproduces the published values from published inputs**, as in B1. | generalise `colab/r1_b1_staged_correction.py` §2a, 2c, 2f, 2g (to write) |
 | 4 | **Validation** | An independent validator (a generalisation of `r1_b1_validate_staged.py`) applies the acceptance criteria in §5 and writes a cell-level diff against three references: (a) published `output/`, (b) the B1 staged tree, (c) the Tier A release `292227e`. | to write |
 | 5 | **Claims and jury** | Re-extracts every number quoted in `claim_evidence_matrix_corrected.csv` from the validated tree, gives each claim and jury ID (Part 2) its status transition, and lists every quoted number in the Part 8 reports that changes. **No prose is edited in the dry run.** | to write: `reports/part8/corrections/r1/claim_recheck.py` |
 
@@ -212,10 +213,10 @@ The dry run is **accepted for review** only if all of the following hold:
 | A9 | **Baseline:** `forecasting:UNRATE\|MSAR` and `T4.8:UNRATE\|240:MSAR` in the release equal the B1-staged chain (704 records; valid 698 / failed 6), and their release provenance cites `b1-staged-20261106T154902Z`. |
 | A10 | **Non-workflow dependents:** each builder reproduced the published values from published inputs before building. Fit-record blocks are replaced only for chains whose records changed. T4.7 status counts equal those recomputed from the final fit records. The inventory hashes equal the files' hashes. |
 | A11 | **Figures:** F4.8 is re-rendered exactly for the series whose plotted inputs changed. Running `f48_staleness_check.py` on the dry-run release gives 0 stale files. All other figures are byte-identical to the base tree, or regenerated by the workflow with a sidecar. |
-| A12 | **Cell-level change sets** against published, B1-staged and Tier A are complete. Every decision-like change (classifications, test decisions, MCS membership, ranks) is listed. Each one is explained by a chain change (F1/F2/F3/F4/F7.1/F8, B1, Tier A, B2, B3) in the explanation table. Unexplained changes: 0. |
+| A12 | **Cell-level change sets** against published, B1-staged and Tier A are complete. Every decision-like change (classifications, test decisions, MCS membership, ranks) is listed. Each one is explained by a chain change (F1/F2/F3/F4/F7.1, B1, Tier A, B2, B3) in the explanation table. Unexplained changes: 0. |
 | A13 | **Provenance:** every changed row carries the dry-run run ID; unchanged rows keep their original provenance; the manifest records data hash, config hash, pin, orchestration commit, run ID and timestamp (CLAUDE.md §8). |
 | A14 | **Claims:** every claim in `claim_evidence_matrix_corrected.csv` is re-extracted. Its status transition is listed with the supporting files. Every jury ID mapped there has a status. Claims whose evidence changes are flagged for review, and none is silently kept. |
-| A15 | **Status:** the aggregation status follows mechanically from the certificates and gates. While D1 is open, `COMPUTATION_COMPLETE_REVIEW_REQUIRED` is the expected status, because of B2. |
+| A15 | **Status:** the aggregation status follows mechanically from the certificates and gates, and every certificate review item and reported sensitivity is carried into the plan verbatim. **Authorising D1 does not clear them.** D1 permits B2's chains as integration candidates; a completed or internally consistent computation is not scientific approval. As long as any certificate has review items, the status is `COMPUTATION_COMPLETE_REVIEW_REQUIRED`, with B2's 20 classification changes and 29 optimiser sensitivities listed. `scientific_approval` is always "not granted". *(Revision, 6 November: the first version tied this status to D1 being open.)* |
 
 **Exit codes:** 0 = accepted, nothing to review beyond reported sensitivity; 4 = accepted, review required; 1 = refused, with every failed criterion listed.
 
@@ -252,3 +253,23 @@ WORK/
 2. The final aggregation: the same command with a publication target, under the existing Step 8 publication safeguards (dry run by default, `CONFIRM_PUBLISH`).
 3. Update the Part 8 reports (`full_empirical_analysis_report.md`, `main_findings.md`, `robustness_findings.md`, `jury_resolution_status.md`, `final_claims_allowed.md`) from `claims_recheck.csv`, with every number traced to `output_corrected/`.
 4. Part 9 (external), only after Part 8 is approved.
+
+## 7. Decisions of 6 November 2026 and implementation status
+
+**Decisions applied to the dry run only:**
+- **D1: approved for candidate integration.** Both B2 MSAR chains enter under the approved live warm-start rule. Their 20 classification changes, 29 optimiser sensitivities and scientific-review status are preserved. This is not blanket scientific approval.
+- **D2: approved.** Every F4.8 figure whose corrected table changes is re-rendered. Each one is validated against the integrated table, not the provisional figures.
+- **D3: deferred.** No publication destination and no final release.
+- **F8: not confirmed.** It is switched off in the dry run (`r1_integration_common.CORRECTION_FLAGS`).
+
+**Implementation.** Stages 0–5 are implemented in:
+- `colab/r1_part8_integration.py` (the driver);
+- `colab/r1_integration_common.py`;
+- `colab/r1_integration_dependents.py`;
+- `colab/r1_integration_validate.py`;
+- `colab/r1_integration_claims.py`.
+
+The notebook is `colab/r1_part8_integration_dryrun.ipynb`. The implemented command line and the launch instructions in `part8_integration_dryrun_implementation.md` §9 supersede the sketch in §5.2. Implementation findings that change this plan are listed in `part8_integration_dryrun_implementation.md`:
+- a chain-aware reconciliation;
+- stale Wald rows in `all_test_results.csv`;
+- T4.6 added to stage 3.
