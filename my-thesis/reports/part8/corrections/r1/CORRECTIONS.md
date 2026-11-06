@@ -29,6 +29,7 @@ F5: interpretation only, so no code change. F6: not implemented. UNRATE K=3 rema
 
 1. **F6 (numerical optimisation).** The approved MSAR multistart does not guarantee the global maximum. UNRATE K=3 (log-likelihood 13.88 < K=2 102.04, although K=3 nests K=2) is inconclusive. INDPRO has an alternative K=3 optimum, and the optimum is sensitive to the platform. No claim of a global maximum is made. The multistart specification is unchanged.
 2. **Pending estimation.** T4.1 alternative-transformation rows (UNRATE, FEDFUNDS), T4.2 (CPI AR lags) and T4.8 UNRATE at 180 and 300 months keep their original values. Those values are marked `original_retained_pending_estimation`.
+   *Status update, 6 November 2026:* the estimation for these rows has since been done in Tier A and in Tier B batches B1, B2 and B3, all certified. It has **not yet been aggregated** into the release. The integration plan is `part8_final_integration_plan.md`.
 3. **F1 and F2 dependence.** Findings that rest on the F1 masking rule or on the guarded MCS are marked provisional in the claim matrix.
 4. **Multiplicity.** The Holm qualification of CPI h=12 is retained.
 5. **Platform.** Re-estimated MSAR or STAR chains would not be bit-identical to the original Colab estimates. They would be labelled `re-estimated` and never mixed with original chains within an exercise.

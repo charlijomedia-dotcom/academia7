@@ -1,5 +1,7 @@
 # R1 Tier B — three independent batch notebooks (implementation; not authorised to run)
 
+> **Status update, 6 November 2026.** This document is the implementation record as written on 4 November. All three batches have since been authorised, run and certified: B1 (`COMPLETE-20261106T070356Z-B1-20261105T125151Z-df107f`, reproduced), B2 (`COMPLETE-20261105T151645Z-B2-20261105T110347Z-505e21`, review required) and B3 (`COMPLETE-20261105T072545Z-B3-20261105T071020Z-4b7705`, reproduced). Copies of the certificates are in `evidence/integration_prep_20261106/certificates/`. The current status is `part8_final_integration_plan.md` §2.
+
 Date: 4 November 2026; revised the same day after independent review (safeguards: agreement categories, review-required status, interrupted-session provenance, Drive protocol check). This document replaces the single-notebook execution design in `tier_b_preflight.md` §2–§4. That document's workload analysis and gate definitions still apply.
 
 - **Authorised:** implementation and testing only.

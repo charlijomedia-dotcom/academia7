@@ -1,6 +1,6 @@
 # STAGED correction B1: baseline `forecasting:UNRATE|MSAR` (not published)
 
-**Status: staged for independent review.** This is not a release. `output/` (the published baseline) is unchanged, and so are the releases and the Tier A/B certificates. Nothing here replaces them until separately authorised.
+**Status: staged; approved (6 November) as the selected implementation correction, not approved for publication or final aggregation.** This is not a release. `output/` (the published baseline) is unchanged, and so are the releases and the Tier A/B certificates. Nothing here replaces them until separately authorised.
 
 ## Contents
 
@@ -8,6 +8,11 @@ This folder holds **only the files that differ** from the published `output/` tr
 
 - 38 content files;
 - the provenance sidecars of the 8 changed figures.
+
+It also holds one metadata file that is **not** an output file: `COUNTER_PROVENANCE_forecast_origin_audit.csv`.
+- The staged origin-audit counters (704 from cache, 0 horizon misses) describe the corrected replay.
+- The historical execution's counters (691, 13) are recorded there beside them, with run IDs.
+- The published table keeps 691 and 13.
 
 **The full staged tree** is the published `output/` with these files laid over it. Files over 5 MB are stored gzip-compressed (`.gz`, mtime 0). `STAGED_FILES.csv` lists every file with:
 - the sha256 of the **uncompressed** staged file;

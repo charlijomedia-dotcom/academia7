@@ -81,3 +81,33 @@ def test_builder_never_estimates_and_never_writes_the_published_tree():
     for line in source.splitlines():
         if ".to_parquet(" in line or "write_text(" in line:
             assert "staged" in line or "args.out" in line or "target" in line, line
+
+
+def test_counter_provenance_keeps_both_histories():
+    published = {"attempted_origins": "704", "origins_from_cache": "691", "cache_horizon_misses": "13",
+                 "run_id": "baseline-x", "code_commit_sha": "old", "created_utc": "2026-10-31T01:38:09Z"}
+    stamp = {"run_id": "b1-staged-20261106T154902Z", "code_commit_sha": "pin",
+             "created_utc": "2026-11-06T15:49:02Z"}
+    record = b1.counter_provenance(published, {"origins_from_cache": 704, "cache_horizon_misses": 0,
+                                               "valid": 698}, stamp)
+    got = {(r.history, r.counter): (r.value, r.run_id) for r in record.itertuples()}
+    assert got == {
+        ("historical_original_execution", "origins_from_cache"): (691, "baseline-x"),
+        ("historical_original_execution", "cache_horizon_misses"): (13, "baseline-x"),
+        ("corrected_replay", "origins_from_cache"): (704, "b1-staged-20261106T154902Z"),
+        ("corrected_replay", "cache_horizon_misses"): (0, "b1-staged-20261106T154902Z")}
+    assert set(record["attempted_origins"]) == {704}
+    assert published["origins_from_cache"] == "691"          # the input is not mutated
+
+
+@pytest.mark.parametrize("extra", [
+    ["--run-id", "b1-staged-20261106T154902Z"],                       # without --created-utc
+    ["--created-utc", "2026-11-06T15:49:02Z"],                        # without --run-id
+    ["--run-id", "baseline-x", "--created-utc", "2026-11-06T15:49:02Z"],
+    ["--run-id", "b1-staged-20261106T154902Z", "--created-utc", "6 Nov 2026"]])
+def test_reused_provenance_arguments_are_validated_before_anything_is_written(tmp_path, extra):
+    out = tmp_path / "out"
+    with pytest.raises(b1.StagingError):
+        b1.main(["--cache-fits", str(tmp_path), "--code-dir", str(tmp_path), "--original",
+                 str(tmp_path), "--impact", str(tmp_path), "--out", str(out), *extra])
+    assert not out.exists()

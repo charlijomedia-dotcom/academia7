@@ -1,0 +1,123 @@
+{
+ "estimation": "none (payloads read only)",
+ "tolerances": {
+  "loglik": 1e-06,
+  "params_scaled": 1e-08,
+  "forecast_abs": 1e-08
+ },
+ "chains": {
+  "T4.1:FEDFUNDS|MSAR": {
+   "original_cache_live": {
+    "planned": 626,
+    "completed": 626,
+    "complete": true,
+    "statuses": {
+     "fragile": 453,
+     "failed": 49,
+     "adequate": 124
+    }
+   },
+   "b2_live": {
+    "planned": 626,
+    "completed": 626,
+    "complete": true,
+    "statuses": {
+     "fragile": 453,
+     "failed": 49,
+     "adequate": 124
+    }
+   },
+   "b2_unreachable_payloads": 0,
+   "compared_directly": 626,
+   "compared_transitively": 0,
+   "same_cache_key_direct": 626,
+   "categories_b2_vs_cache": {
+    "identical_estimate": 626
+   },
+   "b2_vs_published": {
+    "reproduced": 583,
+    "optimizer_sensitivity": 29,
+    "classification_changed": 14
+   },
+   "cache_vs_published": {
+    "identical": 583,
+    "differs": 43
+   },
+   "agreement_table_consistent_with_payloads": true,
+   "max_forecast_abs_diff_direct": 0.0,
+   "status_counts_b2_vs_cache": {
+    "b2": {
+     "fragile": 453,
+     "failed": 49,
+     "adequate": 124
+    },
+    "original_cache_live": {
+     "fragile": 453,
+     "failed": 49,
+     "adequate": 124
+    },
+    "published": {
+     "fragile": 450,
+     "failed": 52,
+     "adequate": 124
+    }
+   }
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "original_cache_live": {
+    "planned": 764,
+    "completed": 764,
+    "complete": true,
+    "statuses": {
+     "fragile": 391,
+     "adequate": 368,
+     "failed": 5
+    }
+   },
+   "b2_live": {
+    "planned": 764,
+    "completed": 764,
+    "complete": true,
+    "statuses": {
+     "fragile": 391,
+     "adequate": 368,
+     "failed": 5
+    }
+   },
+   "b2_unreachable_payloads": 0,
+   "compared_directly": 764,
+   "compared_transitively": 0,
+   "same_cache_key_direct": 764,
+   "categories_b2_vs_cache": {
+    "identical_estimate": 764
+   },
+   "b2_vs_published": {
+    "reproduced": 758,
+    "classification_changed": 6
+   },
+   "cache_vs_published": {
+    "identical": 758,
+    "differs": 6
+   },
+   "agreement_table_consistent_with_payloads": true,
+   "max_forecast_abs_diff_direct": 0.0,
+   "status_counts_b2_vs_cache": {
+    "b2": {
+     "fragile": 391,
+     "adequate": 368,
+     "failed": 5
+    },
+    "original_cache_live": {
+     "fragile": 391,
+     "adequate": 368,
+     "failed": 5
+    },
+    "published": {
+     "fragile": 396,
+     "adequate": 363,
+     "failed": 5
+    }
+   }
+  }
+ }
+}

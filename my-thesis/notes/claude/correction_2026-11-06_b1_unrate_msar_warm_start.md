@@ -1,6 +1,6 @@
 # Correction note (CLAUDE.md §6A): baseline UNRATE MSAR warm-start artifact, Option B1 (staged)
 
-Date: 6 November 2026. Status: **staged, awaiting independent review**. Nothing is published.
+Date: 6 November 2026. Status: **staged; approved as the selected implementation correction (6 November), not approved for publication or final aggregation**. Nothing is published.
 
 ## 1. Error and cause
 
@@ -38,3 +38,19 @@ All 38 files were regenerated in staging (`output_staging/r1_b1_unrate_msar_2026
 - Every changed figure has an updated sidecar with a `b1_correction` field.
 - `STAGED_FILES.csv` maps each staged file to the published sha256 it supersedes.
 - Cell-level before/after: `evidence/b1_staged_20261106/validation/staged_vs_published_cells.csv.gz`.
+
+## 6. Revision, 6 November 2026 (integration preparation)
+
+**Counter provenance.** The staged origin-audit row's `origins_from_cache = 704` and `cache_horizon_misses = 0` describe the corrected replay. The historical execution's 691 and 13 are kept in `output_staging/r1_b1_unrate_msar_20261106/COUNTER_PROVENANCE_forecast_origin_audit.csv`, and the published table still carries them.
+
+**Rendering reproducibility.**
+- *Changed (orchestration and tests only):* `colab/r1_render_guard.py`, `colab/matplotlibrc.default`, the builder, the validator and `code/tests/conftest.py`.
+- *Not changed:* no scientific code.
+- *Check:* a deterministic rerun of the builder reproduced all 461 staged files byte for byte.
+
+**Further implementation error found: F4.8 not re-rendered by the R1 workflow (§6A).**
+- *Error:* the pinned R1 workflow regenerates `robustness/window_length_comparison.csv` but not F4.8.
+- *Affected:* F4.8_UNRATE (png, pdf) in the provisional releases `0573a8c`, `3bd24c4` and `292227e`. Its plotted inputs changed under F1, but the figure did not.
+- *Code:* none changed yet. The checker is `reports/part8/corrections/r1/f48_staleness_check.py`.
+- *Regeneration:* planned in the final integration (stage 3 of `part8_final_integration_plan.md`).
+- *Distinguishing superseded outputs:* the releases are not edited; the stale files are listed in `evidence/integration_prep_20261106/f48_staleness/`.

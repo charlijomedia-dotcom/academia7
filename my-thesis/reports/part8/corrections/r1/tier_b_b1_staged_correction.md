@@ -66,7 +66,7 @@ The complete audit was rerun on this machine from the restored cache (`evidence/
 | Impact: files changed by the candidate | 29 | the **same 29**; identical changed-cell positions; values within 1e-12 relative |
 | Reference against published | 87 identical, 5 within floating-point tolerance | 83 identical (**all 44 figures byte-identical**), 9 within floating-point tolerance (≤ 1e-11) |
 
-**Renderer note [C].** This container ships `/etc/matplotlib/matplotlibrc`, which selects the Inter font. With it, 41 published figures were not reproduced; all tables were. With matplotlib's default configuration, as in Colab, every figure reproduces byte for byte. All staged figures were rendered with the default configuration.
+**Renderer note [C].** This container ships `/etc/matplotlib/matplotlibrc`, which selects the Inter font. With it, 41 published figures were not reproduced; all tables were. With matplotlib's default configuration, as in Colab, every figure reproduces byte for byte. All staged figures were rendered with the default configuration. *(Revision: the container sets `MATPLOTLIBRC=/etc/matplotlib`; the rendering guard now enforces the defaults.)*
 
 ### The other stage-2 unresolved items, now closed [C]
 
@@ -180,11 +180,13 @@ Each builder first **reproduces the published values from the published inputs**
 | Chain | Compared directly (both payloads) | Result | Compared transitively | Result |
 |---|---|---|---|---|
 | T4.1:FEDFUNDS\|MSAR | **626 / 626** | **identical estimate at every origin**: same cache key, Δloglik = 0, Δparams = 0, Δforecast = 0, same start | — | — |
-| T4.8:UNRATE\|180:MSAR | **257** (origins 1–257) | identical at every origin, as above | 507 (origins 258–764) | identical (transitive): B2 reproduces the published record (B2 agreement table, loglik ≤ 1e-6, params ≤ 1e-8), and the original cache equals the published record at all 507 (status, codes, loglik and params ≤ 1e-8, computed here) |
+| T4.8:UNRATE\|180:MSAR | **764 / 764** (origins 1–257 from session d12923, 258–764 from the 24 session-505e21 checkpoint archives) | **identical estimate at every origin**, as above | — (superseded; see note) | — |
+
+*Revision, 6 November 2026 (integration preparation).* The first version of this report compared origins 258–764 only transitively, through the published records. All 24 checkpoint archives of B2's second session (checkpoints 00013–00036) have since been retrieved. Each matches the `archive_sha256` and payload count in the B2 certificate (`evidence/integration_prep_20261106/b2_direct_review/session2_archives.csv`). The comparison is now direct at all 764 origins: same cache key, Δloglik = 0, Δparams = 0, Δforecast = 0 (`evidence/integration_prep_20261106/b2_direct_review/`). The earlier transitive result is kept unchanged in `evidence/b1_staged_20261106/b2_review/`, and it agrees.
 
 **Finding [C]: the B2 re-estimation is the original computation.** It is numerically identical to the original-cache payloads under the approved live rule wherever both are available. Every difference between B2 and the published records is therefore the same implementation artifact as in the baseline chain, not optimiser noise between runs.
 
-**Agreement table [C].** The agreement table written by the B2 session matches its payloads (status and log-likelihood) at all 883 directly compared origins.
+**Agreement table [C].** The agreement table written by the B2 session matches its payloads (status and log-likelihood) at all 1,390 directly compared origins (626 + 764).
 
 ### Classification changes and optimiser sensitivities (B2 = original live rule, against published)
 
@@ -209,7 +211,7 @@ All of them are kept in the evidence. No failed or fragile fit is dropped.
 
 **[P] Interpretation.** These are the multimodal likelihood surfaces of MSAR(p, K=2) around regime-poor windows: FEDFUNDS around 1980–81, UNRATE around 1982. The warm-start path selects among local optima. **The approved rule is the live warm start**, and B2 applies it, as does the original cache.
 
-**Not done.** B2's 507 later UNRATE 180 payloads were not downloaded: 24 small checkpoint archives that the connector returns inline. Their comparison with the original cache is transitive, through the published records, and is labelled so. A bundle cell like the supplementary one would make it direct.
+**Done in the revision.** B2's 507 later UNRATE 180 payloads were retrieved from the 24 session-2 checkpoint archives, verified against the certificate, and compared directly (see the table above).
 
 ## 7. Computational completion against scientific acceptance
 
@@ -217,13 +219,13 @@ All of them are kept in the evidence. No failed or fragile fit is dropped.
 - the staged corrected chain;
 - every affected downstream output, figures, diagnostics and inventory included;
 - the validation;
-- the B2 comparison: 883 origins direct and 507 transitive;
+- the B2 comparison: all 1,390 origins direct (revision; first version 883 direct, 507 transitive);
 - the recovery and independent verification of all stage-2 inputs.
 
 **Not established, and for review:**
 1. **Acceptance of the corrected baseline values** for the thesis: whether B1 replaces the published baseline is a separate decision.
-2. **The T4.8 240-month window-length row** (window-length tables and F4.8) is corrected together with the baseline, because it is the same chain. The other T4.8 window lengths (UNRATE 180 and 300) are **not** changed here: 180 is a B2 chain, and 300 is B1-batch work in progress.
-3. **The provenance counters** origins_from_cache and cache_horizon_misses in the origin audit were set to describe the corrected chain. Keeping the published counters instead is a presentational choice for review.
+2. **The T4.8 240-month window-length row** (window-length tables and F4.8) is corrected together with the baseline, because it is the same chain. The other T4.8 window lengths (UNRATE 180 and 300) are **not** changed here, because they are separate chains completed by Tier B: 180 by batch B2 (certificate `COMPLETE-20261105T151645Z-B2-…-505e21`, review required) and 300 by batch B1 (certificate `COMPLETE-20261106T070356Z-B1-…-df107f`, computation complete and reproduced). *Revision: the first version wrongly described 300 as work in progress.* Their integration is planned in `part8_final_integration_plan.md`.
+3. **The provenance counters** origins_from_cache and cache_horizon_misses in the origin audit describe the corrected replay. The historical counters are preserved alongside them (revision: `forecast_origin_audit_counter_provenance.csv` in the staged tree and `counter_provenance.md`).
 4. **Thesis prose:** the Part 8 report prose that quotes the changed numbers (RMSE, the descriptive fit counts) is not edited here.
 5. **The B2 classification changes** (§6) await your decision on how the B2 chains enter the R1 release. Nothing was aggregated.
 
@@ -237,3 +239,5 @@ All of them are kept in the evidence. No failed or fragile fit is dropped.
 **Related tests:** 90 run, all passing.
 
 `test_r1_correction.py::test_legacy_mode_reproduces_published_tables` fails in this container's default environment, because `/etc/matplotlib/matplotlibrc` selects the Inter font. It passes with matplotlib's default configuration, which is how the outputs were produced (§2).
+
+*Revision, 6 November 2026.* The test environment now pins matplotlib's defaults itself (`code/tests/conftest.py`, `colab/r1_render_guard.py`), and the test passes in the default container environment. The builder and the validator refuse a non-default rendering configuration. See `part8_integration_preparation_report.md` §4.

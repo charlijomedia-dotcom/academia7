@@ -1,0 +1,364 @@
+{
+  "batch": "B3",
+  "authorized_tasks": [
+    "T4.8:UNRATE|180:ARMA",
+    "T4.1:UNRATE|ARMA",
+    "T4.8:UNRATE|300:ARMA",
+    "T4.8:UNRATE|300:STAR",
+    "T4.1:FEDFUNDS|STAR",
+    "T4.1:FEDFUNDS|ARMA"
+  ],
+  "complete": true,
+  "computation_status": "COMPUTATION_COMPLETE",
+  "scientific_status": "COMPUTATION_COMPLETE_REPRODUCED",
+  "scientific_approval": "not granted: a completed computation is not an approved result; every review item and reported warning needs independent review",
+  "review_items": [],
+  "sensitivity_reported": [],
+  "expected_origins": 4007,
+  "completed_origins": 4007,
+  "chains": {
+    "T4.8:UNRATE|180:ARMA": {
+      "planned_origins": 764,
+      "completed_origins": 764,
+      "computation": "complete",
+      "adequate": 741,
+      "fragile": 1,
+      "failed": 22,
+      "original_failed": 22,
+      "failure_count_changed": false,
+      "agreement_status": "COMPUTATION_COMPLETE_REPRODUCED",
+      "agreement": {
+        "task": "T4.8:UNRATE|180:ARMA",
+        "model": "ARMA",
+        "warm_started": false,
+        "loglik_tolerance": 1e-06,
+        "param_tolerance": 1e-08,
+        "origins_compared": 764,
+        "categories": {
+          "reproduced": 764
+        },
+        "first_divergence": null,
+        "status": "COMPUTATION_COMPLETE_REPRODUCED",
+        "requires_review": false,
+        "review_items": [],
+        "sensitivity_items": [],
+        "warnings": []
+      },
+      "checkpoints": [
+        {
+          "checkpoint_id": "ckpt-20261105T072035Z-B3-20261105T071020Z-4b7705-00001-a7f9d4",
+          "archive_sha256": "30c9cbf476296402d1a1a41fa669cf6c469201a03712e3b80a9df379346da7ce",
+          "payloads": 764
+        }
+      ]
+    },
+    "T4.1:UNRATE|ARMA": {
+      "planned_origins": 703,
+      "completed_origins": 703,
+      "computation": "complete",
+      "adequate": 695,
+      "fragile": 1,
+      "failed": 7,
+      "original_failed": 7,
+      "failure_count_changed": false,
+      "agreement_status": "COMPUTATION_COMPLETE_REPRODUCED",
+      "agreement": {
+        "task": "T4.1:UNRATE|ARMA",
+        "model": "ARMA",
+        "warm_started": false,
+        "loglik_tolerance": 1e-06,
+        "param_tolerance": 1e-08,
+        "origins_compared": 703,
+        "categories": {
+          "reproduced": 703
+        },
+        "first_divergence": null,
+        "status": "COMPUTATION_COMPLETE_REPRODUCED",
+        "requires_review": false,
+        "review_items": [],
+        "sensitivity_items": [],
+        "warnings": []
+      },
+      "checkpoints": [
+        {
+          "checkpoint_id": "ckpt-20261105T072036Z-B3-20261105T071020Z-4b7705-00001-3489e9",
+          "archive_sha256": "4b17614338c830bf0e4f05c818d934d04a2a2eabeeaff3ef75ac2e7f39557e88",
+          "payloads": 703
+        }
+      ]
+    },
+    "T4.8:UNRATE|300:ARMA": {
+      "planned_origins": 644,
+      "completed_origins": 644,
+      "computation": "complete",
+      "adequate": 630,
+      "fragile": 1,
+      "failed": 13,
+      "original_failed": 13,
+      "failure_count_changed": false,
+      "agreement_status": "COMPUTATION_COMPLETE_REPRODUCED",
+      "agreement": {
+        "task": "T4.8:UNRATE|300:ARMA",
+        "model": "ARMA",
+        "warm_started": false,
+        "loglik_tolerance": 1e-06,
+        "param_tolerance": 1e-08,
+        "origins_compared": 644,
+        "categories": {
+          "reproduced": 644
+        },
+        "first_divergence": null,
+        "status": "COMPUTATION_COMPLETE_REPRODUCED",
+        "requires_review": false,
+        "review_items": [],
+        "sensitivity_items": [],
+        "warnings": []
+      },
+      "checkpoints": [
+        {
+          "checkpoint_id": "ckpt-20261105T072036Z-B3-20261105T071020Z-4b7705-00001-097bf7",
+          "archive_sha256": "b9f7fc0cf0f617872cd288e27d747c486909cc14e20933db94eb0c2c8a557be9",
+          "payloads": 644
+        }
+      ]
+    },
+    "T4.8:UNRATE|300:STAR": {
+      "planned_origins": 644,
+      "completed_origins": 644,
+      "computation": "complete",
+      "adequate": 68,
+      "fragile": 576,
+      "failed": 0,
+      "original_failed": 0,
+      "failure_count_changed": false,
+      "agreement_status": "COMPUTATION_COMPLETE_REPRODUCED",
+      "agreement": {
+        "task": "T4.8:UNRATE|300:STAR",
+        "model": "STAR",
+        "warm_started": true,
+        "loglik_tolerance": 1e-06,
+        "param_tolerance": 1e-08,
+        "origins_compared": 644,
+        "categories": {
+          "reproduced": 644
+        },
+        "first_divergence": null,
+        "status": "COMPUTATION_COMPLETE_REPRODUCED",
+        "requires_review": false,
+        "review_items": [],
+        "sensitivity_items": [],
+        "warnings": []
+      },
+      "checkpoints": [
+        {
+          "checkpoint_id": "ckpt-20261105T072037Z-B3-20261105T071020Z-4b7705-00001-29e0e4",
+          "archive_sha256": "90ac44be12700969157b3da61aaf42555a52ef25cb4416eb3f4996b7f0ce9c22",
+          "payloads": 411
+        },
+        {
+          "checkpoint_id": "ckpt-20261105T072207Z-B3-20261105T071020Z-4b7705-00002-13c0b8",
+          "archive_sha256": "6db7e2827cea0bfb0d025f5a69c6496056aedc233a594cc3674b1d7e3afa569b",
+          "payloads": 233
+        }
+      ]
+    },
+    "T4.1:FEDFUNDS|STAR": {
+      "planned_origins": 626,
+      "completed_origins": 626,
+      "computation": "complete",
+      "adequate": 30,
+      "fragile": 596,
+      "failed": 0,
+      "original_failed": 0,
+      "failure_count_changed": false,
+      "agreement_status": "COMPUTATION_COMPLETE_REPRODUCED",
+      "agreement": {
+        "task": "T4.1:FEDFUNDS|STAR",
+        "model": "STAR",
+        "warm_started": true,
+        "loglik_tolerance": 1e-06,
+        "param_tolerance": 1e-08,
+        "origins_compared": 626,
+        "categories": {
+          "reproduced": 626
+        },
+        "first_divergence": null,
+        "status": "COMPUTATION_COMPLETE_REPRODUCED",
+        "requires_review": false,
+        "review_items": [],
+        "sensitivity_items": [],
+        "warnings": []
+      },
+      "checkpoints": [
+        {
+          "checkpoint_id": "ckpt-20261105T072037Z-B3-20261105T071020Z-4b7705-00001-ff296c",
+          "archive_sha256": "6a1ac0706d0cdc722945a323b90df7501f49b3581dd203d7fda084e3a9149679",
+          "payloads": 147
+        },
+        {
+          "checkpoint_id": "ckpt-20261105T072208Z-B3-20261105T071020Z-4b7705-00002-cb1b6f",
+          "archive_sha256": "bdf8dfbd06e39f81183951090704ca923c90d826e510af62da9f2310a296544c",
+          "payloads": 479
+        }
+      ]
+    },
+    "T4.1:FEDFUNDS|ARMA": {
+      "planned_origins": 626,
+      "completed_origins": 626,
+      "computation": "complete",
+      "adequate": 620,
+      "fragile": 0,
+      "failed": 6,
+      "original_failed": 6,
+      "failure_count_changed": false,
+      "agreement_status": "COMPUTATION_COMPLETE_REPRODUCED",
+      "agreement": {
+        "task": "T4.1:FEDFUNDS|ARMA",
+        "model": "ARMA",
+        "warm_started": false,
+        "loglik_tolerance": 1e-06,
+        "param_tolerance": 1e-08,
+        "origins_compared": 626,
+        "categories": {
+          "reproduced": 626
+        },
+        "first_divergence": null,
+        "status": "COMPUTATION_COMPLETE_REPRODUCED",
+        "requires_review": false,
+        "review_items": [],
+        "sensitivity_items": [],
+        "warnings": []
+      },
+      "checkpoints": [
+        {
+          "checkpoint_id": "ckpt-20261105T072037Z-B3-20261105T071020Z-4b7705-00001-b050f4",
+          "archive_sha256": "194af4d515dc27b9ab1bcf06bc2e325a04634666f52e8a28fa7162dd37245e5d",
+          "payloads": 260
+        },
+        {
+          "checkpoint_id": "ckpt-20261105T072208Z-B3-20261105T071020Z-4b7705-00002-b97b64",
+          "archive_sha256": "ee56dbc7f152a41f08948c92b192e0caae85b08cd02b2bbb4ded10aee66d1e5f",
+          "payloads": 366
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "batch": "B3",
+    "scientific_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+    "orchestration_commit": "b394cd35e4615bbc5415543839f8701ecfd47c54",
+    "cache_identity": "3413465b508bb844",
+    "frozen_data_sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+    "python": "3.11.18",
+    "packages": {
+      "arch": "8.0.0",
+      "cloudpickle": "3.1.2",
+      "contourpy": "1.3.3",
+      "coverage": "7.16.2",
+      "cycler": "0.12.1",
+      "fonttools": "4.66.1",
+      "formulaic": "1.2.2",
+      "iniconfig": "2.3.1",
+      "interface-meta": "2.0.1",
+      "joblib": "1.6.0",
+      "kiwisolver": "1.5.1",
+      "matplotlib": "3.11.2",
+      "narwhals": "2.26.0",
+      "numpy": "2.4.6",
+      "packaging": "24.0",
+      "pandas": "3.0.6",
+      "patsy": "1.0.3",
+      "pillow": "12.3.0",
+      "pluggy": "1.6.0",
+      "psutil": "7.2.2",
+      "pyarrow": "26.0.0",
+      "pygments": "2.21.0",
+      "pyparsing": "3.1.1",
+      "pytest": "9.1.1",
+      "pytest-cov": "7.1.0",
+      "python-dateutil": "2.9.0.post0",
+      "pyyaml": "6.0.1",
+      "scipy": "1.17.1",
+      "six": "1.16.0",
+      "statsmodels": "0.15.0",
+      "tabulate": "0.10.0",
+      "typing-extensions": "4.16.0",
+      "wrapt": "2.5.0"
+    },
+    "tier_a_archive_sha256": "df73c29532a813ec0c413062d7c21aef7e660f6b3c556bd88d51b6f52d3361c2"
+  },
+  "sessions_terminated": [
+    {
+      "session": "B3-20261105T071020Z-4b7705",
+      "session_dir": "20261105T071035Z-B3-20261105T071020Z-4b7705",
+      "started_utc": "20261105T071035Z",
+      "finished_utc": "20261105T072208Z",
+      "elapsed_hours": 0.192,
+      "exit_code": 0,
+      "final_verification": "Drive checkpoints equal local payloads",
+      "outcomes": {
+        "T4.8:UNRATE|180:ARMA": "complete",
+        "T4.8:UNRATE|300:ARMA": "complete",
+        "T4.1:UNRATE|ARMA": "complete",
+        "T4.1:FEDFUNDS|ARMA": "complete",
+        "T4.8:UNRATE|300:STAR": "complete",
+        "T4.1:FEDFUNDS|STAR": "complete"
+      },
+      "lease_released": true,
+      "last_progress_utc": "20261105T072037Z",
+      "checkpoints": 9,
+      "first_checkpoint_utc": "20261105T072036Z",
+      "last_checkpoint_utc": "20261105T072208Z",
+      "payloads_committed_by_task": {
+        "T4.1:FEDFUNDS|ARMA": 626,
+        "T4.1:FEDFUNDS|STAR": 626,
+        "T4.1:UNRATE|ARMA": 703,
+        "T4.8:UNRATE|180:ARMA": 764,
+        "T4.8:UNRATE|300:ARMA": 644,
+        "T4.8:UNRATE|300:STAR": 644
+      },
+      "incomplete_checkpoint_writes": [],
+      "summary_estimations": {
+        "T4.8:UNRATE|180:ARMA": {
+          "fit_and_forecast": 764,
+          "fit_arma": 764
+        },
+        "T4.8:UNRATE|300:ARMA": {
+          "fit_and_forecast": 644,
+          "fit_arma": 644
+        },
+        "T4.1:UNRATE|ARMA": {
+          "fit_and_forecast": 703,
+          "fit_arma": 703
+        },
+        "T4.1:FEDFUNDS|ARMA": {
+          "fit_and_forecast": 626,
+          "fit_arma": 626
+        },
+        "T4.8:UNRATE|300:STAR": {
+          "fit_and_forecast": 644,
+          "fit_star": 644
+        },
+        "T4.1:FEDFUNDS|STAR": {
+          "fit_and_forecast": 626,
+          "fit_star": 626
+        }
+      },
+      "state": "terminated: complete"
+    }
+  ],
+  "sessions_interrupted": [],
+  "estimations_by_task": {
+    "committed_payloads": {
+      "T4.1:FEDFUNDS|ARMA": 626,
+      "T4.1:FEDFUNDS|STAR": 626,
+      "T4.1:UNRATE|ARMA": 703,
+      "T4.8:UNRATE|180:ARMA": 764,
+      "T4.8:UNRATE|300:ARMA": 644,
+      "T4.8:UNRATE|300:STAR": 644
+    }
+  },
+  "only_authorized_models_estimated": true,
+  "warnings": [],
+  "created_utc": "20261105T072545Z"
+}

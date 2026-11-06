@@ -1,0 +1,43 @@
+{
+ "purpose": "deterministic rerun of the staged B1 builder with the original provenance, in the container's DEFAULT environment (MATPLOTLIBRC=/etc/matplotlib, Inter); the rendering guard pins matplotlib's defaults",
+ "command": "MATPLOTLIBRC=/etc/matplotlib python colab/r1_b1_staged_correction.py --cache-fits <original cache fits> --code-dir code --original output --impact <impact> --out <new> --run-id b1-staged-20261106T154902Z --created-utc 2026-11-06T15:49:02Z",
+ "files_first_run": 461,
+ "files_rerun": 461,
+ "byte_identical": 461,
+ "tree_identical": true,
+ "b1_changed_files_csv_identical": true,
+ "b1_cell_changes_csv_identical": true,
+ "rendering": {
+  "matplotlib_version": "3.11.2",
+  "matplotlib_fname": "/home/user/academia7/my-thesis/colab/matplotlibrc.default",
+  "rc_differs_from_default": [],
+  "font_family": [
+   "sans-serif"
+  ],
+  "resolved_text_font": "DejaVuSans.ttf",
+  "expected_matplotlib_version": "3.11.2",
+  "ok": true
+ },
+ "provenance": {
+  "run_id": "b1-staged-20261106T154902Z",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "2026-11-06T15:49:02Z",
+  "note": "rows/files changed by this correction carry this provenance; every other row keeps the published provenance"
+ },
+ "chain": {
+  "origins": 704,
+  "from_cache": 704,
+  "estimations": 0,
+  "valid": 698,
+  "failed": 6,
+  "statuses": {
+   "adequate": 440,
+   "fragile": 258,
+   "failed": 6
+  },
+  "t48_240_records_identical": true
+ },
+ "estimation": "none (estimators refused; fit calls counted)"
+}

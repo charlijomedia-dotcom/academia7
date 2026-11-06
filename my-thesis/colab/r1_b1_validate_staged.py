@@ -59,6 +59,29 @@ def sha(path: Path) -> str:
     return h.hexdigest()
 
 
+def check_counter_provenance(path: Path, published: Path, staged: Path) -> dict:
+    """Both histories of the origin-audit counters match the published and staged rows."""
+    import pandas as pd
+    record = pd.read_csv(path, dtype=str, keep_default_na=False)
+    result: dict[str, object] = {"rows": len(record)}
+    ok = len(record) == 4
+    for history, tree in (("historical_original_execution", published),
+                          ("corrected_replay", staged)):
+        audit = pd.read_csv(tree / "forecasts" / "forecast_origin_audit.csv", dtype=str,
+                            keep_default_na=False)
+        row = audit[(audit["series"] == SERIES) & (audit["model"] == MODEL)].iloc[0]
+        part = record[record["history"] == history]
+        for _, r in part.iterrows():
+            same = (int(float(row[r["counter"]])) == int(r["value"])
+                    and row["run_id"] == r["run_id"] and row["created_utc"] == r["created_utc"]
+                    and row["code_commit_sha"] == r["code_commit_sha"])
+            result[f"{history}:{r['counter']}"] = {"value": int(r["value"]), "matches_table": same}
+            ok = ok and same
+        ok = ok and len(part) == 2
+    result["ok"] = bool(ok)
+    return result
+
+
 def main(argv=None) -> dict:
     ap = argparse.ArgumentParser()
     ap.add_argument("--published", type=Path, required=True)
@@ -67,7 +90,12 @@ def main(argv=None) -> dict:
     ap.add_argument("--code-dir", type=Path, required=True)
     ap.add_argument("--analysis", type=Path, required=True, help="b3_stage2_analysis.py")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--counter-provenance", type=Path,
+                    help="the builder's forecast_origin_audit_counter_provenance.csv")
     args = ap.parse_args(argv)
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import r1_render_guard as render_guard
+    render_guard.pin_default_rc()
     import numpy as np
     import pandas as pd
     spec = importlib.util.spec_from_file_location("analysis", args.analysis)
@@ -76,6 +104,11 @@ def main(argv=None) -> dict:
     pub, stg = args.published, args.staged
     args.out.mkdir(parents=True, exist_ok=True)
     checks: dict[str, object] = {}
+    try:
+        checks["rendering"] = render_guard.check_default_rendering(
+            render_guard.expected_version_from(args.published))
+    except render_guard.RenderGuardError as error:
+        checks["rendering"] = {"ok": False, "error": str(error)}
 
     # -- files -------------------------------------------------------------------------
     pub_files = {p.relative_to(pub).as_posix() for p in pub.rglob("*") if p.is_file()}
@@ -195,7 +228,11 @@ def main(argv=None) -> dict:
     checks["colab_candidate_agreement"] = {"numeric_cells_compared": compared,
                                            "max_relative_difference": worst,
                                            "within_1e-9": worst <= 1e-9}
-    ok = (checks["same_file_set"] and not checks["unexpected_changes"]
+    if args.counter_provenance is not None:
+        checks["counter_provenance"] = check_counter_provenance(args.counter_provenance, pub, stg)
+    ok = (checks["rendering"].get("ok") is True
+          and checks.get("counter_provenance", {}).get("ok", True) is True
+          and checks["same_file_set"] and not checks["unexpected_changes"]
           and checks["sidecars_only_for_changed_figures"]
           and all(v is True for k, v in cons.items() if isinstance(v, bool))
           and checks["colab_candidate_agreement"]["within_1e-9"])

@@ -27,6 +27,12 @@ tree is a copy of it in which exactly the affected values are replaced:
 
 usage: r1_b1_staged_correction.py --cache-fits F --code-dir C --original OUT
        --impact DIR (the audit's impact folder) --out DIR
+       [--run-id b1-staged-YYYYMMDDTHHMMSSZ --created-utc YYYY-MM-DDTHH:MM:SSZ]
+
+Rendering: the run refuses unless matplotlib renders with its own defaults
+(`r1_render_guard`); the guard pins MATPLOTLIBRC to the empty colab/matplotlibrc.default.
+--run-id/--created-utc reuse an earlier run's provenance, so that a rerun can be compared
+byte for byte with an earlier staged tree.
 """
 
 from __future__ import annotations
@@ -36,6 +42,7 @@ import gzip
 import hashlib
 import io
 import json
+import re
 import shutil
 import sys
 import time
@@ -43,6 +50,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import r1_tierb as tb  # noqa: E402
+import r1_render_guard as render_guard  # noqa: E402
 
 TASKS = ("forecasting:UNRATE|MSAR", "T4.8:UNRATE|240:MSAR")
 SERIES, MODEL = "UNRATE", "MSAR"
@@ -110,10 +118,11 @@ def assert_roundtrip(path: Path) -> None:
 
 
 class Stamp:
-    def __init__(self, run_id: str, data_hash: str, config_hash: str, code: str):
+    def __init__(self, run_id: str, data_hash: str, config_hash: str, code: str,
+                 created_utc: str | None = None):
         self.values = {"run_id": run_id, "data_snapshot_hash": data_hash,
                        "code_commit_sha": code, "config_hash": config_hash,
-                       "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+                       "created_utc": created_utc or time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
 
     def apply(self, frame, rows=None):
         for column, value in self.values.items():
@@ -236,6 +245,41 @@ def find_blocks(registry, signature) -> list[int]:
             if keys[i] == first and keys[i:i + n] == signature]
 
 
+COUNTER_SEMANTICS = {
+    "origins_from_cache": "origins whose fit was served from the fit cache in that execution, "
+                          "rather than estimated in it",
+    "cache_horizon_misses": "origins whose cached forecast lacked a required horizon, so the "
+                            "forecast was recomputed in that execution",
+}
+
+
+def counter_provenance(published_row: dict, replay_counts: dict, stamp_values: dict):
+    """Both histories of the execution counters of the corrected chain's origin-audit row.
+
+    The staged forecast_origin_audit row carries the counters of the CORRECTED REPLAY (all
+    704 origins served from the original fit cache under the live rule; no horizon was
+    missing). They do not describe the historical execution that produced the published
+    chain (691 from cache, 13 horizon misses). This record keeps both, one row each, so the
+    staged table keeps the pinned schema and neither history is lost.
+    """
+    import pandas as pd
+    rows = []
+    replay = {**published_row, **{k: replay_counts[k] for k in COUNTER_SEMANTICS},
+              **{k: stamp_values[k] for k in ("run_id", "code_commit_sha", "created_utc")}}
+    for history, values, source in (
+            ("historical_original_execution", published_row,
+             "published output/forecasts/forecast_origin_audit.csv (unchanged)"),
+            ("corrected_replay", replay, "staged forecasts/forecast_origin_audit.csv")):
+        for counter, meaning in COUNTER_SEMANTICS.items():
+            rows.append({"series": SERIES, "model": MODEL, "history": history, "counter": counter,
+                         "value": int(float(values[counter])),
+                         "attempted_origins": int(float(values["attempted_origins"])),
+                         "run_id": values["run_id"], "code_commit_sha": values["code_commit_sha"],
+                         "created_utc": values["created_utc"], "source": source,
+                         "meaning": meaning})
+    return pd.DataFrame(rows)
+
+
 def main(argv=None) -> dict:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -244,7 +288,16 @@ def main(argv=None) -> dict:
     ap.add_argument("--original", type=Path, required=True)
     ap.add_argument("--impact", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--run-id", help="reuse a run ID (to reproduce a staged tree byte for byte)")
+    ap.add_argument("--created-utc", help="reuse a creation stamp, YYYY-MM-DDTHH:MM:SSZ")
     args = ap.parse_args(argv)
+    if bool(args.run_id) != bool(args.created_utc):
+        raise StagingError("--run-id and --created-utc go together")
+    if args.run_id and not re.fullmatch(r"b1-staged-\d{8}T\d{6}Z", args.run_id):
+        raise StagingError(f"--run-id {args.run_id!r} is not a b1-staged run ID")
+    if args.created_utc and not re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", args.created_utc):
+        raise StagingError(f"--created-utc {args.created_utc!r} is not YYYY-MM-DDTHH:MM:SSZ")
+    render_guard.pin_default_rc()          # before anything imports matplotlib
     tb.use_scientific_code(args.code_dir)
     import numpy as np
     import pandas as pd
@@ -255,6 +308,7 @@ def main(argv=None) -> dict:
     from thesis.evaluation.state_loss_regression import SIGNIFICANCE
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import r1_original_cache_audit as audit
+    rendering = render_guard.check_default_rendering(render_guard.expected_version_from(args.original))
 
     original, impact = args.original.resolve(), args.impact.resolve()
     ref_tree, cand_tree = impact / "reference", impact / "candidate"
@@ -267,7 +321,7 @@ def main(argv=None) -> dict:
     shutil.copytree(original, staged)
     report: dict = {"estimation": "none (estimators refused; fit calls counted)",
                     "scientific_commit": tb.SCIENTIFIC_PIN, "started_utc": tb.utc_stamp(),
-                    "tasks": list(TASKS)}
+                    "tasks": list(TASKS), "rendering": rendering}
     impact_info = json.loads((impact / "impact.json").read_text())
     if impact_info.get("task") != TASKS[0] or not impact_info.get("performed"):
         raise StagingError("the impact folder is not a performed impact run of the baseline chain")
@@ -290,8 +344,9 @@ def main(argv=None) -> dict:
                        "t48_240_records_identical": True}
 
     sample = read_text_table(cand_tree / "forecast_tests" / "T3.3_main_forecast_table.csv").iloc[0]
-    run_id = f"b1-staged-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
-    stamp = Stamp(run_id, sample["data_snapshot_hash"], sample["config_hash"], tb.SCIENTIFIC_PIN)
+    run_id = args.run_id or f"b1-staged-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
+    stamp = Stamp(run_id, sample["data_snapshot_hash"], sample["config_hash"], tb.SCIENTIFIC_PIN,
+                  args.created_utc)
     report["provenance"] = {**stamp.values, "note": "rows/files changed by this correction carry "
                             "this provenance; every other row keeps the published provenance"}
 
@@ -374,6 +429,8 @@ def main(argv=None) -> dict:
     write_text_table(audit_tab, staged / path)
     report["forecast_origin_audit"] = {"before": {k: before[k] for k in fc.counts() if k in before},
                                        "after": fc.counts()}
+    counter_provenance(before, fc.counts(), stamp.values).to_csv(
+        args.out / "forecast_origin_audit_counter_provenance.csv", index=False)
 
     # -- 2c. T4.7 failure registry -------------------------------------------------------
     path = "robustness/T4.7_failure_registry.csv"

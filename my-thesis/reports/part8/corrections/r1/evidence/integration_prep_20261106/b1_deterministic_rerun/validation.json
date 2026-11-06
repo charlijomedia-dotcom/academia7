@@ -1,0 +1,296 @@
+{
+ "rendering": {
+  "matplotlib_version": "3.11.2",
+  "matplotlib_fname": "/home/user/academia7/my-thesis/colab/matplotlibrc.default",
+  "rc_differs_from_default": [],
+  "font_family": [
+   "sans-serif"
+  ],
+  "resolved_text_font": "DejaVuSans.ttf",
+  "expected_matplotlib_version": "3.11.2",
+  "ok": true
+ },
+ "same_file_set": true,
+ "files_published": 461,
+ "files_byte_identical": 415,
+ "files_changed": 38,
+ "figure_sidecars_changed": [
+  "figures/F3.4_UNRATE.pdf.provenance.json",
+  "figures/F3.4_UNRATE.png.provenance.json",
+  "figures/F3.5_UNRATE.pdf.provenance.json",
+  "figures/F3.5_UNRATE.png.provenance.json",
+  "figures/F3.6_UNRATE.pdf.provenance.json",
+  "figures/F3.6_UNRATE.png.provenance.json",
+  "figures/F4.8_UNRATE.pdf.provenance.json",
+  "figures/F4.8_UNRATE.png.provenance.json"
+ ],
+ "unexpected_changes": [],
+ "expected_but_unchanged": [],
+ "sidecars_only_for_changed_figures": true,
+ "changed_cells_non_provenance": 1705,
+ "decision_like_cells_changed": 4,
+ "decision_like_changes_by_column": {
+  "model_status": 4
+ },
+ "per_file": {
+  "data_audit/T4.9_locf_sample_comparison.csv": {
+   "rows": 32,
+   "shape_equal": true,
+   "changed_cells": 20,
+   "changed_rows": 2,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "data_audit/locf_forecast_exposure.csv": {
+   "rows": 55268,
+   "shape_equal": true,
+   "changed_cells": 196,
+   "changed_rows": 36,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "diagnostics/all_test_results.csv": {
+   "rows": 350,
+   "shape_equal": true,
+   "changed_cells": 16,
+   "changed_rows": 8,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "forecast_tests/T3.3A_hlz_pairwise.csv": {
+   "rows": 230,
+   "shape_equal": true,
+   "changed_cells": 208,
+   "changed_rows": 16,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecast_tests/T3.3B_dm_hln_pairwise.csv": {
+   "rows": 230,
+   "shape_equal": true,
+   "changed_cells": 64,
+   "changed_rows": 16,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecast_tests/T3.3_main_forecast_table.csv": {
+   "rows": 92,
+   "shape_equal": true,
+   "changed_cells": 84,
+   "changed_rows": 4,
+   "decision_flips": 4,
+   "keys_unique": true
+  },
+  "forecast_tests/T3.4_model_confidence_set.csv": {
+   "rows": 302,
+   "shape_equal": true,
+   "changed_cells": 192,
+   "changed_rows": 64,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecast_tests/T3.5_state_loss_regression.csv": {
+   "rows": 69,
+   "shape_equal": true,
+   "changed_cells": 58,
+   "changed_rows": 4,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecast_tests/T3.5_state_performance.csv": {
+   "rows": 368,
+   "shape_equal": true,
+   "changed_cells": 60,
+   "changed_rows": 10,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecast_tests/T3.6_peak_trough_detail.csv": {
+   "rows": 48,
+   "shape_equal": true,
+   "changed_cells": 3,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecasts/forecast_horizon_coverage.csv": {
+   "rows": 92,
+   "shape_equal": true,
+   "changed_cells": 4,
+   "changed_rows": 4,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecasts/forecast_origin_audit.csv": {
+   "rows": 24,
+   "shape_equal": true,
+   "changed_cells": 4,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "forecasts/forecasts_UNRATE.csv": {
+   "rows": 11192,
+   "shape_equal": true,
+   "changed_cells": 120,
+   "changed_rows": 36,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "manifests/output_inventory.csv": {
+   "rows": 254,
+   "shape_equal": true,
+   "changed_cells": 68,
+   "changed_rows": 34,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "models/fit_records.csv": {
+   "rows": 67253,
+   "shape_equal": true,
+   "changed_cells": 205,
+   "changed_rows": 26,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "robustness/T4.1_transformation_robustness.csv": {
+   "rows": 32,
+   "shape_equal": true,
+   "changed_cells": 13,
+   "changed_rows": 2,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/T4.4_horizon_predictive_tests.csv": {
+   "rows": 138,
+   "shape_equal": true,
+   "changed_cells": 72,
+   "changed_rows": 8,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/T4.4_horizon_robustness.csv": {
+   "rows": 92,
+   "shape_equal": true,
+   "changed_cells": 40,
+   "changed_rows": 4,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/T4.5_var_comparison.csv": {
+   "rows": 25,
+   "shape_equal": true,
+   "changed_cells": 50,
+   "changed_rows": 5,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/T4.5_var_predictive_tests.csv": {
+   "rows": 40,
+   "shape_equal": true,
+   "changed_cells": 80,
+   "changed_rows": 8,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/T4.7_failure_registry.csv": {
+   "rows_published": 34153,
+   "rows_staged": 34125,
+   "shape_changed": true
+  },
+  "robustness/T4.7_status_counts.csv": {
+   "rows": 69,
+   "shape_equal": true,
+   "changed_cells": 3,
+   "changed_rows": 3,
+   "decision_flips": 0,
+   "keys_unique": false
+  },
+  "robustness/T4.TP1_turning_window_sensitivity.csv": {
+   "rows": 552,
+   "shape_equal": true,
+   "changed_cells": 68,
+   "changed_rows": 19,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/window_length_comparison.csv": {
+   "rows": 72,
+   "shape_equal": true,
+   "changed_cells": 10,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/window_length_mcs.csv": {
+   "rows": 282,
+   "shape_equal": true,
+   "changed_cells": 40,
+   "changed_rows": 16,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/window_length_origin_audit.csv": {
+   "rows": 72,
+   "shape_equal": true,
+   "changed_cells": 9,
+   "changed_rows": 1,
+   "decision_flips": 0,
+   "keys_unique": true
+  },
+  "robustness/window_length_predictive_tests.csv": {
+   "rows": 108,
+   "shape_equal": true,
+   "changed_cells": 18,
+   "changed_rows": 2,
+   "decision_flips": 0,
+   "keys_unique": true
+  }
+ },
+ "consistency": {
+  "fit_records_csv_equals_parquet_status_loglik": true,
+  "blocks_are_unrate_msar": true,
+  "forecasting_and_t48_blocks_identical_records": true,
+  "chain_statuses": {
+   "adequate": 440,
+   "fragile": 258,
+   "failed": 6
+  },
+  "forecast_status_equals_fit_record_status": true,
+  "forecasts_csv_equals_parquet": true,
+  "t33_counts_equal_fit_records": true,
+  "origin_audit_equals_fit_records": true,
+  "t47_status_counts_equal_fit_records": true,
+  "registry_failed_origins_in_chain_blocks": true,
+  "wald_rows_equal_t35": true,
+  "inventory_hashes_match_staged_files": true,
+  "inventory_mismatches_staged": [],
+  "inventory_mismatches_in_published_tree_for_reference": []
+ },
+ "colab_candidate_agreement": {
+  "numeric_cells_compared": 1258,
+  "max_relative_difference": 8.504011931448351e-14,
+  "within_1e-9": true
+ },
+ "counter_provenance": {
+  "rows": 4,
+  "historical_original_execution:origins_from_cache": {
+   "value": 691,
+   "matches_table": true
+  },
+  "historical_original_execution:cache_horizon_misses": {
+   "value": 13,
+   "matches_table": true
+  },
+  "corrected_replay:origins_from_cache": {
+   "value": 704,
+   "matches_table": true
+  },
+  "corrected_replay:cache_horizon_misses": {
+   "value": 0,
+   "matches_table": true
+  },
+  "ok": true
+ },
+ "all_checks_passed": true
+}
