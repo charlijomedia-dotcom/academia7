@@ -72,3 +72,20 @@ Full detail: `reports/part8/corrections/r1/part8_integration_dryrun_implementati
 - *Effect on existing outputs:* no published output was affected. The Tier A release used closed-form AR chains, which reproduce exactly.
 
 **(c) F8 authorisation.** F8 was never confirmed, but the pinned flag is on by default, so it was active in `3bd24c4` and `292227e`. The dry run switches it off.
+
+## 8. Integration dry-run stage-2 refusal (7 November 2026): orchestration error
+
+**Error.** The dry run's replay hook subclassed the pinned `RefitCache`, whose constructor writes `README_R1_REFIT_CACHE.txt` into the cache folder. The strict check then found the merged refit cache changed (Colab session `integration-20261107T184004Z-93c0f8`).
+
+**Scope of the error:**
+- *Payloads:* no payload was changed.
+- *Estimation:* none took place.
+- *Outputs:* no output was affected, because the run stopped.
+
+**Code changed (orchestration only):**
+- `colab/r1_integration_common.readonly_refit_class` and `readonly_refit_replay`;
+- the strict, file-level cache checks in stages 2–4.
+
+**Pinned code:** unchanged.
+
+**Report:** `reports/part8/corrections/r1/part8_integration_stage2_cache_fix.md`.

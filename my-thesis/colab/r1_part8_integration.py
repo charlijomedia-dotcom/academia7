@@ -374,7 +374,8 @@ def assemble(base: Path, cache_root: Path, refit_root: Path, out: Path, approved
     common = dict(cache_root=cache_root, approved_estimation=approved, refit_cache=refit_root)
     with ExitStack() as stack:
         stack.enter_context(tb.no_estimation_allowed())
-        stack.enter_context(tb.live_replay_in_pinned_workflow())
+        # read-only live replay: no README, no folder creation, no payload write (both passes)
+        stack.enter_context(ic.readonly_refit_replay())
         stack.enter_context(correction_flags.configured(**ic.CORRECTION_FLAGS))
         legacy = wf.run(base, out / "legacy", legacy=True, **common)
         files = [f for f in legacy["regenerated_files"] if f not in wf.WORKFLOW_FILES]
@@ -442,7 +443,37 @@ def t42_tolerance(gate_report: dict, tier_a_release: Path, release: Path) -> Non
     gate_report["t42_vs_tier_a_release"] = report or "identical"
 
 
-def stage_aggregate(args, p: dict) -> dict:
+INTEGRITY = "cache_integrity"
+
+
+def record_cache_listings(work: Path, merged_fits: Path, cache_fits: Path) -> dict:
+    """File-level listings of both caches right after merging (strict reference)."""
+    folder = ic.inside(work, work / "dryrun_report" / INTEGRITY)
+    merged, original = ic.tree_listing(merged_fits), ic.tree_listing(cache_fits)
+    ic.save_listing(folder / "merged_refit_after_merge.csv", merged)
+    ic.save_listing(folder / "original_cache_before_assembly.csv.gz", original)
+    return {"merged": merged, "original": original,
+            "merged_files": len(merged), "merged_digest": ic.listing_digest(merged),
+            "original_files": len(original), "original_digest": ic.listing_digest(original)}
+
+
+def check_cache_listings(work: Path, merged_fits: Path, cache_fits: Path, when: str) -> dict:
+    """Strict: both caches hold exactly the files recorded after merging, byte for byte."""
+    folder = work / "dryrun_report" / INTEGRITY
+    tag = when.replace(" ", "_")
+    return {"merged_refit": ic.require_unchanged(
+                "the merged refit cache", merged_fits,
+                ic.load_listing(folder / "merged_refit_after_merge.csv"), when,
+                folder / f"merged_refit_diff_{tag}.json"),
+            "original_cache": ic.require_unchanged(
+                "the original fit cache", cache_fits,
+                ic.load_listing(folder / "original_cache_before_assembly.csv.gz"), when,
+                folder / f"original_cache_diff_{tag}.json")}
+
+
+def stage_aggregate(args, p: dict, tasks: list[str] | None = None) -> dict:
+    """Stage 2. `tasks` defaults to the 17 re-estimated chains (a subset only in rehearsals,
+    where the aggregator's gates then refuse the incomplete chain set)."""
     import r1_tierb as tb
     import r1_tierb_aggregate as agg
     work = p["work"]
@@ -451,13 +482,19 @@ def stage_aggregate(args, p: dict) -> dict:
     check_certificates(p["drive"], p["certificate_manifest"])
     merged_root = ic.inside(work, work / "merged_refit")
     merge_report = agg.merge(p["drive"], p["tier_a_archive"], merged_root / "fits")
-    merged_before = ic.listing_digest(ic.tree_listing(merged_root / "fits"))
+    listings = record_cache_listings(work, merged_root / "fits", p["cache_root"] / "fits")
     jobs, identity, config = tb.build_jobs(base, p["code"])
-    walks = agg.walk_all(jobs, identity, config, merged_root / "fits")
-    approved = sorted(list(tb.TIER_A_CHAINS) + list(tb.TIER_B_CHAINS))
+    approved = sorted(tasks or (list(tb.TIER_A_CHAINS) + list(tb.TIER_B_CHAINS)))
+    if tasks is None:
+        walks = agg.walk_all(jobs, identity, config, merged_root / "fits")
+    else:
+        walks = {t: {k: w[k] for k in ("planned", "completed", "statuses")}
+                 for t in approved for w in [tb.walk_chain(jobs[t], merged_root / "fits",
+                                                           identity, config)]}
     exits = assemble(base, p["cache_root"], merged_root, work / "assembly", approved, work)
-    if ic.listing_digest(ic.tree_listing(merged_root / "fits")) != merged_before:
-        raise ic.IntegrationError("the merged refit cache changed during assembly")
+    integrity = {"after_merge": {k: v for k, v in listings.items() if k not in ("merged", "original")},
+                 "after_assembly": check_cache_listings(work, merged_root / "fits",
+                                                        p["cache_root"] / "fits", "during assembly")}
     gate_report = agg.gates(work / "assembly", work / "references" / "tier_a_release",
                             p["classification"])
     t42_tolerance(gate_report, work / "references" / "tier_a_release", work / "assembly" / "release")
@@ -471,11 +508,12 @@ def stage_aggregate(args, p: dict) -> dict:
             "certificate_chains": {b: c["chains"] for b, c in sorted(certificates.items())},
             "merge": {k: v for k, v in merge_report.items() if k != "batches"},
             "walks": walks, "assembly": exits, "gates": gate_report,
-            "decisions": ic.DECISIONS}
+            "cache_integrity": integrity, "decisions": ic.DECISIONS}
     ic.write_json(ic.inside(work, work / "dryrun_report" / "aggregation_plan.json"), plan)
     return {"run_id": exits["corrected_run_id"], "aggregation_status": status["aggregation_status"],
             "gate_problems": gate_report["problems"], "walks": walks,
-            "estimations_performed": exits["estimations_performed"]}
+            "estimations_performed": exits["estimations_performed"],
+            "cache_integrity": integrity}
 
 
 # -- driver ----------------------------------------------------------------------------------

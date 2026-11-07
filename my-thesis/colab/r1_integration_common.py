@@ -319,3 +319,90 @@ def tree_changes(old_root: Path | str, new_root: Path | str) -> tuple[list[dict]
                 cells.extend(c for c in result["cells"] if relative.endswith(".csv"))
         files.append(row)
     return files, cells
+
+
+# -- read-only refit-cache replay and cache integrity ----------------------------------------
+
+def readonly_refit_class():
+    """The pinned `RefitCache`, made genuinely read-only for replay (orchestration only).
+
+    Built on `r1_tierb.live_replay_class` (served payloads and the live warm-start state are
+    exactly those of the live replay used before). Two pinned side effects are removed:
+
+    * `RefitCache.__post_init__` writes `README_R1_REFIT_CACHE.txt` into the cache folder
+      (and `FitCache.__post_init__` creates the folder if missing). Here the constructor only
+      records the folder and refuses one that does not exist: nothing is written.
+    * `put` stores a payload. Here it refuses: in a replay a write can only follow an
+      estimation, which is itself refused.
+
+    `get` and `path_for` are the pinned ones, unchanged.
+    """
+    import r1_tierb as tb
+    from thesis.correction import rescore
+
+    live = tb.live_replay_class(rescore.RefitCache)
+
+    class ReadOnlyLiveReplayRefitCache(live):
+        def __post_init__(self) -> None:
+            self.directory = Path(self.directory)
+            if not self.enabled or not self.directory.is_dir():
+                raise IntegrationError(f"read-only replay: {self.directory} is not an existing "
+                                       "enabled cache folder")
+
+        def put(self, key, payload):
+            raise IntegrationError(f"read-only replay: write to {self.directory} refused "
+                                   f"({key.series} {key.model} {key.refit_date})")
+
+    return ReadOnlyLiveReplayRefitCache
+
+
+def readonly_refit_replay():
+    """Context: the pinned workflow's `rescore.RefitCache` is the read-only live replay."""
+    from contextlib import contextmanager
+    from thesis.correction import rescore
+
+    @contextmanager
+    def patched():
+        original = rescore.RefitCache
+        rescore.RefitCache = readonly_refit_class()
+        try:
+            yield rescore.RefitCache
+        finally:
+            rescore.RefitCache = original
+    return patched()
+
+
+def listing_diff(before: dict[str, str], after: dict[str, str]) -> dict:
+    """Every added, removed or modified file, with its sha256 values."""
+    return {"added": [{"path": k, "sha256": after[k]} for k in sorted(after.keys() - before.keys())],
+            "removed": [{"path": k, "sha256": before[k]} for k in sorted(before.keys() - after.keys())],
+            "modified": [{"path": k, "sha256_before": before[k], "sha256_after": after[k]}
+                         for k in sorted(before.keys() & after.keys()) if before[k] != after[k]]}
+
+
+def save_listing(path: Path | str, listing: dict[str, str]) -> None:
+    write_rows(path, [{"path": k, "sha256": v} for k, v in sorted(listing.items())],
+               ["path", "sha256"])
+
+
+def load_listing(path: Path | str) -> dict[str, str]:
+    return {r["path"]: r["sha256"] for r in read_rows(path)}
+
+
+def require_unchanged(name: str, root: Path | str, before: dict[str, str], when: str,
+                      report: Path | str) -> dict:
+    """Refuse unless the folder holds exactly `before`, byte for byte (strict: every file,
+    including non-payload files). On a difference the full file-level diff is written to
+    `report` before the run stops."""
+    after = tree_listing(root)
+    diff = listing_diff(before, after)
+    record = {"name": name, "when": when, "files": len(after),
+              "digest_before": listing_digest(before), "digest_after": listing_digest(after),
+              "unchanged": not any(diff.values()), **diff}
+    if not record["unchanged"]:
+        write_json(report, record)
+        raise IntegrationError(
+            f"{name} changed {when}: {len(diff['added'])} added, {len(diff['removed'])} removed, "
+            f"{len(diff['modified'])} modified (first: "
+            f"{(diff['added'] + diff['removed'] + diff['modified'])[0]}); see {Path(report).name}")
+    return {k: record[k] for k in ("name", "when", "files", "digest_after", "unchanged")}

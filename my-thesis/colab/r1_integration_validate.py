@@ -583,6 +583,20 @@ def run(p: dict, protected: dict | None = None, certificates: dict | None = None
     crit["A15"] = check_status(plan, certificates)
     ic.write_rows(report_dir / "chain_sources.csv",
                   chain_table(corrected, certificates, dependents, p["classification"]))
+    import r1_part8_integration as drv
+    integrity = {"stage2": plan.get("cache_integrity"), "stage3": dependents.get("cache_integrity")}
+    try:
+        integrity["stage4"] = drv.check_cache_listings(work, work / "merged_refit" / "fits",
+                                                       p["cache_root"] / "fits", "during validation")
+        intact = True
+    except ic.IntegrationError as error:
+        integrity["stage4"], intact = str(error), False
+    recorded = all(isinstance(x, dict) for x in (integrity["stage2"], integrity["stage3"]))
+    crit["A1"] = criterion(crit["A1"]["pass"] and intact and recorded,
+                           {"estimations": estimations, "cache_integrity": integrity,
+                            "note": "both caches hold exactly the files recorded after merging, "
+                                    "byte for byte, after assembly, after the dependent-output "
+                                    "replay and after validation"})
     ic.write_json(report_dir / "acceptance_stage4.json",
                   {"run_id": run_id, "aggregation_status": plan["aggregation_status"],
                    "criteria": crit})

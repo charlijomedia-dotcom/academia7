@@ -1,6 +1,8 @@
 # Part 8 integration dry run: implementation, findings and launch instructions
 
-Date: 6 November 2026. **Status: implemented and tested; NOT executed in Colab.** The full dry run is for you to run after independent review.
+Date: 6 November 2026. **Status: implemented and tested; NOT executed in Colab.**
+
+> *Update, 7 November 2026.* The first Colab run (`integration-20261107T184004Z-93c0f8`) was refused in stage 2, because the pinned `RefitCache` constructor wrote a README into the merged cache. The fix is orchestration only: a read-only replay adapter, plus strict file-level cache checks in stages 2–4. See `part8_integration_stage2_cache_fix.md`. The full dry run is for you to run after independent review.
 
 **Not done, under this authorisation:**
 - no model was estimated;

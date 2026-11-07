@@ -56,7 +56,9 @@ is set. No final release; no Part 9.
    listing of every protected input;
 1. base tree — published output + the B1-staged overlay, all 461 files verified;
 2. aggregation — Tier A + certified Tier B payloads merged; the pinned R1 workflow (legacy, then
-   corrected), estimation refused; chain-aware reconciliation; the aggregator's gates;
+   corrected), estimation refused, replay through a read-only cache adapter; every file of the
+   merged refit cache and the original cache checked unchanged (stages 2-4, full diff on any
+   change); chain-aware reconciliation; the aggregator's gates;
 3. dependent outputs the workflow does not rebuild — fit records, T4.7 registry and counts,
    all_test_results Wald rows, T4.6 summary, F4.8, inventory;
 4. validation — acceptance criteria A1–A15; every changed scientific cell attributed to a

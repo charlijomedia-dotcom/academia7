@@ -1,0 +1,33 @@
+{
+ "code": "old_a21fdf2",
+ "assembly_minutes": 7.3,
+ "after_merge": {
+  "files": 6987,
+  "digest": "1d07c55303eab9484f33a874f7760c2cb0415e3e68e5fa9140eabe8d8620d6ce"
+ },
+ "after_assembly": {
+  "files": 6988,
+  "digest": "f51679ba7c9f8c243fda134db2811434aceaa469fe7bb18f41568dcdff3bfb2d"
+ },
+ "added": {
+  "README_R1_REFIT_CACHE.txt": "0d4b46635d9d1c1a0a6a979a297ab4c9a5c02f6676f9ce2b59c698127d4552ab"
+ },
+ "removed": {},
+ "modified": {},
+ "every_source_payload_byte_identical": true,
+ "json_payloads_after": 6987,
+ "estimations_performed": {
+  "legacy": {},
+  "corrected": {}
+ },
+ "flags": {
+  "f1_failed_forecast_masking": true,
+  "f2_guarded_mcs": true,
+  "f3_pairwise_orientation": true,
+  "f4_zivot_andrews_reporting": true,
+  "f71_data_dictionary_decision": true,
+  "f8_readable_main_panel": false
+ },
+ "corrected_run_id": "correction-20261107T192357-949fcd76",
+ "readme_text": "R1 REFIT CACHE: every payload here was RE-ESTIMATED by the R1 correction workflow\n(approved chains only, platform-dependent). Never copy these files into the original\nfit cache: the keys are the original keys, and the original cache must hold original\nestimates only. Each payload carries the field 'r1_provenance'.\n"
+}

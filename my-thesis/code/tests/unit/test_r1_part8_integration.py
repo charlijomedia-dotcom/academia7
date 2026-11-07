@@ -286,3 +286,54 @@ def test_t42_gate_accepts_only_floating_point_last_digit_differences(tmp_path):
     gates = {"problems": [f"{name} differs from the Tier A release"]}
     drv.t42_tolerance(gates, tmp_path / "a", tmp_path / "b")
     assert gates["problems"] == [f"{name} differs from the Tier A release"]
+
+
+# -- cache integrity (stage 2 failure of integration-20261107T184004Z-93c0f8) -------------------
+
+def _cache(root: Path, files: dict[str, str]) -> Path:
+    for name, text in files.items():
+        (root / name).parent.mkdir(parents=True, exist_ok=True)
+        (root / name).write_text(text)
+    return root
+
+
+def test_listing_diff_reports_every_added_removed_and_modified_file(tmp_path):
+    root = _cache(tmp_path / "c", {"aa/1.json": "1", "bb/2.json": "2"})
+    before = ic.tree_listing(root)
+    (root / "aa" / "1.json").write_text("changed")
+    (root / "bb" / "2.json").unlink()
+    (root / "README_R1_REFIT_CACHE.txt").write_text("x")
+    diff = ic.listing_diff(before, ic.tree_listing(root))
+    assert [d["path"] for d in diff["added"]] == ["README_R1_REFIT_CACHE.txt"]
+    assert [d["path"] for d in diff["removed"]] == ["bb/2.json"]
+    assert [d["path"] for d in diff["modified"]] == ["aa/1.json"]
+    assert diff["added"][0]["sha256"] == _sha(b"x")
+
+
+def test_stage_cache_check_is_strict_for_every_file_and_records_the_diff(tmp_path):
+    work = tmp_path / "work"
+    merged = _cache(tmp_path / "merged", {"aa/1.json": "1"})
+    original = _cache(tmp_path / "orig", {"cc/3.json": "3"})
+    record = drv.record_cache_listings(work, merged, original)
+    assert record["merged_files"] == 1 and record["original_files"] == 1
+    ok = drv.check_cache_listings(work, merged, original, "during assembly")
+    assert ok["merged_refit"]["unchanged"] and ok["original_cache"]["unchanged"]
+    (merged / "README_R1_REFIT_CACHE.txt").write_text("not a payload, still a change")
+    with pytest.raises(ic.IntegrationError, match="merged refit cache changed during assembly: 1 added"):
+        drv.check_cache_listings(work, merged, original, "during assembly")
+    report = json.loads((work / "dryrun_report" / "cache_integrity" /
+                         "merged_refit_diff_during_assembly.json").read_text())
+    assert report["added"][0]["path"] == "README_R1_REFIT_CACHE.txt" and not report["unchanged"]
+    (merged / "README_R1_REFIT_CACHE.txt").unlink()
+    (original / "cc" / "3.json").write_text("tampered")
+    with pytest.raises(ic.IntegrationError, match="original fit cache changed"):
+        drv.check_cache_listings(work, merged, original, "during validation")
+
+
+def test_assembly_and_dependent_replay_use_only_the_read_only_adapter():
+    driver = (COLAB / "r1_part8_integration.py").read_text()
+    dependents = (COLAB / "r1_integration_dependents.py").read_text()
+    assert "live_replay_in_pinned_workflow" not in driver and "readonly_refit_replay()" in driver
+    assert "b1.replay" not in dependents and "readonly_refit_class()" in dependents
+    assert "check_cache_listings" in dependents
+    assert "check_cache_listings" in (COLAB / "r1_integration_validate.py").read_text()

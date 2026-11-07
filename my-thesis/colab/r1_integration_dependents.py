@@ -160,16 +160,39 @@ def locate_block(fit_records, job, new, model: str, used: set[int] = frozenset()
             f"run with the chain's specification and refit dates; rows {run[0]}-{run[-1]}{note}")
 
 
+def replay(job, fits: Path, identity, config):
+    """One chain through the pinned `rolling.run_chain`, served by the read-only live replay
+    of the merged refit cache (`ic.readonly_refit_class`): every estimator refused, fit calls
+    counted (must be 0), every origin served from the cache, nothing written."""
+    import r1_tierb as tb
+    from thesis.correction import guard
+    from thesis.forecasting import rolling
+    cache = ic.readonly_refit_class()(fits)
+    calls = {"n": 0}
+    real = rolling.fit_and_forecast
+
+    def counting(*a, **k):
+        calls["n"] += 1
+        return real(*a, **k)
+    rolling.fit_and_forecast = counting
+    try:
+        with guard.estimation_forbidden(), tb.no_estimation_allowed(), guard.allowed():
+            chain = rolling.run_chain(job.series_name, job.y, job.spec, job.horizons,
+                                      job.window_length, config, frequency=job.frequency,
+                                      transformation=job.transformation, identity=identity,
+                                      cache=cache, max_origins=job.max_origins,
+                                      task_id=job.task_id)
+    finally:
+        rolling.fit_and_forecast = real
+    if calls["n"] or chain.from_cache != chain.attempted:
+        raise ic.IntegrationError(f"{job.task_id}: replay called the estimator {calls['n']} times "
+                                  f"({chain.from_cache} of {chain.attempted} origins from the cache)")
+    return chain
+
+
 def replay_chains(jobs, tasks, fits: Path, identity, config) -> dict:
     """Each chain replayed through the pinned run_chain from the merged refit cache."""
-    import r1_b1_staged_correction as b1
-    out = {}
-    for task in tasks:
-        try:
-            out[task] = b1.replay(jobs[task], fits, identity, config)
-        except b1.StagingError as error:
-            raise ic.IntegrationError(str(error)) from error
-    return out
+    return {task: replay(jobs[task], fits, identity, config) for task in tasks}
 
 
 def patch_fit_records(base: Path, release: Path, chains: dict, jobs, stamp: Stamp) -> dict:
@@ -555,8 +578,15 @@ def run(p: dict, run_id: str, tasks: list[str] | None = None) -> dict:
     with guard.estimation_forbidden(), tb.no_estimation_allowed():
         jobs, identity, config = tb.build_jobs(base, p["code"])
     tasks = sorted(tasks or (list(tb.TIER_A_CHAINS) + list(tb.TIER_B_CHAINS)))
-    chains = replay_chains(jobs, tasks, work / "merged_refit" / "fits", identity, config)
-    report: dict = {"run_id": run_id, "estimation": "none (estimators refused; fit calls counted)"}
+    import r1_part8_integration as drv
+    fits = work / "merged_refit" / "fits"
+    integrity = {"before_replay": drv.check_cache_listings(work, fits, p["cache_root"] / "fits",
+                                                           "before the dependent-output replay")}
+    chains = replay_chains(jobs, tasks, fits, identity, config)
+    integrity["after_replay"] = drv.check_cache_listings(work, fits, p["cache_root"] / "fits",
+                                                         "during the dependent-output replay")
+    report: dict = {"run_id": run_id, "estimation": "none (estimators refused; fit calls counted)",
+                    "cache_integrity": integrity}
     fit = patch_fit_records(base, release, chains, jobs, stamp)
     report["fit_records"] = fit["chains"]
     report["t47_registry"] = patch_registry(base, release, chains, jobs, fit, stamp)

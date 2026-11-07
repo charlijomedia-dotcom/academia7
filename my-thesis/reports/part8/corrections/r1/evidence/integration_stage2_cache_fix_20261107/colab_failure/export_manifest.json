@@ -1,0 +1,69 @@
+{
+ "session": "integration-20261107T184004Z-93c0f8",
+ "orchestration_commit": "43903d470be83c9995d5daa7de615857c093b693",
+ "scientific_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+ "cache_identity": "3413465b508bb844",
+ "original_payloads": 18964,
+ "frozen_data_sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+ "python": "3.11.18",
+ "estimation": "none (refused)",
+ "published": false,
+ "dry_run_exit": 1,
+ "files": [
+  {
+   "path": "console.log",
+   "bytes": 35340,
+   "sha256": "30d3ce458424a77309c76484ccc999c640d6440ba96d821b594fb9b685b46546"
+  },
+  {
+   "path": "failure.json",
+   "bytes": 820,
+   "sha256": "6855a2ab65c37a2feca3812120cf4d7722ecaaa702ab963fe2f6570a02bffdab"
+  },
+  {
+   "path": "stages/base.json",
+   "bytes": 2304,
+   "sha256": "80375f1b2d403924684135482b1244e3344ead7663d44b2fa3f443fa3d67b31d"
+  },
+  {
+   "path": "stages/preflight.json",
+   "bytes": 5827,
+   "sha256": "d8a0241bdcbbfa5fd2df392b4b3b639b30bee1571b1beed706a9d9677e5f3fe5"
+  },
+  {
+   "path": "base_manifest.csv",
+   "bytes": 81450,
+   "sha256": "44d423f0a68a048e3ef2ef5d89d99f3997eb209aab8ea4d2772c31a5d9aca0e5"
+  },
+  {
+   "path": "assembly/reconcile_cell_causes.csv.gz",
+   "bytes": 66477,
+   "sha256": "73f596891ada7442f8e1a010d8ba789e3f5b30c6ced63ee62edccd7330af91db"
+  },
+  {
+   "path": "assembly/legacy_r1_comparison.csv",
+   "bytes": 8531,
+   "sha256": "89db436b8abe8585ce4ed98c18e9b3415ff21f969e82a0024451de46314af78b"
+  },
+  {
+   "path": "assembly/corrected_r1_comparison.csv",
+   "bytes": 12093,
+   "sha256": "855b426d82006a0368877f45588d25732b7033b78747d2516cff9ab72ab9f0bf"
+  },
+  {
+   "path": "assembly/r1_reconciliation.csv",
+   "bytes": 2038,
+   "sha256": "ebb8e1e078183c0b132b273d627a15b1a124530baf80550f132fd54ccd3eb371"
+  },
+  {
+   "path": "assembly/corrected_r1_summary.json",
+   "bytes": 8954,
+   "sha256": "2be9a30feea06addb8052ad4307a0652cb421a38ad8c6a35d49d3ee3e7a1425f"
+  },
+  {
+   "path": "assembly/legacy_r1_summary.json",
+   "bytes": 8654,
+   "sha256": "45f399a1437ac4b8f321603fab1492876c6e46db74e889535ccda08df95b8375"
+  }
+ ]
+}

@@ -1,0 +1,5 @@
+{
+ "stage": "aggregate",
+ "error": "IntegrationError: the merged refit cache changed during assembly",
+ "traceback": "Traceback (most recent call last):\n  File \"/content/r1_part8_integration/repo/my-thesis/colab/r1_part8_integration.py\", line 586, in main\n    record = run_stage(stage, args, p)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/content/r1_part8_integration/repo/my-thesis/colab/r1_part8_integration.py\", line 492, in run_stage\n    record = stage_aggregate(args, p)\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/content/r1_part8_integration/repo/my-thesis/colab/r1_part8_integration.py\", line 460, in stage_aggregate\n    raise ic.IntegrationError(\"the merged refit cache changed during assembly\")\nr1_integration_common.IntegrationError: the merged refit cache changed during assembly\n"
+}

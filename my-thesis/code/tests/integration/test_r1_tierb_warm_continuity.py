@@ -272,3 +272,92 @@ def test_the_replay_layer_refuses_a_forked_request(reference, tmp_path):
     origin = estimation_origins(_series().index, 120, [1], max_origins=ORIGINS)[0]
     with pytest.raises(tb.TierBError, match="not the live warm-start state"):
         cache.get(_cache_key(IDENTITY, "S", "pct", SPEC, origin, "[1.0]"))
+
+
+# -- the Part 8 integration dry run: read-only replay of the merged refit cache ----------------
+#
+# Colab dry run integration-20261107T184004Z-93c0f8 stopped in stage 2 with "the merged refit
+# cache changed during assembly". Cause: `PublishedRescorer` constructs `rescore.RefitCache`,
+# whose pinned `__post_init__` writes README_R1_REFIT_CACHE.txt into the cache folder; the
+# live-replay hook subclasses it, so the README appeared in the merged cache (which `merge`
+# fills with payloads only). The tests above compare payload files only, so they did not see it.
+
+import r1_integration_common as ic  # noqa: E402
+from thesis.correction.rescore import REFIT_README  # noqa: E402
+
+README = "README_R1_REFIT_CACHE.txt"
+
+
+def _merged_copy(reference, root: Path) -> Path:
+    """The reference payloads only, as `r1_tierb_aggregate.merge` restores them."""
+    fits = root / "fits"
+    for path in tb.payload_files(reference["fits"]):
+        target = fits / path.relative_to(reference["fits"])
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+    assert not (fits / README).exists()
+    return fits
+
+
+def test_old_live_replay_hook_writes_the_readme_and_fails_the_strict_check(reference, tmp_path,
+                                                                          monkeypatch):
+    fits = _merged_copy(reference, tmp_path)
+    before = ic.tree_listing(fits)
+    with tb.no_estimation_allowed(), tb.live_replay_in_pinned_workflow():
+        chain = _run(rescore.RefitCache(fits), Fits(), monkeypatch)
+    assert chain.from_cache == ORIGINS                       # the replay itself was correct
+    diff = ic.listing_diff(before, ic.tree_listing(fits))
+    readme_sha = tb.sha256_bytes(REFIT_README.encode("utf-8"))
+    assert diff == {"added": [{"path": README, "sha256": readme_sha}], "removed": [], "modified": []}
+    report = tmp_path / "diff.json"
+    with pytest.raises(ic.IntegrationError, match="1 added, 0 removed, 0 modified"):
+        ic.require_unchanged("the merged refit cache", fits, before, "during assembly", report)
+    assert json.loads(report.read_text())["added"] == diff["added"]
+
+
+def test_readonly_replay_keeps_the_cache_exact_and_reproduces_the_old_replay(reference, tmp_path,
+                                                                            monkeypatch):
+    old_fits = _merged_copy(reference, tmp_path / "old")
+    with tb.no_estimation_allowed(), tb.live_replay_in_pinned_workflow():
+        old = _run(rescore.RefitCache(old_fits), Fits(), monkeypatch)
+    fits = _merged_copy(reference, tmp_path / "new")
+    before = ic.tree_listing(fits)
+    counter = Fits()
+    with tb.no_estimation_allowed(), ic.readonly_refit_replay():
+        cache = rescore.RefitCache(fits)                    # what PublishedRescorer constructs
+        new = _run(cache, counter, monkeypatch)
+    assert rescore.RefitCache is RefitCache                 # the hook is undone
+    assert ic.require_unchanged("the merged refit cache", fits, before, "during assembly",
+                                tmp_path / "d.json")["unchanged"]
+    assert counter.calls == 0 and new.from_cache == ORIGINS and new.failed == 1
+    assert _records(new) == _records(old) == reference["records"]
+    pd.testing.assert_frame_equal(new.forecasts, old.forecasts)
+    pd.testing.assert_frame_equal(new.forecasts, reference["forecasts"])
+
+
+def test_readonly_adapter_refuses_writes_and_never_creates_a_folder(reference, tmp_path):
+    from thesis.forecasting.rolling import _cache_key
+    cls = ic.readonly_refit_class()
+    with pytest.raises(ic.IntegrationError, match="not an existing"):
+        cls(tmp_path / "missing" / "fits")
+    assert not (tmp_path / "missing").exists()
+    fits = _merged_copy(reference, tmp_path)
+    before = ic.tree_listing(fits)
+    cache = cls(fits)
+    origin = estimation_origins(_series().index, 120, [1], max_origins=ORIGINS)[0]
+    key = _cache_key(IDENTITY, "S", "pct", SPEC, origin, "")
+    assert cache.get(key) is not None                       # the first origin is served
+    with pytest.raises(ic.IntegrationError, match="write to .* refused"):
+        cache.put(key, {"status": "adequate"})
+    assert ic.tree_listing(fits) == before
+
+
+def test_dependent_output_replay_is_read_only_and_reproduces_the_chain(reference, tmp_path):
+    sys.path.insert(0, str(COLAB))
+    import r1_integration_dependents as dep
+    fits = _merged_copy(reference, tmp_path)
+    before = ic.tree_listing(fits)
+    chain = dep.replay(_job(), fits, IDENTITY, _config())
+    assert ic.tree_listing(fits) == before
+    assert chain.from_cache == ORIGINS and _records(chain) == reference["records"]
+    pd.testing.assert_frame_equal(chain.forecasts, reference["forecasts"])
