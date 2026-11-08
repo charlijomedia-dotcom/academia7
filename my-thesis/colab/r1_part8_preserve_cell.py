@@ -3,8 +3,8 @@
 # baseline/r1_part8_candidate_archive/<archive session>/ on Drive. No estimation, no publication.
 import os, sys, json, time, secrets, hashlib, importlib, subprocess
 from pathlib import Path
-ARCHIVE_TOOL_COMMIT = "d37f77f24a783ca13870fafc8c2c873eebf274be"
-ARCHIVE_TOOL_SHA256 = "969f3f427bc1100a83ae6161752f464f77e39c16a1068c16aea52e046024ba34"
+ARCHIVE_TOOL_COMMIT = "878d9289986e48bcf40c8ff4e32f22f620cf0937"
+ARCHIVE_TOOL_SHA256 = "efc20c988dc7072404b1317d9fe983588dcf8d5f683c558b30efa2615c637c59"
 REPOSITORY = globals().get("REPOSITORY", "charlijomedia-dotcom/academia7")
 BRANCH = globals().get("BRANCH", "part8-r1-rescore")
 WORK = globals().get("WORK", "/content/r1_part8_integration")
