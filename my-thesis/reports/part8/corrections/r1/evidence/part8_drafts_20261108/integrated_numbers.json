@@ -1,0 +1,1145 @@
+{
+ "T3.3_h1": {
+  "GDPC1|AR": {
+   "rmse": 5.2844,
+   "oos_r2": 0.0,
+   "rank_rmse": 4.0,
+   "n_valid": 197,
+   "n_failed": 0,
+   "n_fragile": 1,
+   "hlz_sq_p": null,
+   "hlz_abs_p": null
+  },
+  "GDPC1|ARMA": {
+   "rmse": 5.246,
+   "oos_r2": 0.0145,
+   "rank_rmse": 3.0,
+   "n_valid": 197,
+   "n_failed": 0,
+   "n_fragile": 1,
+   "hlz_sq_p": 0.3684,
+   "hlz_abs_p": 0.758
+  },
+  "GDPC1|MSAR": {
+   "rmse": 4.4473,
+   "oos_r2": 0.2917,
+   "rank_rmse": 1.0,
+   "n_valid": 197,
+   "n_failed": 0,
+   "n_fragile": 136,
+   "hlz_sq_p": 0.3566,
+   "hlz_abs_p": 0.6261
+  },
+  "GDPC1|STAR": {
+   "rmse": 5.1227,
+   "oos_r2": 0.0603,
+   "rank_rmse": 2.0,
+   "n_valid": 197,
+   "n_failed": 0,
+   "n_fragile": 192,
+   "hlz_sq_p": 0.5839,
+   "hlz_abs_p": 0.3278
+  },
+  "CPIAUCSL|AR": {
+   "rmse": 2.9668,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 0,
+   "hlz_sq_p": null,
+   "hlz_abs_p": null
+  },
+  "CPIAUCSL|ARMA": {
+   "rmse": 3.0753,
+   "oos_r2": -0.0745,
+   "rank_rmse": 3.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 0,
+   "hlz_sq_p": 0.0986,
+   "hlz_abs_p": 0.0104
+  },
+  "CPIAUCSL|MSAR": {
+   "rmse": 2.9663,
+   "oos_r2": 0.0003,
+   "rank_rmse": 1.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 431,
+   "hlz_sq_p": 0.975,
+   "hlz_abs_p": 0.398
+  },
+  "CPIAUCSL|STAR": {
+   "rmse": 5379975846.3697,
+   "oos_r2": -3.2883228668181053e+18,
+   "rank_rmse": 4.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 569,
+   "hlz_sq_p": 0.3246,
+   "hlz_abs_p": 0.3246
+  },
+  "UNRATE|AR": {
+   "rmse": 0.551,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0,
+   "n_valid": 703,
+   "n_failed": 1,
+   "n_fragile": 2,
+   "hlz_sq_p": null,
+   "hlz_abs_p": null
+  },
+  "UNRATE|ARMA": {
+   "rmse": 0.7366,
+   "oos_r2": 0.2366,
+   "rank_rmse": 4.0,
+   "n_valid": 689,
+   "n_failed": 15,
+   "n_fragile": 4,
+   "hlz_sq_p": 0.3356,
+   "hlz_abs_p": 0.5182
+  },
+  "UNRATE|MSAR": {
+   "rmse": 0.4914,
+   "oos_r2": 0.189,
+   "rank_rmse": 1.0,
+   "n_valid": 698,
+   "n_failed": 6,
+   "n_fragile": 258,
+   "hlz_sq_p": 0.3669,
+   "hlz_abs_p": 0.3217
+  },
+  "UNRATE|STAR": {
+   "rmse": 0.592,
+   "oos_r2": -0.1027,
+   "rank_rmse": 3.0,
+   "n_valid": 704,
+   "n_failed": 0,
+   "n_fragile": 644,
+   "hlz_sq_p": 0.5874,
+   "hlz_abs_p": 0.0015
+  },
+  "INDPRO|AR": {
+   "rmse": 13.3111,
+   "oos_r2": 0.0,
+   "rank_rmse": 3.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 1,
+   "hlz_sq_p": null,
+   "hlz_abs_p": null
+  },
+  "INDPRO|ARMA": {
+   "rmse": 11.9739,
+   "oos_r2": 0.1908,
+   "rank_rmse": 2.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 1,
+   "hlz_sq_p": 0.2658,
+   "hlz_abs_p": 0.2469
+  },
+  "INDPRO|MSAR": {
+   "rmse": 11.6384,
+   "oos_r2": 0.2355,
+   "rank_rmse": 1.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 428,
+   "hlz_sq_p": 0.2317,
+   "hlz_abs_p": 0.1212
+  },
+  "INDPRO|STAR": {
+   "rmse": 7171487.3258,
+   "oos_r2": -290263485342.4346,
+   "rank_rmse": 4.0,
+   "n_valid": 715,
+   "n_failed": 0,
+   "n_fragile": 406,
+   "hlz_sq_p": 0.3246,
+   "hlz_abs_p": 0.3245
+  },
+  "FEDFUNDS|AR": {
+   "rmse": 0.4753,
+   "oos_r2": 0.0,
+   "rank_rmse": 1.0,
+   "n_valid": 625,
+   "n_failed": 0,
+   "n_fragile": 0,
+   "hlz_sq_p": null,
+   "hlz_abs_p": null
+  },
+  "FEDFUNDS|ARMA": {
+   "rmse": 0.477,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0,
+   "n_valid": 618,
+   "n_failed": 7,
+   "n_fragile": 0,
+   "hlz_sq_p": 0.9694,
+   "hlz_abs_p": 0.3354
+  },
+  "FEDFUNDS|MSAR": {
+   "rmse": 0.4799,
+   "oos_r2": -0.0194,
+   "rank_rmse": 3.0,
+   "n_valid": 625,
+   "n_failed": 0,
+   "n_fragile": 474,
+   "hlz_sq_p": 0.4989,
+   "hlz_abs_p": 0.9868
+  },
+  "FEDFUNDS|STAR": {
+   "rmse": 0.6125,
+   "oos_r2": -0.6606,
+   "rank_rmse": 4.0,
+   "n_valid": 625,
+   "n_failed": 0,
+   "n_fragile": 474,
+   "hlz_sq_p": 0.1217,
+   "hlz_abs_p": 0.0292
+  },
+  "M2SL|AR": {
+   "rmse": 5.0775,
+   "oos_r2": 0.0,
+   "rank_rmse": 1.0,
+   "n_valid": 571,
+   "n_failed": 0,
+   "n_fragile": 1,
+   "hlz_sq_p": null,
+   "hlz_abs_p": null
+  },
+  "M2SL|ARMA": {
+   "rmse": 5.0832,
+   "oos_r2": -0.0023,
+   "rank_rmse": 2.0,
+   "n_valid": 571,
+   "n_failed": 0,
+   "n_fragile": 1,
+   "hlz_sq_p": 0.4263,
+   "hlz_abs_p": 0.8275
+  },
+  "M2SL|MSAR": {
+   "rmse": 5.1272,
+   "oos_r2": -0.0197,
+   "rank_rmse": 3.0,
+   "n_valid": 571,
+   "n_failed": 0,
+   "n_fragile": 568,
+   "hlz_sq_p": 0.2364,
+   "hlz_abs_p": 0.8711
+  },
+  "M2SL|STAR": {
+   "rmse": 82.7453,
+   "oos_r2": -264.5773,
+   "rank_rmse": 4.0,
+   "n_valid": 571,
+   "n_failed": 0,
+   "n_fragile": 544,
+   "hlz_sq_p": 0.3268,
+   "hlz_abs_p": 0.3004
+  }
+ },
+ "T3.3_UNRATE_multistep": {
+  "h1|AR": {
+   "rmse": 0.551,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0,
+   "rank_mae": 2.0
+  },
+  "h1|ARMA": {
+   "rmse": 0.737,
+   "oos_r2": 0.237,
+   "rank_rmse": 4.0,
+   "rank_mae": 3.0
+  },
+  "h1|MSAR": {
+   "rmse": 0.491,
+   "oos_r2": 0.189,
+   "rank_rmse": 1.0,
+   "rank_mae": 1.0
+  },
+  "h1|STAR": {
+   "rmse": 0.592,
+   "oos_r2": -0.103,
+   "rank_rmse": 3.0,
+   "rank_mae": 4.0
+  },
+  "h3|AR": {
+   "rmse": 0.942,
+   "oos_r2": 0.0,
+   "rank_rmse": 1.0,
+   "rank_mae": 1.0
+  },
+  "h3|ARMA": {
+   "rmse": 1.714,
+   "oos_r2": 0.056,
+   "rank_rmse": 3.0,
+   "rank_mae": 3.0
+  },
+  "h3|MSAR": {
+   "rmse": 1.064,
+   "oos_r2": -0.129,
+   "rank_rmse": 2.0,
+   "rank_mae": 2.0
+  },
+  "h3|STAR": {
+   "rmse": 12.067,
+   "oos_r2": -163.253,
+   "rank_rmse": 4.0,
+   "rank_mae": 4.0
+  },
+  "h6|AR": {
+   "rmse": 1.165,
+   "oos_r2": 0.0,
+   "rank_rmse": 1.0,
+   "rank_mae": 1.0
+  },
+  "h6|ARMA": {
+   "rmse": 1.674,
+   "oos_r2": -0.137,
+   "rank_rmse": 3.0,
+   "rank_mae": 3.0
+  },
+  "h6|MSAR": {
+   "rmse": 1.41,
+   "oos_r2": -0.538,
+   "rank_rmse": 2.0,
+   "rank_mae": 2.0
+  },
+  "h6|STAR": {
+   "rmse": 7393.709,
+   "oos_r2": -40303385.244,
+   "rank_rmse": 4.0,
+   "rank_mae": 4.0
+  },
+  "h12|AR": {
+   "rmse": 1.492,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0,
+   "rank_mae": 1.0
+  },
+  "h12|ARMA": {
+   "rmse": 1.439,
+   "oos_r2": 0.093,
+   "rank_rmse": 1.0,
+   "rank_mae": 2.0
+  },
+  "h12|MSAR": {
+   "rmse": 2.075,
+   "oos_r2": -0.952,
+   "rank_rmse": 3.0,
+   "rank_mae": 3.0
+  },
+  "h12|STAR": {
+   "rmse": 3055451083.814,
+   "oos_r2": -4.199725758795844e+18,
+   "rank_rmse": 4.0,
+   "rank_mae": 4.0
+  }
+ },
+ "baseline_failed_fits_h1": {
+  "UNRATE|AR": 1,
+  "UNRATE|ARMA": 15,
+  "UNRATE|MSAR": 6,
+  "FEDFUNDS|ARMA": 7
+ },
+ "baseline_failed_fits_h1_total": 29,
+ "T3.3A_rejections": {
+  "available": 226,
+  "reject": 19
+ },
+ "T3.3A_reject_rows": [
+  "CPIAUCSL h1 absolute AR-ARMA p=0.01044",
+  "CPIAUCSL h1 absolute ARMA-MSAR p=0.02684",
+  "CPIAUCSL h3 squared AR-ARMA p=0.0308",
+  "CPIAUCSL h3 absolute AR-ARMA p=0.00126",
+  "CPIAUCSL h3 absolute ARMA-MSAR p=0.00666",
+  "CPIAUCSL h6 squared AR-ARMA p=0.0022",
+  "CPIAUCSL h6 absolute AR-ARMA p=0.0",
+  "CPIAUCSL h6 squared ARMA-MSAR p=0.0026",
+  "CPIAUCSL h6 absolute ARMA-MSAR p=0.0",
+  "CPIAUCSL h12 squared AR-ARMA p=0.00132",
+  "CPIAUCSL h12 absolute AR-ARMA p=0.00198",
+  "CPIAUCSL h12 squared AR-MSAR p=0.03288",
+  "CPIAUCSL h12 absolute AR-MSAR p=0.00444",
+  "CPIAUCSL h12 squared ARMA-MSAR p=0.00056",
+  "CPIAUCSL h12 absolute ARMA-MSAR p=0.00018",
+  "UNRATE h1 absolute AR-STAR p=0.0015",
+  "UNRATE h1 absolute ARMA-STAR p=0.04178",
+  "FEDFUNDS h1 absolute AR-STAR p=0.02916",
+  "FEDFUNDS h1 absolute ARMA-STAR p=0.02972"
+ ],
+ "T3.3A_reject_by_series": {
+  "CPIAUCSL": 15,
+  "UNRATE": 2,
+  "FEDFUNDS": 2
+ },
+ "T3.3B_disagreements": 12,
+ "A4_star_clustering": {
+  "in_[0.30,0.34]": 50,
+  "available": 88
+ },
+ "T3.4_h1_unavailable_cells": 0,
+ "T3.4_h1_excluded": [
+  "CPIAUCSL absolute 0.9 ARMA p=0.075",
+  "FEDFUNDS absolute 0.9 STAR p=0.0452",
+  "FEDFUNDS absolute 0.95 STAR p=0.0452"
+ ],
+ "T3.4_unavailable_cells_all": 0,
+ "T3.4_cells_all": 92,
+ "T3.5R_estimable": "67 of 69",
+ "T3.5R_joint_reject": [
+  "CPIAUCSL ARMA vs AR h3 joint p=0.0025 slopes p=0.216",
+  "CPIAUCSL ARMA vs AR h6 joint p=0.0005 slopes p=0.344",
+  "CPIAUCSL ARMA vs AR h12 joint p=0.0263 slopes p=0.388",
+  "UNRATE ARMA vs AR h1 joint p=0.0343 slopes p=0.282",
+  "FEDFUNDS ARMA vs AR h6 joint p=0.0427 slopes p=0.082"
+ ],
+ "T3.5R_slopes_reject": [
+  "INDPRO ARMA vs AR h3 slopes p=0.022",
+  "FEDFUNDS MSAR vs AR h6 slopes p=0.043"
+ ],
+ "T3.5R_beta_turn_5pct": [
+  "FEDFUNDS ARMA vs AR h6 p=0.031"
+ ],
+ "T3.5R_beta_rec_5pct": [
+  "INDPRO ARMA vs AR h6 p=0.032",
+  "FEDFUNDS MSAR vs AR h6 p=0.047",
+  "M2SL ARMA vs AR h12 p=0.029"
+ ],
+ "UNRATE_ARMA_AR_h1_wald": {
+  "joint_stat": 8.65,
+  "joint_p": 0.034,
+  "slopes_stat": 2.53,
+  "slopes_p": 0.282,
+  "alpha": -0.084,
+  "alpha_p": 0.224,
+  "beta_rec": 0.091,
+  "beta_rec_p": 0.117,
+  "beta_turn": 0.0002,
+  "beta_turn_p": 0.998,
+  "n": 688,
+  "n_recession": 84,
+  "n_turning_window": 104
+ },
+ "TP1": {
+  "rows": 552,
+  "alternative_support_5pct_true": 0,
+  "conclusion_vs_baseline": {
+   "unchanged": 174,
+   "reversed": 24,
+   "unavailable": 6,
+   "weakened": 3
+  }
+ },
+ "FR_status_by_model": {
+  "AR": {
+   "adequate": 18204,
+   "failed": 78,
+   "fragile": 21
+  },
+  "ARMA": {
+   "adequate": 15317,
+   "failed": 99,
+   "fragile": 27
+  },
+  "ARMA-GARCH": {
+   "adequate": 1882,
+   "failed": 162
+  },
+  "MSAR": {
+   "fragile": 10246,
+   "adequate": 5128,
+   "failed": 69
+  },
+  "MSAR3": {
+   "fragile": 6
+  },
+  "STAR": {
+   "fragile": 12702,
+   "adequate": 2741
+  },
+  "VAR": {
+   "adequate": 544,
+   "failed": 27
+  }
+ },
+ "FR_status_total": {
+  "adequate": 43816,
+  "fragile": 23002,
+  "failed": 435
+ },
+ "FR_rows": 67253,
+ "FR_failed_by_series_model": {
+  "CPIAUCSL|AR": 1,
+  "CPIAUCSL|ARMA-GARCH": 27,
+  "CPIAUCSL+INDPRO+UNRATE+FEDFUNDS+M2SL|VAR": 27,
+  "FEDFUNDS|AR": 71,
+  "FEDFUNDS|ARMA": 27,
+  "FEDFUNDS|ARMA-GARCH": 120,
+  "FEDFUNDS|MSAR": 49,
+  "UNRATE|AR": 6,
+  "UNRATE|ARMA": 72,
+  "UNRATE|ARMA-GARCH": 15,
+  "UNRATE|MSAR": 20
+ },
+ "T4.7_status_counts_changed_rows": [
+  {
+   "series": "FEDFUNDS",
+   "model": "MSAR",
+   "status": "adequate",
+   "n": 665,
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+   "created_utc": "2026-10-31T02:34:58Z"
+  },
+  {
+   "series": "FEDFUNDS",
+   "model": "MSAR",
+   "status": "failed",
+   "n": 49,
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+   "created_utc": "2026-10-31T02:34:58Z"
+  },
+  {
+   "series": "FEDFUNDS",
+   "model": "MSAR",
+   "status": "fragile",
+   "n": 2413,
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+   "created_utc": "2026-10-31T02:34:58Z"
+  },
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "status": "adequate",
+   "n": 2120,
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+   "created_utc": "2026-10-31T02:34:58Z"
+  },
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "status": "failed",
+   "n": 20,
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+   "created_utc": "2026-10-31T02:34:58Z"
+  },
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "status": "fragile",
+   "n": 1380,
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+   "created_utc": "2026-10-31T02:34:58Z"
+  }
+ ],
+ "T4.1": {
+  "UNRATE|level|baseline|AR": {
+   "rmse": 0.551,
+   "oos_r2": 0.0,
+   "n_valid": 703,
+   "n_failed": 1,
+   "rank_rmse": 2.0,
+   "rank_mae": 2.0
+  },
+  "UNRATE|level|baseline|ARMA": {
+   "rmse": 0.737,
+   "oos_r2": 0.237,
+   "n_valid": 689,
+   "n_failed": 15,
+   "rank_rmse": 4.0,
+   "rank_mae": 3.0
+  },
+  "UNRATE|level|baseline|MSAR": {
+   "rmse": 0.491,
+   "oos_r2": 0.189,
+   "n_valid": 698,
+   "n_failed": 6,
+   "rank_rmse": 1.0,
+   "rank_mae": 1.0
+  },
+  "UNRATE|level|baseline|STAR": {
+   "rmse": 0.592,
+   "oos_r2": -0.103,
+   "n_valid": 704,
+   "n_failed": 0,
+   "rank_rmse": 3.0,
+   "rank_mae": 4.0
+  },
+  "UNRATE|difference|alternative|AR": {
+   "rmse": 0.563,
+   "oos_r2": 0.0,
+   "n_valid": 701,
+   "n_failed": 2,
+   "rank_rmse": 1.0,
+   "rank_mae": 1.0
+  },
+  "UNRATE|difference|alternative|ARMA": {
+   "rmse": 0.68,
+   "oos_r2": 0.419,
+   "n_valid": 696,
+   "n_failed": 7,
+   "rank_rmse": 2.0,
+   "rank_mae": 3.0
+  },
+  "UNRATE|difference|alternative|MSAR": {
+   "rmse": 0.776,
+   "oos_r2": 0.33,
+   "n_valid": 703,
+   "n_failed": 0,
+   "rank_rmse": 3.0,
+   "rank_mae": 2.0
+  },
+  "UNRATE|difference|alternative|STAR": {
+   "rmse": 20.747,
+   "oos_r2": -0.202,
+   "n_valid": 703,
+   "n_failed": 0,
+   "rank_rmse": 4.0,
+   "rank_mae": 4.0
+  },
+  "FEDFUNDS|difference|baseline|AR": {
+   "rmse": 0.475,
+   "oos_r2": 0.0,
+   "n_valid": 625,
+   "n_failed": 0,
+   "rank_rmse": 1.0,
+   "rank_mae": 2.0
+  },
+  "FEDFUNDS|difference|baseline|ARMA": {
+   "rmse": 0.477,
+   "oos_r2": 0.0,
+   "n_valid": 618,
+   "n_failed": 7,
+   "rank_rmse": 2.0,
+   "rank_mae": 3.0
+  },
+  "FEDFUNDS|difference|baseline|MSAR": {
+   "rmse": 0.48,
+   "oos_r2": -0.019,
+   "n_valid": 625,
+   "n_failed": 0,
+   "rank_rmse": 3.0,
+   "rank_mae": 1.0
+  },
+  "FEDFUNDS|difference|baseline|STAR": {
+   "rmse": 0.613,
+   "oos_r2": -0.661,
+   "n_valid": 625,
+   "n_failed": 0,
+   "rank_rmse": 4.0,
+   "rank_mae": 4.0
+  },
+  "FEDFUNDS|level|alternative|AR": {
+   "rmse": 0.426,
+   "oos_r2": 0.0,
+   "n_valid": 555,
+   "n_failed": 71,
+   "rank_rmse": 1.0,
+   "rank_mae": 1.0
+  },
+  "FEDFUNDS|level|alternative|ARMA": {
+   "rmse": 0.52,
+   "oos_r2": 0.003,
+   "n_valid": 620,
+   "n_failed": 6,
+   "rank_rmse": 3.0,
+   "rank_mae": 3.0
+  },
+  "FEDFUNDS|level|alternative|MSAR": {
+   "rmse": 0.456,
+   "oos_r2": -0.307,
+   "n_valid": 577,
+   "n_failed": 49,
+   "rank_rmse": 2.0,
+   "rank_mae": 2.0
+  },
+  "FEDFUNDS|level|alternative|STAR": {
+   "rmse": 0.974,
+   "oos_r2": -4.18,
+   "n_valid": 626,
+   "n_failed": 0,
+   "rank_rmse": 4.0,
+   "rank_mae": 4.0
+  }
+ },
+ "T4.1P": [
+  "UNRATE ARMA difference squared: HLZ p=0.34698 (do not reject); DM-HLN p=0.4285 (do not reject); d=-0.06915",
+  "UNRATE ARMA difference absolute: HLZ p=0.70802 (do not reject); DM-HLN p=0.8314 (do not reject); d=-0.00196",
+  "UNRATE MSAR difference squared: HLZ p=0.31996 (do not reject); DM-HLN p=0.2842 (do not reject); d=-0.10488",
+  "UNRATE MSAR difference absolute: HLZ p=0.26196 (do not reject); DM-HLN p=0.1952 (do not reject); d=-0.01628",
+  "UNRATE STAR difference squared: HLZ p=0.46114 (do not reject); DM-HLN p=0.7236 (do not reject); d=0.06415",
+  "UNRATE STAR difference absolute: HLZ p=0.69208 (do not reject); DM-HLN p=0.8265 (do not reject); d=0.004",
+  "FEDFUNDS ARMA level squared: HLZ p=0.8084 (do not reject); DM-HLN p=0.7125 (do not reject); d=-0.00064",
+  "FEDFUNDS ARMA level absolute: HLZ p=0.14606 (do not reject); DM-HLN p=0.0076 (reject); d=-0.0028",
+  "FEDFUNDS MSAR level squared: HLZ p=0.2369 (do not reject); DM-HLN p=0.1449 (do not reject); d=0.04934",
+  "FEDFUNDS MSAR level absolute: HLZ p=0.14516 (do not reject); DM-HLN p=0.0286 (reject); d=0.01308",
+  "FEDFUNDS STAR level squared: HLZ p=0.14128 (do not reject); DM-HLN p=0.2394 (do not reject); d=0.75682",
+  "FEDFUNDS STAR level absolute: HLZ p=0.10166 (do not reject); DM-HLN p=0.1327 (do not reject); d=0.05399"
+ ],
+ "T4.2": {
+  "AR(p=1)": {
+   "rmse": 3.075,
+   "mae": 2.194,
+   "oos_r2": 0.0,
+   "common_dates": 714
+  },
+  "AR(p=3)": {
+   "rmse": 2.958,
+   "mae": 2.072,
+   "oos_r2": 0.075,
+   "common_dates": 714
+  },
+  "AR(p=6)": {
+   "rmse": 2.969,
+   "mae": 2.093,
+   "oos_r2": 0.068,
+   "common_dates": 714
+  },
+  "AR(p=12)": {
+   "rmse": 2.967,
+   "mae": 2.08,
+   "oos_r2": 0.069,
+   "common_dates": 714
+  }
+ },
+ "T4.2P": {
+  "AR(p=3)|squared": {
+   "hlz_p": 0.1009,
+   "dm_p": 0.0116,
+   "hlz": "do not reject",
+   "dm": "reject"
+  },
+  "AR(p=3)|absolute": {
+   "hlz_p": 0.0129,
+   "dm_p": 0.0003,
+   "hlz": "reject",
+   "dm": "reject"
+  },
+  "AR(p=6)|squared": {
+   "hlz_p": 0.2567,
+   "dm_p": 0.1039,
+   "hlz": "do not reject",
+   "dm": "do not reject"
+  },
+  "AR(p=6)|absolute": {
+   "hlz_p": 0.1004,
+   "dm_p": 0.0135,
+   "hlz": "do not reject",
+   "dm": "reject"
+  },
+  "AR(p=12)|squared": {
+   "hlz_p": 0.3274,
+   "dm_p": 0.1797,
+   "hlz": "do not reject",
+   "dm": "do not reject"
+  },
+  "AR(p=12)|absolute": {
+   "hlz_p": 0.1012,
+   "dm_p": 0.019,
+   "hlz": "do not reject",
+   "dm": "reject"
+  }
+ },
+ "T4.4P": {
+  "tests": 138,
+  "hlz_reject": 11,
+  "rows": [
+   "CPIAUCSL ARMA h1 absolute p=0.01044 d=0.1074",
+   "CPIAUCSL ARMA h3 squared p=0.0308 d=1.6992",
+   "CPIAUCSL ARMA h3 absolute p=0.00126 d=0.2415",
+   "CPIAUCSL ARMA h6 squared p=0.0022 d=2.2312",
+   "CPIAUCSL ARMA h6 absolute p=0.0 d=0.2517",
+   "CPIAUCSL ARMA h12 squared p=0.00132 d=1.1358",
+   "CPIAUCSL ARMA h12 absolute p=0.00198 d=0.1193",
+   "CPIAUCSL MSAR h12 squared p=0.03288 d=-0.6587",
+   "CPIAUCSL MSAR h12 absolute p=0.00444 d=-0.0712",
+   "UNRATE STAR h1 absolute p=0.0015 d=0.0425",
+   "FEDFUNDS STAR h1 absolute p=0.02916 d=0.0351"
+  ]
+ },
+ "T4.5C_VAR": {
+  "CPIAUCSL": {
+   "rmse": 3.011,
+   "oos_r2": -0.06,
+   "rank": 5.0,
+   "common_dates": 544
+  },
+  "INDPRO": {
+   "rmse": 12.983,
+   "oos_r2": 0.165,
+   "rank": 3.0,
+   "common_dates": 544
+  },
+  "UNRATE": {
+   "rmse": 0.493,
+   "oos_r2": 0.353,
+   "rank": 1.0,
+   "common_dates": 527
+  },
+  "FEDFUNDS": {
+   "rmse": 0.498,
+   "oos_r2": -0.058,
+   "rank": 4.0,
+   "common_dates": 538
+  },
+  "M2SL": {
+   "rmse": 4.82,
+   "oos_r2": 0.09,
+   "rank": 1.0,
+   "common_dates": 544
+  }
+ },
+ "T4.5C_AR": {
+  "CPIAUCSL": 2.925,
+  "INDPRO": 14.207,
+  "UNRATE": 0.613,
+  "FEDFUNDS": 0.484,
+  "M2SL": 5.052
+ },
+ "T4.5C_UNRATE": {
+  "AR": {
+   "rmse": 0.613,
+   "rank_rmse": 4.0
+  },
+  "ARMA": {
+   "rmse": 0.538,
+   "rank_rmse": 2.0
+  },
+  "MSAR": {
+   "rmse": 0.55,
+   "rank_rmse": 3.0
+  },
+  "STAR": {
+   "rmse": 0.622,
+   "rank_rmse": 5.0
+  },
+  "VAR": {
+   "rmse": 0.493,
+   "rank_rmse": 1.0
+  }
+ },
+ "T4.5P_reject": [
+  "UNRATE STAR absolute HLZ p=0.00876 d=0.0498",
+  "FEDFUNDS STAR absolute HLZ p=0.03488 d=0.0401",
+  "FEDFUNDS VAR absolute HLZ p=0.00362 d=0.0339"
+ ],
+ "T4.5P_UNRATE_VAR": [
+  "squared HLZ p=0.3464",
+  "absolute HLZ p=0.81072"
+ ],
+ "T4.8C_h1_oos_r2": {
+  "GDPC1|AR|120": 0.0,
+  "GDPC1|ARMA|120": 0.017,
+  "GDPC1|MSAR|120": 0.343,
+  "GDPC1|STAR|120": 0.063,
+  "GDPC1|AR|90": 0.0,
+  "GDPC1|ARMA|90": 0.041,
+  "GDPC1|MSAR|90": 0.371,
+  "GDPC1|STAR|90": 0.03,
+  "GDPC1|AR|150": 0.0,
+  "GDPC1|ARMA|150": 0.014,
+  "GDPC1|MSAR|150": 0.409,
+  "GDPC1|STAR|150": 0.176,
+  "CPIAUCSL|AR|240": 0.0,
+  "CPIAUCSL|ARMA|240": -0.072,
+  "CPIAUCSL|MSAR|240": 0.004,
+  "CPIAUCSL|STAR|240": -3.459383943641168e+18,
+  "CPIAUCSL|AR|180": 0.0,
+  "CPIAUCSL|ARMA|180": -0.062,
+  "CPIAUCSL|MSAR|180": -0.017,
+  "CPIAUCSL|STAR|180": -80.132,
+  "CPIAUCSL|AR|300": 0.0,
+  "CPIAUCSL|ARMA|300": -0.06,
+  "CPIAUCSL|MSAR|300": -0.034,
+  "CPIAUCSL|STAR|300": -0.266,
+  "UNRATE|AR|240": 0.0,
+  "UNRATE|ARMA|240": 0.238,
+  "UNRATE|MSAR|240": 0.19,
+  "UNRATE|STAR|240": -0.104,
+  "UNRATE|AR|180": 0.0,
+  "UNRATE|ARMA|180": 0.302,
+  "UNRATE|MSAR|180": 0.24,
+  "UNRATE|STAR|180": -2.714,
+  "UNRATE|AR|300": 0.0,
+  "UNRATE|ARMA|300": 0.202,
+  "UNRATE|MSAR|300": -1.102,
+  "UNRATE|STAR|300": -0.075,
+  "INDPRO|AR|240": 0.0,
+  "INDPRO|ARMA|240": 0.198,
+  "INDPRO|MSAR|240": 0.248,
+  "INDPRO|STAR|240": -305303593659.872,
+  "INDPRO|AR|180": 0.0,
+  "INDPRO|ARMA|180": 0.298,
+  "INDPRO|MSAR|180": 0.294,
+  "INDPRO|STAR|180": -571755.13,
+  "INDPRO|AR|300": 0.0,
+  "INDPRO|ARMA|300": 0.196,
+  "INDPRO|MSAR|300": 0.251,
+  "INDPRO|STAR|300": -17.099,
+  "FEDFUNDS|AR|240": 0.0,
+  "FEDFUNDS|ARMA|240": 0.0,
+  "FEDFUNDS|MSAR|240": -0.029,
+  "FEDFUNDS|STAR|240": -0.699,
+  "FEDFUNDS|AR|180": 0.0,
+  "FEDFUNDS|ARMA|180": 0.001,
+  "FEDFUNDS|MSAR|180": -0.035,
+  "FEDFUNDS|STAR|180": -0.388,
+  "FEDFUNDS|AR|300": 0.0,
+  "FEDFUNDS|ARMA|300": 0.001,
+  "FEDFUNDS|MSAR|300": -0.024,
+  "FEDFUNDS|STAR|300": -0.206,
+  "M2SL|AR|240": 0.0,
+  "M2SL|ARMA|240": -0.003,
+  "M2SL|MSAR|240": -0.007,
+  "M2SL|STAR|240": -284.997,
+  "M2SL|AR|180": 0.0,
+  "M2SL|ARMA|180": 0.007,
+  "M2SL|MSAR|180": -0.034,
+  "M2SL|STAR|180": -4.43,
+  "M2SL|AR|300": 0.0,
+  "M2SL|ARMA|300": 0.001,
+  "M2SL|MSAR|300": -0.01,
+  "M2SL|STAR|300": -167.19
+ },
+ "T4.8C_h1_rank_rmse_UNRATE": {
+  "AR|240": 2.0,
+  "ARMA|240": 4.0,
+  "MSAR|240": 1.0,
+  "STAR|240": 3.0,
+  "AR|180": 2.0,
+  "ARMA|180": 3.0,
+  "MSAR|180": 1.0,
+  "STAR|180": 4.0,
+  "AR|300": 1.0,
+  "ARMA|300": 3.0,
+  "MSAR|300": 4.0,
+  "STAR|300": 2.0
+ },
+ "T4.8P": {
+  "tests": 108,
+  "conclusion_vs_baseline": {
+   "unchanged": 97,
+   "reversed": 10,
+   "weakened": 1
+  },
+  "support_change": {
+   "support_absent_in_both": 87,
+   "no_change": 18,
+   "strengthened": 2,
+   "support_lost": 1
+  },
+  "hlz_reject": [
+   "CPIAUCSL ARMA 240 absolute p=0.01788 d=0.10542",
+   "CPIAUCSL ARMA 300 absolute p=0.03588 d=0.08512",
+   "UNRATE STAR 240 absolute p=0.00124 d=0.04709",
+   "UNRATE STAR 180 absolute p=0.04626 d=0.09866",
+   "UNRATE STAR 300 absolute p=0.00174 d=0.03634",
+   "FEDFUNDS STAR 240 absolute p=0.033 d=0.03777",
+   "FEDFUNDS STAR 180 absolute p=0.02092 d=0.02876",
+   "FEDFUNDS ARMA 300 squared p=0.03168 d=-0.00012",
+   "FEDFUNDS ARMA 300 absolute p=0.01366 d=-0.00047",
+   "FEDFUNDS STAR 300 absolute p=0.03898 d=0.02039"
+  ],
+  "UNRATE_MSAR": [
+   "240 squared HLZ p=0.36968",
+   "240 absolute HLZ p=0.33336",
+   "180 squared HLZ p=0.39236",
+   "180 absolute HLZ p=0.77428",
+   "300 squared HLZ p=0.31568",
+   "300 absolute HLZ p=0.30264"
+  ]
+ },
+ "T4.8M": {
+  "cells": 72,
+  "unavailable_cells": 0
+ },
+ "T4.9": {
+  "CPIAUCSL|AR|full_approved": {
+   "rmse": 2.9668,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0
+  },
+  "CPIAUCSL|ARMA|full_approved": {
+   "rmse": 3.0753,
+   "oos_r2": -0.0745,
+   "rank_rmse": 3.0
+  },
+  "CPIAUCSL|MSAR|full_approved": {
+   "rmse": 2.9663,
+   "oos_r2": 0.0003,
+   "rank_rmse": 1.0
+  },
+  "CPIAUCSL|STAR|full_approved": {
+   "rmse": 5379975846.3697,
+   "oos_r2": -3.2883228668181053e+18,
+   "rank_rmse": 4.0
+  },
+  "CPIAUCSL|AR|pre_gap_unaffected": {
+   "rmse": 2.9501,
+   "oos_r2": 0.0,
+   "rank_rmse": 1.0
+  },
+  "CPIAUCSL|ARMA|pre_gap_unaffected": {
+   "rmse": 3.059,
+   "oos_r2": -0.0752,
+   "rank_rmse": 3.0
+  },
+  "CPIAUCSL|MSAR|pre_gap_unaffected": {
+   "rmse": 2.9514,
+   "oos_r2": -0.0009,
+   "rank_rmse": 2.0
+  },
+  "CPIAUCSL|STAR|pre_gap_unaffected": {
+   "rmse": 5421843994.1316,
+   "oos_r2": -3.3777464785560904e+18,
+   "rank_rmse": 4.0
+  },
+  "UNRATE|AR|full_approved": {
+   "rmse": 0.551,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0
+  },
+  "UNRATE|ARMA|full_approved": {
+   "rmse": 0.7366,
+   "oos_r2": 0.2366,
+   "rank_rmse": 4.0
+  },
+  "UNRATE|MSAR|full_approved": {
+   "rmse": 0.4914,
+   "oos_r2": 0.189,
+   "rank_rmse": 1.0
+  },
+  "UNRATE|STAR|full_approved": {
+   "rmse": 0.592,
+   "oos_r2": -0.1027,
+   "rank_rmse": 3.0
+  },
+  "UNRATE|AR|pre_gap_unaffected": {
+   "rmse": 0.5551,
+   "oos_r2": 0.0,
+   "rank_rmse": 2.0
+  },
+  "UNRATE|ARMA|pre_gap_unaffected": {
+   "rmse": 0.7424,
+   "oos_r2": 0.2366,
+   "rank_rmse": 4.0
+  },
+  "UNRATE|MSAR|pre_gap_unaffected": {
+   "rmse": 0.4945,
+   "oos_r2": 0.1909,
+   "rank_rmse": 1.0
+  },
+  "UNRATE|STAR|pre_gap_unaffected": {
+   "rmse": 0.5946,
+   "oos_r2": -0.0959,
+   "rank_rmse": 3.0
+  }
+ },
+ "A3_UNRATE_h1_integrated": {
+  "ARMA": {
+   "oos_r2_all": 0.237,
+   "oos_r2_excl_2020_01_2021_06": -0.051,
+   "n_excluded": 17
+  },
+  "MSAR": {
+   "oos_r2_all": 0.189,
+   "oos_r2_excl_2020_01_2021_06": -0.01,
+   "n_excluded": 16
+  },
+  "STAR": {
+   "oos_r2_all": -0.103,
+   "oos_r2_excl_2020_01_2021_06": -2.276,
+   "n_excluded": 17
+  }
+ },
+ "UNRATE_h1_common_all_four": {
+  "n": 682,
+  "AR": 0.546035,
+  "ARMA": 0.481509,
+  "MSAR": 0.491711,
+  "STAR": 0.556163
+ },
+ "T2.2_zivot_andrews": [
+  {
+   "name": "Zivot-Andrews (initial window, level; reported under Part 5 \u00a73.2 / P-02; not used by the \u00a73.4 rule)",
+   "null_hypothesis": "the series has a unit root with no structural break",
+   "statistic": -4.556110800759712,
+   "p_value": 0.1887322973181879,
+   "reference": "Zivot-Andrews distribution for the break-in-intercept-and-trend specification, critical values from the implementation used",
+   "decision_5pct": "do not reject",
+   "implication": "a unit root cannot be rejected even allowing one break",
+   "series": "UNRATE",
+   "model": NaN,
+   "tuning": "autolag=BIC; maxlag=12; regression=ct; significance=0.05; trim=0.15; used_lag=3",
+   "extra": "break_date=1957-08-01; break_index=115; critical_1%=-5.57556; critical_10%=-4.82668; critical_5%=-5.07332",
+   "available": true,
+   "unavailable_reason": NaN
+  },
+  {
+   "name": "Zivot-Andrews (full sample, level; reported under Part 5 \u00a73.2 / P-02; not used by the \u00a73.4 rule)",
+   "null_hypothesis": "the series has a unit root with no structural break",
+   "statistic": -4.606206152802374,
+   "p_value": 0.1691467543253993,
+   "reference": "Zivot-Andrews distribution for the break-in-intercept-and-trend specification, critical values from the implementation used",
+   "decision_5pct": "do not reject",
+   "implication": "a unit root cannot be rejected even allowing one break",
+   "series": "UNRATE",
+   "model": NaN,
+   "tuning": "autolag=BIC; maxlag=12; regression=ct; significance=0.05; trim=0.15; used_lag=0",
+   "extra": "break_date=2008-04-01; break_index=723; critical_1%=-5.57556; critical_10%=-4.82668; critical_5%=-5.07332",
+   "available": true,
+   "unavailable_reason": NaN
+  },
+  {
+   "name": "Zivot-Andrews (initial window, level; reported under Part 5 \u00a73.2 / P-02; not used by the \u00a73.4 rule)",
+   "null_hypothesis": "the series has a unit root with no structural break",
+   "statistic": -3.500479881700901,
+   "p_value": 0.8112616073470882,
+   "reference": "Zivot-Andrews distribution for the break-in-intercept-and-trend specification, critical values from the implementation used",
+   "decision_5pct": "do not reject",
+   "implication": "a unit root cannot be rejected even allowing one break",
+   "series": "FEDFUNDS",
+   "model": NaN,
+   "tuning": "autolag=BIC; maxlag=12; regression=ct; significance=0.05; trim=0.15; used_lag=1",
+   "extra": "break_date=1970-10-01; break_index=195; critical_1%=-5.57556; critical_10%=-4.82668; critical_5%=-5.07332",
+   "available": true,
+   "unavailable_reason": NaN
+  },
+  {
+   "name": "Zivot-Andrews (full sample, level; reported under Part 5 \u00a73.2 / P-02; not used by the \u00a73.4 rule)",
+   "null_hypothesis": "the series has a unit root with no structural break",
+   "statistic": -4.289946391888213,
+   "p_value": 0.3202574842278809,
+   "reference": "Zivot-Andrews distribution for the break-in-intercept-and-trend specification, critical values from the implementation used",
+   "decision_5pct": "do not reject",
+   "implication": "a unit root cannot be rejected even allowing one break",
+   "series": "FEDFUNDS",
+   "model": NaN,
+   "tuning": "autolag=BIC; maxlag=12; regression=ct; significance=0.05; trim=0.15; used_lag=11",
+   "extra": "break_date=1984-08-01; break_index=361; critical_1%=-5.57556; critical_10%=-4.82668; critical_5%=-5.07332",
+   "available": true,
+   "unavailable_reason": NaN
+  }
+ ]
+}

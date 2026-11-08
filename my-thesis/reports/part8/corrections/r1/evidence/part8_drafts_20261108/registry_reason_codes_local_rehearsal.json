@@ -1,0 +1,28 @@
+{
+ "source": "local rehearsal of the integration (rc/fixed/work/release/robustness/T4.7_failure_registry.csv); not cross-checked cell by cell against the Colab candidate",
+ "sha256": "27374e4e5261f7f81bd5bcd97cb99d85409395457610ab1a4d802db2d19b9ff8",
+ "rows": 34122,
+ "by_category": {
+  "fragile": 33610,
+  "failed": 512
+ },
+ "by_category_reason": {
+  "failed|EMPTY_REGIME": 1,
+  "failed|EXTREME_FORECAST": 6,
+  "failed|ILL_CONDITIONED_COV": 1,
+  "failed|LOW_OCCUPANCY": 14,
+  "failed|NONCONVERGENCE": 329,
+  "failed|SINGULAR_COV": 47,
+  "failed|TRANSITION_BOUNDARY": 9,
+  "failed|UNSTABLE_AR": 105,
+  "fragile|EXTREME_FORECAST": 662,
+  "fragile|ILL_CONDITIONED_COV": 5941,
+  "fragile|LOW_OCCUPANCY": 8835,
+  "fragile|NEAR_CONSTANT_TRANSITION": 1040,
+  "fragile|RESIDUAL_AUTOCORR": 22,
+  "fragile|SINGULAR_COV": 4062,
+  "fragile|STAR_GAMMA_BOUND": 4941,
+  "fragile|STAR_THRESHOLD_EXTREME": 4262,
+  "fragile|TRANSITION_BOUNDARY": 3845
+ }
+}

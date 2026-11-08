@@ -1,0 +1,46 @@
+{
+ "record": "B2 scientific adjudication",
+ "date": "2026-11-08",
+ "decision": "ACCEPTED for inclusion in the final Part 8 candidate (user decision, 8 November 2026)",
+ "scope": "Tier B batch B2: T4.1:FEDFUNDS|MSAR (626 origins) and T4.8:UNRATE|180:MSAR (764 origins)",
+ "basis": "approved live warm-start rule; B2 equals the original fit cache under that rule at 1,390/1,390 origins (identical estimate, same cache key)",
+ "certificate": {
+  "file": "COMPLETE-20261105T151645Z-B2-20261105T110347Z-505e21.json",
+  "sha256": "c8c90ba079abf5bd4256bb1be244dcc7116ae218a28206e75f44660c644f83c4",
+  "status_as_issued": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+  "modified": false
+ },
+ "items": {
+  "classification_changed": 20,
+  "optimizer_sensitivity": 29,
+  "by_chain": {
+   "T4.1:FEDFUNDS|MSAR": {
+    "optimizer_sensitivity": 29,
+    "classification_changed": 14
+   },
+   "T4.8:UNRATE|180:MSAR": {
+    "classification_changed": 6
+   }
+  }
+ },
+ "items_file": "b2_adjudicated_items.csv",
+ "items_file_sha256": "0cbab76841a567ba7b051d5308639aa43aafb7bdd4fb4ae42e7b96059a72a9ef",
+ "source_evidence": {
+  "evidence/integration_prep_20261106/b2_direct_review/b2_vs_original_cache_by_origin.csv.gz": "69ca4ab4c8f810ab0df484a6a93f6205831563ef6469ff78481e120543e48f4a"
+ },
+ "integration_session": "integration-20261108T052245Z-9bba8e",
+ "limitations_retained": [
+  "F6: the approved MSAR multistart does not guarantee the global likelihood maximum; no global-optimum claim is made",
+  "the 20 classification changes and 29 optimiser sensitivities are reported, not removed",
+  "a higher or lower log-likelihood does not by itself establish scientific preference"
+ ],
+ "not_changed": [
+  "historical certificates",
+  "Tier B checkpoints",
+  "original fit cache",
+  "published results",
+  "approved methodology",
+  "scientific pin 8aaa4217"
+ ],
+ "scientific_approval_of_part8": "not granted by this record"
+}

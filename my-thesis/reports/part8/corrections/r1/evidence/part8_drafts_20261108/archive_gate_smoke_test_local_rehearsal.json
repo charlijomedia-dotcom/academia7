@@ -1,0 +1,19 @@
+{
+ "purpose": "smoke test of the archive equivalence gate (inventory part) against the LOCAL partial rehearsal, which lacks the Drive-only B1/B3 chains and so must be refused",
+ "release": "scratchpad rc/fixed/work/release (local rehearsal)",
+ "ok": false,
+ "paths_new": 464,
+ "paths_audited": 464,
+ "identical": 360,
+ "provenance_only": 101,
+ "refused": {
+  "figures/F4.8_UNRATE.pdf": "source changed regenerated_r1 -> regenerated_integration_dependents",
+  "figures/F4.8_UNRATE.png": "source changed regenerated_r1 -> regenerated_integration_dependents",
+  "manifests/correction_file_comparison.csv": "differs and is not an identified provenance carrier"
+ },
+ "missing": [],
+ "extra": [],
+ "files_on_disk": 465,
+ "inventory_vs_disk": 0,
+ "archive_tool_sha256": "969f3f427bc1100a83ae6161752f464f77e39c16a1068c16aea52e046024ba34"
+}
