@@ -17,4 +17,4 @@ Run on 8 November 2026 with `python -m pytest -q -p no:cacheprovider tests/unit 
 | Run | Result |
 |---|---|
 | Full unit suite, before the notebook was generated | 611 passed, 1 skipped. The skip is the committed-notebook equality test, which needs the generated notebook |
-| `tests/unit/test_r1_integration_archive.py` | 20 passed, 1 skipped (the same test) before generation. For the result after generation, see the commit that adds the notebook |
+| `tests/unit/test_r1_integration_archive.py` | 20 passed, 1 skipped before generation; **21 passed** after generating the notebook pinned to `d37f77f` |
