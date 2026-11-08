@@ -1,0 +1,177 @@
+{
+ "stage": "aggregate",
+ "finished_utc": "2026-11-08T05:38:16Z",
+ "run_id": "correction-20261108T053328-949fcd76",
+ "aggregation_status": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+ "gate_problems": [],
+ "walks": {
+  "T4.1:UNRATE|AR": {
+   "planned": 703,
+   "completed": 703,
+   "statuses": {
+    "adequate": 700,
+    "failed": 2,
+    "fragile": 1
+   }
+  },
+  "T4.1:FEDFUNDS|AR": {
+   "planned": 626,
+   "completed": 626,
+   "statuses": {
+    "failed": 71,
+    "adequate": 555
+   }
+  },
+  "T4.2:CPIAUCSL|AR(p=1)": {
+   "planned": 715,
+   "completed": 715,
+   "statuses": {
+    "adequate": 715
+   }
+  },
+  "T4.2:CPIAUCSL|AR(p=3)": {
+   "planned": 715,
+   "completed": 715,
+   "statuses": {
+    "adequate": 715
+   }
+  },
+  "T4.2:CPIAUCSL|AR(p=6)": {
+   "planned": 715,
+   "completed": 715,
+   "statuses": {
+    "adequate": 715
+   }
+  },
+  "T4.2:CPIAUCSL|AR(p=12)": {
+   "planned": 715,
+   "completed": 715,
+   "statuses": {
+    "adequate": 714,
+    "failed": 1
+   }
+  },
+  "T4.8:UNRATE|180:AR": {
+   "planned": 764,
+   "completed": 764,
+   "statuses": {
+    "adequate": 763,
+    "failed": 1
+   }
+  },
+  "T4.8:UNRATE|300:AR": {
+   "planned": 644,
+   "completed": 644,
+   "statuses": {
+    "adequate": 643,
+    "failed": 1
+   }
+  },
+  "T4.8:UNRATE|300:MSAR": {
+   "planned": 644,
+   "completed": 644,
+   "statuses": {
+    "adequate": 502,
+    "fragile": 139,
+    "failed": 3
+   }
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "planned": 764,
+   "completed": 764,
+   "statuses": {
+    "fragile": 391,
+    "adequate": 368,
+    "failed": 5
+   }
+  },
+  "T4.1:FEDFUNDS|MSAR": {
+   "planned": 626,
+   "completed": 626,
+   "statuses": {
+    "fragile": 453,
+    "failed": 49,
+    "adequate": 124
+   }
+  },
+  "T4.8:UNRATE|180:ARMA": {
+   "planned": 764,
+   "completed": 764,
+   "statuses": {
+    "adequate": 741,
+    "failed": 22,
+    "fragile": 1
+   }
+  },
+  "T4.1:UNRATE|ARMA": {
+   "planned": 703,
+   "completed": 703,
+   "statuses": {
+    "adequate": 695,
+    "failed": 7,
+    "fragile": 1
+   }
+  },
+  "T4.8:UNRATE|300:ARMA": {
+   "planned": 644,
+   "completed": 644,
+   "statuses": {
+    "adequate": 630,
+    "failed": 13,
+    "fragile": 1
+   }
+  },
+  "T4.1:FEDFUNDS|ARMA": {
+   "planned": 626,
+   "completed": 626,
+   "statuses": {
+    "adequate": 620,
+    "failed": 6
+   }
+  },
+  "T4.8:UNRATE|300:STAR": {
+   "planned": 644,
+   "completed": 644,
+   "statuses": {
+    "fragile": 576,
+    "adequate": 68
+   }
+  },
+  "T4.1:FEDFUNDS|STAR": {
+   "planned": 626,
+   "completed": 626,
+   "statuses": {
+    "fragile": 596,
+    "adequate": 30
+   }
+  }
+ },
+ "estimations_performed": {
+  "legacy": {},
+  "corrected": {}
+ },
+ "cache_integrity": {
+  "after_merge": {
+   "merged_files": 11638,
+   "merged_digest": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+   "original_files": 18964,
+   "original_digest": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0"
+  },
+  "after_assembly": {
+   "merged_refit": {
+    "name": "the merged refit cache",
+    "when": "during assembly",
+    "files": 11638,
+    "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+    "unchanged": true
+   },
+   "original_cache": {
+    "name": "the original fit cache",
+    "when": "during assembly",
+    "files": 18964,
+    "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+    "unchanged": true
+   }
+  }
+ }
+}

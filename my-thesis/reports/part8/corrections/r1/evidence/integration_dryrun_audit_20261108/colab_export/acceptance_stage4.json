@@ -1,0 +1,550 @@
+{
+ "run_id": "correction-20261108T053328-949fcd76",
+ "aggregation_status": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+ "criteria": {
+  "A1": {
+   "pass": true,
+   "detail": {
+    "estimations": {
+     "legacy": {},
+     "corrected": {},
+     "dependents": "none (estimators refused; fit calls counted)"
+    },
+    "cache_integrity": {
+     "stage2": {
+      "after_merge": {
+       "merged_files": 11638,
+       "merged_digest": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+       "original_files": 18964,
+       "original_digest": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0"
+      },
+      "after_assembly": {
+       "merged_refit": {
+        "name": "the merged refit cache",
+        "when": "during assembly",
+        "files": 11638,
+        "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+        "unchanged": true
+       },
+       "original_cache": {
+        "name": "the original fit cache",
+        "when": "during assembly",
+        "files": 18964,
+        "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+        "unchanged": true
+       }
+      }
+     },
+     "stage3": {
+      "before_replay": {
+       "merged_refit": {
+        "name": "the merged refit cache",
+        "when": "before the dependent-output replay",
+        "files": 11638,
+        "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+        "unchanged": true
+       },
+       "original_cache": {
+        "name": "the original fit cache",
+        "when": "before the dependent-output replay",
+        "files": 18964,
+        "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+        "unchanged": true
+       }
+      },
+      "after_replay": {
+       "merged_refit": {
+        "name": "the merged refit cache",
+        "when": "during the dependent-output replay",
+        "files": 11638,
+        "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+        "unchanged": true
+       },
+       "original_cache": {
+        "name": "the original fit cache",
+        "when": "during the dependent-output replay",
+        "files": 18964,
+        "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+        "unchanged": true
+       }
+      }
+     },
+     "stage4": {
+      "merged_refit": {
+       "name": "the merged refit cache",
+       "when": "during validation",
+       "files": 11638,
+       "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+       "unchanged": true
+      },
+      "original_cache": {
+       "name": "the original fit cache",
+       "when": "during validation",
+       "files": 18964,
+       "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+       "unchanged": true
+      }
+     }
+    },
+    "note": "both caches hold exactly the files recorded after merging, byte for byte, after assembly, after the dependent-output replay and after validation"
+   }
+  },
+  "A3": {
+   "pass": true,
+   "detail": {
+    "corrected": {
+     "counts": {
+      "published": 48,
+      "re-estimated": 17,
+      "cache": 17,
+      "unavailable": 26
+     },
+     "problems": []
+    },
+    "legacy_equal": true,
+    "legacy_problems": []
+   }
+  },
+  "A4": {
+   "pass": true,
+   "detail": {
+    "files_with_pending_rows": []
+   }
+  },
+  "A5": {
+   "pass": true,
+   "detail": {
+    "files_not_reproduced": [],
+    "chain_dependent_differences": [
+     "figures/F4.8_UNRATE.pdf",
+     "figures/F4.8_UNRATE.png",
+     "robustness/T4.1_transformation_predictive_tests.csv",
+     "robustness/T4.1_transformation_robustness.csv",
+     "robustness/window_length_comparison.csv",
+     "robustness/window_length_origin_audit.csv",
+     "robustness/window_length_predictive_tests.csv"
+    ]
+   }
+  },
+  "A6": {
+   "pass": true,
+   "detail": {
+    "T4.2_cpi_lag_predictive_tests.csv": {
+     "status": "equal_within_fp_tolerance",
+     "max_relative_difference": 1.3998462614168704e-16,
+     "cells_differing_in_print": [
+      {
+       "row": 4,
+       "column": "hlz_statistic",
+       "tier_a": "-1.5862070789136966",
+       "dry_run": "-1.5862070789136964"
+      },
+      {
+       "row": 5,
+       "column": "hlz_statistic",
+       "tier_a": "-2.6786288669947798",
+       "dry_run": "-2.67862886699478"
+      }
+     ]
+    }
+   }
+  },
+  "A7": {
+   "pass": true,
+   "detail": {
+    "chains": {
+     "T4.1:UNRATE|MSAR": {
+      "origins": 703,
+      "mismatches": 0
+     },
+     "T4.1:UNRATE|STAR": {
+      "origins": 703,
+      "mismatches": 0
+     },
+     "T4.8:CPIAUCSL|180:MSAR": {
+      "origins": 775,
+      "mismatches": 0
+     },
+     "T4.8:CPIAUCSL|180:STAR": {
+      "origins": 775,
+      "mismatches": 0
+     },
+     "T4.8:CPIAUCSL|300:MSAR": {
+      "origins": 655,
+      "mismatches": 0
+     },
+     "T4.8:CPIAUCSL|300:STAR": {
+      "origins": 655,
+      "mismatches": 0
+     },
+     "T4.8:FEDFUNDS|180:MSAR": {
+      "origins": 685,
+      "mismatches": 0
+     },
+     "T4.8:FEDFUNDS|180:STAR": {
+      "origins": 685,
+      "mismatches": 0
+     },
+     "T4.8:FEDFUNDS|300:MSAR": {
+      "origins": 565,
+      "mismatches": 0
+     },
+     "T4.8:GDPC1|150:MSAR": {
+      "origins": 167,
+      "mismatches": 0
+     },
+     "T4.8:GDPC1|90:MSAR": {
+      "origins": 227,
+      "mismatches": 0
+     },
+     "T4.8:INDPRO|180:MSAR": {
+      "origins": 775,
+      "mismatches": 0
+     },
+     "T4.8:INDPRO|180:STAR": {
+      "origins": 775,
+      "mismatches": 0
+     },
+     "T4.8:INDPRO|300:MSAR": {
+      "origins": 655,
+      "mismatches": 0
+     },
+     "T4.8:INDPRO|300:STAR": {
+      "origins": 655,
+      "mismatches": 0
+     },
+     "T4.8:M2SL|180:MSAR": {
+      "origins": 631,
+      "mismatches": 0
+     },
+     "T4.8:UNRATE|180:STAR": {
+      "origins": 764,
+      "mismatches": 0
+     }
+    },
+    "problems": []
+   }
+  },
+  "A8": {
+   "pass": true,
+   "detail": {
+    "chains": {
+     "T4.1:FEDFUNDS|AR": {
+      "statuses": {
+       "adequate": 555,
+       "failed": 71
+      },
+      "certificate": {
+       "records": 626,
+       "failed": 71
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.1:FEDFUNDS|ARMA": {
+      "statuses": {
+       "adequate": 620,
+       "failed": 6
+      },
+      "certificate": {
+       "adequate": 620,
+       "fragile": 0,
+       "failed": 6
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.1:FEDFUNDS|MSAR": {
+      "statuses": {
+       "fragile": 453,
+       "adequate": 124,
+       "failed": 49
+      },
+      "certificate": {
+       "adequate": 124,
+       "fragile": 453,
+       "failed": 49
+      },
+      "replaced": 43,
+      "expected_replaced": 43
+     },
+     "T4.1:FEDFUNDS|STAR": {
+      "statuses": {
+       "fragile": 596,
+       "adequate": 30
+      },
+      "certificate": {
+       "adequate": 30,
+       "fragile": 596,
+       "failed": 0
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.1:UNRATE|AR": {
+      "statuses": {
+       "adequate": 700,
+       "failed": 2,
+       "fragile": 1
+      },
+      "certificate": {
+       "records": 703,
+       "failed": 2
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.1:UNRATE|ARMA": {
+      "statuses": {
+       "adequate": 695,
+       "failed": 7,
+       "fragile": 1
+      },
+      "certificate": {
+       "adequate": 695,
+       "fragile": 1,
+       "failed": 7
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.2:CPIAUCSL|AR(p=1)": {
+      "statuses": {
+       "adequate": 715
+      },
+      "certificate": {
+       "records": 715,
+       "failed": 0
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.2:CPIAUCSL|AR(p=12)": {
+      "statuses": {
+       "adequate": 714,
+       "failed": 1
+      },
+      "certificate": {
+       "records": 715,
+       "failed": 1
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.2:CPIAUCSL|AR(p=3)": {
+      "statuses": {
+       "adequate": 715
+      },
+      "certificate": {
+       "records": 715,
+       "failed": 0
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.2:CPIAUCSL|AR(p=6)": {
+      "statuses": {
+       "adequate": 715
+      },
+      "certificate": {
+       "records": 715,
+       "failed": 0
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.8:UNRATE|180:AR": {
+      "statuses": {
+       "adequate": 763,
+       "failed": 1
+      },
+      "certificate": {
+       "records": 764,
+       "failed": 1
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.8:UNRATE|180:ARMA": {
+      "statuses": {
+       "adequate": 741,
+       "failed": 22,
+       "fragile": 1
+      },
+      "certificate": {
+       "adequate": 741,
+       "fragile": 1,
+       "failed": 22
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.8:UNRATE|180:MSAR": {
+      "statuses": {
+       "fragile": 391,
+       "adequate": 368,
+       "failed": 5
+      },
+      "certificate": {
+       "adequate": 368,
+       "fragile": 391,
+       "failed": 5
+      },
+      "replaced": 6,
+      "expected_replaced": 6
+     },
+     "T4.8:UNRATE|300:AR": {
+      "statuses": {
+       "adequate": 643,
+       "failed": 1
+      },
+      "certificate": {
+       "records": 644,
+       "failed": 1
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.8:UNRATE|300:ARMA": {
+      "statuses": {
+       "adequate": 630,
+       "failed": 13,
+       "fragile": 1
+      },
+      "certificate": {
+       "adequate": 630,
+       "fragile": 1,
+       "failed": 13
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.8:UNRATE|300:MSAR": {
+      "statuses": {
+       "adequate": 502,
+       "fragile": 139,
+       "failed": 3
+      },
+      "certificate": {
+       "adequate": 502,
+       "fragile": 139,
+       "failed": 3
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     },
+     "T4.8:UNRATE|300:STAR": {
+      "statuses": {
+       "fragile": 576,
+       "adequate": 68
+      },
+      "certificate": {
+       "adequate": 68,
+       "fragile": 576,
+       "failed": 0
+      },
+      "replaced": 0,
+      "expected_replaced": 0
+     }
+    },
+    "problems": []
+   }
+  },
+  "A9": {
+   "pass": true,
+   "detail": {
+    "chains": {
+     "forecasting:UNRATE|MSAR": {
+      "records": 704,
+      "statuses": {
+       "adequate": 440,
+       "fragile": 258,
+       "failed": 6
+      },
+      "b1_rows": 13
+     },
+     "T4.8:UNRATE|240:MSAR": {
+      "records": 704,
+      "statuses": {
+       "adequate": 440,
+       "fragile": 258,
+       "failed": 6
+      },
+      "b1_rows": 13
+     }
+    },
+    "problems": []
+   }
+  },
+  "A10": {
+   "pass": true,
+   "detail": {
+    "problems": []
+   }
+  },
+  "A11": {
+   "pass": true,
+   "detail": {
+    "f48_validated_against_integrated_table": {
+     "F4.8_CPIAUCSL.png": true,
+     "F4.8_CPIAUCSL.pdf": true,
+     "F4.8_FEDFUNDS.png": true,
+     "F4.8_FEDFUNDS.pdf": true,
+     "F4.8_GDPC1.png": true,
+     "F4.8_GDPC1.pdf": true,
+     "F4.8_INDPRO.png": true,
+     "F4.8_INDPRO.pdf": true,
+     "F4.8_M2SL.png": true,
+     "F4.8_M2SL.pdf": true,
+     "F4.8_UNRATE.png": true,
+     "F4.8_UNRATE.pdf": true
+    },
+    "problems": [],
+    "unexpected": []
+   }
+  },
+  "A12": {
+   "pass": true,
+   "detail": {
+    "files_changed_vs_base": 126,
+    "cells_changed_vs_base": 3885,
+    "decision_like_changes": 175,
+    "unexplained": [],
+    "unexplained_total": 0,
+    "files_changed_vs_published": 127,
+    "files_changed_vs_tier_a": 123
+   }
+  },
+  "A13": {
+   "pass": true,
+   "detail": {
+    "rows_checked": 886,
+    "problems": [],
+    "manifest": {
+     "run_id": "correction-20261108T053328-949fcd76",
+     "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+     "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+     "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+     "code_tree_dirty": false
+    }
+   }
+  },
+  "A15": {
+   "pass": true,
+   "detail": {
+    "aggregation_status": "COMPUTATION_COMPLETE_REVIEW_REQUIRED",
+    "review_items": [
+     "B2: T4.8:UNRATE|180:MSAR: 6 origins classification_changed (status or reason codes differ from the original fit)",
+     "B2: T4.1:FEDFUNDS|MSAR: failed fits 49 vs original 52",
+     "B2: T4.1:FEDFUNDS|MSAR: 14 origins classification_changed (status or reason codes differ from the original fit)"
+    ],
+    "sensitivity_reported": [
+     "B2: T4.1:FEDFUNDS|MSAR: 29 origins optimizer_sensitivity (warm-started model, same classification, different log-likelihood (another optimum or different start))",
+     "B2: T4.1:FEDFUNDS|MSAR: re-estimated log-likelihood lower than the original at 0 of the sensitivity origins"
+    ],
+    "problems": [],
+    "note": "D1 authorises candidate integration only; B2's review items remain review items"
+   }
+  }
+ }
+}

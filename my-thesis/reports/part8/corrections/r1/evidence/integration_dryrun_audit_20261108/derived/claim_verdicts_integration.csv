@@ -1,0 +1,25 @@
+claim_id,r1_status,integrated_status,dry_run_transition,action,note
+P04-regime-count,QUALIFIED,QUALIFIED,EVIDENCE_UNCHANGED,none,F6 unchanged
+C01,SUPPORTED,SUPPORTED,decision-like changed,none,"only change: nominal rejection against STAR (UNRATE h=1 abs), replicated at 180/300"
+C02,QUALIFIED,QUALIFIED,decision-like changed (UNRATE cells of shared files),none,CPI unaffected
+C03,QUALIFIED,QUALIFIED,decision-like changed (UNRATE cells of shared files),none,GDPC1/INDPRO unaffected
+C04,NOT_SUPPORTED,NOT_SUPPORTED,decision-like changed,none,strengthened: every new rejection is against a nonlinear model
+C05,SUPPORTED,SUPPORTED,EVIDENCE_UNCHANGED,none,
+C06,SUPPORTED,SUPPORTED,EVIDENCE_UNCHANGED,none,
+C07,SUPPORTED,SUPPORTED,decision-like changed (fit statuses),note,state 'predominantly' across models/targets; UNRATE MSAR mostly adequate (pre-existing)
+C08,SUPPORTED,SUPPORTED,decision-like changed,add qualification,STAR tests at explosive horizons carry no usable inference
+C09,NOT_SUPPORTED,NOT_SUPPORTED,EVIDENCE_UNCHANGED,none,
+C10,QUALIFIED,QUALIFIED,EVIDENCE_UNCHANGED,none,
+C11,SUPPORTED,SUPPORTED,EVIDENCE_UNCHANGED,none,
+C12,NOT_SUPPORTED,NOT_SUPPORTED,values changed,none,ARMA-vs-AR joint Wald p 0.034 is linear-vs-linear; slopes p 0.28
+C13,QUALIFIED,QUALIFIED,decision-like changed,none,rejections against STAR only
+C14,SUPPORTED,SUPPORTED,decision-like changed,wording change,97/10/1 unchanged counts; MSAR UNRATE h=1 advantage not window-robust
+C15,SUPPORTED,SUPPORTED,decision-like changed,wording change,no HLZ rejection; rankings depend on transformation; DM-HLN secondary rejects FEDFUNDS level MSAR
+C16,SUPPORTED,SUPPORTED,values changed,none,T4.2 final equals R1 preview
+C17,SUPPORTED,SUPPORTED,values changed,none,
+C18,QUALIFIED,QUALIFIED,EVIDENCE_UNCHANGED,none,F6
+C19,SUPPORTED,SUPPORTED,EVIDENCE_UNCHANGED,none,
+C20,SUPPORTED,SUPPORTED,values changed,none,LOCF ranks identical with/without exposed dates
+C21,SUPPORTED,SUPPORTED,decision-like changed,wording change,h=1 RMSE ranks compare different samples (2020-05); ARMA and MSAR tied on common sample
+C22,SUPPORTED,SUPPORTED,EVIDENCE_UNCHANGED,none,
+C23,QUALIFIED,QUALIFIED,manual,none,design claim

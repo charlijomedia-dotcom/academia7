@@ -1,0 +1,16 @@
+{
+ "files_in_manifest": 45,
+ "verified": 45,
+ "mismatches": [],
+ "export_manifest_sha256": "b7e585f3824e8ef01388f5ea1bd7674cf004097fa84e04bf682adff5f9f57612",
+ "session": "integration-20261108T052245Z-9bba8e",
+ "orchestration_commit": "a2c3171dbadc80f8821fdb91877d82622a1ff171",
+ "scientific_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+ "cache_identity": "3413465b508bb844",
+ "original_payloads": 18964,
+ "frozen_data_sha256": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+ "python": "3.11.18",
+ "estimation": "none (refused)",
+ "published": false,
+ "dry_run_exit": 4
+}

@@ -1,0 +1,19 @@
+{
+ "stage": "claims",
+ "finished_utc": "2026-11-08T05:40:17Z",
+ "claims": 24,
+ "transitions": {
+  "EVIDENCE_UNCHANGED": 9,
+  "REVIEW_REQUIRED: decision-like evidence changed": 10,
+  "REVIEW_REQUIRED: evidence values changed (no decision-like change)": 4,
+  "REVIEW_REQUIRED: supporting files not machine-checkable ('(all)'); assess manually": 1
+ },
+ "jury_ids": 33,
+ "jury_status": {
+  "NOT_MAPPED_TO_A_CLAIM: assess manually from jury_resolution_status.md": 14,
+  "REVIEW_REQUIRED": 14,
+  "EVIDENCE_UNCHANGED": 5
+ },
+ "report_lines_flagged": 70,
+ "problems": []
+}

@@ -1,0 +1,72 @@
+{
+ "certificates_and_evidence": {
+  "path": "/content/r1_part8_integration/repo/my-thesis/reports/part8/corrections/r1/evidence",
+  "files": 115,
+  "digest": "967ee16e548b60d8d29007bcd7c3e766383ca37f2e0e20fd5268765593f67fcc"
+ },
+ "drive_B1_certificates": {
+  "path": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_tierb_batches/B1/certificates",
+  "files": 2,
+  "digest": "fdbce8a6a937b3dea24f86e77fbd13a3bf8c0b1bc515345bf61c4b45b1c26fe3"
+ },
+ "drive_B2_certificates": {
+  "path": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_tierb_batches/B2/certificates",
+  "files": 2,
+  "digest": "9c1f88c51b3048f286c1225003d1bdd8d41204029d89ab864a7d4ebbf8fab7b8"
+ },
+ "drive_B3_certificates": {
+  "path": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_tierb_batches/B3/certificates",
+  "files": 2,
+  "digest": "b12fc3ac23b856790b01a73795acfaa4e3cb38285051711b08e6da8ab156853d"
+ },
+ "drive_tier_b_batches": {
+  "path": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_tierb_batches",
+  "files": 396,
+  "digest": "8a8644296e312276b229889cf4ef021dfe58b1be63f02815a14c5e64420fe460"
+ },
+ "extra_original_cache_archive_0": {
+  "path": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/fit_cache/3413465b508bb844",
+  "files": 286,
+  "digest": "2801bad763d0e1fd1cfb1c084f0ee3fa0ddab736501c4d98cc138eeeacbb1101"
+ },
+ "original_cache_local": {
+  "path": "/content/r1_part8_integration/original_cache/fits",
+  "files": 18964,
+  "digest": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0"
+ },
+ "pinned_approved_specs": {
+  "path": "/content/r1_part8_integration/pinned/my-thesis/approved-specs",
+  "files": 26,
+  "digest": "a734ab425ff904ffc23cef83d84d9cc316128b2099234f3b3a4788864207b4c7"
+ },
+ "published_output": {
+  "path": "/content/r1_part8_integration/pinned/my-thesis/output",
+  "files": 461,
+  "digest": "931f9d0bce36b7e2834ea7f364dc03e904d5c8b0b6c1605a6eea1c53a9cec961"
+ },
+ "repo_approved_specs": {
+  "path": "/content/r1_part8_integration/repo/my-thesis/approved-specs",
+  "files": 26,
+  "digest": "a734ab425ff904ffc23cef83d84d9cc316128b2099234f3b3a4788864207b4c7"
+ },
+ "repo_output": {
+  "path": "/content/r1_part8_integration/repo/my-thesis/output",
+  "files": 461,
+  "digest": "931f9d0bce36b7e2834ea7f364dc03e904d5c8b0b6c1605a6eea1c53a9cec961"
+ },
+ "repo_output_staging": {
+  "path": "/content/r1_part8_integration/repo/my-thesis/output_staging",
+  "files": 49,
+  "digest": "aa567074b6805ae331cf6967196297f05109789191aa9f68d620d058759568b9"
+ },
+ "repo_source_materials": {
+  "path": "/content/r1_part8_integration/repo/my-thesis/source-materials",
+  "files": 4,
+  "digest": "4c5dd7da489969832328aa9dcc816d06d785f71486ab0dcbede1601179eeec62"
+ },
+ "tier_a_archive": {
+  "path": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_tier_a_checkpoint/20261103T063749Z/refit_cache_20261103T063749Z.tar.gz",
+  "files": 1,
+  "digest": "43bc329f577637dc7e2e8f8a62d7aae216caa35f44d224a924a65788f9aaf089"
+ }
+}

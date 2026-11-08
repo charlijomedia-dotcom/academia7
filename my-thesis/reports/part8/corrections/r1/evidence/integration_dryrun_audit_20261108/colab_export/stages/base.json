@@ -1,0 +1,62 @@
+{
+ "stage": "base",
+ "finished_utc": "2026-11-08T05:29:41Z",
+ "files": 461,
+ "b1_staged": 46,
+ "published": 415,
+ "base_digest": "96db366b71dd234336576df335439ed3bcac80d46cb283bfd359fe6c6b8460ee",
+ "counter_provenance": [
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "history": "historical_original_execution",
+   "counter": "origins_from_cache",
+   "value": "691",
+   "attempted_origins": "704",
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "created_utc": "2026-10-31T01:38:09Z",
+   "source": "published output/forecasts/forecast_origin_audit.csv (unchanged)",
+   "meaning": "origins whose fit was served from the fit cache in that execution, rather than estimated in it"
+  },
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "history": "historical_original_execution",
+   "counter": "cache_horizon_misses",
+   "value": "13",
+   "attempted_origins": "704",
+   "run_id": "baseline-20261030T173044-949fcd76",
+   "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+   "created_utc": "2026-10-31T01:38:09Z",
+   "source": "published output/forecasts/forecast_origin_audit.csv (unchanged)",
+   "meaning": "origins whose cached forecast lacked a required horizon, so the forecast was recomputed in that execution"
+  },
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "history": "corrected_replay",
+   "counter": "origins_from_cache",
+   "value": "704",
+   "attempted_origins": "704",
+   "run_id": "b1-staged-20261106T154902Z",
+   "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+   "created_utc": "2026-11-06T15:49:02Z",
+   "source": "staged forecasts/forecast_origin_audit.csv",
+   "meaning": "origins whose fit was served from the fit cache in that execution, rather than estimated in it"
+  },
+  {
+   "series": "UNRATE",
+   "model": "MSAR",
+   "history": "corrected_replay",
+   "counter": "cache_horizon_misses",
+   "value": "0",
+   "attempted_origins": "704",
+   "run_id": "b1-staged-20261106T154902Z",
+   "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+   "created_utc": "2026-11-06T15:49:02Z",
+   "source": "staged forecasts/forecast_origin_audit.csv",
+   "meaning": "origins whose cached forecast lacked a required horizon, so the forecast was recomputed in that execution"
+  }
+ ]
+}

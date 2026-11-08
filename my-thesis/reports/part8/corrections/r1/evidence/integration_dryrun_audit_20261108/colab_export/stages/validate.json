@@ -1,0 +1,21 @@
+{
+ "stage": "validate",
+ "finished_utc": "2026-11-08T05:39:52Z",
+ "run_id": "correction-20261108T053328-949fcd76",
+ "criteria": {
+  "A1": true,
+  "A3": true,
+  "A4": true,
+  "A5": true,
+  "A6": true,
+  "A7": true,
+  "A8": true,
+  "A9": true,
+  "A10": true,
+  "A11": true,
+  "A12": true,
+  "A13": true,
+  "A15": true
+ },
+ "unexplained": 0
+}

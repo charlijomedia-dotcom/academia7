@@ -1,0 +1,95 @@
+path,status,kind,columns_added,columns_removed,rows_original,rows_corrected,rows_differing,cells_differing,columns_differing,within_tolerance,max_relative_difference
+data_audit/T2.0_concept_series.csv,identical,table,[],[],14.0,14.0,0.0,0.0,[],True,0.0
+data_audit/T2.1_data_dictionary.csv,identical,table,[],[],6.0,6.0,0.0,0.0,[],True,0.0
+data_audit/T4.9_locf_sample_comparison.csv,identical,table,[],[],32.0,32.0,0.0,0.0,[],True,0.0
+data_audit/locf_forecast_exposure.csv,identical,table,[],[],55268.0,55268.0,0.0,0.0,[],True,0.0
+data_audit/locf_forecast_exposure.parquet,identical,table,[],[],55268.0,55268.0,0.0,0.0,[],True,0.0
+data_audit/october_2025_imputation_audit.csv,identical,table,[],[],2.0,2.0,0.0,0.0,[],True,0.0
+diagnostics/T2.2_stationarity.csv,identical,table,[],[],32.0,32.0,0.0,0.0,[],True,0.0
+diagnostics/T2.2_transformation_decisions.csv,identical,table,[],[],2.0,2.0,0.0,0.0,[],True,0.0
+figures/F2.0_sample_timeline.pdf,identical,binary,,,,,,,,,
+figures/F2.0_sample_timeline.png,identical,binary,,,,,,,,,
+figures/F2.1_CPIAUCSL.pdf,identical,binary,,,,,,,,,
+figures/F2.1_CPIAUCSL.png,identical,binary,,,,,,,,,
+figures/F2.1_FEDFUNDS.pdf,identical,binary,,,,,,,,,
+figures/F2.1_FEDFUNDS.png,identical,binary,,,,,,,,,
+figures/F2.1_GDPC1.pdf,identical,binary,,,,,,,,,
+figures/F2.1_GDPC1.png,identical,binary,,,,,,,,,
+figures/F2.1_INDPRO.pdf,identical,binary,,,,,,,,,
+figures/F2.1_INDPRO.png,identical,binary,,,,,,,,,
+figures/F2.1_M2SL.pdf,identical,binary,,,,,,,,,
+figures/F2.1_M2SL.png,identical,binary,,,,,,,,,
+figures/F2.1_UNRATE.pdf,identical,binary,,,,,,,,,
+figures/F2.1_UNRATE.png,identical,binary,,,,,,,,,
+figures/F3.4_CPIAUCSL.pdf,identical,binary,,,,,,,,,
+figures/F3.4_CPIAUCSL.png,identical,binary,,,,,,,,,
+figures/F3.4_FEDFUNDS.pdf,identical,binary,,,,,,,,,
+figures/F3.4_FEDFUNDS.png,identical,binary,,,,,,,,,
+figures/F3.4_GDPC1.pdf,identical,binary,,,,,,,,,
+figures/F3.4_GDPC1.png,identical,binary,,,,,,,,,
+figures/F3.4_INDPRO.pdf,identical,binary,,,,,,,,,
+figures/F3.4_INDPRO.png,identical,binary,,,,,,,,,
+figures/F3.4_M2SL.pdf,identical,binary,,,,,,,,,
+figures/F3.4_M2SL.png,identical,binary,,,,,,,,,
+figures/F3.4_UNRATE.pdf,identical,binary,,,,,,,,,
+figures/F3.4_UNRATE.png,identical,binary,,,,,,,,,
+figures/F3.5_CPIAUCSL.pdf,identical,binary,,,,,,,,,
+figures/F3.5_CPIAUCSL.png,identical,binary,,,,,,,,,
+figures/F3.5_FEDFUNDS.pdf,identical,binary,,,,,,,,,
+figures/F3.5_FEDFUNDS.png,identical,binary,,,,,,,,,
+figures/F3.5_GDPC1.pdf,identical,binary,,,,,,,,,
+figures/F3.5_GDPC1.png,identical,binary,,,,,,,,,
+figures/F3.5_INDPRO.pdf,identical,binary,,,,,,,,,
+figures/F3.5_INDPRO.png,identical,binary,,,,,,,,,
+figures/F3.5_M2SL.pdf,identical,binary,,,,,,,,,
+figures/F3.5_M2SL.png,identical,binary,,,,,,,,,
+figures/F3.5_UNRATE.pdf,identical,binary,,,,,,,,,
+figures/F3.5_UNRATE.png,identical,binary,,,,,,,,,
+figures/F3.6_CPIAUCSL.pdf,identical,binary,,,,,,,,,
+figures/F3.6_CPIAUCSL.png,identical,binary,,,,,,,,,
+figures/F3.6_FEDFUNDS.pdf,identical,binary,,,,,,,,,
+figures/F3.6_FEDFUNDS.png,identical,binary,,,,,,,,,
+figures/F3.6_GDPC1.pdf,identical,binary,,,,,,,,,
+figures/F3.6_GDPC1.png,identical,binary,,,,,,,,,
+figures/F3.6_INDPRO.pdf,identical,binary,,,,,,,,,
+figures/F3.6_INDPRO.png,identical,binary,,,,,,,,,
+figures/F3.6_M2SL.pdf,identical,binary,,,,,,,,,
+figures/F3.6_M2SL.png,identical,binary,,,,,,,,,
+figures/F3.6_UNRATE.pdf,identical,binary,,,,,,,,,
+figures/F3.6_UNRATE.png,identical,binary,,,,,,,,,
+figures/F4.8_UNRATE.pdf,changed,binary,,,,,,,,,
+figures/F4.8_UNRATE.png,changed,binary,,,,,,,,,
+forecast_tests/T3.3A_hlz_pairwise.csv,equal_within_fp_tolerance,table,[],[],230.0,230.0,13.0,43.0,"[""statistic"", ""omega_modified"", ""omega_standard"", ""mean_variation"", ""mean_variation_ratio""]",True,1.902779933091994e-15
+forecast_tests/T3.3B_dm_hln_pairwise.csv,equal_within_fp_tolerance,table,[],[],230.0,230.0,4.0,7.0,"[""statistic"", ""p_value""]",True,4.982043022740598e-16
+forecast_tests/T3.3_main_forecast_table.csv,equal_within_fp_tolerance,table,[],[],92.0,92.0,2.0,3.0,"[""hlz_squared_statistic"", ""hlz_absolute_statistic""]",True,2.805933030578176e-16
+forecast_tests/T3.4_model_confidence_set.csv,identical,table,[],[],302.0,302.0,0.0,0.0,[],True,0.0
+forecast_tests/T3.5_state_loss_regression.csv,equal_within_fp_tolerance,table,[],[],69.0,69.0,4.0,47.0,"[""alpha"", ""alpha_se"", ""alpha_p"", ""beta_rec"", ""beta_rec_se"", ""beta_rec_p"", ""beta_turn"", ""beta_turn_se"", ""beta_turn_p"", ""joint_wald_statistic"", ""joint_wald_p"", ""slopes_wald_statistic"", ""slopes_wald_p""]",True,8.504011931447628e-14
+forecast_tests/T3.5_state_performance.csv,identical,table,[],[],368.0,368.0,0.0,0.0,[],True,0.0
+forecast_tests/T3.6_peak_trough_detail.csv,identical,table,[],[],48.0,48.0,0.0,0.0,[],True,0.0
+forecasts/forecast_horizon_coverage.csv,identical,table,[],[],92.0,92.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_CPIAUCSL.csv,identical,table,[],[],11368.0,11368.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_CPIAUCSL.parquet,identical,table,[],[],11368.0,11368.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_FEDFUNDS.csv,identical,table,[],[],9928.0,9928.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_FEDFUNDS.parquet,identical,table,[],[],9928.0,9928.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_GDPC1.csv,identical,table,[],[],2348.0,2348.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_GDPC1.parquet,identical,table,[],[],2348.0,2348.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_INDPRO.csv,identical,table,[],[],11368.0,11368.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_INDPRO.parquet,identical,table,[],[],11368.0,11368.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_M2SL.csv,identical,table,[],[],9064.0,9064.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_M2SL.parquet,identical,table,[],[],9064.0,9064.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_UNRATE.csv,identical,table,[],[],11192.0,11192.0,0.0,0.0,[],True,0.0
+forecasts/forecasts_UNRATE.parquet,identical,table,[],[],11192.0,11192.0,0.0,0.0,[],True,0.0
+manifests/T2.0A_frozen_manifest.csv,identical,table,[],[],8.0,8.0,0.0,0.0,[],True,0.0
+robustness/T4.1_transformation_predictive_tests.csv,changed,table,[],[],12.0,12.0,2.0,20.0,"[""n"", ""n_aligned"", ""mean_loss_differential"", ""hlz_statistic"", ""hlz_p_value_two_sided"", ""hlz_p_value_upper"", ""hlz_p_value_lower"", ""dm_hln_statistic"", ""dm_hln_p_value"", ""dm_hln_decision_5pct"", ""agrees_with_hlz""]",False,0.7155680951162353
+robustness/T4.1_transformation_robustness.csv,changed,table,[],[],32.0,32.0,2.0,13.0,"[""n_valid"", ""n_failed"", ""rmse"", ""mae"", ""n_common_with_benchmark"", ""oos_r2_vs_benchmark"", ""rmse_common"", ""mae_common"", ""mean_loss_diff_squared"", ""mean_loss_diff_absolute"", ""n""]",False,0.3410977200947668
+robustness/T4.2_cpi_lag_predictive_tests.csv,identical,table,[],[],6.0,6.0,0.0,0.0,[],True,0.0
+robustness/T4.2_cpi_lag_robustness.csv,identical,table,[],[],4.0,4.0,0.0,0.0,[],True,0.0
+robustness/T4.4_horizon_predictive_tests.csv,equal_within_fp_tolerance,table,[],[],138.0,138.0,4.0,7.0,"[""hlz_statistic"", ""dm_hln_statistic"", ""dm_hln_p_value""]",True,3.5272057360370095e-16
+robustness/T4.4_horizon_robustness.csv,identical,table,[],[],92.0,92.0,0.0,0.0,[],True,0.0
+robustness/T4.5_var_comparison.csv,equal_within_fp_tolerance,table,[],[],25.0,25.0,3.0,10.0,"[""rmse"", ""mae"", ""oos_r2_vs_benchmark"", ""rmse_common"", ""mae_common"", ""mean_loss_diff_squared"", ""mean_loss_diff_absolute""]",True,6.878491794699518e-15
+robustness/T4.5_var_predictive_tests.csv,equal_within_fp_tolerance,table,[],[],40.0,40.0,13.0,32.0,"[""mean_loss_differential"", ""hlz_statistic"", ""dm_hln_statistic"", ""dm_hln_p_value""]",True,3.390565006250347e-14
+robustness/T4.TP1_turning_window_sensitivity.csv,identical,table,[],[],552.0,552.0,0.0,0.0,[],True,0.0
+robustness/window_length_comparison.csv,changed,table,[],[],72.0,72.0,1.0,7.0,"[""rmse"", ""mae"", ""oos_r2_vs_benchmark"", ""rmse_common"", ""mae_common"", ""mean_loss_diff_squared"", ""mean_loss_diff_absolute""]",False,0.0010442214672221424
+robustness/window_length_mcs.csv,identical,table,[],[],282.0,282.0,0.0,0.0,[],True,0.0
+robustness/window_length_origin_audit.csv,changed,table,[],[],72.0,72.0,1.0,5.0,"[""n_adequate"", ""n_fragile"", ""rate_adequate"", ""rate_fragile"", ""reason_codes""]",False,0.01358695652173923
+robustness/window_length_predictive_tests.csv,changed,table,[],[],108.0,108.0,5.0,14.0,"[""mean_loss_differential"", ""hlz_statistic"", ""hlz_p_value_two_sided"", ""hlz_p_value_upper"", ""hlz_p_value_lower"", ""dm_hln_statistic"", ""dm_hln_p_value"", ""notes""]",False,0.0016485150349769078

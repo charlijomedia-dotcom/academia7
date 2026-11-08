@@ -1,0 +1,25 @@
+row,series,model,name,p_published,p_claims_reference,p_integrated,decision_published,decision_integrated
+250,UNRATE,ARMA vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.4763793953718124,0.4763793953718124,0.0342849825833298,do not reject,reject
+251,UNRATE,ARMA vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.4281662256134665,0.4281662256134665,0.2820138731698259,do not reject,do not reject
+252,UNRATE,MSAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.3288448217791299,0.3288448217791299,0.2483753090027436,do not reject,do not reject
+253,UNRATE,MSAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.4003273112722321,0.4003273112722321,0.161951305949809,do not reject,do not reject
+254,UNRATE,STAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.810033633324572,0.810033633324572,0.5664755022784307,do not reject,do not reject
+255,UNRATE,STAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.6870340343062022,0.6870340343062022,0.3762731529541864,do not reject,do not reject
+256,UNRATE,ARMA vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7934420906320682,0.7934420906320682,0.2138941673283147,do not reject,do not reject
+257,UNRATE,ARMA vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.5996357167499577,0.5996357167499577,0.2908299274584693,do not reject,do not reject
+258,UNRATE,MSAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7916902762502475,0.7916902762502475,0.6531082554700467,do not reject,do not reject
+259,UNRATE,MSAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.5998888737135666,0.5998888737135666,0.5305125083897906,do not reject,do not reject
+260,UNRATE,STAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.5053391227092476,0.5053391227092476,0.720486975498372,do not reject,do not reject
+261,UNRATE,STAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.3111998962094306,0.3111998962094306,0.5131424243435733,do not reject,do not reject
+262,UNRATE,ARMA vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7998781011408899,0.7998781011408899,0.3188526171876493,do not reject,do not reject
+263,UNRATE,ARMA vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.6062259056087421,0.6062259056087421,0.4279009504231608,do not reject,do not reject
+264,UNRATE,MSAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7999140267937455,0.7999140267937455,0.407176643241955,do not reject,do not reject
+265,UNRATE,MSAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.6067913576961523,0.6067913576961523,0.6510171265926513,do not reject,do not reject
+266,UNRATE,STAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7816903631742986,0.7816903631742986,0.7816849912594311,do not reject,do not reject
+267,UNRATE,STAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.5827005431287884,0.5827005431287884,0.5826938531420538,do not reject,do not reject
+268,UNRATE,ARMA vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.796928014690403,0.796928014690403,0.2578617782163304,do not reject,do not reject
+269,UNRATE,ARMA vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.6015430055174711,0.6015430055174711,0.1351243005856301,do not reject,do not reject
+270,UNRATE,MSAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7967772235145794,0.7967772235145794,0.6381017143949035,do not reject,do not reject
+271,UNRATE,MSAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.6018686165620681,0.6018686165620681,0.5792952619562208,do not reject,do not reject
+272,UNRATE,STAR vs AR,joint Wald (alpha = beta_rec = beta_turn = 0),0.7945557197700586,0.7945557197700586,0.7945459717232809,do not reject,do not reject
+273,UNRATE,STAR vs AR,state-dependence Wald (beta_rec = beta_turn = 0),0.598235521405335,0.598235521405335,0.5982233154959117,do not reject,do not reject

@@ -1,0 +1,396 @@
+{
+ "stage": "dependents",
+ "finished_utc": "2026-11-08T05:39:01Z",
+ "run_id": "correction-20261108T053328-949fcd76",
+ "estimation": "none (estimators refused; fit calls counted)",
+ "cache_integrity": {
+  "before_replay": {
+   "merged_refit": {
+    "name": "the merged refit cache",
+    "when": "before the dependent-output replay",
+    "files": 11638,
+    "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+    "unchanged": true
+   },
+   "original_cache": {
+    "name": "the original fit cache",
+    "when": "before the dependent-output replay",
+    "files": 18964,
+    "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+    "unchanged": true
+   }
+  },
+  "after_replay": {
+   "merged_refit": {
+    "name": "the merged refit cache",
+    "when": "during the dependent-output replay",
+    "files": 11638,
+    "digest_after": "b403274dc56cc82751ca8a34cce53ec193f8e88ab01e41813c264137b58e21d7",
+    "unchanged": true
+   },
+   "original_cache": {
+    "name": "the original fit cache",
+    "when": "during the dependent-output replay",
+    "files": 18964,
+    "digest_after": "7e283de334a0b879120f300c3a169a37f9a4ca1cecf3e73168d7bdf43716b2a0",
+    "unchanged": true
+   }
+  }
+ },
+ "t47_registry": {
+  "T4.1:FEDFUNDS|MSAR": {
+   "published_rows": "9106-9837",
+   "events_before": 732,
+   "events_after": 741,
+   "kept_verbatim": 718,
+   "candidate_blocks_with_same_signature": 1
+  },
+  "T4.8:UNRATE|180:MSAR": {
+   "published_rows": "17203-17865",
+   "events_before": 663,
+   "events_after": 651,
+   "kept_verbatim": 651,
+   "candidate_blocks_with_same_signature": 1
+  }
+ },
+ "t47_status_counts": {
+  "rows_changed": [
+   {
+    "row": 23,
+    "series": "FEDFUNDS",
+    "model": "MSAR",
+    "status": "failed",
+    "before": "52",
+    "after": "49"
+   },
+   {
+    "row": 24,
+    "series": "FEDFUNDS",
+    "model": "MSAR",
+    "status": "fragile",
+    "before": "2410",
+    "after": "2413"
+   },
+   {
+    "row": 63,
+    "series": "UNRATE",
+    "model": "MSAR",
+    "status": "adequate",
+    "before": "2115",
+    "after": "2120"
+   },
+   {
+    "row": 65,
+    "series": "UNRATE",
+    "model": "MSAR",
+    "status": "fragile",
+    "before": "1385",
+    "after": "1380"
+   }
+  ]
+ },
+ "wald_rows": {
+  "wald_rows": 134,
+  "validated_against_base_t35": true,
+  "rows_changed": [
+   {
+    "row": 250,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value",
+     "decision_5pct",
+     "implication",
+     "stars"
+    ]
+   },
+   {
+    "row": 251,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 256,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 257,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 262,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 263,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 268,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 269,
+    "series": "UNRATE",
+    "model": "ARMA vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 252,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 253,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 258,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 259,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 264,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 265,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 270,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 271,
+    "series": "UNRATE",
+    "model": "MSAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 254,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 255,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 260,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 261,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 266,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 267,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 272,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   },
+   {
+    "row": 273,
+    "series": "UNRATE",
+    "model": "STAR vs AR",
+    "columns": [
+     "statistic",
+     "p_value"
+    ]
+   }
+  ]
+ },
+ "t46_summary": {
+  "rows_changed": [],
+  "validated_against_base": true
+ },
+ "f48": {
+  "reproduced_from_base": {
+   "CPIAUCSL": {
+    "F4.8_CPIAUCSL.png": true,
+    "F4.8_CPIAUCSL.pdf": true
+   },
+   "FEDFUNDS": {
+    "F4.8_FEDFUNDS.png": true,
+    "F4.8_FEDFUNDS.pdf": true
+   },
+   "GDPC1": {
+    "F4.8_GDPC1.png": true,
+    "F4.8_GDPC1.pdf": true
+   },
+   "INDPRO": {
+    "F4.8_INDPRO.png": true,
+    "F4.8_INDPRO.pdf": true
+   },
+   "M2SL": {
+    "F4.8_M2SL.png": true,
+    "F4.8_M2SL.pdf": true
+   },
+   "UNRATE": {
+    "F4.8_UNRATE.png": true,
+    "F4.8_UNRATE.pdf": true
+   }
+  },
+  "re_rendered": [
+   "F4.8_UNRATE.png",
+   "F4.8_UNRATE.pdf"
+  ],
+  "inputs_changed": [
+   "UNRATE"
+  ]
+ },
+ "records": {
+  "files": 464,
+  "by_source": {
+   "original_unchanged": 359,
+   "regenerated_r1": 95,
+   "regenerated_integration_dependents": 7,
+   "correction_record": 3
+  }
+ },
+ "dependent_files": [
+  "diagnostics/all_test_results.csv",
+  "figures/F4.8_UNRATE.pdf",
+  "figures/F4.8_UNRATE.pdf.provenance.json",
+  "figures/F4.8_UNRATE.png",
+  "figures/F4.8_UNRATE.png.provenance.json",
+  "models/fit_records.csv",
+  "models/fit_records.parquet",
+  "robustness/T4.6_arma_garch_summary.csv",
+  "robustness/T4.7_failure_registry.csv",
+  "robustness/T4.7_status_counts.csv"
+ ],
+ "fit_records_replaced": {
+  "T4.1:FEDFUNDS|AR": 0,
+  "T4.1:FEDFUNDS|ARMA": 0,
+  "T4.1:FEDFUNDS|MSAR": 43,
+  "T4.1:FEDFUNDS|STAR": 0,
+  "T4.1:UNRATE|AR": 0,
+  "T4.1:UNRATE|ARMA": 0,
+  "T4.2:CPIAUCSL|AR(p=1)": 0,
+  "T4.2:CPIAUCSL|AR(p=12)": 0,
+  "T4.2:CPIAUCSL|AR(p=3)": 0,
+  "T4.2:CPIAUCSL|AR(p=6)": 0,
+  "T4.8:UNRATE|180:AR": 0,
+  "T4.8:UNRATE|180:ARMA": 0,
+  "T4.8:UNRATE|180:MSAR": 6,
+  "T4.8:UNRATE|300:AR": 0,
+  "T4.8:UNRATE|300:ARMA": 0,
+  "T4.8:UNRATE|300:MSAR": 0,
+  "T4.8:UNRATE|300:STAR": 0
+ }
+}
