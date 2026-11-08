@@ -75,6 +75,10 @@ Use this mode only if the tree is gone.
 2. **Run records:** `correction_run_manifest.json`, `correction_summary.json`, and `T2.0A_frozen_manifest.csv` (its `run_id` and `created_utc` columns).
 3. **Regenerated tables** whose `run_id` and `created_utc` columns change. Each must be listed in the audited `files_vs_published.csv`, so that every other cell is fixed by the identical `cells_vs_*` reports.
 4. **`console.log`:** not compared (timings and paths).
+5. **`aggregation_plan.json`, field `assembly.legacy_run_id` only** (added 8 November 2026 after the first reconstruction was refused on it).
+   - The integration driver stamps the legacy (first) workflow pass with its own run ID, separate from the corrected run ID, so a re-run necessarily changes it.
+   - Both values must have the run-ID structure `correction-YYYYMMDDTHHMMSS-949fcd76`, and the audited value must be `correction-20261108T053006-949fcd76`.
+   - Only the value at that one path is replaced. The same string elsewhere in the plan, a new run-ID key, or the same field name in another report still counts as a difference.
 
 **Why bytes cannot be required in Mode B.** Each regenerated table stamps its own wall-clock time. A rebuilt tree therefore cannot reproduce the audited bytes of those files. Its numerical content is pinned by the cell reports.
 

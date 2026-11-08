@@ -37,6 +37,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import tarfile
 from pathlib import Path
 
@@ -46,6 +47,11 @@ AUDITED_ORCHESTRATION = "a2c3171dbadc80f8821fdb91877d82622a1ff171"
 SCIENTIFIC_PIN = "8aaa4217536ab3cb942dd248dd19ece7838a8d60"
 AUDITED_EXPORT_MANIFEST_SHA256 = "b7e585f3824e8ef01388f5ea1bd7674cf004097fa84e04bf682adff5f9f57612"
 AUDITED_INVENTORY_SHA256 = "d55721d3798ae52d57de0f193bf97953f1ac49633d4d35a85cdcbe2d70827089"
+# The integration driver stamps the legacy (first) workflow pass with its own run id, separately
+# from the corrected run id. It is run provenance, recorded in exactly one place.
+AUDITED_LEGACY_RUN_ID = "correction-20261108T053006-949fcd76"
+LEGACY_RUN_ID_FIELD = ("aggregation_plan.json", ("assembly", "legacy_run_id"))
+RUN_ID_PATTERN = re.compile(r"correction-\d{8}T\d{6}-949fcd76")
 AUDITED_EXPORT_FILES = 45
 RELEASE_FILES = 465
 INVENTORY = "manifests/output_inventory.csv"
@@ -196,13 +202,47 @@ def _csv_without(data: bytes, drop: frozenset) -> list[list[str]]:
     return [[r[i] if i < len(r) else "" for i in keep] for r in rows]
 
 
+def _legacy_run_id_problem(new_doc, audited_doc) -> str | None:
+    """None if both documents carry a well-formed run id at LEGACY_RUN_ID_FIELD (the audited one
+    being the audited session's); otherwise the reason. Only that one field may then differ."""
+    values = []
+    for doc in (new_doc, audited_doc):
+        node = doc
+        for key in LEGACY_RUN_ID_FIELD[1]:
+            node = node.get(key) if isinstance(node, dict) else None
+        if not isinstance(node, str) or not RUN_ID_PATTERN.fullmatch(node):
+            return f"{'.'.join(LEGACY_RUN_ID_FIELD[1])} missing or not a run id: {node!r}"
+        values.append(node)
+    if values[1] != AUDITED_LEGACY_RUN_ID:
+        return f"audited {'.'.join(LEGACY_RUN_ID_FIELD[1])} is {values[1]!r}"
+    return None
+
+
+def _replace_at(doc, path: tuple[str, ...], value):
+    """Copy of doc with the value at path replaced (the path must exist)."""
+    if not path:
+        return value
+    out = dict(doc)
+    out[path[0]] = _replace_at(doc[path[0]], path[1:], value)
+    return out
+
+
 def compare_report(relative: str, new: bytes, audited: bytes, tokens: dict[str, str]) -> str | None:
     """None if equivalent; otherwise the reason."""
     if relative.endswith(".gz"):
         new, audited = gzip.decompress(new), gzip.decompress(audited)
         relative = relative[:-3]
     if relative.endswith(".json"):
-        a, b = normalise(json.loads(new), tokens), normalise(json.loads(audited), tokens)
+        new_doc, audited_doc = json.loads(new), json.loads(audited)
+        if relative == LEGACY_RUN_ID_FIELD[0]:
+            reason = _legacy_run_id_problem(new_doc, audited_doc)
+            if reason:
+                return reason
+            # Only the value at that field is replaced; the same string anywhere else still counts.
+            path = LEGACY_RUN_ID_FIELD[1]
+            new_doc = _replace_at(new_doc, path, "<legacy_run_id>")
+            audited_doc = _replace_at(audited_doc, path, "<legacy_run_id>")
+        a, b = normalise(new_doc, tokens), normalise(audited_doc, tokens)
         return None if a == b else "JSON content differs beyond the identified provenance keys"
     if relative == "release_manifests/output_inventory.csv":
         return None                     # compared file by file in compare_inventory
@@ -343,6 +383,10 @@ def equivalence_gate(new_dryrun: Path | str, audited_export: Path | str, *, exit
               "audited_run_id": AUDITED_RUN_ID, "new_session": new_session, "new_run_id": new_run_id,
               "checks": checks, "reports": reports, "inventory": inventory,
               "allowed_differences": {"json_keys": sorted(VOLATILE_KEYS),
+                                      "json_fields": {LEGACY_RUN_ID_FIELD[0]:
+                                                      ".".join(LEGACY_RUN_ID_FIELD[1])
+                                                      + " (run id of the legacy workflow pass; "
+                                                      + "structure validated)"},
                                       "csv_columns": sorted(PROVENANCE_COLUMNS),
                                       "sidecar_keys": sorted(SIDECAR_KEYS),
                                       "sidecar_annotations": SIDECAR_ANNOTATIONS,

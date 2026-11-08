@@ -17,6 +17,9 @@ import r1_integration_archive as arc  # noqa: E402
 AUDITED = arc.AUDITED_SESSION
 NEW = "integration-20991231T000000Z-abcdef"
 NEW_RUN = "correction-20991231T000001-949fcd76"
+NEW_LEGACY = "correction-20991231T000000-949fcd76"
+REAL_EXPORT = (Path(__file__).resolve().parents[3] / "reports/part8/corrections/r1/evidence"
+               / "integration_dryrun_audit_20261108/colab_export")
 
 
 def sha(data: bytes) -> str:
@@ -68,6 +71,10 @@ def make_dryrun(root: Path, session: str, run_id: str, *, wald_p: str = "0.034")
         "criteria": {"A1": {"pass": True, "detail": {"note": f"{session}/x"}},
                      "A13": {"pass": True, "detail": {"manifest": {"run_id": run_id}}}}}))
     write(d / "dryrun_report/unexplained_differences.csv", "empty\r\n")
+    legacy = arc.AUDITED_LEGACY_RUN_ID if run_id == arc.AUDITED_RUN_ID else NEW_LEGACY
+    write(d / "dryrun_report/aggregation_plan.json", json.dumps({
+        "run_id": run_id, "assembly": {"legacy_run_id": legacy, "corrected_run_id": run_id,
+                                       "regenerated_files": 95}}))
     write(d / "dryrun_report/decision_changes.csv", f"path,row,old,new\nall_test_results,250,0.476,{wald_p}\n")
     write(d / "dryrun_report/cells_vs_published.csv.gz", gzip.compress(b"path,row,new\nx,1,2\n", mtime=1))
     write(d / "dryrun_report/console.log", f"started {session} at some time")
@@ -327,3 +334,108 @@ def test_committed_notebook_matches_the_generator():
     commit = tool.split('"')[1]
     assert nb == mk.build(commit)
     assert (COLAB / mk.PRESERVE_CELL_FILE).read_text() == mk.preserve_cell(commit)
+
+
+# -- the legacy workflow pass's run id (aggregation_plan.json assembly.legacy_run_id) ----------
+
+RECONSTRUCTED_LEGACY = "correction-20261108T103110-949fcd76"   # observed in the reconstruction
+PLAN = "aggregation_plan.json"
+
+
+def _real_plan() -> dict:
+    return json.loads((REAL_EXPORT / PLAN).read_text())
+
+
+def _tokens(new_run: str = NEW_RUN) -> dict:
+    return {NEW: "<session>", AUDITED: "<session>", new_run: "<run_id>", arc.AUDITED_RUN_ID: "<run_id>"}
+
+
+def _reconstructed_plan(**assembly) -> dict:
+    plan = _real_plan()
+    plan["run_id"] = NEW_RUN
+    plan["assembly"] = dict(plan["assembly"], legacy_run_id=RECONSTRUCTED_LEGACY,
+                            corrected_run_id=NEW_RUN, **assembly)
+    return plan
+
+
+def _compare(new: dict, audited: dict | None = None, relative: str = PLAN):
+    audited = _real_plan() if audited is None else audited
+    return arc.compare_report(relative, json.dumps(new).encode(), json.dumps(audited).encode(),
+                              _tokens())
+
+
+def test_real_audited_and_reconstructed_plans_pass_after_the_narrow_normalisation():
+    audited = _real_plan()
+    assert audited["assembly"]["legacy_run_id"] == arc.AUDITED_LEGACY_RUN_ID
+    assert arc.sha256_file(REAL_EXPORT / PLAN) == next(
+        f["sha256"] for f in json.loads((REAL_EXPORT / "export_manifest.json").read_text())["files"]
+        if f["path"] == PLAN)                       # the committed audited evidence, unmodified
+    assert _compare(_reconstructed_plan()) is None
+    # Without the field-specific rule the same pair is refused (the failure seen in Colab).
+    assert _compare(_reconstructed_plan(), relative="other_plan.json") is not None
+
+
+@pytest.mark.parametrize("change", [
+    lambda p: p["assembly"].update(regenerated_files=94),
+    lambda p: p["assembly"]["flags"].update(f8_readable_main_panel=True),
+    lambda p: p["assembly"]["estimations_performed"]["legacy"].update(T41=1),
+    lambda p: p["assembly"]["reconciliation"][1].update(cells_changed_by_corrections=7),
+    lambda p: p["assembly"].update(corrected_run_id="correction-20261108T999999-949fcd76"),
+    lambda p: p.update(publish=True),
+    lambda p: p.pop("cache_integrity"),
+], ids=["regenerated_files", "flag", "estimation", "reconciliation_cells", "corrected_run_id",
+        "publish", "dropped_section"])
+def test_any_substantive_change_in_the_plan_is_still_refused(change):
+    plan = _reconstructed_plan()
+    change(plan)
+    assert _compare(plan) == "JSON content differs beyond the identified provenance keys"
+
+
+@pytest.mark.parametrize("value", [None, "", "baseline-20261108T103110-949fcd76",
+                                   "correction-20261108T103110-deadbeef",
+                                   "correction-2026-11-08T10:31:10-949fcd76",
+                                   " correction-20261108T103110-949fcd76", 7])
+def test_malformed_or_missing_legacy_run_id_is_refused(value):
+    plan = _reconstructed_plan()
+    if value is None:
+        plan["assembly"].pop("legacy_run_id")
+    else:
+        plan["assembly"]["legacy_run_id"] = value
+    assert "missing or not a run id" in _compare(plan)
+
+
+def test_unexpected_run_identification_fields_remain_detectable():
+    # The reconstructed legacy run id appearing in any other field is still a difference.
+    plan = _reconstructed_plan()
+    plan["merge"] = dict(plan["merge"], source_run=RECONSTRUCTED_LEGACY)
+    audited = _real_plan()
+    audited["merge"] = dict(audited["merge"], source_run=arc.AUDITED_LEGACY_RUN_ID)
+    assert _compare(plan, audited) is not None
+    # A new run-identification key, even next to the admitted one, is not normalised.
+    plan = _reconstructed_plan(legacy_run_id_retry=RECONSTRUCTED_LEGACY)
+    assert _compare(plan, dict(_real_plan(), assembly=dict(
+        _real_plan()["assembly"], legacy_run_id_retry=arc.AUDITED_LEGACY_RUN_ID))) is not None
+    # The same field name in another report is not normalised.
+    other = {"assembly": {"legacy_run_id": RECONSTRUCTED_LEGACY}}
+    assert _compare(other, {"assembly": {"legacy_run_id": arc.AUDITED_LEGACY_RUN_ID}},
+                    relative="stages/aggregate.json") is not None
+    # The audited side must carry the audited session's legacy run id.
+    assert "audited assembly.legacy_run_id" in _compare(
+        _reconstructed_plan(), dict(_real_plan(), assembly=dict(
+            _real_plan()["assembly"], legacy_run_id=RECONSTRUCTED_LEGACY)))
+
+
+def test_gate_accepts_a_reconstruction_whose_legacy_run_id_differs(audited, tmp_path):
+    _, export = audited
+    new = make_dryrun(tmp_path / "new", NEW, NEW_RUN)
+    plan = json.loads((new / "dryrun_report" / PLAN).read_text())
+    assert plan["assembly"]["legacy_run_id"] == NEW_LEGACY != arc.AUDITED_LEGACY_RUN_ID
+    report = arc.equivalence_gate(new, export, exit_code=4, new_session=NEW, new_run_id=NEW_RUN,
+                                  published_dir=tmp_path / "published")
+    assert report["ok"] and PLAN in report["allowed_differences"]["json_fields"]
+    # ...and refuses when anything else in the plan changes as well.
+    plan["assembly"]["regenerated_files"] = 96
+    write(new / "dryrun_report" / PLAN, json.dumps(plan))
+    with pytest.raises(arc.ArchiveRefused, match="reports_identical"):
+        arc.equivalence_gate(new, export, exit_code=4, new_session=NEW, new_run_id=NEW_RUN,
+                             published_dir=tmp_path / "published")
