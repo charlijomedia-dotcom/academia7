@@ -1,6 +1,6 @@
 """Check the numbers quoted in the integrated Part 8 report drafts.
 
-Usage: python check_draft_numbers.py DRAFTS_DIR EVIDENCE_DIR OUT_CSV
+Usage: python check_draft_numbers.py REPORT_DIR EVIDENCE_DIR OUT_CSV [MATRIX_FILE]
 
 Each check names a draft file, a text fragment that must appear in it, and
 the integrated value (from integrated_numbers.json or the registry json)
@@ -197,4 +197,7 @@ def main(drafts, evidence, out_csv):
 
 
 if __name__ == "__main__":
+    # optional 4th argument: the claim-matrix file name (the final directory's differs)
+    if len(sys.argv) > 4:
+        CHECKS = [(sys.argv[4] if c[0] == MX else c[0], *c[1:]) for c in CHECKS]
     sys.exit(main(*sys.argv[1:4]))

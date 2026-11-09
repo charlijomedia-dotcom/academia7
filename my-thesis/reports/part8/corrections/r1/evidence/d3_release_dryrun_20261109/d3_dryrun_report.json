@@ -1,0 +1,65 @@
+{
+ "purpose": "local real-data dry run of the D3 release workflow (no push, no Drive write)",
+ "input": "local archive-equivalent tree (its 12 F3.4 files equal the archive byte for byte); NUMBERS_RUN_ID substituted with the local run id correction-20261107T193414-949fcd76 because only its sidecars differ in run provenance; in Colab the archive itself is used",
+ "tool_checkout": "9c873a18b444316df320cb1e437613631b9ef51c",
+ "code_at_pin": true,
+ "render_check": {
+  "legacy_equals_archive": 12,
+  "f8_equals_approved": 12,
+  "render_guard": {
+   "matplotlib_version": "3.11.2",
+   "matplotlib_fname": "/home/user/academia7/my-thesis/colab/matplotlibrc.default",
+   "rc_differs_from_default": [],
+   "font_family": [
+    "sans-serif"
+   ],
+   "resolved_text_font": "DejaVuSans.ttf",
+   "expected_matplotlib_version": "3.11.2",
+   "ok": true
+  }
+ },
+ "assembly": {
+  "files": 465,
+  "identical_to_archive": 440,
+  "changed": [
+   "figures/F3.4_CPIAUCSL.pdf",
+   "figures/F3.4_CPIAUCSL.pdf.provenance.json",
+   "figures/F3.4_CPIAUCSL.png",
+   "figures/F3.4_CPIAUCSL.png.provenance.json",
+   "figures/F3.4_FEDFUNDS.pdf",
+   "figures/F3.4_FEDFUNDS.pdf.provenance.json",
+   "figures/F3.4_FEDFUNDS.png",
+   "figures/F3.4_FEDFUNDS.png.provenance.json",
+   "figures/F3.4_GDPC1.pdf",
+   "figures/F3.4_GDPC1.pdf.provenance.json",
+   "figures/F3.4_GDPC1.png",
+   "figures/F3.4_GDPC1.png.provenance.json",
+   "figures/F3.4_INDPRO.pdf",
+   "figures/F3.4_INDPRO.pdf.provenance.json",
+   "figures/F3.4_INDPRO.png",
+   "figures/F3.4_INDPRO.png.provenance.json",
+   "figures/F3.4_M2SL.pdf",
+   "figures/F3.4_M2SL.pdf.provenance.json",
+   "figures/F3.4_M2SL.png",
+   "figures/F3.4_M2SL.png.provenance.json",
+   "figures/F3.4_UNRATE.pdf",
+   "figures/F3.4_UNRATE.pdf.provenance.json",
+   "figures/F3.4_UNRATE.png",
+   "figures/F3.4_UNRATE.png.provenance.json",
+   "manifests/output_inventory.csv"
+  ],
+  "approved_f8": 12,
+  "ok": true
+ },
+ "record_inventory_sha256": "aee17b8446e37e95acc1194d7ce914133d9d34573cc88b4d4436e2aa8c7a5071",
+ "git": {
+  "commit": "99fae2d4907687bf0fde02a195c59552adae0baa",
+  "parent": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "files_verified": 469,
+  "changes": 131
+ },
+ "drive_payload_members": 465,
+ "publish_state": "not_authorized",
+ "drive_written": false,
+ "remote_release_branch": null
+}
