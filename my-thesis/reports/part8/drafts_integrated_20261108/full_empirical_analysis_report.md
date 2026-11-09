@@ -16,7 +16,7 @@
 >   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
 >   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
 >   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
-> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
+> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) was approved on 9 November 2026 as a presentation-only amendment. Its 12 figures are prepared for the release in `corrections/r1/f8_review/`; the archived candidate itself still holds the pre-F8 F3.4. D3 (publication) is planned in `corrections/r1/part8_d3_release_plan.md` and not executed.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
 **Integrated candidate (the subject of this draft)**
@@ -116,7 +116,7 @@ Still open:
 
 - **F5.** The FEDFUNDS K=2 MSAR is unidentified but is labelled fragile (interpretation only).
 - **F6.** No global MSAR likelihood maximum is guaranteed; the UNRATE K=3 fit is not a global maximum.
-- **F7.2 / F8.** Presentation of flagged forecasts in F3.4. F8 (readable main panel) remains disabled.
+- **F7.2 / F8 — prepared.** Flagged forecasts are drawn as markers (F1). F8, the readable F3.4 main panel, was approved on 9 November 2026 as presentation only. Its figures are prepared for the release (`corrections/r1/f8_review/`), and the archived candidate holds the pre-F8 F3.4.
 
 ### 3. Forecasting: no approved nonlinear model gives formally supported, robust gains over AR at the baseline horizon h=1
 
@@ -687,7 +687,8 @@ RMSE is on each model's own valid forecasts; OOS R² on each competitor's dates 
 See `jury_resolution_status.md`. In summary, for the empirically testable remarks:
 
 - **Resolved on the integrated candidate** (subject to approval and publication): R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03 and P-05.
-- **Partially addressed:** R1-06 (F3.4 presentation; F8 disabled), R1-11 (empirical part only) and P-04 (UNRATE K=3 inconclusive, F6).
+- **Resolved, conditional on publishing the F8 figures:** R1-06.
+- **Partially addressed:** R1-11 (empirical part only) and P-04 (UNRATE K=3 inconclusive, F6).
 - **Outside empirical scope:** R1-01 to R1-05, R1-08, R1-10, R1-16, R1-20, R1-21 and P-06.
 
 ---
@@ -718,7 +719,11 @@ See `jury_resolution_status.md`. In summary, for the empirically testable remark
 - The baseline transformations are unchanged (§3.4: ADF and KPSS agree).
 - For UNRATE, the break-allowing test does not reject a unit root, so the level-stationarity conclusion rests on ADF and KPSS alone.
 
-**F6.** The UNRATE K=2/K=3 information-criterion comparison is INCONCLUSIVE; see `corrections/correction_plan.md` §F6.
+**F6 (final disposition, 9 November 2026).** The UNRATE K=2/K=3 information-criterion comparison is INCONCLUSIVE and is retained as such. The published K=3 log-likelihood (13.88) lies below K=2's (102.04) although K=3 nests K=2, so it is a local optimum.
+- A nesting-informed start reaches 101.53 for K=3, 0.10 below K=2. It was never approved and is not adopted.
+- The approved multistart is unchanged, and no optimisation is re-run.
+- Full-sample MSAR optima are platform-sensitive, so regime parameters describe local optima only.
+- Sources: `corrections/r1/f6_scientific_disposition.md`; `corrections/correction_plan.md` §F6.
 
 **B2 (accepted 8 November 2026).** The two MSAR robustness chains recomputed under the approved live warm-start rule are included. The certificate keeps its `REVIEW_REQUIRED` status as issued; the acceptance, the 20 classification changes and the 29 optimiser sensitivities are recorded in `corrections/r1/b2_scientific_adjudication.md`. The FEDFUNDS-level DM-HLN change (p 0.053 → 0.029; HLZ unchanged at the 5% decision, 0.130 → 0.145) is attributable jointly to F1 and B2 and is not decomposed.
 
@@ -726,7 +731,7 @@ See `jury_resolution_status.md`. In summary, for the empirically testable remark
 
 ## H. Limitations
 
-1. **Corrections and open items.** F1–F4 and F7.1 are applied in the candidate. F5 (interpretation) and F6 (no global MSAR maximum) remain. F8 (readable F3.4 main panel) is disabled, so for CPI an exploding STAR forecast still compresses the F3.4 main panel. The candidate is archived (`archive-20261109T080914Z-3c7d68`) but not yet approved or published.
+1. **Corrections and open items.** F1–F4 and F7.1 are applied in the candidate. F5 (interpretation) and F6 (no global MSAR maximum) remain. F8 (readable F3.4 main panel) is approved and its figures are prepared, but the archived candidate still holds the pre-F8 F3.4, in which an exploding STAR forecast compresses the CPI main panel. The release plan replaces them. The candidate is archived (`archive-20261109T080914Z-3c7d68`) but not yet approved or published.
 2. **Single country.** The design covers one country (P-06) and uses a pseudo-out-of-sample evaluation on revised data, so it says nothing about real-time nowcasting (R1-20).
 3. **Few episodes.** There are 23 recession quarters for GDPC1 and 58 to 85 recession months for the monthly targets (T3.5R `n_recession`). State-specific inference has low power, and the 2020 episode dominates squared-error metrics.
 4. **Search depth.** MSAR used 2 deterministic starts, and the likelihoods are multimodal (F6). Different local optima are plausible across rolling origins, and B2 shows them directly: 20 classification changes and 29 optimiser sensitivities in two robustness chains under the approved warm-start rule.

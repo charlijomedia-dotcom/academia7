@@ -1,0 +1,20 @@
+{
+ "inputs_local_equivalent_release": {
+  "forecasts/forecasts_GDPC1.parquet": "a92984e6d5000044bd2646f91aa646ef2b22a98a71a108f92d79faac39fb814c",
+  "forecasts/forecasts_CPIAUCSL.parquet": "9fd4a29de515258842ded684770011f2a6a1f2667bedce0502580f5f3e27e066",
+  "forecasts/forecasts_UNRATE.parquet": "6c8df009215f798e5d320f1e2c43a41c7c5b86d1a1a19a084697505f00d23206",
+  "forecasts/forecasts_INDPRO.parquet": "d0d1bfa7feb9d9c636969443136aa607265f1301f794715d611ce11091b177a6",
+  "forecasts/forecasts_FEDFUNDS.parquet": "18a8291091c9c8d0a9a2312fc5e20f67c996f0ec81acf53221afbc9987c4af52",
+  "forecasts/forecasts_M2SL.parquet": "00b38972138c3e5f4951d9fc666c9c898eadde64384a434dc6ab2e67f9ac283a",
+  "diagnostics/T2.2_transformation_decisions.csv": "e56d5e3255730adec1868e2ee870e5edff4c2c68af4ad446bcd9b05f169e1b94"
+ },
+ "archived_sha256": {
+  "forecasts/forecasts_GDPC1.parquet": "34e1db22a1773a64bf142e8a45f110bb2e10962e5e6f5a5b4cff77a3695b8f95",
+  "forecasts/forecasts_CPIAUCSL.parquet": "27b476ca2cec888a92e18c133c318ce3babf62701e39111556f87c3c242c1db3",
+  "forecasts/forecasts_UNRATE.parquet": "4e581b4e9bb7d83d8e52e115e0b715ddf91fe88031b7c52a497ce92f73158403",
+  "forecasts/forecasts_INDPRO.parquet": "fc092ae5b4cb064e80a9e5b1a94b8027adc0125bfa30cba05b4d6a93ba1d6eae",
+  "forecasts/forecasts_FEDFUNDS.parquet": "2367a001e9b687ba421939daf4024af1575ca1da3585cb89a6e493fb539b1371",
+  "forecasts/forecasts_M2SL.parquet": "b194bfbd5855bde2e8e4b041f34dc7e585b0a967e4b69c20eaf04b933dd232d9",
+  "diagnostics/T2.2_transformation_decisions.csv": "58cc104032227defe6720eb4bbd1dbf2539ed668b140e0c7b7b495461aa54c81"
+ }
+}

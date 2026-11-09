@@ -16,7 +16,7 @@
 >   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
 >   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
 >   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
-> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
+> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) was approved on 9 November 2026 as a presentation-only amendment. Its 12 figures are prepared for the release in `corrections/r1/f8_review/`; the archived candidate itself still holds the pre-F8 F3.4. D3 (publication) is planned in `corrections/r1/part8_d3_release_plan.md` and not executed.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
 **Provenance.** The baseline estimation run is `baseline-20261030T173044-949fcd76` (code `46a53181e5e9`, data `7e7dc769…`). The integrated candidate re-scores its forecasts and replaces the recomputed chains listed in the banner. Full evidence and citations are in `full_empirical_analysis_report.md`, whose §0 defines the source keys.

@@ -18,7 +18,7 @@
 >   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
 >   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
 >   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
-> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
+> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) was approved on 9 November 2026 as a presentation-only amendment. Its 12 figures are prepared for the release in `corrections/r1/f8_review/`; the archived candidate itself still holds the pre-F8 F3.4. D3 (publication) is planned in `corrections/r1/part8_d3_release_plan.md` and not executed.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
 **Basis of the statuses.** They are assessed on the integrated candidate. A status of RESOLVED means the requested analysis is performed and reported in the candidate; it becomes final only when the candidate is archived, approved and published. Changes from the published statuses are marked "(was …)".
@@ -58,12 +58,15 @@
 - **Remaining action:** Part 9.
 
 **R1-06 — Misleading figures**
-- **Status:** PARTIALLY ADDRESSED (unchanged).
-- **Evidence:**
-  - The failure-aware figure design exists. F3.4 has a separate diagnostic panel, and extreme forecasts are flagged (`figures/F3.4_*`).
-  - With F1 the UNRATE main panel no longer plots the FAILED AR forecast spike; failed fits appear in the diagnostic panel as hollow markers labelled "failed fit (raw value, not scored)" (`corrections/r1/figure_review.md`).
-  - **Remaining defect:** F8 (readable main panel) is disabled, so for CPI an exploding STAR forecast (1.4×10¹¹ in 1974) still compresses the F3.4 main panel. That conflicts with Part 5 §13.1.
-- **Remaining action:** your decision on F8 (presentation only; no number changes).
+- **Status:** RESOLVED, conditional on the F8 figures being the ones published (was PARTIALLY ADDRESSED). The archived candidate still holds the pre-F8 F3.4.
+- **Evidence:** the three defects behind the partial status are addressed in the actual figures (`corrections/r1/f8_review/f8_figure_review.md`):
+  - **F1.** The UNRATE main panel no longer plots the failed AR forecast. Failed fits appear in the diagnostic panel as hollow markers labelled "failed fit (raw value, not scored)".
+  - **F1 marker rule.** Flagged forecasts are unconnected markers, not lines joining non-adjacent dates.
+  - **F8 (approved 9 November 2026).** The CPI main panel is no longer compressed by the STAR forecast of 1.4×10¹¹. It now shows actual inflation and all models readably. The 15 STAR extremes appear in the diagnostic panel on a labelled symmetric-log axis; the INDPRO extremes, down to −1.9×10⁸, are shown the same way.
+  - The omission from the main panel is stated in each title. Nothing is clipped.
+  - With F8 off, the renderer reproduces all 12 archived F3.4 files byte for byte, so the F8 figures use exactly the archived inputs.
+- **Residual presentation points (not §13.1 defects):** the M2SL diagnostic panel stays linear, so its dense STAR markers overlap. There is an empty pre-sample span from 1945 to the first forecast.
+- **Remaining action:** publish the F8 figures with the release (`corrections/r1/part8_d3_release_plan.md`).
 
 **R1-07 — Uncertainty on cross-correlation displays**
 - **Status:** RESOLVED.
@@ -215,7 +218,7 @@
 - **Status:** PARTIALLY ADDRESSED.
   - The exercise was performed for all six targets and K=3 is not credible for any of them.
   - The published UNRATE K=3 estimate is not a global maximum (log-likelihood below K=2's, although K=3 nests K=2), so the UNRATE in-sample comparison is INCONCLUSIVE.
-  - The F6 numerical review is in `corrections/f6_k3_nesting_feasibility.csv`. Any modification of T4.3 needs your approval.
+  - The F6 numerical review is in `corrections/f6_k3_nesting_feasibility.csv`. The final disposition, retaining the result as inconclusive with no re-optimisation, is `corrections/r1/f6_scientific_disposition.md`.
 - **Evidence:**
   - Full-sample K=2 against K=3 for all six targets, per amended §11.1 (`robustness/T4.3_regime_count.csv`, `_conclusion.csv`, `T4.3_regime_parameters.csv`, `figures/F4.3_*`).
   - K=3 is not credible for any target.
@@ -223,7 +226,7 @@
   - K=2 is retained as predeclared.
   - The UNRATE comparison is inconclusive (non-global K=3 optimum; F6).
   - "Useful" is judged in-sample only, by design: no K=3 forecasts were made.
-- **Remaining action:** Decide whether to approve the nesting-informed K=3 start (F6). Until then, report UNRATE as inconclusive.
+- **Remaining action:** none in Part 8. By your decision of 9 November 2026 the nesting-informed start is not adopted and the approved multistart is unchanged. The UNRATE K=3 comparison stays INCONCLUSIVE, so P-04 stays PARTIALLY ADDRESSED. Part 9 states the limitation (`corrections/r1/f6_scientific_disposition.md`).
 
 **P-05 — One-step horizon limitation**
 - **Status:** RESOLVED (was PARTIALLY ADDRESSED).
@@ -249,9 +252,9 @@
 
 | Status | Count | Remarks |
 |---|---|---|
-| RESOLVED | 15 | R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03, P-05 |
-| PARTIALLY ADDRESSED | 3 | R1-06 (F8 disabled), R1-11 (empirical part only), P-04 (F6) |
+| RESOLVED | 16 | R1-06 (conditional on publishing the F8 figures), R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03, P-05 |
+| PARTIALLY ADDRESSED | 2 | R1-11 (empirical part only), P-04 (F6) |
 | UNRESOLVED | 0 | — |
 | OUTSIDE EMPIRICAL SCOPE | 11 | R1-01, R1-02, R1-03, R1-04, R1-05, R1-08, R1-10, R1-16, R1-20, R1-21, P-06 |
 
-Seven remarks move from PARTIALLY ADDRESSED to RESOLVED on the integrated candidate: R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05. **R1-06 stays partial**, because F8 is disabled; the integration audit had listed it among the remarks that could move, but that assumed the F3.4 presentation issue would be settled. P-04 depends on F6. R1-11 stays partial (its textual part is Part 9). All RESOLVED statuses are final only after the archived candidate is approved and published.
+Seven remarks move from PARTIALLY ADDRESSED to RESOLVED on the integrated candidate: R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05. **R1-06** moves to RESOLVED only with F8, approved on 9 November 2026, and only once the F8 figures are published. P-04 stays partial (F6, final disposition). R1-11 stays partial (its textual part is Part 9). All RESOLVED statuses are final only after the archived candidate is approved and published.

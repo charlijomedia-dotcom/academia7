@@ -152,3 +152,16 @@ The integration audit verified these as unchanged. Where a source could not be f
 | Jury R1-22, V-07; full report H.1 | Remaining action is now approval and publication, not archiving | archive |
 | **New:** `claim_evidence_matrix_candidate.csv` | Candidate matrix with 24 claims and candidate statuses (13 SUPPORTED, 8 QUALIFIED, 3 NOT_SUPPORTED). Columns: evidence, required limitations, wording reference and archive source. The published `claim_evidence_matrix_adjudicated.csv`, the R1 matrix and `output/manifests/claim_evidence_matrix.csv` are unchanged | — |
 | Validation | `number_checks.csv`: 128 checks (23 new: C16, registry and matrix), all pass | `corrections/r1/check_draft_numbers.py` |
+
+## Revision of 9 November 2026 (F8, F6, D3)
+
+| Where | Change | Basis |
+|---|---|---|
+| All five banners | "F8 remains disabled" replaced: F8 approved (presentation only), its figures prepared in `corrections/r1/f8_review/`, the archived candidate still pre-F8; D3 planned, not executed | your approval of 9 Nov 2026; `f8_review/f8_figure_review.md`; `part8_d3_release_plan.md` |
+| Jury R1-06 | PARTIALLY ADDRESSED → **RESOLVED, conditional on the F8 figures being published**. The evidence cites the actual before/after figures. Residual presentation points listed (M2SL diagnostic overlap; empty pre-sample span) | `f8_figure_review.md` §5 |
+| Jury summary | 16 resolved / 2 partial / 11 outside scope (was 15 / 3 / 11) | — |
+| Jury P-04; full report H0 (F6) | Final F6 disposition: retained INCONCLUSIVE, no re-optimisation, nesting-informed start not adopted, platform sensitivity, limits on regime interpretation. P-04 stays PARTIALLY ADDRESSED | `corrections/r1/f6_scientific_disposition.md` |
+| Full report §2 and H.1 | F7.2/F8 "prepared"; the pre-F8 archive figures are named | — |
+| C16 (claims, robustness) | The 714-date AR(2) comparison is labelled an **[audit] sensitivity** whose alignment is inferred, not verified from stored T4.2 forecasts. Status stays QUALIFIED | your instruction |
+| Candidate matrix | C08: F8 figure evidence. P04-regime-count and C18: F6 disposition. C16: audit-sensitivity label. No status changes | — |
+| Validation | `number_checks.csv`: 128 / 128 pass. New `code/tests/unit/test_f8_review.py` (8 tests) | — |

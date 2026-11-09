@@ -1,0 +1,14 @@
+{
+  "artifact": "F3.4_CPIAUCSL.png",
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
+  "created_utc": "<release time>",
+  "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
+  "figure_id": "F3.4",
+  "figure_sha256": "9ef97dd5f98389cb72a91b42f52760e3f3608646152eab320bc015e4b60dfd07",
+  "horizon": 1,
+  "presentation_amendment": "F8 readable main panel (Part 5 \u00a713.1), approved 9 November 2026: flagged forecasts omitted from the main panel and shown in the diagnostic panel; presentation only, no number changed",
+  "rendered_from": "archive-20261109T080914Z-3c7d68 forecasts (equivalent inputs verified by byte-identical legacy re-render)",
+  "run_id": "<release run id>",
+  "series": "CPIAUCSL"
+}

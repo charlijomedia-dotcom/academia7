@@ -111,13 +111,13 @@ robustness_findings.md,"AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.96
 robustness_findings.md,"AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute)",T4.2P/AR(p=12)|squared/hlz_p,0.327,0.3274,True,True,True
 robustness_findings.md,"AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute)",T4.2P/AR(p=12)|absolute/hlz_p,0.101,0.1012,True,True,True
 robustness_findings.md,the baseline p=2 (2.967 on its own 715 dates),C16/AR2_own_715/rmse,2.967,2.966832990472226,True,True,True
-final_claims_allowed.md,"AR(2) has RMSE 2.966 but MAE 2.084, against AR(12)'s 2.967 and 2.080 [audit]",C16/AR2_on_714/mae,2.084,2.083681998186257,True,True,True
+final_claims_allowed.md,"AR(2) has RMSE 2.966 but MAE 2.084, against AR(12)'s 2.967 and 2.080. This is an **[audit] sensitivity**",C16/AR2_on_714/mae,2.084,2.083681998186257,True,True,True
 final_claims_allowed.md,2.967 for AR(12) on the 714 common dates; 2.967 for AR(2) on its own 715 dates,C16/AR2_own_715/rmse,2.967,2.966832990472226,True,True,True
 main_findings.md,AR(12) does not significantly beat AR(1) (HLZ p = 0.327 / 0.101),T4.2P/AR(p=12)|absolute/hlz_p,0.101,0.1012,True,True,True
 full_empirical_analysis_report.md,2.966 on the 714 dates [audit],C16/AR2_on_714/rmse,2.966,2.9661830248454897,True,True,True
 full_empirical_analysis_report.md,"counted 34,122 rows (512 failed, 33,610 fragile)",REG/rows,34122,34122,True,True,True
 main_findings.md,"512 FAILED (including 105 `UNSTABLE_AR`) and 33,610 FRAGILE (T4.7). These totals are verified on the archived",REG/by_category_reason/failed|UNSTABLE_AR,105,105,True,True,True
-claim_evidence_matrix_candidate.csv,AR(2) RMSE 2.966 / MAE 2.084 vs AR(12) 2.967 / 2.080 [audit],C16/AR2_on_714/rmse,2.966,2.9661830248454897,True,True,True
+claim_evidence_matrix_candidate.csv,AR(2) RMSE 2.966 / MAE 2.084 vs AR(12) 2.967 / 2.080 [audit sensitivity,C16/AR2_on_714/rmse,2.966,2.9661830248454897,True,True,True
 claim_evidence_matrix_candidate.csv,"MSAR 10,246 fragile of 15,443 (5,128 adequate, 69 failed)",FR_status_by_model/MSAR/fragile,10246,10246,True,True,True
 claim_evidence_matrix_candidate.csv,"34,122 events (512 failed, 33,610 fragile",REG/by_category/fragile,33610,33610,True,True,True
 claim_evidence_matrix_candidate.csv,"RMSE on the 682 dates common to all four AR 0.546, ARMA 0.482, MSAR 0.492, STAR 0.556",UNRATE_h1_common_all_four/ARMA,0.482,0.481509,True,True,True

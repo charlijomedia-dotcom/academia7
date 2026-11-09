@@ -16,7 +16,7 @@
 >   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
 >   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
 >   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
-> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
+> - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) was approved on 9 November 2026 as a presentation-only amendment. Its 12 figures are prepared for the release in `corrections/r1/f8_review/`; the archived candidate itself still holds the pre-F8 F3.4. D3 (publication) is planned in `corrections/r1/part8_d3_release_plan.md` and not executed.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
 **Provenance.** Baseline estimation run `baseline-20261030T173044-949fcd76` (code `46a53181e5e9`); integrated candidate `correction-20261108T053328-949fcd76` (see the banner).
@@ -101,7 +101,7 @@ The p=1, 3, 6 and 12 rows use 714 common dates, from 1967-02 to 2026-08. The pub
 
 - **Descriptively**, lags beyond 2 bring no visible gain. p=3, 6 and 12 are within 0.01 RMSE of the baseline p=2 (2.967 on its own 715 dates).
   - On the 714 T4.2 dates, AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12). The RMSE ordering and the MAE ordering disagree.
-  - The [audit] figures are computed from the baseline AR(2) forecasts after removing target 1974-10. That is the only failed p=12 fit (origin 1974-09), so it is presumed to be the date missing from the T4.2 sample.
+  - These [audit] figures are an **audit sensitivity**, not an approved output. They are computed from the baseline AR(2) forecasts after removing target 1974-10. That is the only failed p=12 fit (origin 1974-09), so it is presumed to be the date missing from the T4.2 sample.
 - **Inferentially**, p=1 is worse than p=3 under HLZ only with absolute loss (p = 0.013). AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute). DM-HLN also rejects for p=3 squared, p=6 absolute and p=12 absolute; HLZ governs.
 - **What is not established.** T4.2 benchmarks against p=1, not against the baseline p=2, so no direct p=2-versus-p=12 test exists.
   - A non-rejection would in any case not show equal accuracy, and no equivalence test was run.
