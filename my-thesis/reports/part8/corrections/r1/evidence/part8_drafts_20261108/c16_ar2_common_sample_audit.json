@@ -1,0 +1,28 @@
+{
+ "purpose": "C16 descriptive check (audit computation, no estimation): baseline AR(2) h=1 accuracy on the T4.2 common sample",
+ "source_forecasts": "output/forecasts/forecasts_CPIAUCSL.csv (baseline AR(p=2) h=1 forecasts; CPI AR has no failed fit, so F1 does not change them)",
+ "p12_fits": 715,
+ "p12_failed": [
+  {
+   "refit_date": "1974-09-01",
+   "reason_codes": "UNSTABLE_AR"
+  }
+ ],
+ "assumption": "the 714 T4.2 common dates are the 715 baseline dates minus target 1974-10 (the only failed p=12 fit, origin 1974-09); T4.2 chain forecasts are not stored, so this is presumed, not verified date by date",
+ "AR2_own_715": {
+  "n": 715,
+  "rmse": 2.966832990472226,
+  "mae": 2.0855220695730226
+ },
+ "AR2_on_714": {
+  "n": 714,
+  "rmse": 2.9661830248454897,
+  "mae": 2.083681998186257
+ },
+ "AR12_T4.2": {
+  "n": 714,
+  "rmse": 2.967493,
+  "mae": 2.07958,
+  "source": "robustness/T4.2_cpi_lag_robustness.csv (integrated)"
+ }
+}

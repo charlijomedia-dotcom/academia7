@@ -1,16 +1,21 @@
 # Part 8 — Robustness findings (integrated candidate, draft)
 
-> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026. Not approved and not published.**
+> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026; revised 9 November 2026 after the archive. Not approved and not published.**
 >
 > - **Basis.** The integrated candidate of the Part 8 integration dry run: session `integration-20261108T052245Z-9bba8e`, run `correction-20261108T053328-949fcd76`, orchestration commit `a2c3171`, scientific pin `8aaa4217` (unchanged).
 >   - It combines the R1 corrections (F1 failed-forecast scoring, F2 guarded MCS, F3 sign label, F4 Zivot–Andrews, F7.1) with the Tier A and Tier B recomputations: B1 (baseline UNRATE MSAR), B2 and B3.
 >   - B2 was accepted on 8 November 2026 under the approved live warm-start rule (`corrections/r1/b2_scientific_adjudication.md`). Its certificate keeps the status `REVIEW_REQUIRED` as issued.
 >   - No model was estimated in the integration.
-> - **Source of the numbers.** The 465-file candidate tree is **not yet under `output/`** and has not yet been archived.
->   - Every number here comes from the integrated tables, rebuilt from the claims-reference release plus the audited cell-level differences of that session: `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`.
->   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the numbers quoted here against those tables.
->   - Table keys (T3.3, T4.1, …) name the files of the candidate tree, which keep the paths of `output/`.
->   - Under CLAUDE.md §9 the numbers become citable only after the candidate is archived, approved and published.
+> - **Archive (9 November 2026).** The candidate is archived, not published.
+>   - Location: `baseline/r1_part8_candidate_archive/archive-20261109T080914Z-3c7d68/` on Drive. It holds 465 files; `release.tar.gz` has sha256 `54b61285…d7b4ee`.
+>   - It is a non-estimating reconstruction (run `correction-20261109T080220-949fcd76`, archive tool `878d928`).
+>   - It passed all nine equivalence checks against the audited session. Cell-level comparisons, decisions, chain sources and protected inputs are identical, and figures and original files are byte-identical. The 101 other differing files differ only in run provenance.
+>   - Verification record: `corrections/r1/archive_verification_20261109.md`.
+> - **Source of the numbers.** The candidate is **not yet under `output/`**.
+>   - Every number comes from the integrated tables in `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`. The equivalence gate ties their cell content to the archived tree.
+>   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
+>   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
+>   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
 > - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
@@ -73,7 +78,7 @@ Bold: lowest h=1 RMSE in the alternative transformation. **AR ranks first under 
 - No transformation yields significant forecast differences against AR under HLZ, and none yields a nonlinear gain.
 - **Point rankings do depend on the transformation:** AR has the lowest h=1 RMSE under both alternatives.
 - STAR produces explosive forecasts when UNRATE is differenced.
-- The FEDFUNDS level specification is numerically worse-behaved, which supports the baseline differencing.
+- The FEDFUNDS level specification is numerically worse-behaved (71 unstable AR fits, 49 failed MSAR fits). This is consistent with the baseline differencing, which was chosen beforehand by the §3.4 rule and not on these results.
 - **Status:** SUPPORTED that the inferential conclusions do not depend on the transformation; QUALIFIED for rankings (claim C15).
 
 ---
@@ -94,13 +99,17 @@ The p=1, 3, 6 and 12 rows use 714 common dates, from 1967-02 to 2026-08. The pub
 
 **Reading**
 
-- Lags beyond 2 add nothing: p=3, 6 and 12 are within 0.01 RMSE of p=2.
-- p=1 is worse. Under HLZ that is significant only for p=3 with absolute loss (p = 0.013). DM-HLN also rejects for p=3 squared, p=6 absolute and p=12 absolute; HLZ governs.
-- The 12-lag structure criticised by the jury is unnecessary for forecasting. The BIC-selected p=2 performs as well as p=12.
-- T4.2 benchmarks against p=1, not against the baseline p=2. A direct p=2-versus-p=12 test is therefore not in the outputs.
+- **Descriptively**, lags beyond 2 bring no visible gain. p=3, 6 and 12 are within 0.01 RMSE of the baseline p=2 (2.967 on its own 715 dates).
+  - On the 714 T4.2 dates, AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12). The RMSE ordering and the MAE ordering disagree.
+  - The [audit] figures are computed from the baseline AR(2) forecasts after removing target 1974-10. That is the only failed p=12 fit (origin 1974-09), so it is presumed to be the date missing from the T4.2 sample.
+- **Inferentially**, p=1 is worse than p=3 under HLZ only with absolute loss (p = 0.013). AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute). DM-HLN also rejects for p=3 squared, p=6 absolute and p=12 absolute; HLZ governs.
+- **What is not established.** T4.2 benchmarks against p=1, not against the baseline p=2, so no direct p=2-versus-p=12 test exists.
+  - A non-rejection would in any case not show equal accuracy, and no equivalence test was run.
+  - The models are nested. Under a fixed rolling window, the larger model's extra parameters add estimation noise even when the extra lags have no population effect. A raw RMSE tie therefore does not decide whether the extra lags carry information.
+  - The supported statement is: **no evidence that 12 lags improve one-step forecast accuracy over AR(2)**. It is not "AR(2) forecasts as accurately as AR(12)", and it is not a proof that 12 lags bring no benefit.
 - The p=2 row is on its own 715-date sample, not on the 714 common dates; the comparison with p=2 is descriptive.
 
-**Status:** SUPPORTED.
+**Status:** QUALIFIED (claim C16). R1-15 remains resolved: the requested analysis is performed and reported (CLAUDE.md §12).
 
 ---
 

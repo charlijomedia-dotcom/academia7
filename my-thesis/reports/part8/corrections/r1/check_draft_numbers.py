@@ -12,6 +12,7 @@ from pathlib import Path
 MF, RF, FR, JR, CL = ("main_findings.md", "robustness_findings.md",
                       "full_empirical_analysis_report.md",
                       "jury_resolution_status.md", "final_claims_allowed.md")
+MX = "claim_evidence_matrix_candidate.csv"
 H1 = ("T3.3_h1",)
 CHECKS = [
     # (file, fragment, json path, quoted value, decimals)
@@ -121,6 +122,31 @@ CHECKS = [
     (CL, "for ARMA (in ARMA's favour, p = 0.0076)", ("T4.1P_parsed", "FEDFUNDS ARMA level absolute", "dm"), 0.0076, 4),
     (CL, "and for MSAR (against MSAR, p = 0.029)", ("T4.1P_parsed", "FEDFUNDS MSAR level absolute", "dm"), 0.029, 3),
     (CL, "HLZ governs (p = 0.146 and 0.145)", ("T4.1P_parsed", "FEDFUNDS MSAR level absolute", "hlz"), 0.145, 3),
+    # C16 (revised 9 November 2026)
+    (RF, "AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)", ("C16", "AR2_on_714", "rmse"), 2.966, 3),
+    (RF, "AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)", ("C16", "AR2_on_714", "mae"), 2.084, 3),
+    (RF, "AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)", ("T4.2", "AR(p=12)", "rmse"), 2.967, 3),
+    (RF, "AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)", ("T4.2", "AR(p=12)", "mae"), 2.080, 3),
+    (RF, "AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute)", ("T4.2P", "AR(p=12)|squared", "hlz_p"), 0.327, 3),
+    (RF, "AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute)", ("T4.2P", "AR(p=12)|absolute", "hlz_p"), 0.101, 3),
+    (RF, "the baseline p=2 (2.967 on its own 715 dates)", ("C16", "AR2_own_715", "rmse"), 2.967, 3),
+    (CL, "AR(2) has RMSE 2.966 but MAE 2.084, against AR(12)'s 2.967 and 2.080 [audit]", ("C16", "AR2_on_714", "mae"), 2.084, 3),
+    (CL, "2.967 for AR(12) on the 714 common dates; 2.967 for AR(2) on its own 715 dates", ("C16", "AR2_own_715", "rmse"), 2.967, 3),
+    (MF, "AR(12) does not significantly beat AR(1) (HLZ p = 0.327 / 0.101)", ("T4.2P", "AR(p=12)|absolute", "hlz_p"), 0.101, 3),
+    (FR, "2.966 on the 714 dates [audit]", ("C16", "AR2_on_714", "rmse"), 2.966, 3),
+    (FR, "counted 34,122 rows (512 failed, 33,610 fragile)", ("REG", "rows"), 34122, 0),
+    (MF, "512 FAILED (including 105 `UNSTABLE_AR`) and 33,610 FRAGILE (T4.7). These totals are verified on the archived", ("REG", "by_category_reason", "failed|UNSTABLE_AR"), 105, 0),
+    # candidate claim matrix
+    (MX, "AR(2) RMSE 2.966 / MAE 2.084 vs AR(12) 2.967 / 2.080 [audit]", ("C16", "AR2_on_714", "rmse"), 2.966, 3),
+    (MX, "MSAR 10,246 fragile of 15,443 (5,128 adequate, 69 failed)", ("FR_status_by_model", "MSAR", "fragile"), 10246, 0),
+    (MX, "34,122 events (512 failed, 33,610 fragile", ("REG", "by_category", "fragile"), 33610, 0),
+    (MX, "RMSE on the 682 dates common to all four AR 0.546, ARMA 0.482, MSAR 0.492, STAR 0.556", ("UNRATE_h1_common_all_four", "ARMA"), 0.482, 3),
+    (MX, "OOS R2 vs AR on AR-matched samples ARMA 0.237 (688), MSAR 0.189 (697)", H1 + ("UNRATE|MSAR", "oos_r2"), 0.189, 3),
+    (MX, "OOS R2 0.240 / 0.190 / -1.102", ("T4.8C_h1_oos_r2", "UNRATE|MSAR|300"), -1.102, 3),
+    (MX, "chi2(3) 8.65, p 0.034", ("UNRATE_ARMA_AR_h1_wald", "joint_p"), 0.034, 3),
+    (MX, "chi2(2) 2.53, p 0.282", ("UNRATE_ARMA_AR_h1_wald", "slopes_p"), 0.282, 3),
+    (MX, "UNRATE differences 0.563; FEDFUNDS levels 0.426", ("T4.1", "FEDFUNDS|level|alternative|AR", "rmse"), 0.426, 3),
+    (MX, "only p=3 beats p=1 under HLZ (absolute, p 0.013)", ("T4.2P", "AR(p=3)|absolute", "hlz_p"), 0.013, 3),
 ]
 CHECKS = [c for c in CHECKS if c[2] is not None]
 
@@ -136,6 +162,7 @@ def main(drafts, evidence, out_csv):
     drafts, evidence = Path(drafts), Path(evidence)
     data = json.loads((evidence / "integrated_numbers.json").read_text())
     data["REG"] = json.loads((evidence / "registry_reason_codes_local_rehearsal.json").read_text())
+    data["C16"] = json.loads((evidence / "c16_ar2_common_sample_audit.json").read_text())
     data["ZA"] = [{"p_value": z["p_value"], "statistic": z["statistic"]}
                   for z in data["T2.2_zivot_andrews"]]
     parsed = {}

@@ -1,16 +1,21 @@
 # Part 8 — Final claims allowed (integrated candidate, draft)
 
-> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026. Not approved and not published.**
+> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026; revised 9 November 2026 after the archive. Not approved and not published.**
 >
 > - **Basis.** The integrated candidate of the Part 8 integration dry run: session `integration-20261108T052245Z-9bba8e`, run `correction-20261108T053328-949fcd76`, orchestration commit `a2c3171`, scientific pin `8aaa4217` (unchanged).
 >   - It combines the R1 corrections (F1 failed-forecast scoring, F2 guarded MCS, F3 sign label, F4 Zivot–Andrews, F7.1) with the Tier A and Tier B recomputations: B1 (baseline UNRATE MSAR), B2 and B3.
 >   - B2 was accepted on 8 November 2026 under the approved live warm-start rule (`corrections/r1/b2_scientific_adjudication.md`). Its certificate keeps the status `REVIEW_REQUIRED` as issued.
 >   - No model was estimated in the integration.
-> - **Source of the numbers.** The 465-file candidate tree is **not yet under `output/`** and has not yet been archived.
->   - Every number here comes from the integrated tables, rebuilt from the claims-reference release plus the audited cell-level differences of that session: `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`.
->   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the numbers quoted here against those tables.
->   - Table keys (T3.3, T4.1, …) name the files of the candidate tree, which keep the paths of `output/`.
->   - Under CLAUDE.md §9 the numbers become citable only after the candidate is archived, approved and published.
+> - **Archive (9 November 2026).** The candidate is archived, not published.
+>   - Location: `baseline/r1_part8_candidate_archive/archive-20261109T080914Z-3c7d68/` on Drive. It holds 465 files; `release.tar.gz` has sha256 `54b61285…d7b4ee`.
+>   - It is a non-estimating reconstruction (run `correction-20261109T080220-949fcd76`, archive tool `878d928`).
+>   - It passed all nine equivalence checks against the audited session. Cell-level comparisons, decisions, chain sources and protected inputs are identical, and figures and original files are byte-identical. The 101 other differing files differ only in run provenance.
+>   - Verification record: `corrections/r1/archive_verification_20261109.md`.
+> - **Source of the numbers.** The candidate is **not yet under `output/`**.
+>   - Every number comes from the integrated tables in `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`. The equivalence gate ties their cell content to the archived tree.
+>   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
+>   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
+>   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
 > - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
@@ -37,7 +42,7 @@ The machine-readable version for the published release is `reports/part8/claim_e
 - **Degenerate tests.** A test on exploding STAR losses (T3.3A mean differential beyond 10³; p ≈ 0.31–0.33) carries no usable inference. It supports no affirmative inferential claim, including "no significant difference".
 - **Joint tests.** A joint Wald rejection is reported separately from its state-dependence test and is not read as state dependence.
 
-**Status of the earlier provisional flags.** The published report marked C01, C02, C04, C12–C17 and C21 as provisional pending F1 or F2. In the integrated candidate F1 and F2 are applied and every pending chain is computed, so those flags are lifted. Against the R1 corrected matrix, all 24 claims keep their status. Against this published report, only C21 changes status (INCONCLUSIVE → SUPPORTED as revised). C08, C14, C15 and C21 have revised wording and C07 a clarification, as you requested; C12, C13, C16 and C17 carry smaller wording additions listed in `CHANGELOG.md` (integration audit §6). **All claims remain drafts until the candidate is archived, approved and published.** P04-regime-count and C18 remain qualified by F6 (UNRATE K=3 is a non-global optimum).
+**Status of the earlier provisional flags.** The published report marked C01, C02, C04, C12–C17 and C21 as provisional pending F1 or F2. In the integrated candidate F1 and F2 are applied and every pending chain is computed, so those flags are lifted. Against the R1 corrected matrix, 23 claims keep their status and **C16 moves from SUPPORTED to QUALIFIED** (revision of 9 November 2026: equal accuracy of AR(2) and AR(12) is not established). Against the published report, C21 also changes (INCONCLUSIVE → SUPPORTED as revised). C08, C14, C15, C16 and C21 have revised wording and C07 a clarification; C12, C13 and C17 carry smaller additions. All are listed in `CHANGELOG.md`. The candidate matrix is `claim_evidence_matrix_candidate.csv` in this directory. **All claims remain drafts until the archived candidate is approved and published.** P04-regime-count and C18 remain qualified by F6 (UNRATE K=3 is a non-global optimum).
 
 **Inference language.** In every claim, a non-rejection is reported as "no significant difference" or "no evidence of superiority". It is never reported as "equal forecasting ability".
 
@@ -148,10 +153,16 @@ The machine-readable version for the published release is `reports/part8/claim_e
 - **Evidence:** `robustness/T4.1_*`.
 - **Jury IDs:** P-02, P-03.
 
-**C16 — The CPI 12-lag structure is unnecessary**
-- **Status:** SUPPORTED (now final on the candidate; the p=12 chain is recomputed and its failed fit not scored).
-- **Allowed wording:** "Lags beyond two add no accuracy for CPI inflation: the AR(12) RMSE equals that of the BIC-selected AR(2) to three decimals, and no lag order beyond one is significantly more accurate than AR(1) under HLZ except AR(3) under absolute loss."
-- **Restriction:** do not write "as accurately as" as a test result; no direct p=2-versus-p=12 test exists.
+**C16 — No evidence that the CPI 12-lag structure improves forecasts**
+- **Status:** QUALIFIED (was SUPPORTED). The p=12 chain is recomputed and its failed fit is not scored.
+- **Allowed wording:** "The robustness exercise provides no evidence that a 12-lag autoregression improves one-step CPI-inflation forecasts over the BIC-selected AR(2). The two models have one-step RMSEs within about 0.002 of each other (2.967 for AR(12) on the 714 common dates; 2.967 for AR(2) on its own 715 dates), and AR(12) is not significantly more accurate than AR(1) under HLZ. No direct test of AR(12) against AR(2), and no equivalence test, was performed."
+- **Econometric justification for QUALIFIED.**
+  1. **Different samples.** AR(2)'s 2.967 is on 715 dates and AR(12)'s on 714: the failed p=12 fit at origin 1974-09 is not scored. On the 714 dates AR(2) has RMSE 2.966 but MAE 2.084, against AR(12)'s 2.967 and 2.080 [audit]. The ordering depends on the loss function.
+  2. **No direct test.** T4.2 tests each lag order only against AR(1). A "no gain" statement about p=12 relative to p=2 therefore rests on point estimates, not on inference.
+  3. **Non-rejection is not equivalence.** Even a direct HLZ non-rejection would not establish equal accuracy. That needs an equivalence test with a pre-set margin, which the approved design does not contain.
+  4. **Nested models.** AR(2) is nested in AR(12). Under a fixed 240-month rolling window, the ten extra coefficients add estimation noise even if their population values are zero. Equal RMSE therefore neither proves that the extra lags are uninformative nor that they help. The approved design contains no nested-model adjustment (Clark–McCracken was excluded, Part 5 §10.6), so the comparison stays descriptive.
+- **Restrictions:** do not write "unnecessary", "as accurately as", "adds no accuracy" or "no benefit" as established results. State the absence of evidence of improvement, with the sample sizes.
+- **Jury:** R1-15 is still RESOLVED. The requested lag-robustness analysis is performed and reported (CLAUDE.md §12).
 - **Evidence:** `robustness/T4.2_*`; T3.3.
 - **Jury IDs:** R1-15.
 

@@ -1,0 +1,54 @@
+# Manual base64 transcription of the first part of archive_manifest.json. One copying error corrected by hand: the gate key reads "nothing_unexplained" in the original (my copy had produced "not_unexplained").
+{
+ "archive_session": "archive-20261109T080914Z-3c7d68",
+ "published": false,
+ "estimation": "none",
+ "acceptance_report_sha256": "974691b782c3219063ffaa7c7bbdee967128cfb039bba3a1620a7f2cccbaff6e",
+ "files": 465,
+ "release_tar_sha256": "54b61285a732f44d9ef9f1a5e97e6a04f45f287f49dbcf044e6d2574d1d7b4ee",
+ "archive_inventory_sha256": "24ee8bee0ca0aca3850c2bffdb1e842e7576275c741d38ba7c09841886209a58",
+ "release_inventory_sha256": "72c8530f6c1a5c7515f1088b3fecead33c065f06509404f2dd0aeea20d0f24da",
+ "identity": {
+  "mode": "reconstruct",
+  "archive_session": "archive-20261109T080914Z-3c7d68",
+  "archive_tool_commit": "878d9289986e48bcf40c8ff4e32f22f620cf0937",
+  "orchestration_commit": "a2c3171dbadc80f8821fdb91877d82622a1ff171",
+  "scientific_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+  "source_session": "integration-20261109T075322Z-16749b",
+  "source_run_id": "correction-20261109T080220-949fcd76",
+  "audited_session": "integration-20261108T052245Z-9bba8e",
+  "audited_run_id": "correction-20261108T053328-949fcd76",
+  "audited_export_manifest_sha256": "b7e585f3824e8ef01388f5ea1bd7674cf004097fa84e04bf682adff5f9f57612",
+  "python": "3.13.18"
+ },
+ "gate": {
+  "mode": "reconstruct",
+  "audited_session": "integration-20261108T052245Z-9bba8e",
+  "audited_run_id": "correction-20261108T053328-949fcd76",
+  "new_session": "integration-20261109T075322Z-16749b",
+  "new_run_id": "correction-20261109T080220-949fcd76",
+  "checks": {
+   "exit_code": true,
+   "accepted": true,
+   "all_criteria_pass": true,
+   "nothing_unexplained": true,
+   "not_published": true,
+   "orchestration_commit": true,
+   "scientific_commit": true,
+   "reports_identical": true,
+   "release_inventory": true
+  },
+  "reports": {
+   "compared": 44,
+   "not_compared": {
+    "console.log": "run log (timings and paths)"
+   },
+   "missing": [],
+   "differs": {}
+  },
+  "inventory": {
+   "paths_new": 464,
+   "paths_audited": 464,
+   "missing": [],
+   "extra": [],
+   "identical": 363,

@@ -18,3 +18,12 @@ Run on 8 November 2026 with `python -m pytest -q -p no:cacheprovider tests/unit 
 |---|---|
 | Full unit suite, before the notebook was generated | 611 passed, 1 skipped. The skip is the committed-notebook equality test, which needs the generated notebook |
 | `tests/unit/test_r1_integration_archive.py` | 20 passed, 1 skipped before generation; **21 passed** after generating the notebook pinned to `d37f77f` |
+
+## Revision of 9 November 2026
+
+- **Archive.** `archive-20261109T080914Z-3c7d68` is verified in `../../archive_verification_20261109.md`, with evidence in `../archive_verification_20261109/`.
+- **T4.7 reason codes.** The counts in `registry_reason_codes_local_rehearsal.json` equal the counts of the archived `T4.7_failure_registry.csv`: 34,122 rows; 512 failed and 33,610 fragile; all 17 category/reason-code counts. The independent review checked this on the archived file.
+  - Row-by-row identity of the rehearsal file and the archived file is not established: the byte size is equal, but the sha256 differs because of run provenance.
+- **`c16_ar2_common_sample_audit.json`.** The baseline AR(2) h=1 RMSE and MAE on the T4.2 common sample, an [audit] computation from stored forecasts with no estimation.
+  - It presumes the dropped date is target 1974-10, the only failed p=12 fit. The T4.2 chain forecasts are not stored, so this is not verified date by date.
+- **`number_checks.csv`.** 128 checks, now including the candidate claim matrix; **128 / 128 pass**.

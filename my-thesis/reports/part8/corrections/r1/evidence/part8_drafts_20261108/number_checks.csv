@@ -104,3 +104,26 @@ final_claims_allowed.md,"UNRATE MSAR h=1 OOS R² 0.240, 0.190 and −1.102",T4.8
 final_claims_allowed.md,"for ARMA (in ARMA's favour, p = 0.0076)",T4.1P_parsed/FEDFUNDS ARMA level absolute/dm,0.0076,0.0076,True,True,True
 final_claims_allowed.md,"and for MSAR (against MSAR, p = 0.029)",T4.1P_parsed/FEDFUNDS MSAR level absolute/dm,0.029,0.0286,True,True,True
 final_claims_allowed.md,HLZ governs (p = 0.146 and 0.145),T4.1P_parsed/FEDFUNDS MSAR level absolute/hlz,0.145,0.14516,True,True,True
+robustness_findings.md,"AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)",C16/AR2_on_714/rmse,2.966,2.9661830248454897,True,True,True
+robustness_findings.md,"AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)",C16/AR2_on_714/mae,2.084,2.083681998186257,True,True,True
+robustness_findings.md,"AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)",T4.2/AR(p=12)/rmse,2.967,2.967,True,True,True
+robustness_findings.md,"AR(2) has RMSE 2.966 and MAE 2.084 [audit], against 2.967 and 2.080 for AR(12)",T4.2/AR(p=12)/mae,2.08,2.08,True,True,True
+robustness_findings.md,"AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute)",T4.2P/AR(p=12)|squared/hlz_p,0.327,0.3274,True,True,True
+robustness_findings.md,"AR(12) does not significantly beat AR(1) (HLZ p = 0.327 squared, 0.101 absolute)",T4.2P/AR(p=12)|absolute/hlz_p,0.101,0.1012,True,True,True
+robustness_findings.md,the baseline p=2 (2.967 on its own 715 dates),C16/AR2_own_715/rmse,2.967,2.966832990472226,True,True,True
+final_claims_allowed.md,"AR(2) has RMSE 2.966 but MAE 2.084, against AR(12)'s 2.967 and 2.080 [audit]",C16/AR2_on_714/mae,2.084,2.083681998186257,True,True,True
+final_claims_allowed.md,2.967 for AR(12) on the 714 common dates; 2.967 for AR(2) on its own 715 dates,C16/AR2_own_715/rmse,2.967,2.966832990472226,True,True,True
+main_findings.md,AR(12) does not significantly beat AR(1) (HLZ p = 0.327 / 0.101),T4.2P/AR(p=12)|absolute/hlz_p,0.101,0.1012,True,True,True
+full_empirical_analysis_report.md,2.966 on the 714 dates [audit],C16/AR2_on_714/rmse,2.966,2.9661830248454897,True,True,True
+full_empirical_analysis_report.md,"counted 34,122 rows (512 failed, 33,610 fragile)",REG/rows,34122,34122,True,True,True
+main_findings.md,"512 FAILED (including 105 `UNSTABLE_AR`) and 33,610 FRAGILE (T4.7). These totals are verified on the archived",REG/by_category_reason/failed|UNSTABLE_AR,105,105,True,True,True
+claim_evidence_matrix_candidate.csv,AR(2) RMSE 2.966 / MAE 2.084 vs AR(12) 2.967 / 2.080 [audit],C16/AR2_on_714/rmse,2.966,2.9661830248454897,True,True,True
+claim_evidence_matrix_candidate.csv,"MSAR 10,246 fragile of 15,443 (5,128 adequate, 69 failed)",FR_status_by_model/MSAR/fragile,10246,10246,True,True,True
+claim_evidence_matrix_candidate.csv,"34,122 events (512 failed, 33,610 fragile",REG/by_category/fragile,33610,33610,True,True,True
+claim_evidence_matrix_candidate.csv,"RMSE on the 682 dates common to all four AR 0.546, ARMA 0.482, MSAR 0.492, STAR 0.556",UNRATE_h1_common_all_four/ARMA,0.482,0.481509,True,True,True
+claim_evidence_matrix_candidate.csv,"OOS R2 vs AR on AR-matched samples ARMA 0.237 (688), MSAR 0.189 (697)",T3.3_h1/UNRATE|MSAR/oos_r2,0.189,0.189,True,True,True
+claim_evidence_matrix_candidate.csv,OOS R2 0.240 / 0.190 / -1.102,T4.8C_h1_oos_r2/UNRATE|MSAR|300,-1.102,-1.102,True,True,True
+claim_evidence_matrix_candidate.csv,"chi2(3) 8.65, p 0.034",UNRATE_ARMA_AR_h1_wald/joint_p,0.034,0.034,True,True,True
+claim_evidence_matrix_candidate.csv,"chi2(2) 2.53, p 0.282",UNRATE_ARMA_AR_h1_wald/slopes_p,0.282,0.282,True,True,True
+claim_evidence_matrix_candidate.csv,UNRATE differences 0.563; FEDFUNDS levels 0.426,T4.1/FEDFUNDS|level|alternative|AR/rmse,0.426,0.426,True,True,True
+claim_evidence_matrix_candidate.csv,"only p=3 beats p=1 under HLZ (absolute, p 0.013)",T4.2P/AR(p=3)|absolute/hlz_p,0.013,0.0129,True,True,True

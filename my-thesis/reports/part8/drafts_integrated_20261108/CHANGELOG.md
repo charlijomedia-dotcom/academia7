@@ -138,3 +138,17 @@ The integration audit verified these as unchanged. Where a source could not be f
 - T3.1, T3.2, T4.3 and T4.6 content, and every non-UNRATE baseline number. The integration leaves them untouched.
 - `claim_evidence_matrix_adjudicated.csv` and `corrections/r1/claim_evidence_matrix_corrected.csv`.
 - No metric definition, test, threshold or methodology choice.
+
+## Revision of 9 November 2026 (after the archive)
+
+| Where | Change | Basis |
+|---|---|---|
+| All five banners | "Not yet archived" replaced by the archive identity: `archive-20261109T080914Z-3c7d68`, 465 files, tar sha256 `54b61285…d7b4ee`, reconstruction run `correction-20261109T080220-949fcd76`, all nine gate checks passed. Numbers become citable after approval and publication, no longer "after archive" | `corrections/r1/archive_verification_20261109.md` |
+| Full report C.1; main findings §9 | T4.7 reason-code totals now cited as **verified on the archived registry**. The local rehearsal is named as the earlier provisional source. Same byte size, different sha256; **no row-by-row identity claimed** | independent review of the archive; `archive_verification_20261109.md` §3 |
+| **C16** (claims; robustness T4.2; main findings §8 and §10; full report F; jury R1-15) | Status **SUPPORTED → QUALIFIED**. "Unnecessary", "performs as well as" and "add nothing" are removed. New wording: no evidence that 12 lags improve on AR(2). Added: different samples (715 vs 714); AR(2) on the 714 dates RMSE 2.966 / MAE 2.084 against AR(12) 2.967 / 2.080 [audit]; no direct or equivalence test; nested-model caveat. R1-15 stays RESOLVED (CLAUDE.md §12) | `evidence/part8_drafts_20261108/c16_ar2_common_sample_audit.json`; T4.2, T4.2P |
+| Robustness T4.1 | "supports the baseline differencing" → "consistent with the baseline differencing, which was chosen beforehand by the §3.4 rule" (avoids a result-driven reading) | CLAUDE.md §6 |
+| Main findings §1 | "Every decision change goes against a nonlinear model" narrowed to changes *involving* a nonlinear model; the linear-vs-linear Wald and DM-only changes are named | integration audit §2.3 |
+| Claims preamble | Status-change summary updated (C16) | — |
+| Jury R1-22, V-07; full report H.1 | Remaining action is now approval and publication, not archiving | archive |
+| **New:** `claim_evidence_matrix_candidate.csv` | Candidate matrix with 24 claims and candidate statuses (13 SUPPORTED, 8 QUALIFIED, 3 NOT_SUPPORTED). Columns: evidence, required limitations, wording reference and archive source. The published `claim_evidence_matrix_adjudicated.csv`, the R1 matrix and `output/manifests/claim_evidence_matrix.csv` are unchanged | — |
+| Validation | `number_checks.csv`: 128 checks (23 new: C16, registry and matrix), all pass | `corrections/r1/check_draft_numbers.py` |

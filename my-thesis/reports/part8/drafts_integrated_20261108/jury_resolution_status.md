@@ -2,17 +2,22 @@
 
 **Remark IDs** are the permanent IDs from `approved-specs/part2/part2_jury_remark_registry.md`. Prof. Verne's constraints (V-04 to V-07) come from `approved-specs/part5/part5_methodology_vs_jury_matrix.md`.
 
-> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026. Not approved and not published.**
+> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026; revised 9 November 2026 after the archive. Not approved and not published.**
 >
 > - **Basis.** The integrated candidate of the Part 8 integration dry run: session `integration-20261108T052245Z-9bba8e`, run `correction-20261108T053328-949fcd76`, orchestration commit `a2c3171`, scientific pin `8aaa4217` (unchanged).
 >   - It combines the R1 corrections (F1 failed-forecast scoring, F2 guarded MCS, F3 sign label, F4 Zivot–Andrews, F7.1) with the Tier A and Tier B recomputations: B1 (baseline UNRATE MSAR), B2 and B3.
 >   - B2 was accepted on 8 November 2026 under the approved live warm-start rule (`corrections/r1/b2_scientific_adjudication.md`). Its certificate keeps the status `REVIEW_REQUIRED` as issued.
 >   - No model was estimated in the integration.
-> - **Source of the numbers.** The 465-file candidate tree is **not yet under `output/`** and has not yet been archived.
->   - Every number here comes from the integrated tables, rebuilt from the claims-reference release plus the audited cell-level differences of that session: `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`.
->   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the numbers quoted here against those tables.
->   - Table keys (T3.3, T4.1, …) name the files of the candidate tree, which keep the paths of `output/`.
->   - Under CLAUDE.md §9 the numbers become citable only after the candidate is archived, approved and published.
+> - **Archive (9 November 2026).** The candidate is archived, not published.
+>   - Location: `baseline/r1_part8_candidate_archive/archive-20261109T080914Z-3c7d68/` on Drive. It holds 465 files; `release.tar.gz` has sha256 `54b61285…d7b4ee`.
+>   - It is a non-estimating reconstruction (run `correction-20261109T080220-949fcd76`, archive tool `878d928`).
+>   - It passed all nine equivalence checks against the audited session. Cell-level comparisons, decisions, chain sources and protected inputs are identical, and figures and original files are byte-identical. The 101 other differing files differ only in run provenance.
+>   - Verification record: `corrections/r1/archive_verification_20261109.md`.
+> - **Source of the numbers.** The candidate is **not yet under `output/`**.
+>   - Every number comes from the integrated tables in `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`. The equivalence gate ties their cell content to the archived tree.
+>   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
+>   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
+>   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
 > - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
@@ -115,7 +120,7 @@
 - **Status:** RESOLVED (was PARTIALLY ADDRESSED).
 - **Evidence:**
   - BIC selects p=2 (`diagnostics/T2.5_selected_specs.csv`).
-  - Under p=1, 3, 6 and 12 robustness on 714 common dates (`robustness/T4.2_cpi_lag_robustness.csv`, `_predictive_tests.csv`; the p=12 chain recomputed under Tier A, its failed 1974-09 fit not scored), p=12 brings no gain: RMSE 2.967 on the 714 common dates, against 2.967 for the baseline p=2 on its own 715-date sample (T3.3). Only p=3 beats p=1 under HLZ (absolute loss, p = 0.013).
+  - Under p=1, 3, 6 and 12 robustness on 714 common dates (`robustness/T4.2_cpi_lag_robustness.csv`, `_predictive_tests.csv`; the p=12 chain recomputed under Tier A, its failed 1974-09 fit not scored), there is no evidence that 12 lags improve on the BIC-selected AR(2). AR(12) has RMSE 2.967 on the 714 common dates, against 2.967 for the baseline p=2 on its own 715-date sample (T3.3). AR(12) does not significantly beat AR(1); only p=3 does, under absolute loss (HLZ p = 0.013). No direct AR(2)-versus-AR(12) test or equivalence test exists, so the claim is QUALIFIED (C16). The remark is resolved because the analysis is performed and reported (CLAUDE.md §12), whatever its result.
   - F2.1 and F3.x show the CPI series and fits.
 - **Remaining action:** none.
 
@@ -160,7 +165,7 @@
   - The audit's defects are corrected in the candidate (F1, F2, F3, F4, F7.1), and every chain that needed recomputation is computed (Tier A; Tier B B1, B2, B3). No estimation was performed in the integration.
   - Failures visible: 435 failed fits and 34,122 registry events (`models/fit_records.csv`, `robustness/T4.7_failure_registry.csv`), plus the MSAR optimiser sensitivity recorded under B2 (20 classification changes, 29 sensitivities; `corrections/r1/b2_scientific_adjudication.md`).
   - Robustness exercises T4.1–T4.9 and TP1 complete.
-- **Remaining action:** archive and independent review of the candidate (`corrections/r1/part8_candidate_archive_procedure.md`); F6 stays a stated limitation.
+- **Remaining action:** your Part 8 approval and publication of the archived candidate (`archive-20261109T080914Z-3c7d68`, verified in `corrections/r1/archive_verification_20261109.md`); F6 stays a stated limitation.
 
 **R1-23 — M2 sample and relevance**
 - **Status:** RESOLVED.
@@ -238,7 +243,7 @@
   - Caveat: "ARMA" is a pure AR for 5 of 6 targets (T2.5).
 - **V-05 (recession, expansion and turning-point evaluation):** RESOLVED (T3.5, T3.6, TP1). There is no significant state dependence for the nonlinear models. The UNRATE ARMA-versus-AR joint Wald rejection (p = 0.034) is not evidence of state dependence: its state-dependence test gives p = 0.282.
 - **V-06 (adequacy before forecast ranking):** RESOLVED (T3.1, T3.2, then T3.3).
-- **V-07 (outputs ready for Part 9 synthesis):** READY SUBJECT TO APPROVAL (was PARTIALLY ADDRESSED). F1, F2 and F4 are applied in the candidate, and all pending estimation is integrated. It becomes final after the archive, your Part 8 approval and publication.
+- **V-07 (outputs ready for Part 9 synthesis):** READY SUBJECT TO APPROVAL (was PARTIALLY ADDRESSED). F1, F2 and F4 are applied in the candidate, and all pending estimation is integrated. The candidate is archived (`archive-20261109T080914Z-3c7d68`); the status becomes final after your Part 8 approval and publication.
 
 ## Summary count (29 Part 2 remarks)
 
@@ -249,4 +254,4 @@
 | UNRESOLVED | 0 | — |
 | OUTSIDE EMPIRICAL SCOPE | 11 | R1-01, R1-02, R1-03, R1-04, R1-05, R1-08, R1-10, R1-16, R1-20, R1-21, P-06 |
 
-Seven remarks move from PARTIALLY ADDRESSED to RESOLVED on the integrated candidate: R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05. **R1-06 stays partial**, because F8 is disabled; the integration audit had listed it among the remarks that could move, but that assumed the F3.4 presentation issue would be settled. P-04 depends on F6. R1-11 stays partial (its textual part is Part 9). All RESOLVED statuses are final only after the candidate is archived, approved and published.
+Seven remarks move from PARTIALLY ADDRESSED to RESOLVED on the integrated candidate: R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05. **R1-06 stays partial**, because F8 is disabled; the integration audit had listed it among the remarks that could move, but that assumed the F3.4 presentation issue would be settled. P-04 depends on F6. R1-11 stays partial (its textual part is Part 9). All RESOLVED statuses are final only after the archived candidate is approved and published.

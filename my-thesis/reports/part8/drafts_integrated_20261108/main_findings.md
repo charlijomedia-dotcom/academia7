@@ -1,16 +1,21 @@
 # Part 8 — Main findings (integrated candidate, draft)
 
-> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026. Not approved and not published.**
+> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026; revised 9 November 2026 after the archive. Not approved and not published.**
 >
 > - **Basis.** The integrated candidate of the Part 8 integration dry run: session `integration-20261108T052245Z-9bba8e`, run `correction-20261108T053328-949fcd76`, orchestration commit `a2c3171`, scientific pin `8aaa4217` (unchanged).
 >   - It combines the R1 corrections (F1 failed-forecast scoring, F2 guarded MCS, F3 sign label, F4 Zivot–Andrews, F7.1) with the Tier A and Tier B recomputations: B1 (baseline UNRATE MSAR), B2 and B3.
 >   - B2 was accepted on 8 November 2026 under the approved live warm-start rule (`corrections/r1/b2_scientific_adjudication.md`). Its certificate keeps the status `REVIEW_REQUIRED` as issued.
 >   - No model was estimated in the integration.
-> - **Source of the numbers.** The 465-file candidate tree is **not yet under `output/`** and has not yet been archived.
->   - Every number here comes from the integrated tables, rebuilt from the claims-reference release plus the audited cell-level differences of that session: `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`.
->   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the numbers quoted here against those tables.
->   - Table keys (T3.3, T4.1, …) name the files of the candidate tree, which keep the paths of `output/`.
->   - Under CLAUDE.md §9 the numbers become citable only after the candidate is archived, approved and published.
+> - **Archive (9 November 2026).** The candidate is archived, not published.
+>   - Location: `baseline/r1_part8_candidate_archive/archive-20261109T080914Z-3c7d68/` on Drive. It holds 465 files; `release.tar.gz` has sha256 `54b61285…d7b4ee`.
+>   - It is a non-estimating reconstruction (run `correction-20261109T080220-949fcd76`, archive tool `878d928`).
+>   - It passed all nine equivalence checks against the audited session. Cell-level comparisons, decisions, chain sources and protected inputs are identical, and figures and original files are byte-identical. The 101 other differing files differ only in run provenance.
+>   - Verification record: `corrections/r1/archive_verification_20261109.md`.
+> - **Source of the numbers.** The candidate is **not yet under `output/`**.
+>   - Every number comes from the integrated tables in `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`. The equivalence gate ties their cell content to the archived tree.
+>   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
+>   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
+>   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
 > - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
@@ -40,7 +45,7 @@ The question is *when nonlinear state-dependent models give statistically credib
   - The Bonferroni threshold for that family is 0.05/46 ≈ 0.0011.
   - **The CPI h=12 gain therefore does not survive a family-wise correction.** It is an unadjusted 5% result.
 - **Non-rejection is not equality.** Failing to reject equal accuracy means the data do not provide evidence of superiority. It does **not** show that the models forecast equally well. The tests have limited power with a few hundred dependent observations and time-varying loss differentials.
-- **Every decision change produced by the corrections goes against a nonlinear model.** The new nominal rejection is STAR *worse* than AR for unemployment at h=1 under absolute loss (§5).
+- **Every decision change produced by the corrections that involves a nonlinear model goes against it.** The new nominal rejection is STAR *worse* than AR for unemployment at h=1 under absolute loss (§5). The other changes concern linear-versus-linear comparisons (the UNRATE ARMA-vs-AR joint Wald, §6) or the secondary DM-HLN test.
 - **Status:**
   - NOT_SUPPORTED: a general nonlinear advantage.
   - QUALIFIED: the CPI h=12 exception (unadjusted significance; not robust to multiplicity).
@@ -185,7 +190,7 @@ STAR has the worst or explosive RMSE for most targets and horizons. Examples (T3
 No robustness exercise produces a nonlinear-over-AR rejection; the only one anywhere remains CPI h=12 MSAR.
 
 - **Transformations (T4.1):** none of the 12 HLZ tests rejects. Point rankings depend on the transformation: AR has the lowest h=1 RMSE for UNRATE in differences and FEDFUNDS in levels.
-- **CPI lags (T4.2, 714 common dates):** p=12 is unnecessary and the BIC-selected p=2 is adequate. Only p=3 beats p=1 under HLZ (absolute loss, p = 0.013).
+- **CPI lags (T4.2, 714 common dates):** no evidence that 12 lags improve on the BIC-selected AR(2). AR(12) does not significantly beat AR(1) (HLZ p = 0.327 / 0.101), and its RMSE is within 0.002 of AR(2)'s on nearly the same dates. Equal accuracy is **not** established: there is no direct AR(2)-versus-AR(12) test and no equivalence test (C16, QUALIFIED). Only p=3 beats p=1 under HLZ (absolute loss, p = 0.013).
 - **Horizons (T4.4):** 11 of 138 HLZ rejections; the only one favouring a nonlinear model is CPIAUCSL MSAR at h=12.
 - **Monthly VAR(1) (T4.5):** never significantly better than AR; significantly worse for FEDFUNDS under absolute loss.
 - **Window lengths (T4.8):** 97 of 108 conclusions unchanged, 10 insignificant sign reversals, 1 weakened; no nonlinear model gains HLZ support at any length. The UNRATE STAR rejection replicates at all three lengths. **UNRATE MSAR's descriptive h=1 advantage is not window-robust** (OOS R² 0.240, 0.190 and −1.102 at 180, 240 and 300 months; rank 4 of 4 at 300; no significant difference at any length).
@@ -200,7 +205,7 @@ No robustness exercise produces a nonlinear-over-AR rejection; the only one anyw
   - 435 FAILED, mostly non-convergence;
   - 23,002 FRAGILE;
   - 43,816 adequate.
-- The 34,122 registry rows are reason-code events, not failed fits: 512 FAILED (including 105 `UNSTABLE_AR`) and 33,610 FRAGILE (T4.7).
+- The 34,122 registry rows are reason-code events, not failed fits: 512 FAILED (including 105 `UNSTABLE_AR`) and 33,610 FRAGILE (T4.7). These totals are verified on the archived `T4.7_failure_registry.csv` (independent review of archive `archive-20261109T080914Z-3c7d68`).
 - Baseline horse-race failures at h=1: 29 fits, all UNRATE or FEDFUNDS: UNRATE AR 1, ARMA 15, MSAR 6; FEDFUNDS ARMA 7 (T3.3). Failed fits are not scored (F1).
 - The MSAR optimiser sensitivity recorded under B2 (20 classification changes, 29 sensitivities) is part of this fragility evidence (§3).
 
@@ -213,6 +218,7 @@ No robustness exercise produces a nonlinear-over-AR rejection; the only one anyw
 - That MSAR regimes are business-cycle regimes. In particular, no MSAR "recession regime" exists for GDPC1, INDPRO or M2SL.
 - That the CPI high-inflation regime has a causal or policy meaning.
 - That STAR captures a credible smooth transition, except possibly in-sample for CPI.
+- That AR(2) and AR(12) forecast CPI inflation equally well, or that 12 lags bring no benefit; only the absence of evidence of improvement is shown (C16).
 - That K=3 improves forecasting. It was never forecast.
 - That any MSAR estimate is a global likelihood maximum (F6).
 - That results transfer to other countries, or to real-time nowcasting.

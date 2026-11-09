@@ -1,16 +1,21 @@
 # Part 8 — Full empirical analysis and audit report (integrated candidate, draft)
 
-> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026. Not approved and not published.**
+> **DRAFT FOR INDEPENDENT REVIEW — integrated Part 8 candidate, 8 November 2026; revised 9 November 2026 after the archive. Not approved and not published.**
 >
 > - **Basis.** The integrated candidate of the Part 8 integration dry run: session `integration-20261108T052245Z-9bba8e`, run `correction-20261108T053328-949fcd76`, orchestration commit `a2c3171`, scientific pin `8aaa4217` (unchanged).
 >   - It combines the R1 corrections (F1 failed-forecast scoring, F2 guarded MCS, F3 sign label, F4 Zivot–Andrews, F7.1) with the Tier A and Tier B recomputations: B1 (baseline UNRATE MSAR), B2 and B3.
 >   - B2 was accepted on 8 November 2026 under the approved live warm-start rule (`corrections/r1/b2_scientific_adjudication.md`). Its certificate keeps the status `REVIEW_REQUIRED` as issued.
 >   - No model was estimated in the integration.
-> - **Source of the numbers.** The 465-file candidate tree is **not yet under `output/`** and has not yet been archived.
->   - Every number here comes from the integrated tables, rebuilt from the claims-reference release plus the audited cell-level differences of that session: `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`.
->   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the numbers quoted here against those tables.
->   - Table keys (T3.3, T4.1, …) name the files of the candidate tree, which keep the paths of `output/`.
->   - Under CLAUDE.md §9 the numbers become citable only after the candidate is archived, approved and published.
+> - **Archive (9 November 2026).** The candidate is archived, not published.
+>   - Location: `baseline/r1_part8_candidate_archive/archive-20261109T080914Z-3c7d68/` on Drive. It holds 465 files; `release.tar.gz` has sha256 `54b61285…d7b4ee`.
+>   - It is a non-estimating reconstruction (run `correction-20261109T080220-949fcd76`, archive tool `878d928`).
+>   - It passed all nine equivalence checks against the audited session. Cell-level comparisons, decisions, chain sources and protected inputs are identical, and figures and original files are byte-identical. The 101 other differing files differ only in run provenance.
+>   - Verification record: `corrections/r1/archive_verification_20261109.md`.
+> - **Source of the numbers.** The candidate is **not yet under `output/`**.
+>   - Every number comes from the integrated tables in `corrections/r1/evidence/part8_drafts_20261108/integrated_numbers.json`. The equivalence gate ties their cell content to the archived tree.
+>   - `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv` checks the quoted numbers.
+>   - Table keys (T3.3, T4.1, …) name files of the archived tree, which keep the paths of `output/`.
+>   - Under CLAUDE.md §9 the numbers become citable only after approval and publication.
 > - **Not changed.** The published reports in `reports/part8/`, results commit `0662945`, releases `0573a8c`, `3bd24c4` and `292227e`, certificates, and `approved-specs/`. F8 (readable F3.4 main panel) remains disabled; D3 (publication destination) remains deferred.
 > - **Changes from the published report:** `CHANGELOG.md` in this directory.
 
@@ -92,7 +97,7 @@ All paths are `output/`-relative paths of the candidate tree.
   - data hash `7e7dc769…` (RM);
   - code SHA `46a53181…`, `code_tree_dirty=false` (RM).
 - All 254 inventoried files pass checksum verification against INV.
-- The integrated candidate's own provenance (orchestration and scientific pins, cache-integrity checks, acceptance criteria) was verified in the integration audit (`corrections/r1/part8_integration_scientific_audit.md` §1). It is not yet archived; the archive procedure is `colab/r1_part8_candidate_archive.ipynb`.
+- The integrated candidate's own provenance (orchestration and scientific pins, cache-integrity checks, acceptance criteria) was verified in the integration audit (`corrections/r1/part8_integration_scientific_audit.md` §1). It is archived (not published) as `archive-20261109T080914Z-3c7d68`, a non-estimating reconstruction that passed the equivalence gate (`corrections/r1/archive_verification_20261109.md`).
 
 ### 2. Implementation defects found by the audit, and their correction in the candidate
 
@@ -403,7 +408,11 @@ The registry has **one row per reason code per fit**. It counts flags, not faile
 
 The published registry had 34,153 events (540 FAILED, 33,613 FRAGILE). The candidate's B1 and B2 chains change the MSAR events (UNRATE baseline and 180-month chains, FEDFUNDS level chain).
 
-The reason-code counts below are taken from the local rehearsal of the integration, whose registry has the same 34,122 rows as the audited candidate. They were not cross-checked cell by cell against the Colab candidate, which is not yet archived.
+**Provenance of these counts.**
+- The category totals and all 17 category/reason-code counts below are **verified on the archived file** `robustness/T4.7_failure_registry.csv` of archive `archive-20261109T080914Z-3c7d68`. The independent review downloaded the archive and counted 34,122 rows (512 failed, 33,610 fragile).
+- They were first taken from the local rehearsal of the integration, and the two sets of counts agree.
+- The local-rehearsal file has the same byte size as the archived one (10,842,235 bytes) but a different sha256, as its run provenance differs.
+- **Row-by-row identity between the rehearsal and the archive is not established.** The rehearsal is cited only as the earlier, provisional source.
 
 - **512 FAILED-category events.** These come from 435 failed fits (FR):
   - NONCONVERGENCE: 329;
@@ -653,7 +662,7 @@ RMSE is on each model's own valid forecasts; OOS R² on each competitor's dates 
 | Exercise | Threat (Part 5 §11) | Result | Effect on conclusions |
 |---|---|---|---|
 | T4.1 transformations (UNRATE in differences, FEDFUNDS in levels) | Transformation drives the ranking | No HLZ rejection in 12 tests (min p 0.102; T4.1P). AR ranks first by RMSE under both alternatives. UNRATE STAR in differences explodes (RMSE 20.75). FEDFUNDS level MSAR fails 49 of 626 fits (T4.1). DM-HLN only: FEDFUNDS-level ARMA (p 0.0076, ARMA better) and MSAR (p 0.029, MSAR worse) | Inference unchanged; rankings depend on the transformation |
-| T4.2 CPI lags (R1-15) | The p=12 lag drives the result | On 714 common dates: p=1 RMSE 3.075; p=3 2.958; p=6 2.969; p=12 2.967 (T4.2), against baseline p=2 2.967 on its own sample (T3.3). Only p=3 beats p=1 under HLZ, absolute loss, p = 0.013 (T4.2P) | p=12 is unnecessary; BIC p=2 is adequate |
+| T4.2 CPI lags (R1-15) | The p=12 lag drives the result | On 714 common dates: p=1 RMSE 3.075; p=3 2.958; p=6 2.969; p=12 2.967 (T4.2), against baseline p=2 2.967 on its own 715 dates (T3.3; 2.966 on the 714 dates [audit]). Only p=3 beats p=1 under HLZ, absolute loss, p = 0.013 (T4.2P); AR(12) does not beat AR(1) | No evidence that 12 lags improve on AR(2); equal accuracy not established (no direct AR(2)-vs-AR(12) or equivalence test). C16 QUALIFIED |
 | T4.3 regime count (P-04) | Two regimes are too restrictive | K=3 is not credible for any target; ICs favour K=3 for 5 targets through outlier regimes; the UNRATE comparison is invalid (F6) | K=2 retained; but K=2 itself is weak for 4 targets |
 | T4.4 horizons (P-05) | Gains appear only at h=1 | See D.2; 11 of 138 HLZ rejections: CPIAUCSL ARMA (7) and MSAR h=12 (2) versus AR, plus STAR h=1 absolute for UNRATE and FEDFUNDS, both STAR worse (T4.4P) | No systematic nonlinear advantage at longer horizons |
 | T4.5 VAR(1) (R1-19, P-01) | Omitted cross-variable information | VAR never significantly better than AR; significantly worse for FEDFUNDS under absolute loss (HLZ p = 0.0036, T4.5P) | Univariate conclusions stand |
@@ -717,7 +726,7 @@ See `jury_resolution_status.md`. In summary, for the empirically testable remark
 
 ## H. Limitations
 
-1. **Corrections and open items.** F1–F4 and F7.1 are applied in the candidate. F5 (interpretation) and F6 (no global MSAR maximum) remain. F8 (readable F3.4 main panel) is disabled, so for CPI an exploding STAR forecast still compresses the F3.4 main panel. The candidate is not yet archived, approved or published.
+1. **Corrections and open items.** F1–F4 and F7.1 are applied in the candidate. F5 (interpretation) and F6 (no global MSAR maximum) remain. F8 (readable F3.4 main panel) is disabled, so for CPI an exploding STAR forecast still compresses the F3.4 main panel. The candidate is archived (`archive-20261109T080914Z-3c7d68`) but not yet approved or published.
 2. **Single country.** The design covers one country (P-06) and uses a pseudo-out-of-sample evaluation on revised data, so it says nothing about real-time nowcasting (R1-20).
 3. **Few episodes.** There are 23 recession quarters for GDPC1 and 58 to 85 recession months for the monthly targets (T3.5R `n_recession`). State-specific inference has low power, and the 2020 episode dominates squared-error metrics.
 4. **Search depth.** MSAR used 2 deterministic starts, and the likelihoods are multimodal (F6). Different local optima are plausible across rolling origins, and B2 shows them directly: 20 classification changes and 29 optimiser sensitivities in two robustness chains under the approved warm-start rule.
