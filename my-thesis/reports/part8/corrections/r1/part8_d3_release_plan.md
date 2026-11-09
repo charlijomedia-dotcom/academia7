@@ -120,6 +120,36 @@ Everything is staged and verified in the Colab runtime first: the tree, the reco
 
 `published` exists **only** when both destinations are verified. The local status file (`WORK/publication_status.json`) records every step, including failures and which destinations exist.
 
+### 3.2 Recovery after a lost Colab runtime (`colab/r1_part8_release_recovery.py`)
+
+**The problem.** A new runtime cannot re-run the release: it would render, assemble and commit again under new identities. Section 2 of the notebook therefore inspects the external state first. Anything other than "not started" switches the notebook to **recovery mode**:
+- sections 5–7 (render, assemble, stage, publish) are skipped;
+- section 8 runs `rec.recover`;
+- recovery needs its own setting, `AUTHORIZE_RECOVERY` (default False). `AUTHORIZE_PUBLICATION` must then be False, and the two can never both be True.
+
+| External state after the loss | Recovery, with `AUTHORIZE_RECOVERY = True` |
+|---|---|
+| nothing exists | refused: use the normal run |
+| Drive `.partial` incomplete (lost during the copy) | refused; the folder is left untouched for a human decision |
+| Drive `.partial` complete, no branch (lost before or during the push) | the same release is rebuilt from the verified partial: its tar and its record, keeping its publication and F8 identities. It is committed locally, the **new** branch is pushed, Drive is finalized and the status recorded |
+| branch + `.partial` (lost after the push, before the rename) | only the Drive rename and the status |
+| branch + final, no status (lost before the status was written) | only the status file |
+| branch + final + status | verified; nothing changes (`already_published`) |
+| anything else (final without branch, branch without Drive, partial and final both present, a mismatched status) | refused as a conflict |
+
+**Checks before any action.**
+- **The payload:** every tar member against its inventory; the manifest against the inventory; the manifest identities (release, branch, numbers run, pin, archive, F8 operation, publication).
+- **The release:** it is rebuilt from the payload and checked against the freshly verified archive. Exactly the 25 allowed paths differ, the 12 approved F8 hashes match, and the sidecars carry complete provenance naming the manifest's F8 operation. `archive_to_release_diff.csv` is recomputed.
+- **The GitHub commit** (when it exists): its parent is the pin, it changes only `output/` and `release/part8_final/`, and **every blob equals the payload's tree and record**. GitHub and Drive are thus reconciled cryptographically.
+
+**What recovery never does.** It never creates a new publication identity. It never overwrites, deletes or force-pushes. If a branch or folder appears while recovery is running, it refuses.
+
+**Compatibility.** The recovered status file has the same schema as a normal publication, with `recovered: true` and the recovery log. `reports/part8/final/finalize_reports.py` accepts it.
+
+**Tests.** `code/tests/unit/test_r1_part8_release_recovery.py` (26) loses the runtime at each boundary: during the Drive copy, before the push, after the push, before the rename, before the status, and after the status. It also covers conflicts, tampered payloads (including a self-consistent one with a changed number), unverifiable identities, a GitHub commit that differs from Drive, races, the separate authorization, and no-delete/no-force.
+
+**Real-data check.** `evidence/d3_release_dryrun_20261109/recovery_dryrun_report.json`. The dry run's 465-file payload, lost before the push, was recovered under its original publication ID with exactly one push to a stand-in remote; re-verification then reported `already_published`.
+
 ## 4. Release record (`my-thesis/release/part8_final/`)
 
 | File | Content |

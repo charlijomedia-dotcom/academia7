@@ -1,0 +1,10 @@
+{
+ "purpose": "real-data recovery check: runtime lost after Drive staging, before the push; fake remote; no push, no Drive write outside the scratch directory",
+ "payload": "the local D3 dry-run payload (465 files)",
+ "unauthorized": "not_authorized",
+ "recovered": "published",
+ "publication_id_preserved": "publish-20261109T104032Z-a4f134",
+ "remote_pushes": 1,
+ "final_state_then": "published",
+ "reverify": "already_published"
+}

@@ -14,3 +14,12 @@ This is a real-data dry run of `colab/r1_part8_final_release.py`. Nothing was pu
 | `d3_dryrun_report.json` | render check (F8 off = archive, F8 on = approved, all 12); assembly (465 files, 440 identical, 25 changed); git verification of the staged commit (parent = pin, 469 blobs = 465 files + 4 record files); Drive payload (465 members); publication state `not_authorized`; no Drive write; no remote branch |
 | `release_manifest.json`, `RELEASE.md`, `archive_to_release_diff.csv` | the release record produced by the dry run. Its identities are those of the dry run, not of the real release |
 | `example_F3.4_CPIAUCSL.png.provenance.json` | a release sidecar, separating `run_id`/`numbers_run_id` from `figure_operation` |
+
+## Recovery check
+
+`recovery_dryrun_report.json` covers the case where the dry run's real 465-file payload was left as a Drive `.partial` (runtime lost before the push):
+- **Without authorization:** `not_authorized`, nothing changed.
+- **With `AUTHORIZE_RECOVERY`:** the same release was rebuilt and verified against the archive under its **original** publication ID, committed, pushed once to a stand-in remote and finalized.
+- **Re-check:** a further run reported `already_published`.
+
+The temporary local branch was deleted, and nothing was pushed to GitHub.

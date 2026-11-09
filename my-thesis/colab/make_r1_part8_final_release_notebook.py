@@ -22,6 +22,7 @@ import r1_part8_final_release as rel  # noqa: E402
 NOTEBOOK = "r1_part8_final_release.ipynb"
 TOOL_SHA256 = hashlib.sha256((HERE / "r1_part8_final_release.py").read_bytes()).hexdigest()
 ARCHIVE_TOOL_SHA256 = hashlib.sha256((HERE / "r1_integration_archive.py").read_bytes()).hexdigest()
+RECOVERY_SHA256 = hashlib.sha256((HERE / "r1_part8_release_recovery.py").read_bytes()).hexdigest()
 
 INTRO = f"""# Part 8 final release (D3): assembly, verification and guarded publication
 
@@ -41,6 +42,13 @@ must be byte-identical.
    leaves a recorded status and never overwrites anything.
 
 The GitHub write credential is read from Colab Secrets (`GITHUB_TOKEN`) and is never printed.
+
+**Recovery after a lost runtime.** Section 2 inspects the external state. If the release branch or a
+Drive release folder already exists, the notebook switches to recovery mode: it renders,
+assembles and commits nothing new, and section 8 finishes only the missing steps of the
+interrupted publication, under the identity read from its verified payload, and only if
+`AUTHORIZE_RECOVERY = True` (a separate setting, default False; `AUTHORIZE_PUBLICATION` must then be
+False). Any conflict or unverifiable item refuses; nothing is overwritten, deleted or force-pushed.
 """
 
 SETTINGS = f'''# @title Settings
@@ -51,6 +59,8 @@ RELEASE_TOOL_SHA256 = "{TOOL_SHA256}"
 ARCHIVE_TOOL_SHA256 = "{ARCHIVE_TOOL_SHA256}"
 DRIVE_ROOT = "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29"  # @param {{type:"string"}}
 AUTHORIZE_PUBLICATION = False  # @param {{type:"boolean"}}
+AUTHORIZE_RECOVERY = False  # @param {{type:"boolean"}}
+RECOVERY_SHA256 = "{RECOVERY_SHA256}"
 USE_CONSTRAINTS = True
 WORK = "/content/r1_part8_final_release"'''
 
@@ -66,6 +76,8 @@ try:
 except ImportError:                       # outside Colab (used only to test this notebook)
     GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 assert isinstance(AUTHORIZE_PUBLICATION, bool), "AUTHORIZE_PUBLICATION must be True or False"
+assert isinstance(AUTHORIZE_RECOVERY, bool), "AUTHORIZE_RECOVERY must be True or False"
+assert not (AUTHORIZE_PUBLICATION and AUTHORIZE_RECOVERY), "authorize publication OR recovery, not both"
 assert re.fullmatch(r"[0-9a-f]{40}", RELEASE_TOOL_COMMIT), "RELEASE_TOOL_COMMIT must be a full SHA"
 DRIVE_ROOT = str(DRIVE_ROOT).strip().rstrip("/")
 assert DRIVE_ROOT.startswith("/content/drive/"), "DRIVE_ROOT must be under /content/drive/"
@@ -81,8 +93,8 @@ if GITHUB_TOKEN:
                        '  *) echo "$THESIS_GIT_TOKEN" ;;\\nesac\\n')
     askpass.chmod(0o700)
     GIT_ENV.update(GIT_ASKPASS=str(askpass), THESIS_GIT_TOKEN=GITHUB_TOKEN)
-if AUTHORIZE_PUBLICATION:
-    assert GITHUB_TOKEN, "publication needs the GITHUB_TOKEN Colab secret"
+if AUTHORIZE_PUBLICATION or AUTHORIZE_RECOVERY:
+    assert GITHUB_TOKEN, "publication and recovery need the GITHUB_TOKEN Colab secret"
 print("authorize publication:", AUTHORIZE_PUBLICATION, "| GitHub token:", "found" if GITHUB_TOKEN else "not set")'''
 
 CLONE = '''REPO = WORK_DIR / "repo"
@@ -104,10 +116,19 @@ RENDERER = REPO / rel.RENDERER
 assert hashlib.sha256(RENDERER.read_bytes()).hexdigest() == rel.RENDERER_SHA256
 subprocess.run(["git", "fetch", "-q", "origin", rel.SCIENTIFIC_PIN], cwd=REPO, env=GIT_ENV)
 subprocess.run(["git", "cat-file", "-e", rel.SCIENTIFIC_PIN + "^{commit}"], cwd=REPO, check=True)
-existing = rel.remote_branch_head(REPO, rel.RELEASE_BRANCH, GIT_ENV)
-assert existing is None, f"remote branch {rel.RELEASE_BRANCH} already exists at {existing}; nothing is overwritten"
-assert not (Path(DRIVE_ROOT) / rel.DRIVE_RELEASE_PARENT / rel.RELEASE_ID).exists(), "the Drive release folder exists"
-print("release tool", RELEASE_TOOL_COMMIT[:12], "verified; release branch and Drive folder are free")'''
+assert hashlib.sha256((COLAB_DIR / "r1_part8_release_recovery.py").read_bytes()).hexdigest() == RECOVERY_SHA256
+import r1_part8_release_recovery as rec
+importlib.reload(rec)
+STATE = rec.inspect_state(REPO, Path(DRIVE_ROOT), GIT_ENV)        # reads only
+RECOVERY_MODE = STATE["state"] != "not_started"
+print("external state:", json.dumps(STATE))
+if RECOVERY_MODE:
+    assert not AUTHORIZE_PUBLICATION, ("a publication already started (" + STATE["state"] + "); a new "
+                                       "release is never published over it. Use AUTHORIZE_RECOVERY.")
+    print("RECOVERY MODE: sections 5-7 are skipped; section 8 verifies and finishes the interrupted publication.")
+else:
+    assert not AUTHORIZE_RECOVERY, "nothing to recover: the release has not been started"
+    print("release tool", RELEASE_TOOL_COMMIT[:12], "verified; release branch and Drive folders are free")'''
 
 ENV = '''spec = importlib.util.spec_from_file_location("thesis_colab", COLAB_DIR / "thesis_colab.py")
 tc = importlib.util.module_from_spec(spec)
@@ -196,6 +217,25 @@ else:
     print("Not published (", STATUS["state"], "). Send the output above to Claude.")'''
 
 
+RECOVER = '''# Only in recovery mode. Verifies everything that exists; finishes only the missing steps.
+if not RECOVERY_MODE:
+    print("normal mode: no recovery needed")
+else:
+    RECOVERY_STATUS_PATH = WORK_DIR / "recovery_status.json"
+    try:
+        RECOVERY = rec.recover(authorized=AUTHORIZE_RECOVERY, repo=REPO, drive_root=Path(DRIVE_ROOT),
+                               archive_tree=ARCH_TREE, work=WORK_DIR / "recovery",
+                               status_path=RECOVERY_STATUS_PATH, git_env=GIT_ENV)
+    finally:
+        print(RECOVERY_STATUS_PATH.read_text() if RECOVERY_STATUS_PATH.exists() else "no recovery log written")
+    print("Recovery result:", RECOVERY["result"], "- send this output to Claude.")'''
+
+
+def _normal_only(source: str) -> str:
+    return ('if RECOVERY_MODE:\n    print("recovery mode: skipped")\nelse:\n'
+            f'    exec(compile({source!r}, "<normal release>", "exec"), globals())')
+
+
 def cells(tool_commit: str) -> list[tuple[str, str]]:
     return [("markdown", INTRO), ("code", SETTINGS.replace("__TOOL__", tool_commit)),
             ("markdown", "## 1. Drive and credentials"), ("code", SETUP),
@@ -203,10 +243,15 @@ def cells(tool_commit: str) -> list[tuple[str, str]]:
             ("markdown", "## 3. Approved environment and frozen data"), ("code", ENV),
             ("markdown", "## 4. Verify and extract the candidate archive"), ("code", ARCHIVE),
             ("markdown", "## 5. Render F3.4 (F8 off = archive; F8 on = approved), no estimation"),
-            ("code", RENDER),
-            ("markdown", "## 6a. Assemble and verify the release (25-path allowlist)"), ("code", ASSEMBLE),
-            ("markdown", "## 6b. Stage the GitHub commit and the Drive payload locally"), ("code", STAGE),
-            ("markdown", "## 7. Publish (only if AUTHORIZE_PUBLICATION is True)"), ("code", PUBLISH)]
+            ("code", _normal_only(RENDER)),
+            ("markdown", "## 6a. Assemble and verify the release (25-path allowlist)"),
+            ("code", _normal_only(ASSEMBLE)),
+            ("markdown", "## 6b. Stage the GitHub commit and the Drive payload locally"),
+            ("code", _normal_only(STAGE)),
+            ("markdown", "## 7. Publish (only if AUTHORIZE_PUBLICATION is True)"),
+            ("code", _normal_only(PUBLISH)),
+            ("markdown", "## 8. Recovery of an interrupted publication (only if AUTHORIZE_RECOVERY is True)"),
+            ("code", RECOVER)]
 
 
 def build(tool_commit: str) -> dict:
