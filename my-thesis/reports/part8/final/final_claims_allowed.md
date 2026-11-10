@@ -12,7 +12,13 @@
 
 **Purpose.** This file is the bridge to Part 9. It gives the exact claims the **final release** permits (see the banner), with the wording allowed, the status, the supporting files (relative to `my-thesis/output/` in the release commit) and the jury IDs.
 
-The machine-readable version for the published release is `reports/part8/claim_evidence_matrix_adjudicated.csv`, and the R1 version is `corrections/r1/claim_evidence_matrix_corrected.csv`. The claim-by-claim verdicts on the integrated candidate are in `corrections/r1/evidence/integration_dryrun_audit_20261108/derived/claim_verdicts_integration.csv`. The final machine-readable matrix is `claim_evidence_matrix_final.csv` in this directory; the earlier matrices are unchanged (§4).
+**Authoritative matrix.** `claim_evidence_matrix_final.csv` in this directory is the authoritative, final claims matrix. It covers 24 claims (13 SUPPORTED, 8 QUALIFIED, 3 NOT_SUPPORTED), all non-provisional. It applies to the published release `part8-final-20261109`, commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`.
+
+The earlier matrices are historical and superseded; they are kept unchanged (§4):
+- `reports/part8/claim_evidence_matrix_adjudicated.csv`, for the original publication of 1 November 2026;
+- `corrections/r1/claim_evidence_matrix_corrected.csv`, for R1;
+- `corrections/r1/evidence/integration_dryrun_audit_20261108/derived/claim_verdicts_integration.csv`, the integration verdicts;
+- `drafts_integrated_20261108/claim_evidence_matrix_candidate.csv`, the candidate.
 
 **Statuses**
 
@@ -28,12 +34,12 @@ The machine-readable version for the published release is `reports/part8/claim_e
   - no universal model ranking;
   - no claims about other countries or real-time nowcasting;
   - no economic labels on statistical regimes.
-- Every number used in Part 9 must be quoted from `output/`, i.e. from the candidate once it is published. The **[audit]** numbers in these reports are not citable as results.
+- Every number used in Part 9 must be quoted from `my-thesis/output/` at the published release commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b` (`SOURCE_OF_TRUTH.md`). The **[audit]** numbers in these reports are not citable as results.
 - **Significance versus ranking.** A descriptive ranking (lowest RMSE, rank) is never stated as a statistical conclusion. A ranking is stated with the sample it uses.
 - **Degenerate tests.** A test on exploding STAR losses (T3.3A mean differential beyond 10³; p ≈ 0.31–0.33) carries no usable inference. It supports no affirmative inferential claim, including "no significant difference".
 - **Joint tests.** A joint Wald rejection is reported separately from its state-dependence test and is not read as state dependence.
 
-**Status of the earlier provisional flags.** The published report marked C01, C02, C04, C12–C17 and C21 as provisional pending F1 or F2. In the integrated candidate F1 and F2 are applied and every pending chain is computed, so those flags are lifted. Against the R1 corrected matrix, 23 claims keep their status and **C16 moves from SUPPORTED to QUALIFIED** (revision of 9 November 2026: equal accuracy of AR(2) and AR(12) is not established). Against the published report, C21 also changes (INCONCLUSIVE → SUPPORTED as revised). C08, C14, C15, C16 and C21 have revised wording and C07 a clarification; C12, C13 and C17 carry smaller additions. All are listed in `CHANGELOG.md`. The candidate matrix is `claim_evidence_matrix_candidate.csv` in this directory. **All claims remain drafts until the archived candidate is approved and published.** P04-regime-count and C18 remain qualified by F6 (UNRATE K=3 is a non-global optimum).
+**Status of the earlier provisional flags.** The original published report (1 November 2026) marked C01, C02, C04, C12–C17 and C21 as provisional pending F1 or F2. In the integrated candidate F1 and F2 are applied and every pending chain is computed, so those flags are lifted. Against the R1 corrected matrix, 23 claims keep their status and **C16 moves from SUPPORTED to QUALIFIED** (revision of 9 November 2026: equal accuracy of AR(2) and AR(12) is not established). Against the original published report, C21 also changes (INCONCLUSIVE → SUPPORTED as revised). C08, C14, C15, C16 and C21 have revised wording and C07 a clarification; C12, C13 and C17 carry smaller additions. All are listed in `CHANGELOG.md`. **All 24 claims are final and non-provisional for the published release (commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`)**; their statuses are those of `claim_evidence_matrix_final.csv`. P04-regime-count and C18 remain qualified by F6 (UNRATE K=3 is a non-global optimum).
 
 **Inference language.** In every claim, a non-rejection is reported as "no significant difference" or "no evidence of superiority". It is never reported as "equal forecasting ability".
 
@@ -216,18 +222,24 @@ The machine-readable version for the published release is `reports/part8/claim_e
 
 ---
 
-## 4. Claim matrix: derived report versus immutable output
+## 4. Claim matrices: the final release and their history
 
-- Part 5 requires `output/manifests/claim_evidence_matrix.csv`. The pipeline registered it before Part 8 with one row, `P04-regime-count`, whose result and status fields were empty. The file has SHA-256 `62d5ec1e797aab3318fcc26071a416bdaf9f93b26a7b00daa6021f4cc96ed89a` and is listed in `output/manifests/output_inventory.csv`.
-- **Decision.** The adjudication is written to **`reports/part8/claim_evidence_matrix_adjudicated.csv`**. **`output/` is not modified.** The reasons:
-  1. It keeps every file under `output/` byte-identical to the immutable results commit `0662945`, so the inventory checksums still verify.
-  2. The statuses are Part 8 *judgements*, not computed numbers. CLAUDE.md §9 places judgements in `reports/`.
-  3. F1 required regeneration anyway (at the time of the published report). The pipeline-written matrix should be refreshed after the approved re-run, not hand-edited now.
-- **The adjudicated CSV**
-  - uses the exact Part 5 §12 columns;
-  - adds `adjudication_basis`, `provisional_due_to` and `adjudicated_in`;
-  - adjudicates the P-04 row and adds every major claim above (C01–C23).
-- **Final matrix.** `claim_evidence_matrix_final.csv` in this directory carries the final statuses, evidence and required limitations of all 24 claims. The pipeline-registered `output/manifests/claim_evidence_matrix.csv` (one empty P04 row) is not a source of claim statuses.
-- If the user prefers the adjudication to live in `output/manifests/claim_evidence_matrix.csv`, that is a deliberate change to an inventoried file. It needs:
-  - the inventory regenerated;
-  - the old hash (`62d5ec1e…`) and the new hash recorded in a note.
+**The final release (authoritative)**
+
+- **Numbers.** The published numerical outputs are final. They are `my-thesis/output/` at commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b` on `part8-corrected-results/final-20261109`, published and verified on 10 November 2026 (`PUBLICATION.md`). They await no further correction or publication.
+- **Claim statuses.** These are Part 8 judgements, not computed numbers, so they live in `reports/` (CLAUDE.md §9). The final matrix is `claim_evidence_matrix_final.csv` in this directory. It adds `candidate_status`, `required_limitations`, `allowed_wording_ref` and `candidate_source` to the earlier matrices' columns. Each `allowed_wording_ref` points to the claim's section of this file.
+- **The pipeline-registered `output/manifests/claim_evidence_matrix.csv`.**
+  - It is the file Part 5 requires. The pipeline wrote it before Part 8, with one row (`P04-regime-count`) whose result and status fields are empty.
+  - It is **not** a source of claim statuses.
+  - It is carried unchanged into the release: `original_unchanged`, sha256 `62d5ec1e797aab3318fcc26071a416bdaf9f93b26a7b00daa6021f4cc96ed89a`, listed in the release's `manifests/output_inventory.csv` and `release_inventory.csv`.
+  - It was deliberately not hand-edited, because every release file is verified byte for byte against the candidate archive. Moving the statuses into it now would change the published, inventoried release, which would require a new release. None is planned.
+
+**History (the original publication of 1 November 2026; superseded)**
+
+- The original audit wrote its adjudication to `reports/part8/claim_evidence_matrix_adjudicated.csv` and left `output/` untouched. The reasons then were:
+  1. to keep every file under `output/` byte-identical to the immutable results commit `0662945`, so that its inventory checksums kept verifying;
+  2. because the statuses were judgements;
+  3. because F1 required regenerating the evidence, so the matrix was not to be hand-edited before that.
+- That regeneration has since been done without new estimation: R1 → integration → candidate archive `archive-20261109T080914Z-3c7d68`. It is published as the release above.
+- `0662945` remains the immutable record of the original, superseded baseline. It is not a source of thesis numbers.
+- That adjudicated CSV uses the Part 5 §12 columns and adds `adjudication_basis`, `provisional_due_to` and `adjudicated_in`. It adjudicated the P-04 row and C01–C23 against the original publication. It is kept unchanged as history.

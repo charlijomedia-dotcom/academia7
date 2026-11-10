@@ -46,3 +46,21 @@ All are retained unchanged:
 - the integrated tables equal the published files in all 2,665,073 cells;
 - all cited `output/` paths exist at the commit;
 - number checks pass 128 / 128.
+
+## Closure corrections (10 November 2026; documentation only)
+
+These follow from the closure review of `b1fcc77`.
+
+| Where | Change |
+|---|---|
+| `claim_evidence_matrix_final.csv` | All 24 `allowed_wording_ref` entries now point to the claim sections of `reports/part8/final/final_claims_allowed.md`, as `§n, Cxx`. P04-regime-count points to §3 C18, its P-04 claim; until now they pointed to the drafts. **No other column changed:** statuses (13 / 8 / 3), evidence, limitations and provisional flags are as before |
+| `final_claims_allowed.md`, purpose | `claim_evidence_matrix_final.csv` is named as the authoritative final matrix. The earlier matrices are listed as historical and superseded |
+| `final_claims_allowed.md`, general restrictions | "from the candidate once it is published" → "from `my-thesis/output/` at the published release commit `9817daf…`" |
+| `final_claims_allowed.md`, provisional-flags paragraph | "All claims remain drafts until the archived candidate is approved and published" is removed. All 24 claims are final and non-provisional for the published release. "Published report" is clarified as the original report of 1 November |
+| `final_claims_allowed.md` §4 | Rewritten as "the final release and their history". The published outputs at `9817daf…` are final, and no correction or publication is pending. The pipeline-registered `output/manifests/claim_evidence_matrix.csv` is carried unchanged in the release (sha256 `62d5ec1e…`) and is not a source of claim statuses. The original-baseline reasoning (immutable `0662945`, regeneration still to come) is kept, explicitly as superseded history |
+
+**Validation.**
+- The matrix differs from `b1fcc77` only in `allowed_wording_ref`.
+- All 24 references resolve to their claim's section of the final report.
+- The release commit is cited correctly in all seven final documents.
+- Number checks pass 128 / 128 (output unchanged), and the release, recovery and final-report tests pass 98 / 98.
