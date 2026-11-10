@@ -1,11 +1,30 @@
 {
   "artifact": "F3.4_UNRATE.pdf",
-  "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
-  "created_utc": "2026-10-31T01:40:37Z",
+  "created_utc": "2026-11-10T03:20:42Z",
   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
   "figure_id": "F3.4",
+  "figure_operation": {
+    "approved": "2026-11-09",
+    "archived_figure_created_utc": "2026-11-09T08:03:14Z",
+    "archived_figure_sha256": "878e01a0a59b4efdb88ce802036be6e4327f471fef7f3abd4cc6675b3bc716fa",
+    "archived_sidecar_sha256": "2ccebe44ab871411863695261cf85db25e8ac04cb99333bc1efd673bcafc1861",
+    "operation": "F8 presentation re-render of F3.4 (no number changed)",
+    "operation_id": "f8render-20261110T032042Z-dc0f7b",
+    "plotting_code_commit": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
+    "release_tool_commit": "3243c6b0e28faf7da2040be3e0f1b1d5e79e74c9",
+    "rendered_from_archive": "archive-20261109T080914Z-3c7d68",
+    "rendered_utc": "2026-11-10T03:20:42Z",
+    "renderer": "my-thesis/reports/part8/corrections/r1/f8_review/f8_render.py",
+    "renderer_sha256": "6a8e4eeb54af3b39c66068aa4c19e253eb9983b6863a660e9ea77b579633947f",
+    "switch": "f8_readable_main_panel=true"
+  },
+  "figure_sha256": "8a50e282229ad9a23fef9868a00b9c6d5204d9d5fb8aad6e7099a24473836cf1",
   "horizon": 1,
-  "run_id": "baseline-20261030T173044-949fcd76",
+  "numbers_audited_run_id": "correction-20261108T053328-949fcd76",
+  "numbers_run_id": "correction-20261109T080220-949fcd76",
+  "presentation_amendment": "F8 readable main panel (Part 5 \u00a713.1), approved 9 November 2026: flagged forecasts are omitted from the main panel and shown in the diagnostic panel; presentation only, no number changed",
+  "run_id": "correction-20261109T080220-949fcd76",
   "series": "UNRATE"
 }

@@ -1,11 +1,13 @@
 {
   "artifact": "F4.8_UNRATE.png",
+  "b1_correction": "re-rendered by the pinned code from the corrected window-length table",
   "baseline_window_length": 240,
-  "code_commit_sha": "46a53181e5e9d23c415f1c7fe11c0da93d9c3964",
+  "code_commit_sha": "8aaa4217536ab3cb942dd248dd19ece7838a8d60",
   "config_hash": "949fcd76769048e3322f1595cd9bfb26006f8dcb692c17d16d3a9e5dab61db8e",
-  "created_utc": "2026-10-31T02:34:21Z",
+  "created_utc": "2026-11-09T08:03:52Z",
   "data_snapshot_hash": "7e7dc769bd63ca4951ef55430180f413de62c9dc53a275af50ad277a715b832a",
   "figure_id": "F4.8",
-  "run_id": "baseline-20261030T173044-949fcd76",
+  "integration_dry_run": "re-rendered by the pinned code from the integrated window-length table (decision D2)",
+  "run_id": "correction-20261109T080220-949fcd76",
   "series": "UNRATE"
 }
