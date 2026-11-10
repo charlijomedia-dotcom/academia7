@@ -181,6 +181,53 @@ def verify_remote_commit(repo: Path, commit: str, tree: Path, record: Path, git_
         raise RecoveryRefused(f"the GitHub commit {commit} does not match the Drive payload: {exc}") from exc
 
 
+def verify_published_status(status: dict, *, commit: str, final: Path, publication_id: str,
+                            tar_sha256: str) -> None:
+    """An existing `published` status must describe exactly the independently verified release.
+
+    `commit` is the remote branch head, already verified blob by blob against the Drive payload;
+    `publication_id` and `tar_sha256` come from that verified payload. A status written by the
+    normal publication does not record the publication ID: there it is bound by the verified
+    commit, whose release_manifest.json equals the payload's. A status that records one (every
+    recovered status does) must record exactly this one.
+    """
+    problems = []
+    if not isinstance(status, dict):
+        raise RecoveryRefused("the existing status file is not a JSON object")
+    if status.get("state") != "published":
+        problems.append(f"state {status.get('state')!r}")
+    if status.get("release_id") != rel.RELEASE_ID:
+        problems.append(f"release_id {status.get('release_id')!r}")
+    if status.get("branch") != rel.RELEASE_BRANCH:
+        problems.append(f"branch {status.get('branch')!r}")
+    if status.get("commit") != commit:
+        problems.append(f"commit {status.get('commit')!r} is not the verified branch head {commit}")
+    if "publication_id" in status or status.get("recovered"):
+        if status.get("publication_id") != publication_id:
+            problems.append(f"publication_id {status.get('publication_id')!r} is not {publication_id}")
+    if status.get("drive_final") != str(final):
+        problems.append(f"drive_final {status.get('drive_final')!r} is not {final}")
+    steps = status.get("steps") if isinstance(status.get("steps"), list) else []
+    states = [step.get("state") for step in steps if isinstance(step, dict)]
+    if states[-3:] != ["drive_staged", "github_verified", "published"]:
+        problems.append(f"steps {states} do not end drive_staged, github_verified, published")
+    for step in steps:
+        if isinstance(step, dict) and step.get("state") in ("drive_staged", "published") \
+                and step.get("tar_sha256") != tar_sha256:
+            problems.append(f"{step.get('state')} tar_sha256 {step.get('tar_sha256')!r} is not {tar_sha256}")
+        if isinstance(step, dict) and step.get("state") == "github_verified" \
+                and step.get("remote_head") != commit:
+            problems.append(f"github_verified remote_head {step.get('remote_head')!r} is not {commit}")
+    if not any(isinstance(s, dict) and s.get("state") == "published" and s.get("tar_sha256")
+               for s in steps):
+        problems.append("no recorded tar sha256 for the published step")
+    if not str(status.get("published_utc", "")):
+        problems.append("published_utc missing")
+    if problems:
+        raise RecoveryRefused("the existing status file does not match the verified release: "
+                              + "; ".join(problems))
+
+
 # -- recovery ---------------------------------------------------------------------------------
 
 def recover(*, authorized: bool, repo: Path, drive_root: Path, archive_tree: Path, work: Path,
@@ -219,9 +266,13 @@ def recover(*, authorized: bool, repo: Path, drive_root: Path, archive_tree: Pat
         verify_remote_commit(repo, commit, tree, record, git_env, fetch)
         note("verified_github", commit=commit)
     if state == "published":
-        existing = json.loads((final / "publication_status.json").read_text())
-        if existing.get("commit") != facts["remote_head"] or existing.get("state") != "published":
-            raise RecoveryRefused("the existing status file does not match the verified release")
+        try:
+            existing = json.loads((final / "publication_status.json").read_text())
+        except ValueError as exc:
+            raise RecoveryRefused(f"the existing status file is not valid JSON: {exc}") from exc
+        verify_published_status(existing, commit=facts["remote_head"], final=final,
+                                publication_id=identity["publication_id"],
+                                tar_sha256=identity["release_tar_sha256"])
         note("already_published", commit=facts["remote_head"])
         log["result"] = "already_published"
         return log

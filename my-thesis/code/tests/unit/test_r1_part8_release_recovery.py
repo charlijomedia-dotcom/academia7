@@ -345,3 +345,99 @@ def test_notebook_routes_to_recovery_with_separate_authorization():
     for inner in (mk.RENDER, mk.ASSEMBLE, mk.STAGE, mk.PUBLISH, mk.RECOVER):
         ast.parse(inner)
     assert text.count("recovery mode: skipped") == 4
+
+
+# -- an existing `published` status must describe exactly the verified release ----------------
+
+def _published_world(world, recovered: bool):
+    """A complete publication: normal (status without publication_id) or recovered."""
+    if recovered:
+        lose_runtime_at(world, "after_push")
+        recover(world, new_runtime(world))
+    else:
+        rel.publish(authorized=True, payload_dir=world["payload"], drive_root=world["drive"],
+                    repo=world["first"], commit=world["commit"], tree=world["tmp"] / "release_tree",
+                    record_dir=world["record"], status_path=world["tmp"] / "status1.json", git_env=None,
+                    push=world["remote"].push, remote_head=world["remote"].remote_head)
+    _, final = rec.drive_paths(world["drive"])
+    return final / "publication_status.json"
+
+
+@pytest.mark.parametrize("recovered", [False, True])
+def test_consistent_published_status_is_accepted(world, recovered):
+    path = _published_world(world, recovered)
+    before = path.read_bytes()
+    assert recover(world, new_runtime(world))["result"] == "already_published"
+    assert path.read_bytes() == before                      # never rewritten
+
+
+def _tamper(status: dict, field: str) -> None:
+    steps = status["steps"]
+    if field == "release_id":
+        status["release_id"] = "part8-final-20991231"
+    elif field == "branch":
+        status["branch"] = "part8-corrected-results/other"
+    elif field == "commit":
+        status["commit"] = "0" * 40
+    elif field == "publication_id":
+        status["publication_id"] = "publish-20991231T000000Z-000000"
+    elif field == "drive_final":
+        status["drive_final"] = status["drive_final"] + "-copy"
+    elif field == "published_tar":
+        next(s for s in steps if s["state"] == "published")["tar_sha256"] = "1" * 64
+    elif field == "staged_tar":
+        next(s for s in steps if s["state"] == "drive_staged")["tar_sha256"] = "2" * 64
+    elif field == "missing_tar":
+        next(s for s in steps if s["state"] == "published").pop("tar_sha256")
+    elif field == "github_head":
+        next(s for s in steps if s["state"] == "github_verified")["remote_head"] = "3" * 40
+    elif field == "steps":
+        status["steps"] = [s for s in steps if s["state"] != "github_verified"]
+    elif field == "state":
+        status["state"] = "failed"
+    elif field == "published_utc":
+        status.pop("published_utc")
+
+
+FIELDS = ["release_id", "branch", "commit", "publication_id", "drive_final", "published_tar",
+          "staged_tar", "missing_tar", "github_head", "steps", "state", "published_utc"]
+
+
+@pytest.mark.parametrize("recovered", [False, True])
+@pytest.mark.parametrize("field", FIELDS)
+def test_inconsistent_published_status_is_refused(world, recovered, field):
+    path = _published_world(world, recovered)
+    status = json.loads(path.read_text())
+    _tamper(status, field)
+    path.write_text(json.dumps(status))
+    tampered = path.read_bytes()
+    with pytest.raises(rec.RecoveryRefused, match="status file"):
+        recover(world, new_runtime(world))
+    assert path.read_bytes() == tampered                    # refused, not "repaired"
+
+
+def test_recovered_status_without_its_publication_id_is_refused(world):
+    path = _published_world(world, recovered=True)
+    status = json.loads(path.read_text())
+    status.pop("publication_id")
+    path.write_text(json.dumps(status))
+    with pytest.raises(rec.RecoveryRefused, match="publication_id"):
+        recover(world, new_runtime(world))
+
+
+def test_status_file_that_is_not_json_is_refused(world):
+    path = _published_world(world, recovered=False)
+    path.write_text("{not json")
+    with pytest.raises(rec.RecoveryRefused, match="not valid JSON"):
+        recover(world, new_runtime(world))
+
+
+def test_notebook_requires_a_fresh_runtime_for_authorized_recovery():
+    import make_r1_part8_final_release_notebook as mk
+    nb = mk.build("d" * 40)
+    setup = next("".join(c["source"]) for c in nb["cells"]
+                 if c["cell_type"] == "code" and "AUTHORIZE_RECOVERY must be True or False" in "".join(c["source"]))
+    assert 'assert not (WORK_DIR / "recovery").exists()' in setup
+    intro = "".join(nb["cells"][0]["source"])
+    assert "each in a fresh runtime" in intro and "Do not set the flag and Run all again" in intro
+    assert "open a FRESH runtime" in mk.RECOVER and "Do not re-run in this runtime" in mk.RECOVER

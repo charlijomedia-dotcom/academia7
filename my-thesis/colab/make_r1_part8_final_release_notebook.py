@@ -49,6 +49,11 @@ assembles and commits nothing new, and section 8 finishes only the missing steps
 interrupted publication, under the identity read from its verified payload, and only if
 `AUTHORIZE_RECOVERY = True` (a separate setting, default False; `AUTHORIZE_PUBLICATION` must then be
 False). Any conflict or unverifiable item refuses; nothing is overwritten, deleted or force-pushed.
+
+Recovery is two runs, **each in a fresh runtime** (Runtime > Disconnect and delete runtime, then
+Run all): first read-only with both settings False; then, after review, with
+`AUTHORIZE_RECOVERY = True`. Do not set the flag and Run all again in the runtime of the read-only
+run: the notebook refuses, because that runtime already holds a recovered copy.
 """
 
 SETTINGS = f'''# @title Settings
@@ -83,6 +88,9 @@ DRIVE_ROOT = str(DRIVE_ROOT).strip().rstrip("/")
 assert DRIVE_ROOT.startswith("/content/drive/"), "DRIVE_ROOT must be under /content/drive/"
 WORK_DIR = Path(WORK)
 assert not (WORK_DIR / "tree").exists(), "this runtime already assembled a release; use a fresh runtime"
+assert not (WORK_DIR / "recovery").exists(), ("this runtime already ran a recovery check; for an authorized "
+                                              "recovery use a fresh runtime (Runtime > Disconnect and delete "
+                                              "runtime), set AUTHORIZE_RECOVERY = True, then Run all")
 WORK_DIR.mkdir(parents=True, exist_ok=True)
 SECRETS_DIR = WORK_DIR / "secrets"
 SECRETS_DIR.mkdir(exist_ok=True)
@@ -228,7 +236,11 @@ else:
                                status_path=RECOVERY_STATUS_PATH, git_env=GIT_ENV)
     finally:
         print(RECOVERY_STATUS_PATH.read_text() if RECOVERY_STATUS_PATH.exists() else "no recovery log written")
-    print("Recovery result:", RECOVERY["result"], "- send this output to Claude.")'''
+    print("Recovery result:", RECOVERY["result"], "- send this output to Claude.")
+    if RECOVERY["result"] == "not_authorized":
+        print("To finish after review: open a FRESH runtime (Runtime > Disconnect and delete runtime), "
+              "set AUTHORIZE_RECOVERY = True, keep AUTHORIZE_PUBLICATION = False, then Run all. "
+              "Do not re-run in this runtime.")'''
 
 
 def _normal_only(source: str) -> str:
