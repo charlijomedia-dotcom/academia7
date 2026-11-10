@@ -1,12 +1,12 @@
 # Part 8 — Robustness findings (final)
 
-> **FINAL PART 8 REPORT — release `part8-final-20261109`.** <!--PUB:status-->**Not yet published.** The release commit and Drive folder do not exist yet. Until `finalize_reports.py` records the verified publication, these reports and their numbers are not citable (CLAUDE.md §9).<!--/PUB:status-->
+> **FINAL PART 8 REPORT — release `part8-final-20261109`.** **Published on 2026-11-10:** commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b` on `part8-corrected-results/final-20261109`; Drive `baseline/r1_part8_final_release/part8-final-20261109/` (release.tar.gz sha256 `a9d1a028d0e0b09e9fff3a98d7593cb51026ce70cff1db25b12d1beb225728b8`), verified at both destinations (`PUBLICATION.md`).
 >
 > - **Authoritative numbers.** `my-thesis/output/` in the release commit on branch `part8-corrected-results/final-20261109`: 465 files, listed with sha256 in `my-thesis/release/part8_final/release_inventory.csv`. See `SOURCE_OF_TRUTH.md` in this directory.
 >   - `output/` in any other commit or branch holds superseded or provisional values. That includes `part8-r1-rescore`, the pin `8aaa4217` and the results commit `0662945`, which hold the original baseline. **Do not use it.**
 > - **Numbers identity.** Run `correction-20261109T080220-949fcd76` (archive `archive-20261109T080914Z-3c7d68`), equivalent to the audited run `correction-20261108T053328-949fcd76`. Scientific code `8aaa4217`, unchanged. No model was estimated in the integration or the release. B2 was accepted on 8 November 2026 (`corrections/r1/b2_scientific_adjudication.md`).
 > - **Number checks.** Every quoted number is checked against the integrated tables, whose cell content the archive's equivalence gate ties to the release: `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv`.
-> - **F3.4 figures.** <!--PUB:f8-->The approved F8 versions (presentation only, 9 November 2026) are prepared in `corrections/r1/f8_review/` and become the release's `figures/F3.4_*` on publication.<!--/PUB:f8-->
+> - **F3.4 figures.** The release's `figures/F3.4_*` are the approved F8 versions (presentation only, approved 9 November 2026; sha256 in `release_inventory.csv`).
 > - **Not changed.** The superseded reports in `reports/part8/*.md` and the drafts in `drafts_integrated_20261108/`; results commit `0662945`; the provisional releases `0573a8c`, `3bd24c4` and `292227e`; certificates; `approved-specs/`.
 > - **Changes from the published (1 November) reports and from the drafts:** `CHANGELOG.md`.
 

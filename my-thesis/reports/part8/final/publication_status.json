@@ -1,0 +1,26 @@
+{
+ "release_id": "part8-final-20261109",
+ "branch": "part8-corrected-results/final-20261109",
+ "commit": "9817daf91ac4cb4aaa42c2bef5deaff5b674841b",
+ "drive_partial": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_part8_final_release/part8-final-20261109.partial",
+ "drive_final": "/content/drive/MyDrive/KillyPhD/Part8_K3_InSample_2026-10-29/baseline/r1_part8_final_release/part8-final-20261109",
+ "steps": [
+  {
+   "state": "drive_staged",
+   "utc": "20261110T032111Z",
+   "tar_sha256": "a9d1a028d0e0b09e9fff3a98d7593cb51026ce70cff1db25b12d1beb225728b8"
+  },
+  {
+   "state": "github_verified",
+   "utc": "20261110T032127Z",
+   "remote_head": "9817daf91ac4cb4aaa42c2bef5deaff5b674841b"
+  },
+  {
+   "state": "published",
+   "utc": "20261110T032128Z",
+   "tar_sha256": "a9d1a028d0e0b09e9fff3a98d7593cb51026ce70cff1db25b12d1beb225728b8"
+  }
+ ],
+ "state": "published",
+ "published_utc": "20261110T032128Z"
+}

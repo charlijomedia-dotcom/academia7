@@ -1,12 +1,12 @@
 # Part 8 — Full empirical analysis and audit report (final)
 
-> **FINAL PART 8 REPORT — release `part8-final-20261109`.** <!--PUB:status-->**Not yet published.** The release commit and Drive folder do not exist yet. Until `finalize_reports.py` records the verified publication, these reports and their numbers are not citable (CLAUDE.md §9).<!--/PUB:status-->
+> **FINAL PART 8 REPORT — release `part8-final-20261109`.** **Published on 2026-11-10:** commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b` on `part8-corrected-results/final-20261109`; Drive `baseline/r1_part8_final_release/part8-final-20261109/` (release.tar.gz sha256 `a9d1a028d0e0b09e9fff3a98d7593cb51026ce70cff1db25b12d1beb225728b8`), verified at both destinations (`PUBLICATION.md`).
 >
 > - **Authoritative numbers.** `my-thesis/output/` in the release commit on branch `part8-corrected-results/final-20261109`: 465 files, listed with sha256 in `my-thesis/release/part8_final/release_inventory.csv`. See `SOURCE_OF_TRUTH.md` in this directory.
 >   - `output/` in any other commit or branch holds superseded or provisional values. That includes `part8-r1-rescore`, the pin `8aaa4217` and the results commit `0662945`, which hold the original baseline. **Do not use it.**
 > - **Numbers identity.** Run `correction-20261109T080220-949fcd76` (archive `archive-20261109T080914Z-3c7d68`), equivalent to the audited run `correction-20261108T053328-949fcd76`. Scientific code `8aaa4217`, unchanged. No model was estimated in the integration or the release. B2 was accepted on 8 November 2026 (`corrections/r1/b2_scientific_adjudication.md`).
 > - **Number checks.** Every quoted number is checked against the integrated tables, whose cell content the archive's equivalence gate ties to the release: `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv`.
-> - **F3.4 figures.** <!--PUB:f8-->The approved F8 versions (presentation only, 9 November 2026) are prepared in `corrections/r1/f8_review/` and become the release's `figures/F3.4_*` on publication.<!--/PUB:f8-->
+> - **F3.4 figures.** The release's `figures/F3.4_*` are the approved F8 versions (presentation only, approved 9 November 2026; sha256 in `release_inventory.csv`).
 > - **Not changed.** The superseded reports in `reports/part8/*.md` and the drafts in `drafts_integrated_20261108/`; results commit `0662945`; the provisional releases `0573a8c`, `3bd24c4` and `292227e`; certificates; `approved-specs/`.
 > - **Changes from the published (1 November) reports and from the drafts:** `CHANGELOG.md`.
 
@@ -107,7 +107,7 @@ Still open:
 
 - **F5.** The FEDFUNDS K=2 MSAR is unidentified but is labelled fragile (interpretation only).
 - **F6.** No global MSAR likelihood maximum is guaranteed; the UNRATE K=3 fit is not a global maximum.
-- **F7.2 / F8.** Flagged forecasts are drawn as markers (F1). F8, the readable F3.4 main panel, was approved on 9 November 2026 as presentation only. <!--PUB:f8_full-->Its figures are prepared for the release (`corrections/r1/f8_review/`); until publication the only stored F3.4 are the pre-F8 archived figures.<!--/PUB:f8_full-->
+- **F7.2 / F8.** Flagged forecasts are drawn as markers (F1). F8, the readable F3.4 main panel, was approved on 9 November 2026 as presentation only. Its figures are the release's `figures/F3.4_*` (commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`).
 
 ### 3. Forecasting: no approved nonlinear model gives formally supported, robust gains over AR at the baseline horizon h=1
 
@@ -677,9 +677,9 @@ RMSE is on each model's own valid forecasts; OOS R² on each competitor's dates 
 
 See `jury_resolution_status.md`. In summary, for the empirically testable remarks:
 
-- **Resolved on the integrated candidate** (subject to approval and publication): R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03 and P-05.
-<!--PUB:r106_full-->- **Partially addressed until the release is published with the F8 figures:** R1-06.
-- **Partially addressed:** R1-11 (empirical part only) and P-04 (UNRATE K=3 inconclusive, F6).<!--/PUB:r106_full-->
+- **Resolved** (in the published release, commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`; formal Part 8 approval pending the closure review): R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03 and P-05.
+- **Resolved:** R1-06 (the published release contains the approved F8 figures).
+- **Partially addressed:** R1-11 (empirical part only) and P-04 (UNRATE K=3 inconclusive, F6).
 - **Outside empirical scope:** R1-01 to R1-05, R1-08, R1-10, R1-16, R1-20, R1-21 and P-06.
 
 ---
@@ -722,7 +722,7 @@ See `jury_resolution_status.md`. In summary, for the empirically testable remark
 
 ## H. Limitations
 
-1. **Corrections and open items.** F1–F4 and F7.1 are applied in the candidate. F5 (interpretation) and F6 (no global MSAR maximum) remain. F8 (readable F3.4 main panel) is approved. <!--PUB:f8_limit-->Its figures replace the pre-F8 F3.4 only on publication of the release; the archived candidate (`archive-20261109T080914Z-3c7d68`) keeps the pre-F8 figures, in which an exploding STAR forecast compresses the CPI main panel.<!--/PUB:f8_limit--> The residual M2SL diagnostic-panel overlap is an accepted presentation limitation.
+1. **Corrections and open items.** F1–F4 and F7.1 are applied in the candidate. F5 (interpretation) and F6 (no global MSAR maximum) remain. F8 (readable F3.4 main panel) is approved. Its figures are the release's F3.4 (commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`); the archived candidate keeps the pre-F8 figures for the record. The residual M2SL diagnostic-panel overlap is an accepted presentation limitation.
 2. **Single country.** The design covers one country (P-06) and uses a pseudo-out-of-sample evaluation on revised data, so it says nothing about real-time nowcasting (R1-20).
 3. **Few episodes.** There are 23 recession quarters for GDPC1 and 58 to 85 recession months for the monthly targets (T3.5R `n_recession`). State-specific inference has low power, and the 2020 episode dominates squared-error metrics.
 4. **Search depth.** MSAR used 2 deterministic starts, and the likelihoods are multimodal (F6). Different local optima are plausible across rolling origins, and B2 shows them directly: 20 classification changes and 29 optimiser sensitivities in two robustness chains under the approved warm-start rule.

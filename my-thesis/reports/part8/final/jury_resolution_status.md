@@ -2,17 +2,17 @@
 
 **Remark IDs** are the permanent IDs from `approved-specs/part2/part2_jury_remark_registry.md`. Prof. Verne's constraints (V-04 to V-07) come from `approved-specs/part5/part5_methodology_vs_jury_matrix.md`.
 
-> **FINAL PART 8 REPORT — release `part8-final-20261109`.** <!--PUB:status-->**Not yet published.** The release commit and Drive folder do not exist yet. Until `finalize_reports.py` records the verified publication, these reports and their numbers are not citable (CLAUDE.md §9).<!--/PUB:status-->
+> **FINAL PART 8 REPORT — release `part8-final-20261109`.** **Published on 2026-11-10:** commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b` on `part8-corrected-results/final-20261109`; Drive `baseline/r1_part8_final_release/part8-final-20261109/` (release.tar.gz sha256 `a9d1a028d0e0b09e9fff3a98d7593cb51026ce70cff1db25b12d1beb225728b8`), verified at both destinations (`PUBLICATION.md`).
 >
 > - **Authoritative numbers.** `my-thesis/output/` in the release commit on branch `part8-corrected-results/final-20261109`: 465 files, listed with sha256 in `my-thesis/release/part8_final/release_inventory.csv`. See `SOURCE_OF_TRUTH.md` in this directory.
 >   - `output/` in any other commit or branch holds superseded or provisional values. That includes `part8-r1-rescore`, the pin `8aaa4217` and the results commit `0662945`, which hold the original baseline. **Do not use it.**
 > - **Numbers identity.** Run `correction-20261109T080220-949fcd76` (archive `archive-20261109T080914Z-3c7d68`), equivalent to the audited run `correction-20261108T053328-949fcd76`. Scientific code `8aaa4217`, unchanged. No model was estimated in the integration or the release. B2 was accepted on 8 November 2026 (`corrections/r1/b2_scientific_adjudication.md`).
 > - **Number checks.** Every quoted number is checked against the integrated tables, whose cell content the archive's equivalence gate ties to the release: `corrections/r1/evidence/part8_drafts_20261108/number_checks.csv`.
-> - **F3.4 figures.** <!--PUB:f8-->The approved F8 versions (presentation only, 9 November 2026) are prepared in `corrections/r1/f8_review/` and become the release's `figures/F3.4_*` on publication.<!--/PUB:f8-->
+> - **F3.4 figures.** The release's `figures/F3.4_*` are the approved F8 versions (presentation only, approved 9 November 2026; sha256 in `release_inventory.csv`).
 > - **Not changed.** The superseded reports in `reports/part8/*.md` and the drafts in `drafts_integrated_20261108/`; results commit `0662945`; the provisional releases `0573a8c`, `3bd24c4` and `292227e`; certificates; `approved-specs/`.
 > - **Changes from the published (1 November) reports and from the drafts:** `CHANGELOG.md`.
 
-**Basis of the statuses.** They are assessed on the integrated candidate. A status of RESOLVED means the requested analysis is performed and reported in the candidate; it becomes final only when the candidate is archived, approved and published. Changes from the published statuses are marked "(was …)".
+**Basis of the statuses.** They are assessed on the published final release `part8-final-20261109` (commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`), whose numbers are those of the integrated candidate. A status of RESOLVED means the requested analysis is performed and reported in that release. Formal Part 8 approval is pending the closure review. Changes from the published (1 November) statuses are marked "(was …)".
 
 **Rule (CLAUDE.md §12).** A remark is satisfied by properly performing and reporting the requested analysis, whatever the result.
 
@@ -49,7 +49,7 @@
 - **Remaining action:** Part 9.
 
 **R1-06 — Misleading figures**
-<!--PUB:r106_status-->- **Status:** PARTIALLY ADDRESSED until the release is published. It becomes RESOLVED only when the published release contains the approved F8 figures; until then the only stored F3.4 are the pre-F8 archived figures.<!--/PUB:r106_status-->
+- **Status:** RESOLVED (was PARTIALLY ADDRESSED). The published release (commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`) contains the approved F8 figures.
 - **Evidence:** the three defects behind the partial status are addressed in the actual figures (`corrections/r1/f8_review/f8_figure_review.md`):
   - **F1.** The UNRATE main panel no longer plots the failed AR forecast. Failed fits appear in the diagnostic panel as hollow markers labelled "failed fit (raw value, not scored)".
   - **F1 marker rule.** Flagged forecasts are unconnected markers, not lines joining non-adjacent dates.
@@ -57,7 +57,7 @@
   - The omission from the main panel is stated in each title. Nothing is clipped.
   - With F8 off, the renderer reproduces all 12 archived F3.4 files byte for byte, so the F8 figures use exactly the archived inputs.
 - **Residual presentation points (not §13.1 defects):** the M2SL diagnostic panel stays linear, so its dense STAR markers overlap. There is an empty pre-sample span from 1945 to the first forecast.
-<!--PUB:r106_action-->- **Remaining action:** publish the release with the F8 figures (`corrections/r1/part8_d3_release_plan.md`).<!--/PUB:r106_action-->
+- **Remaining action:** none.
 
 **R1-07 — Uncertainty on cross-correlation displays**
 - **Status:** RESOLVED.
@@ -153,13 +153,13 @@
 - **Remaining action:** Part 9.
 
 **R1-22 — Verify and broaden the econometric results**
-- **Status:** RESOLVED on the integrated candidate (was PARTIALLY ADDRESSED); final after archive, approval and publication.
+- **Status:** RESOLVED (was PARTIALLY ADDRESSED); the corrected evidence is published in the release commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`.
 - **Evidence:**
   - Full reproducible run from the frozen, hash-verified CSV (`manifests/run_manifest.json`).
   - The audit's defects are corrected in the candidate (F1, F2, F3, F4, F7.1), and every chain that needed recomputation is computed (Tier A; Tier B B1, B2, B3). No estimation was performed in the integration.
   - Failures visible: 435 failed fits and 34,122 registry events (`models/fit_records.csv`, `robustness/T4.7_failure_registry.csv`), plus the MSAR optimiser sensitivity recorded under B2 (20 classification changes, 29 sensitivities; `corrections/r1/b2_scientific_adjudication.md`).
   - Robustness exercises T4.1–T4.9 and TP1 complete.
-- **Remaining action:** your Part 8 approval and publication of the archived candidate (`archive-20261109T080914Z-3c7d68`, verified in `corrections/r1/archive_verification_20261109.md`); F6 stays a stated limitation.
+- **Remaining action:** none empirically; formal Part 8 approval (closure review). F6 stays a stated limitation.
 
 **R1-23 — M2 sample and relevance**
 - **Status:** RESOLVED.
@@ -237,15 +237,15 @@
   - Caveat: "ARMA" is a pure AR for 5 of 6 targets (T2.5).
 - **V-05 (recession, expansion and turning-point evaluation):** RESOLVED (T3.5, T3.6, TP1). There is no significant state dependence for the nonlinear models. The UNRATE ARMA-versus-AR joint Wald rejection (p = 0.034) is not evidence of state dependence: its state-dependence test gives p = 0.282.
 - **V-06 (adequacy before forecast ranking):** RESOLVED (T3.1, T3.2, then T3.3).
-- **V-07 (outputs ready for Part 9 synthesis):** READY SUBJECT TO APPROVAL (was PARTIALLY ADDRESSED). F1, F2 and F4 are applied in the candidate, and all pending estimation is integrated. The candidate is archived (`archive-20261109T080914Z-3c7d68`); the status becomes final after your Part 8 approval and publication.
+- **V-07 (outputs ready for Part 9 synthesis):** READY (was PARTIALLY ADDRESSED). F1, F2 and F4 are applied, all pending estimation is integrated, and the final release is published and verified at commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b` (`my-thesis/output/`; `SOURCE_OF_TRUTH.md`). Part 9 starts only after the formal Part 8 closure review.
 
 ## Summary count (29 Part 2 remarks)
 
 | Status | Count | Remarks |
 |---|---|---|
-<!--PUB:r106_table-->| RESOLVED | 15 | R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03, P-05 |
-| PARTIALLY ADDRESSED | 3 | R1-06 (until the release with the F8 figures is published), R1-11 (empirical part only), P-04 (F6) |<!--/PUB:r106_table-->
+| RESOLVED | 16 | R1-06, R1-07, R1-09, R1-12, R1-13, R1-14, R1-15, R1-17, R1-18, R1-19, R1-22, R1-23, P-01, P-02, P-03, P-05 |
+| PARTIALLY ADDRESSED | 2 | R1-11 (empirical part only), P-04 (F6) |
 | UNRESOLVED | 0 | — |
 | OUTSIDE EMPIRICAL SCOPE | 11 | R1-01, R1-02, R1-03, R1-04, R1-05, R1-08, R1-10, R1-16, R1-20, R1-21, P-06 |
 
-Seven remarks move from PARTIALLY ADDRESSED to RESOLVED on the integrated candidate: R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05. <!--PUB:r106_text-->**R1-06** moves to RESOLVED only when the release containing the approved F8 figures is published and verified.<!--/PUB:r106_text--> P-04 stays partial (F6, final disposition). R1-11 stays partial (its textual part is Part 9). <!--PUB:final_text-->All RESOLVED statuses take effect when the release is published.<!--/PUB:final_text-->
+Seven remarks move from PARTIALLY ADDRESSED to RESOLVED on the integrated candidate: R1-13, R1-14, R1-15, R1-19, R1-22, P-02 and P-05. **R1-06** is RESOLVED: the published release contains the approved F8 figures. P-04 stays partial (F6, final disposition). R1-11 stays partial (its textual part is Part 9). All RESOLVED statuses take effect with the published release (commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`).

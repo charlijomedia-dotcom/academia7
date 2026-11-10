@@ -1,0 +1,15 @@
+{
+ "commit": "9817daf91ac4cb4aaa42c2bef5deaff5b674841b",
+ "files": 465,
+ "blob_mismatches": 0,
+ "differ_from_archive": 25,
+ "allowlist_exact": true,
+ "f8_approved": true,
+ "release_inventory_sha256": "86c593923314daa9efdc82aa451348f5f67a8c833957d9451bd0cfe35a784474",
+ "identities": {
+  "numbers_run_id": "correction-20261109T080220-949fcd76",
+  "figure_operation_id": "f8render-20261110T032042Z-dc0f7b",
+  "publication_id": "publish-20261110T032055Z-0585a2",
+  "release_tool_commit": "3243c6b0e28faf7da2040be3e0f1b1d5e79e74c9"
+ }
+}

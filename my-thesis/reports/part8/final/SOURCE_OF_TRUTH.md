@@ -5,7 +5,7 @@
 The canonical thesis-facing numbers are the files in **`my-thesis/output/` of the release commit** on branch **`part8-corrected-results/final-20261109`**.
 - There are 465 files.
 - Each is listed with its sha256 in `my-thesis/release/part8_final/release_inventory.csv` of the same commit.
-- The release commit SHA is recorded in `PUBLICATION.md` here once the release is published and verified.
+- **Published release commit: `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`** (published and verified on 10 November 2026; `PUBLICATION.md`).
 
 Part 9 may quote a number only from that commit. Before quoting, it checks the file against `release_inventory.csv` (§4).
 
@@ -41,7 +41,7 @@ Part 9 may quote a number only from that commit. Before quoting, it checks the f
 
 ```bash
 git fetch origin part8-corrected-results/final-20261109
-C=<release commit from PUBLICATION.md>
+C=9817daf91ac4cb4aaa42c2bef5deaff5b674841b
 git show $C:my-thesis/output/forecast_tests/T3.3_main_forecast_table.csv | sha256sum
 grep '^forecast_tests/T3.3_main_forecast_table.csv,' <(git show $C:my-thesis/release/part8_final/release_inventory.csv)
 ```

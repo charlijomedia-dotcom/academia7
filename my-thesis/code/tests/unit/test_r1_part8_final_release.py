@@ -457,17 +457,60 @@ def test_constants_match_the_reviewed_evidence():
 
 # -- final reports ----------------------------------------------------------------------------
 
-def test_final_reports_are_pending_until_finalized(tmp_path):
+RELEASE_COMMIT = "9817daf91ac4cb4aaa42c2bef5deaff5b674841b"
+
+
+def _pending_reports(dest: Path) -> Path:
+    """The final reports as built before publication (from the accepted drafts)."""
+    sys.path.insert(0, str(ROOT / "reports/part8/corrections/r1"))
+    import make_final_reports as mk
+    dest.mkdir(parents=True)
+    for name in mk.REPORTS:
+        (dest / name).write_text(mk.build_report(name), encoding="utf-8")
+    original = mk.FINAL
+    mk.FINAL = dest
+    try:
+        mk.build_matrix()
+    finally:
+        mk.FINAL = original
+    return dest
+
+
+def test_pending_reports_keep_r106_partial_until_publication(tmp_path):
+    sys.path.insert(0, str(FINAL))
+    import finalize_reports as fin
+    pending = _pending_reports(tmp_path / "pending")
+    for name in fin.REPORTS:
+        text = (pending / name).read_text()
+        assert "DRAFT" not in text and "Not yet published" in text and "<!--PUB:" in text
+    jury = (pending / "jury_resolution_status.md").read_text()
+    assert "| RESOLVED | 15 |" in jury and "R1-06 (until the release" in jury
+
+
+def test_published_final_reports_record_the_release(tmp_path):
     sys.path.insert(0, str(FINAL))
     import finalize_reports as fin
     for name in fin.REPORTS:
         text = (FINAL / name).read_text()
-        assert "DRAFT" not in text and "Not yet published" in text
-        assert "<!--PUB:" in text
+        assert "<!--PUB:" not in text and "Not yet published" not in text and "DRAFT" not in text
+        assert f"commit `{RELEASE_COMMIT}`" in text and "Published on 2026-11-10" in text
     jury = (FINAL / "jury_resolution_status.md").read_text()
-    assert "| RESOLVED | 15 |" in jury and "R1-06 (until the release" in jury
-    for limitation in ("F6", "C16", "Holm", "degenerate", "optimiser"):
-        assert limitation in (FINAL / "full_empirical_analysis_report.md").read_text()
+    assert "| RESOLVED | 16 | R1-06," in jury and "| PARTIALLY ADDRESSED | 2 | R1-11 (empirical part only), P-04 (F6) |" in jury
+    assert "P-04 stays PARTIALLY ADDRESSED" in jury
+    claims = (FINAL / "final_claims_allowed.md").read_text()
+    assert "**Status:** QUALIFIED (was SUPPORTED)" in claims and "[audit] sensitivity" in claims
+    full = (FINAL / "full_empirical_analysis_report.md").read_text()
+    for limitation in ("F6", "C16", "Holm", "degenerate", "optimiser", "INCONCLUSIVE", "M2SL"):
+        assert limitation in full
+    rows = list(csv.DictReader(open(FINAL / "claim_evidence_matrix_final.csv")))
+    assert len(rows) == 24 and all(r["provisional"] == "False" for r in rows)
+    status = {r["claim_id"]: r["candidate_status"] for r in rows}
+    assert status["C16"] == "QUALIFIED" and status["C18"] == "QUALIFIED" and status["P04-regime-count"] == "QUALIFIED"
+    assert {r["claim_id"] for r in rows if "F6" in r["provisional_due_to"]} == {"P04-regime-count", "C18"}
+    published = json.loads((FINAL / "publication_status.json").read_text())
+    assert fin.check_status(published)["commit"] == RELEASE_COMMIT
+    assert RELEASE_COMMIT in (FINAL / "PUBLICATION.md").read_text()
+    assert f"C={RELEASE_COMMIT}" in (FINAL / "SOURCE_OF_TRUTH.md").read_text()
 
 
 def _status(commit="c" * 40, state="published"):
@@ -491,8 +534,7 @@ def test_finalizer_refuses_without_verified_publication(status):
 def test_finalizer_resolves_r106_only_after_publication(tmp_path):
     sys.path.insert(0, str(FINAL))
     import finalize_reports as fin
-    copy = tmp_path / "final"
-    shutil.copytree(FINAL, copy, ignore=shutil.ignore_patterns("__pycache__"))
+    copy = _pending_reports(tmp_path / "final")
     status = tmp_path / "status.json"
     status.write_text(json.dumps(_status()))
     fin.finalize(status, copy, remote_check=False)

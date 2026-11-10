@@ -28,3 +28,21 @@ All are retained unchanged:
 - the M2SL diagnostic-panel overlap (accepted presentation limitation).
 
 **Validation.** `corrections/r1/evidence/part8_drafts_20261108/number_checks_final.csv`: 128 / 128 pass on these reports.
+
+## Publication (10 November 2026)
+
+| Where | Change | How |
+|---|---|---|
+| All five reports and the matrix | Publication markers replaced. The banner now names the published commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`, the Drive folder and the tar sha256. **R1-06 RESOLVED** (jury: 16 resolved / 2 partial / 0 / 11). The matrix is non-provisional, with F6 kept for P04-regime-count and C18 | `finalize_reports.py`, with its remote check enabled, on the `publication_status.json` read from the final Drive folder |
+| `jury_resolution_status.md` | "Basis of the statuses", R1-22 and V-07 describe the published release (they lay outside the markers). Formal Part 8 approval is stated as pending the closure review | manual, recorded here |
+| `full_empirical_analysis_report.md` G | "Resolved on the integrated candidate (subject to approval and publication)" → "Resolved (in the published release …; formal Part 8 approval pending the closure review)" | manual, recorded here |
+| `SOURCE_OF_TRUTH.md` | The published commit is named, including in the Part 9 check | manual |
+| New | `PUBLICATION.md` (identities and verification) and `publication_status.json` (a byte copy of the Drive file) | finalizer, then the provenance section appended |
+
+**Unchanged.** No number or claim status changed apart from R1-06. P-04 stays PARTIALLY ADDRESSED (UNRATE K=3 INCONCLUSIVE, F6). C16 stays QUALIFIED. All other limitations are retained.
+
+**Validation** (`corrections/r1/evidence/part8_final_publication_20261110/`):
+- the published commit verifies against its inventory and the archive;
+- the integrated tables equal the published files in all 2,665,073 cells;
+- all cited `output/` paths exist at the commit;
+- number checks pass 128 / 128.
