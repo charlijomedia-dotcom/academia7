@@ -1,7 +1,7 @@
 # PART 9 | DISSERTATION WRITING BLUEPRINT
 
 **Project:** Forecasting Macroeconomic Aggregates under Economic Instability: Theory, Nonlinearity, and Policy Implications  
-**Version:** 1.0 | 12 November 2026  
+**Version:** 1.1 | 12 November 2026 (expanded dissertation-length instruction)  
 **Purpose:** The controlling writing blueprint for the European-style economics monograph. This is a writing plan, not an amendment to the approved methodology and not the dissertation manuscript.  
 **Status:** Ready for Part 9 drafting, subject to normal checking of each citation and manuscript statement.
 
@@ -37,16 +37,16 @@ The manuscript must make eight answers easy to find:
 
 ## 2. Writing and page-count contract
 
-**Priority:** the shortest body that remains self-contained, mathematically clear, empirically defensible and compliant with every jury remark. Preliminary editing target **55–65 main-body pages**; not a minimum, not a university requirement, and subject to supervisor formatting and necessary evidence. Bibliography, front matter and appendices are outside this target.
+**Priority:** a substantive European economics doctoral monograph, not a journal-length article. The user's revised editing target is **120–140 main-body pages**. The body must be comprehensive, self-contained, mathematically precise, empirically defensible and compliant with every jury remark. This is an authorial target, not an asserted Sorbonne regulatory requirement. Front matter, bibliography and appendices are excluded. Do not inflate pages with repetition: use the greater space to deepen original theory, pre-existing evidence, hypothesis logic, methodology justification, contrasts with literature, and empirical interpretation.
 
 | Manuscript component | Editing budget, pages | Scientific job |
 |---|---:|---|
-| General Introduction | 5–6 | Problem, real-world stakes, gap, bounded contribution, question, design, headline answer |
-| Chapter 1 | 9–11 | Theory and prior knowledge lead to a testable unresolved problem |
-| Chapter 2 | 13–15 | Complete but efficient empirical contract, equations and justified methods |
-| Chapter 3 | 12–14 | Adequacy first, then primary forecast evidence and conditional states |
-| Chapter 4 | 12–15 | Challenge the evidence, limitations, credibility and economic implications |
-| General Conclusion | 3–4 | Direct qualified answer; no new results |
+| General Introduction | 10–12 | Problem, real-world stakes, gap, bounded contribution, question, design, headline answer |
+| Chapter 1 | 24–27 | Theory and prior knowledge lead to a testable unresolved problem |
+| Chapter 2 | 28–32 | Complete but efficient empirical contract, equations and justified methods |
+| Chapter 3 | 26–30 | Adequacy first, then primary forecast evidence and conditional states |
+| Chapter 4 | 26–30 | Challenge the evidence, limitations, credibility and economic implications |
+| General Conclusion | 6–9 | Direct qualified answer; no new results |
 
 **Editing test:** every paragraph must define a relevant object, establish an economic mechanism, identify a gap, justify a method, report evidence, assess an alternative explanation, or delimit a claim. Remove paragraphs that do none of these. Tables should replace repetitive prose, but essential test results and model definitions must stay in the body. Each chapter has **one page of concluding synthesis within its budget**, with no new result, study or argument.
 
@@ -165,7 +165,7 @@ Each robustness subsection follows **baseline claim → threat → approved chec
 
 Follow Part 4's title: *What Nonlinear Forecasting Can and Cannot Contribute to Macroeconomic Policy Under Instability*.
 
-In roughly 3–4 pages, answer the eight research questions without new data, citations that introduce new arguments, models or tests. State the measured absence of systematic nonlinear forecast superiority, isolated conditional gains, estimation weaknesses, limitations of U.S. historical pseudo-OOS evidence, and the value of failure-aware forecasting discipline. This dissertation offers a **credible evaluation and bounded findings**, not a universal cure for forecasting error.
+In roughly 6–9 pages, answer the eight research questions without new data, citations that introduce new arguments, models or tests. State the measured absence of systematic nonlinear forecast superiority, isolated conditional gains, estimation weaknesses, limitations of U.S. historical pseudo-OOS evidence, and the value of failure-aware forecasting discipline. This dissertation offers a **credible evaluation and bounded findings**, not a universal cure for forecasting error.
 
 ## 7. Appendices | Compact, referenced and outside body page budget
 
@@ -207,7 +207,7 @@ For methods, first consult the approved Part 5 literature-justification file; ve
 
 1. **Blueprint established (this file).** It controls the chapter organization and writing standards. Do not ask Claude Code to write Part 9; the approved project instructions assign that task to ChatGPT.
 2. **Next deliverable: the General Introduction evidence sheet.** Verify the precise Douay-Rheims edition/APA reference, 2–3 official or peer-reviewed modern forecast-error examples and their limits, the welfare evidence, earlier literature and the permitted main Part 8 claims. Mark each proposed sentence as sourced, qualified or unsupported. No additional modelling or broad code review.
-3. **Then draft General Introduction v1** (target 5–6 pages), starting with Joseph; tight transition to forecasting mistakes and real stakes; exact question; U.S. choice; existing answers and gap; bounded contribution; preview of the verified negative/conditional results; chapter map. Audit for every jury concern and factual citation before moving on.
+3. **Revise General Introduction v2** (target 10–12 pages), starting with Joseph; tight transition to forecasting mistakes and real stakes; exact question; U.S. choice; existing answers and gap; bounded contribution; preview of the verified negative/conditional results; chapter map. Audit for every jury concern and factual citation before moving on.
 4. **Draft Chapter 1** from the approved 1.1–1.9 structure, then Chapter 2 from 2.1–2.14, inserting the brief methodology-amendment/failure paragraph and K=3 calculation.
 5. **Draft Chapter 3 and Chapter 4** with exact referenced figures, tables and formal inferential limits. Draft each appendix only when its body citation requires it, avoiding duplication.
 6. **Write the General Conclusion last.** Validate the eight answers, jury matrix, APA bibliography, exact data hashes and body page count. Run a compression pass on the complete manuscript.
@@ -216,4 +216,4 @@ For methods, first consult the approved Part 5 literature-justification file; ve
 
 ---
 
-**End of blueprint v1.** The next actual writing task is the **General Introduction evidence sheet**, followed by the first complete, cited introduction draft. No further Colab execution, code audit or empirical re-estimation is needed.
+**Part 9 revision (12 November 2026):** The author rejected the shorter 55–65-page editing budget in favor of 120–140 body pages, to give doctoral-level depth and address jury concerns about a paper-like manuscript. Preserve exact Part 4 structure, four one-page chapter conclusions, empirical source locks and all scientific limits. General Introduction v1 remains an archive; write and review v2 before Chapter 1. No new Colab execution or empirical re-estimation is required.
