@@ -8,7 +8,7 @@
 
 ## 1. Editorial contract
 
-**Shortest defensible body.** Target the 55–65-page body in the writing blueprint, excluding bibliography and appendices. Keep in-sample adequacy, necessary model/test equations, the negative baseline result, key robustness evidence, F6 limitations and jury-critical findings in the body. Move complete target-by-target tables, code traces, residuals, optimizer details and exhaustive plots to appendices. Four chapter-ending syntheses each occupy one page and add no new evidence.
+**Substantive monograph body.** Target 120–140 pages in the revised writing blueprint, excluding bibliography and appendices. Use the additional space for economically necessary explanation, original theory, deeper literature discussion, source-supported inference and comprehensive jury responses; never pad with repeated claims. Keep in-sample adequacy, necessary model/test equations, the negative baseline result, key robustness evidence, F6 limitations and jury-critical findings in the body. Move complete target-by-target tables, code traces, residuals, optimizer details and exhaustive plots to appendices. Four chapter-ending syntheses each occupy one page and add no new evidence.
 
 **Every claim has one main home.** The final matrix contains **24 entries: 13 SUPPORTED, 8 QUALIFIED, 3 NOT_SUPPORTED**. Each appears once in the primary claim column below. Cross-reference other sections without reprinting results. `C01` non-rejection is not forecast equivalence; `C02` and `C16` require their limitations; `C12` nonlinear state advantage is not supported; `P04-regime-count` remains inconclusive for UNRATE.
 
@@ -16,14 +16,14 @@
 
 **Out-of-scope old mathematics:** remove the old MSSTAR-specific theorem/proposition. Define the retained MSAR/STAR models and Markov-chain terms in the body, with proper attribution. No model superiority or policy causality is implied by presenting a mathematical specification.
 
-## 2. Minimal exhibits for the thesis body
+## 2. Main-body exhibits: doctoral depth with disciplined selection
 
 | Location | Essential main-body material | Appendix material |
 |---|---|---|
 | General Introduction and Chapter 1 | Joseph narrative and documented forecasting failures; essential economic theory, no new Part 8 table | Context/background notes only if necessary |
-| Chapter 2 | One condensed six-target data table, one compact methodological/robustness design chart, essential equations and test hypotheses | Frozen-data audit, full decision tables, parameter grids, estimation calendars, software provenance |
-| Chapter 3 | Compact pre-test, in-sample fit, K2 credibility, baseline forecast/inference and recession/turning findings; at most one informative regime figure | All target/model residuals, horizon rows, supplementary F3.1–F3.6 panels and full model test tables |
-| Chapter 4 | Compact transformation/CPI lag, K3, horizon/VAR and fragility summaries; use a corrected F8 figure to illustrate an extreme STAR failure | Full T4.1–T4.9 results, all individual F4.3/F4.8 figures, 34,122 event registry and computation appendix |
+| Chapter 2 | Six-target data table, an explicit model specification table, a methodology/threat-design chart, essential equations, formal test hypotheses and justified conventions | Frozen-data audit, full decision tables, parameter grids, estimation calendars, software provenance |
+| Chapter 3 | Clearly separated pretest, in-sample fit, K2 credibility, baseline forecast/inference and state/turning findings; several selective interpretable figures where they answer a distinct question | All target/model residuals, horizon rows, supplementary F3.1–F3.6 panels and full model test tables |
+| Chapter 4 | Thorough but nonrepetitive transformation/CPI lag, K3, horizon/VAR and fragility evidence; use corrected F8 figures to illustrate model failure without masking extremes | Full T4.1–T4.9 results, all individual F4.3/F4.8 figures, 34,122 event registry and computation appendix |
 | General Conclusion | Direct answer to the question, no new table | No new tests |
 
 ## 3. General Introduction: scientific evidence route
@@ -250,4 +250,4 @@ The **29 Part 2 jury remarks** must be answered in prose, not merely listed. The
 
 Before a section is accepted: (1) it does its specific Part 4 job; (2) all economic theory, statistical tests and equations are clearly defined and attributed in APA 7; (3) every number comes from released `my-thesis/output/` at `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`; (4) each claim respects final Part 8 support status, multiplicity, sample, optimizer and real-time limitations; (5) the essential adverse findings remain visible; (6) the mapped jury item has been answered; (7) no old MSSTAR theorem, unfounded Joseph-first claim, optimal-policy causal conclusion or general U.S.-to-world model ranking appears; (8) the text is short, clear, objective and dense in information; (9) chapter-enders add no new arguments or evidence.
 
-**Next work after Step 3:** write the General Introduction from the APA register and this map, then validate it paragraph by paragraph. No new Colab work or code review is authorized or necessary.
+**Next work after Step 3 (revised 12 November 2026):** expand the General Introduction into a doctoral monograph opening, target 10–12 body pages with stronger theory, literature, research-gap and design arguments, then validate paragraph by paragraph before Chapter 1. No new Colab work or code review is authorized or necessary.
