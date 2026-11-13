@@ -129,7 +129,7 @@ The decision rules form a hierarchy. If the initial-window ADF rejects a unit ro
 
 The initial-window evidence resolves the disputed target forms without looking at the later forecast errors. UNRATE is forecast in levels, and FEDFUNDS is forecast in first differences. Both initial- and full-sample ZA tests fail to reject their unit-root nulls even allowing one endogenous break. This does not overturn the declared ADF/KPSS decision because ZA was specified as a tie-breaker only if those two tests disagreed. It does limit any claim that the tested level series has been shown stationary around a single estimated break.
 
-The full frozen-sample tests for the four annualized log-change targets are also informative. ADF rejects the unit-root null for all four transformed series at 5%. KPSS does not reject for GDP growth ($p=0.0529$) and M2 growth ($p=0.0766$), but it narrowly rejects for CPI inflation ($p=0.0494$) and rejects for industrial production growth ($p=0.0355$). These conflicting results should not be concealed behind a blanket statement that all transformed series are stationary. Their existence is consistent with caution about stable moments, level shifts, changing variance or other forms of instability. They do not, by themselves, prove a unit root, a particular break or a STAR-type conditional mean. The approved transformations are retained, with robustness and adequacy checks providing further information.
+The full frozen-sample tests for the four annualized log-change targets are also informative. ADF rejects the unit-root null for all four transformed series at 5%. KPSS does not reject for GDP growth ($p=0.0529$) and M2 growth ($p=0.0766$), but it narrowly rejects for CPI inflation ($p=0.0494$) and rejects for industrial production growth ($p=0.0355$). These conflicting results should not be concealed behind a blanket statement that all transformed series are stationary. Their existence is consistent with caution about stable moments, level shifts, changing variance or other forms of instability. They do not, by themselves, prove a unit root, a particular break or a STAR-type conditional mean. The baseline transformations are retained, while robustness and adequacy checks assess their implications.
 
 For comparison, the log levels of GDP, CPI, industrial production and M2 show the opposite general pattern: the ADF unit-root null is not rejected at 5%, while the KPSS stationarity null is rejected. Those tests support the use of log changes for the core point-forecast comparison but do not make the annualization factor or the exact differencing choice a discovered statistical optimum. The stated model definitions are fixed by the scientific design.
 
@@ -145,12 +145,13 @@ The second stage uses the Luukkonen–Saikkonen–Teräsvirta and Teräsvirta sp
 
 The formal distinction can be expressed as follows:
 
-**Equation (2.4): Diagnostic linearity question**
+**Equation (2.4): Conditional-mean linearity hypothesis**
 
 ```math
-H_0:\ E(y_t\mid\mathcal F_{t-1})\text{ has the selected linear AR form};
-\quad
-H_1:\ \text{the conditional mean departs from that form.}
+\begin{aligned}
+H_0 &: E(y_t\mid\mathcal F_{t-1})=c+\sum_{j=1}^{p}\phi_j y_{t-j},\\
+H_1 &: E(y_t\mid\mathcal F_{t-1})\text{ is not of this linear form.}
+\end{aligned}
 ```
 
 The alternative in an actual test is narrower than all conceivable nonlinear processes. Tsay's auxiliary form and the STAR-specific sequence can respond to different features. A non-rejection in one test and rejection in another is therefore not automatically a contradiction. Results are reported with the test statistic, reference distribution, p-value, 5% decision and, for STAR, the selected delay and transition function. The target-specific findings are examined in Section 3.1; full diagnostics are presented in Appendix A. No post hoc filter removes a predeclared nonlinear competitor merely because its specification test did not reject.
@@ -240,7 +241,7 @@ ARCH and GARCH provide an explicit treatment of changing conditional variance. E
 
 This equation concerns the conditional spread of innovations, not necessarily their expected value. The study applies ARCH–LM to the selected classical-mean residuals. Where the 5% test rejects constant conditional variance, an ARMA–GARCH(1,1) diagnostic is estimated and its volatility persistence and standardized residuals are reported. A variance model is not credited with point-forecast superiority simply because it fits the variance better. A separate point-forecast comparison would be necessary to make that claim, and it is not the role assigned to GARCH here.
 
-A deterministic polynomial trend, for instance $a+bt+ct^2$, models the level's path as an explicit function of calendar time. It answers a different question from whether shocks and state transitions alter the conditional mean of a growth or rate target. Chapter 1 established that deterministic and stochastic trends need not be confused. The baseline transformation protocol removes or addresses the trending levels before fitting the main forecast families. Polynomial extrapolation is therefore excluded from the primary horse race for a scientific reason: it is not an appropriate like-for-like alternative to the specified dynamic forecasts of the transformed targets. If significant deterministic trends persisted in a final target, the approved methodology would require reconsideration before adding such a competitor. No polynomial specification was selected retrospectively to favor or disfavor a model.
+A deterministic polynomial trend, for instance $a+bt+ct^2$, models the level's path as an explicit function of calendar time. It answers a different question from whether shocks and state transitions alter the conditional mean of a growth or rate target. Chapter 1 established that deterministic and stochastic trends need not be confused. The baseline transformation protocol removes or addresses the trending levels before fitting the main forecast families. Polynomial extrapolation is therefore excluded from the primary horse race for a scientific reason: it is not an appropriate like-for-like alternative to the specified dynamic forecasts of the transformed targets. A statistically significant deterministic trend in the final modelled target would call for a separate trend specification and a different forecasting comparison. No polynomial specification was selected retrospectively to favor or disfavor a model.
 
 This benchmark hierarchy separates autoregressive dependence, innovation dynamics and conditional variance. AR provides the primary loss denominator and the transparent benchmark. ARMA tests whether richer linear innovation dynamics alter that conclusion. GARCH examines conditional variance when indicated by evidence. Polynomial trends are excluded from the central transformed-target contest with an explicit rationale. The nonlinear candidates must now justify the additional complexity they introduce.
 
@@ -337,7 +338,7 @@ MSAR and STAR should not be merged conceptually. The former allows an unobserved
 | STAR | Smooth coefficient transition using observed lagged state | Threshold, smoothness, transition delay/type, nonlinear identification | A causal threshold or unique economic state |
 | VAR (robustness) | Lagged cross-variable information in a linear system | Common data calendar, joint lags, stability | Causal transmission absent structural restrictions |
 
-*Note:* This table summarizes the declared comparison, not in-sample or out-of-sample rankings. Complete specification details and parameter estimates are presented in Appendices A and B.
+*Source: Author's synthesis of the model definitions in Sections 2.5–2.7.* *Note:* The table characterizes the competing mechanisms; it does not report model rankings. Additional specification details and parameter estimates appear in Appendices A and B.
 
 A hybrid model combining Markov switching and smooth transition is not included. Its simultaneous use of two distinct nonlinear mechanisms would increase the identification burden and complicate the interpretation of any forecast difference. The separate MSAR and STAR specifications provide a clearer comparison of discrete and smooth state dependence within the stated research question.
 
@@ -577,7 +578,7 @@ A robustness check is useful only when it challenges a named alternative explana
 | Optimizer behavior or failed forecasts favors survivors | Multi-start and warning records, common-date tests, status summaries and non-clipped figures | Numerical credibility and sample-selection limitations |
 | Many tested model-horizon cells produce a nominal small p-value | Clearly separated primary tests, full p-value family and multiplicity-sensitive audit | Whether isolated nominal findings justify a broader statement |
 
-*Note:* The threats are assessed one at a time under the stated design; the study does not estimate every possible cross-product of horizons, transformations, state widths and window lengths. Results and their qualifications are examined in Chapter 4, with supporting tables in Appendix C.
+*Source: Author's construction.* *Note:* The analyses examine specified threats rather than every possible cross-product of horizons, transformations, state widths and window lengths. The findings are examined in Chapter 4, with supplementary results in Appendix C.
 
 ### Transformations, benchmark lags and horizons
 
