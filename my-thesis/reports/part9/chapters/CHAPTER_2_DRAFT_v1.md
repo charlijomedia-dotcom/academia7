@@ -14,9 +14,9 @@ Let $y_{i,t}$ denote one of the six approved forecasting targets, expressed in i
 
 **Equation (2.1): Forecast error**
 
-\`\`\`math
+```math
 e^{(m)}_{i,t+h\mid t}=y_{i,t+h}-\widehat y^{(m)}_{i,t+h\mid t}.
-\`\`\`
+```
 
 The comparison is between errors produced by alternative forecasting procedures under matched target dates and declared information rules. It does not require the fitted statistical model to reproduce all economic mechanisms in Chapter 1. Instead, it asks whether adding particular types of conditional-mean flexibility to a benchmark improves the forecast of an observable target. The model family, horizon, estimation window, target transformation and loss function form part of the research question. A model cannot be described as superior without specifying all of them.
 
@@ -59,10 +59,10 @@ For each positive-valued level series $X_t$ selected for growth-rate modelling, 
 
 **Equation (2.2): Approved log-growth transformation**
 
-\`\`\`math
+```math
 g_t^{(f)}=a_f\bigl(\ln X_t-\ln X_{t-1}\bigr),
 \qquad a_M=1200,\quad a_Q=400.
-\`\`\`
+```
 
 Here $a_M$ is the scale for a monthly observation and $a_Q$ is the scale for a quarterly observation. Because the log change is for one native-frequency interval, annualization changes the unit but does not create an annual observation. The transformed monthly CPI, INDPRO and M2 series are expressed in annualized percentage points of continuous growth, as is quarterly real GDP growth. The scaled rates are not year-on-year growth rates and should not be described as twelve-month or four-quarter cumulative growth. This distinction is important when comparing a one-month-ahead target with a twelve-month-ahead forecast horizon.
 
@@ -100,11 +100,11 @@ The augmented Dickey–Fuller (ADF) regression tests the null hypothesis that th
 
 **Equation (2.3): ADF regression**
 
-\`\`\`math
+```math
 \Delta y_t=\alpha+\rho y_{t-1}
 +\sum_{j=1}^{k}\psi_j\Delta y_{t-j}+v_t,
 \qquad H_0:\rho=0.
-\`\`\`
+```
 
 The lagged differences reduce residual serial correlation, and the distribution of the test statistic under the unit-root null is nonstandard. The thesis uses an intercept, a BIC-selected augmentation order and a maximum of 12 monthly or four quarterly lags. The 5% decision is based on the appropriate Dickey–Fuller reference distribution, not a standard regression $t$ critical value (Dickey & Fuller, 1979).
 
@@ -120,12 +120,12 @@ The decision rules form a hierarchy. If the initial-window ADF rejects a unit ro
 
 | Series and tested sample | ADF p-value ($H_0$: unit root) | KPSS p-value ($H_0$: stationary) | ZA p-value ($H_0$: unit root allowing a break in the alternative) | Implication |
 |---|---:|---:|---:|---|
-| UNRATE: initial 240 observations | 0.0251 | ≥0.1000* | 0.1887 | Clear level stationarity under the ADF/KPSS rule; ZA is reported but not the tie-breaker |
+| UNRATE: initial 240 observations | 0.0251 | ≥0.1000 (bound) | 0.1887 | Clear level stationarity under the ADF/KPSS rule; ZA is reported but not the tie-breaker |
 | UNRATE: full sample | 0.0028 | 0.0783 | 0.1691 | Full-sample ADF/KPSS agrees with retaining levels |
-| FEDFUNDS: initial 240 observations | 0.9530 | ≤0.0100* | 0.8113 | Clear nonstationarity under the ADF/KPSS rule; first difference selected |
-| FEDFUNDS: full sample | 0.1285 | ≤0.0100* | 0.3203 | Full-sample ADF/KPSS supports the original difference decision |
+| FEDFUNDS: initial 240 observations | 0.9530 | ≤0.0100 (bound) | 0.8113 | Clear nonstationarity under the ADF/KPSS rule; first difference selected |
+| FEDFUNDS: full sample | 0.1285 | ≤0.0100 (bound) | 0.3203 | Full-sample ADF/KPSS supports the original difference decision |
 
-*Source:* [T2.2 stationarity test output](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.2_stationarity.csv) and [locked transformation decisions](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.2_transformation_decisions.csv). *The KPSS implementation reports p-values at the edge of its critical-value table; inequalities indicate a tabulated bound rather than exact tail probabilities.* All decisions use 5%.
+*Source:* [T2.2 stationarity test output](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.2_stationarity.csv) and [locked transformation decisions](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.2_transformation_decisions.csv). *The KPSS implementation reports p-values at the edge of its critical-value table; inequalities and the word 'bound' indicate a tabulated limit rather than an exact tail probability.* All decisions use 5%.
 
 The initial-window evidence resolves the disputed target forms without looking at the later forecast errors. UNRATE is forecast in levels, and FEDFUNDS is forecast in first differences. Both initial- and full-sample ZA tests fail to reject their unit-root nulls even allowing one endogenous break. This does not overturn the declared ADF/KPSS decision because ZA was specified as a tie-breaker only if those two tests disagreed. It does limit any claim that the tested level series has been shown stationary around a single estimated break.
 
@@ -147,11 +147,11 @@ The formal distinction can be expressed as follows:
 
 **Equation (2.4): Diagnostic linearity question**
 
-\`\`\`math
+```math
 H_0:\ E(y_t\mid\mathcal F_{t-1})\text{ has the selected linear AR form};
 \quad
 H_1:\ \text{the conditional mean departs from that form.}
-\`\`\`
+```
 
 The alternative in an actual test is narrower than all conceivable nonlinear processes. Tsay's auxiliary form and the STAR-specific sequence can respond to different features. A non-rejection in one test and rejection in another is therefore not automatically a contradiction. The output records the statistic, test reference distribution or algorithm, p-value, 5% decision, delay and, for STAR, the chosen transition type. Detailed target-specific evidence is examined in Chapter 3 from [T2.3](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.3_tsay.csv) and [T2.4](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.4_star_linearity.csv). No post hoc filter removes a predeclared nonlinear competitor merely because its specification test did not reject.
 
