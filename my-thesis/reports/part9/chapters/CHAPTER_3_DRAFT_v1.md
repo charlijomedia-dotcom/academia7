@@ -132,3 +132,230 @@ The full-sample labels are also not sufficient to describe numerical behavior at
 
 The in-sample assessment therefore yields a constrained conclusion. Nonlinear specifications frequently improve recorded full-sample fit, but they do not uniformly improve residual diagnostics or satisfy all credibility conditions. This leaves open the question of whether their estimated states and transition functions have substantive meaning. The next section examines that issue directly, before the forecasts are ranked.
 
+## 3.3 Regime and Parameter Credibility for Nonlinear Models
+
+### 3.3.1 What an estimated state can and cannot establish
+
+The defining feature of an MSAR model is that an unobserved Markov state changes part of the conditional distribution. In the specification used here, regime-dependent means are combined with common autoregressive coefficients and a common innovation variance. A distinct estimated mean is not sufficient to establish a distinct recurring economic state. The regime must also be represented by enough observations to support estimation, have transition probabilities away from problematic boundaries and yield parameter estimates with usable uncertainty measures. Otherwise, the likelihood may describe a rare disturbance by treating it as a separate distribution rather than uncovering a recurrent feature of macroeconomic dynamics.
+
+Hamilton (1989) showed why latent-state models can be valuable for describing changes in U.S. output dynamics. That contribution does not imply that the state variable of every two-regime estimate is interchangeable with recession status. The mapping between an estimated state and an economic episode requires evidence. A high-inflation state, for example, need not be a recession state; monetary and real-activity conditions can differ within the same NBER-dated expansion or contraction. Accordingly, the regimes in this section are described by their estimated means, persistence and occupancy. They are not assigned causal labels.
+
+For a two-state Markov process with estimated stay probability $\widehat p_{kk}$, the expected duration of an uninterrupted spell in state $k$, conditional on the estimated constant transition probability, is
+
+**Equation (3.1): Expected duration of an estimated Markov state**
+
+```math
+\widehat D_k=\frac{1}{1-\widehat p_{kk}},
+\qquad k\in\{1,2\}.
+```
+
+This quantity is expressed in quarters for GDP and months for the remaining series. When a transition probability approaches one, the implied duration becomes large. Such a result might describe persistence, but it can also indicate weak identification in a finite sample. Expected duration should therefore be read alongside effective occupancy, parameter uncertainty and the observed history rather than as an independently verified economic cycle length.
+
+A separate difficulty arises when a fitted state absorbs only an extreme observation. The state may acquire a very different estimated mean and sharply improve the likelihood while containing too little information to estimate transition dynamics reliably. The usual regularity conditions for comparing one- and two-state likelihoods are not automatic because parameters can be unidentified under a one-state null and probabilities may lie on boundaries (Cho & White, 2007; Qu & Zhuo, 2021). For this reason, a large likelihood difference is not presented as a conventional likelihood-ratio rejection with an assumed chi-square reference distribution.
+
+The STAR family presents an analogous but distinct credibility problem. Its transition function is based on an observed lagged variable rather than an unobserved state. The relevant questions are whether the fitted threshold lies in a part of the sample containing enough observations, whether the transition moves meaningfully between its limiting values, and whether the transition slope and autoregressive parameters are estimated with reasonable precision. A threshold outside the observed central range can make the transition nearly constant. An estimated slope at its admissible limit can approximate a discontinuous change even when the model was intended to represent smooth adjustment (Teräsvirta, 1994). A numerical minimum of the objective function need not resolve these identification problems.
+
+### 3.3.2 Contrasting the two-state estimates across aggregates
+
+**Table 3.3. Full-sample MSAR regime estimates and principal STAR credibility warnings**
+
+| Forecast target | MSAR regime means | Occupancy of less-populated state | Principal MSAR qualification | Principal STAR qualification |
+|---|---|---:|---|---|
+| Real GDP growth | −38.14; 3.20 | 0.32% | Essentially one-observation state; transition boundary | Ill-conditioned parameter covariance |
+| CPI inflation | 2.56; 12.49 | 8.60% | Distinct estimated means, but residual autocorrelation | Residual autocorrelation |
+| Unemployment rate | −0.14; 10.96 | 8.19% | Near-absorbing transitions; imprecise state means | Threshold outside central data range; singular covariance |
+| Industrial production growth | −167.80; 2.72 | 0.11% | Essentially one-observation state; singular covariance | Transition slope at bound; residual autocorrelation |
+| Federal funds rate change | 0.0025; 0.0025 | 49.95% | Means coincide; states not separately identified | Transition slope at bound; residual autocorrelation |
+| M2 growth | 6.35; 53.72 | 0.37% | Approximately three-observation state; transition boundary | Transition slope at bound; residual autocorrelation |
+
+*Source: Author's computations.* *Note:* Regime means use the units of the transformed targets in Table 2.1: annualized percentage growth rates, unemployment in percent and federal funds rate changes in percentage points. Occupancy refers to smoothed full-sample state probabilities. A numerically lower BIC is not sufficient to override low occupancy, boundary transitions, singular covariance or residual-autocorrelation warnings. STAR qualifications describe its own fitted transition mechanism; its threshold is not an MSAR state.
+
+The table reveals several qualitatively different forms of nonlinear fit. The GDP and industrial production MSAR models assign an extremely small proportion of observations to one state. CPI inflation displays a more substantial second state, with distinct estimated mean levels. Unemployment has appreciable state occupancy but exceptionally persistent transitions and imprecise regime means. The federal funds rate produces nearly identical regime means. M2 exhibits a sparse high-growth state. These differences prevent the same substantive explanation from being assigned to every reduction in the nonlinear BIC.
+
+For GDP, the less-populated state has an estimated mean of approximately $-38.14$ in annualized quarterly-growth units, compared with approximately $3.20$ in the other state. Its occupancy share is $0.0032$. With roughly 316 observations contributing to the fitted autoregression, this corresponds to approximately one effective observation. The transition probability associated with leaving the rare state is effectively at its boundary. These features are consistent with the model isolating a very large contraction rather than identifying a regularly recurring state with estimable transition behavior.
+
+This distinction is important in the historical setting of 2020. Large movements in activity around the pandemic can exert exceptional influence on macroeconomic likelihoods. Lenza and Primiceri (2022) explain why those observations complicate conventional VAR estimation. Here, the question is different but the statistical concern is related: a very large disturbance can dominate the flexible likelihood of a single-equation model. A sharp reduction in BIC is therefore not enough to conclude that the GDP series has two economically stable and repeatedly observed growth regimes. The sparse-state diagnosis is an empirical limitation on that interpretation.
+
+Industrial production presents an even more extreme contrast. One state has an estimated mean near $-167.80$ in annualized monthly log-growth units and an occupancy share of approximately $0.0011$. The implied number of effectively assigned observations is about one. The fitted transition matrix also contains probabilities at or near its boundaries, while the parameter covariance estimate is unusable. The result is a strong example of the difference between matching a historical outlier and estimating a stable nonlinear mechanism. Industrial production responds strongly to sudden disruptions in goods production, but the model does not establish that the unusual observation belongs to a recurrent economic state.
+
+M2 is less extreme in numerical magnitude but similar in statistical structure. Its estimated second mean is approximately $53.72$, against $6.35$ in the more prevalent state, and its smaller state has occupancy of only $0.37\%$. This is equivalent to approximately three observations over the fitted sample. The main state's stay probability is effectively one, producing an exceedingly long mechanical expected duration. Such a value should not be interpreted as a forecast that a monetary state will literally last for many centuries. It indicates that the estimated transition dynamics are close to a boundary and that the rare state provides little repeated evidence about switching probabilities.
+
+### 3.3.3 CPI inflation is the clearest regime example, but not a complete model-adequacy success
+
+The CPI model has the most interpretable two-state mean structure of the six targets. The lower estimated mean is $2.56\%$ annualized and the higher mean is $12.49\%$ annualized. The higher-mean state accounts for approximately $8.6\%$ of the fitted sample. Its estimated probability of remaining in that state is approximately $0.8407$, implying an expected duration of $6.28$ months under Equation (3.1). The lower-mean state has an estimated stay probability near $0.9842$, corresponding to approximately $63.1$ months. These figures show a distinguishable high-inflation statistical state that is represented by more than a handful of observations.
+
+This is a descriptive interpretation, not a structural explanation of the causes of inflation. The estimated high-mean state may reflect periods of sustained price pressure, but the model does not identify whether those pressures came from monetary policy, supply constraints, demand conditions or changes in expectations. Neither the sign nor the timing of its state probability is sufficient to identify a causal economic mechanism. The model is useful here because it offers the clearest example of a recurrent difference in fitted means, not because it resolves the structural debate about inflation.
+
+The credibility of the state distinction also does not make the complete CPI forecasting equation adequate on every criterion. The full-sample MSAR residuals reject the Ljung–Box null at both twelve and twenty-four months. This means that, despite the regime-dependent means, detectable dependence remains in the errors. The CPI MSAR fit is accordingly classified as fragile on the full sample because of residual autocorrelation, even though its regime parameters are considerably more interpretable than those for several other targets.
+
+That combination is central to the dissertation's question. A state-dependent description can be statistically interesting and still fail to remove all the conditional-mean dependence relevant for prediction. Moreover, the existence of a high-mean state does not specify how well it can be recognized at the moment a forecast is formed. Smoothed state probabilities use observations after the date being classified; forecast-time probabilities cannot. The distinction between retrospective state interpretation and predictive use is therefore maintained when the rolling forecasts are evaluated.
+
+### 3.3.4 Unemployment and the policy rate: two forms of weak identification
+
+The unemployment MSAR model assigns approximately $91.8\%$ of observations to one state and $8.2\%$ to the other. Occupancy alone would not necessarily rule out this division. The difficulty lies in its estimated transitions and parameter uncertainty. The two stay probabilities are approximately $0.9991$ and $0.9966$, which imply expected durations of roughly 1,092 and 295 months. These durations are exceptionally long relative to the recurring expansions and contractions that a reader might be tempted to associate with unemployment regimes. In addition, the estimated standard errors of the regime means are large relative to their differences in economically plausible unemployment ranges.
+
+The fitted means, approximately $-0.14$ and $10.96$ in unemployment-rate units, should not be read as two precisely identified natural unemployment rates. The negative value and extreme persistence underline the danger of imposing a literal labor-market interpretation on parameters of a difficult nonlinear likelihood. An optimizer can return a high likelihood while portions of the parameter space remain poorly identified. In this case, the MSAR fit also retains residual autocorrelation. It is therefore not justified to interpret the estimated process as a verified model of recurring employment regimes.
+
+The unemployment STAR result is problematic for a different reason. Its estimated logistic threshold is approximately $14.8\%$, outside the central range of historical unemployment observations. The fitted transition is nearly constant over much of the sample, with a reported transition-function standard deviation of approximately $0.0163$. Its parameter covariance is singular. A model with an essentially inactive or poorly located transition cannot provide persuasive evidence that a meaningful change in autoregressive dynamics has been identified, even if a preliminary linearity test rejected the linear null. The disagreement between pretesting and full-sample parameter credibility is thus empirically substantive.
+
+The policy-rate MSAR illustrates a near-complete collapse of the state distinction. The transformed target is the monthly first difference of the effective federal funds rate. The fitted two-state means both round to $0.0025$ percentage points. The transition probabilities describe switching between two labels that have no distinguishable conditional-mean content in this specification. A model that duplicates the same mean across states cannot be interpreted as having uncovered economically distinct monetary-policy regimes merely because it contains a Markov chain.
+
+This result does not disprove the existence of occasionally binding lower bounds or changes in monetary-policy behavior. It shows that a two-state common-variance autoregression of the **change** in the federal funds rate fails to identify those mechanisms through distinct state means in this sample. A shadow-rate model and a regime-switching mean model impose different restrictions and answer different questions. The weak regime diagnosis is therefore a statement about the fitted model, not a universal conclusion about monetary policy.
+
+### 3.3.5 The credibility of smooth transitions
+
+The STAR estimates also differ substantially across targets. For quarterly GDP, the logistic specification has an ill-conditioned covariance matrix, with a reported condition number of approximately $2.79\times10^{16}$. This means that small perturbations can make conventional parameter-uncertainty calculations unreliable. The estimated transition may vary over the observations, but its slope and threshold cannot be regarded as precisely estimated solely because a numerical fit exists.
+
+For unemployment, as noted above, the threshold is outside the central data range and the covariance is singular. Industrial production and the policy-rate change both place the exponential-transition slope at its upper parameter bound. M2 places the logistic-transition slope at its upper bound as well. These outcomes weaken the claim that the observations identify a stable and economically meaningful smooth transition. A parameter at its imposed limit may reflect an abrupt threshold, a nearly constant transition or a flat likelihood in the direction of the slope, depending on the fitted values and the location of observations. Its interpretation requires the behavior of the transition function itself rather than its numerical magnitude alone.
+
+CPI is again the relatively more interpretable case. Its logistic transition is estimated with a six-month delay, a threshold near $3.93$ in the transformed inflation series and a finite transition slope around $2.58$. The parameter covariance is usable. Yet residual autocorrelation remains significant in the full-sample fit, so even this more credible transition should not be treated as a fully adequate forecasting model. The role of this evidence is to motivate a test of predictive value, not to announce a gain before that test occurs.
+
+Together, the full-sample nonlinear estimates lead to a limited conclusion. CPI provides the strongest evidence of a recognizable two-state inflation process. GDP, industrial production and M2 exhibit states built around very few extreme observations. Unemployment and the federal funds rate show different identification problems, including near-absorbing transitions and indistinguishable means. Several STAR thresholds or slopes are poorly identified. These findings do not make every nonlinear forecast invalid. They show that an attractive in-sample criterion often measures something other than a stable state-dependent forecasting mechanism. The actual out-of-sample comparison is therefore decisive.
+
+## 3.4 Out-of-Sample Forecast Performance Against Classical Benchmarks
+
+### 3.4.1 Forecast dates, losses and the appropriate comparison
+
+The forecasting experiment re-estimates each model at every historical origin using 240 monthly or 120 quarterly observations. The primary evaluation horizon is one month for the five monthly targets and one quarter for GDP. The rolling estimation window is held fixed in length, while each model's lag order and other discrete specification choices follow the initial-window selection described in Chapter 2. The target to be predicted is not included in the estimation window at its forecast origin.
+
+A model is evaluated only when its forecast is finite and the corresponding fit satisfies the criteria for retention. An unsuccessful estimate is not silently replaced with a prediction from another family. As a result, a model's own valid forecast dates can differ from those of its competitors. The comparison requires two different pieces of information: the error achieved on the model's own valid dates, and the error difference measured on dates for which the relevant models both have admissible forecasts.
+
+Let $\mathcal I_{m,b,h}$ denote the set of forecast origins at which competitor $m$ and benchmark $b$ both provide retained $h$-step forecasts and share an observed target outcome. The paired loss comparison evaluates the differential $L(e_{m,t+h\mid t})-L(e_{b,t+h\mid t})$ only for origins in that set. An own-valid-sample RMSE is not numerically interchangeable with a paired-sample RMSE if their target dates differ. This distinction is particularly important for unemployment, where a few failed fits and an extreme pandemic observation alter descriptive rankings.
+
+The classical AR forecast is the principal reference because it provides a parsimonious test of whether added complexity improves on own-history persistence. ARMA is retained as a second classical family, testing whether a more general linear innovation structure provides a useful alternative. MSAR and STAR are evaluated both descriptively and through formal loss comparisons. No favorable numerical result is interpreted as statistically established unless the relevant inferential procedure supports it.
+
+### 3.4.2 One-step forecast accuracy on each model's valid dates
+
+**Table 3.4. Baseline one-step out-of-sample RMSE by forecasting family**
+
+| Forecast target | AR RMSE ($n$) | ARMA RMSE ($n$) | MSAR RMSE ($n$) | STAR RMSE ($n$) | MSAR $R^2_{\mathrm{OOS}}$ vs AR |
+|---|---:|---:|---:|---:|---:|
+| Real GDP growth | 5.284 (197) | 5.246 (197) | **4.447 (197)** | 5.123 (197) | 0.292 |
+| CPI inflation | 2.967 (715) | 3.075 (715) | **2.966 (715)** | $5.38\times10^{9}$ (715) | 0.0003 |
+| Unemployment rate | 0.551 (703) | 0.737 (689) | **0.491 (698)** | 0.592 (704) | 0.189 |
+| Industrial production growth | 13.311 (715) | 11.974 (715) | **11.638 (715)** | $7.17\times10^{6}$ (715) | 0.236 |
+| Federal funds rate change | **0.475 (625)** | 0.477 (618) | 0.480 (625) | 0.613 (625) | −0.019 |
+| M2 growth | **5.078 (571)** | 5.083 (571) | 5.127 (571) | 82.745 (571) | −0.020 |
+
+*Source: Author's computations.* *Note:* Bold identifies the smallest RMSE on each model's **own valid forecast dates**, not a significance result or a ranking on a universal common sample. The $n$ in parentheses is the number of retained forecasts. The final column is computed on each MSAR–AR matched date set using Equation (2.17), so it is not obtained by dividing the own-sample RMSEs when those samples differ. Extremely large but finite STAR errors are displayed without truncation. Values are rounded for presentation.
+
+The first pattern is that MSAR attains the smallest own-sample RMSE for GDP, CPI, unemployment and industrial production. But the economic meaning of these rankings differs considerably. For CPI, the MSAR and AR RMSEs are virtually identical, and the matched out-of-sample $R^2$ is only about $0.0003$. For unemployment, the sample sizes differ across models and the ranking changes under date alignment. GDP and industrial production show larger numerical MSAR gains against AR, but they are strongly influenced by observations around the pandemic shock. The apparent scope of nonlinear improvement therefore becomes narrower once the magnitude, sample and reliability of each comparison are considered.
+
+For GDP, the MSAR RMSE of $4.447$ is below the AR RMSE of $5.284$, and both methods have 197 valid target dates. The corresponding matched $R^2_{\mathrm{OOS}}$ is approximately $0.292$. This is a substantial descriptive reduction in squared forecast loss within the reported sample. It is not, however, evidence of a statistically reliable gain without considering the variability of the loss differential. The concern is particularly acute because the GDP MSAR fit assigns roughly one historical observation to a distinct state and the extreme period surrounding 2020 contributes heavily to the observed accuracy difference. A procedure that handles one shock well in retrospectively selected rolling windows may not be robust in a different episode.
+
+Industrial production shows a related pattern. MSAR has RMSE $11.638$, compared with $13.311$ for AR, yielding a matched out-of-sample $R^2$ near $0.236$ over 715 dates. ARMA also improves the descriptive RMSE to $11.974$. These are economically meaningful magnitudes in the scale of the transformed series, but the interpretation is conditional on the highly volatile historical sample. The full-sample MSAR regime diagnosis is weak, with one effective observation in its rare state and a singular covariance estimate. It would therefore be premature to treat the smaller RMSE as evidence that the model has learned a recurrent industrial-cycle mechanism.
+
+Inflation offers a more direct test of the difference between model interpretation and predictive value. The two-regime MSAR identifies a relatively clear high-inflation state in-sample, yet its one-step RMSE of $2.966$ is almost indistinguishable descriptively from the AR benchmark's $2.967$. The matched out-of-sample $R^2$ is approximately $0.0003$, a reduction in squared error too small to support any substantial forecast-value claim on its own. A coherent state interpretation need not translate into additional one-period-ahead information after the benchmark's persistence has been considered.
+
+The policy-rate and money-growth targets provide still less descriptive support for MSAR. For changes in the federal funds rate, AR has the lowest RMSE, $0.475$, compared with $0.480$ for MSAR. The MSAR matched $R^2_{\mathrm{OOS}}$ is negative, approximately $-0.019$. For M2 growth, AR has RMSE $5.078$, compared with $5.127$ for MSAR, and the matched $R^2_{\mathrm{OOS}}$ is about $-0.020$. A negative value indicates that the competitor incurs greater squared forecast loss than AR on its matched dates. These results are consistent with the weak MSAR state diagnoses for the two monetary targets, although they cannot by themselves establish why the forecasts differ.
+
+### 3.4.3 Unemployment shows why the evaluation sample cannot be ignored
+
+The unemployment results require separate treatment because the number and composition of valid forecasts differ. AR supplies 703 retained one-step forecasts, ARMA 689, MSAR 698 and STAR 704. On each model's own valid dates, MSAR has the smallest RMSE at $0.491$, AR has $0.551$ and ARMA has the largest at $0.737$. Reading only those entries would suggest that MSAR is plainly superior and ARMA plainly inferior.
+
+That conclusion would be incorrect. One unusually large unemployment forecast error occurs on a pandemic target date for which not all models have a valid paired forecast. In particular, a very large ARMA error contributes to its own-valid-sample RMSE while the AR benchmark is unavailable on that date. When ARMA is compared with AR on their 688 common valid target dates, ARMA's RMSE is approximately $0.486$, and its AR-relative out-of-sample $R^2$ is about $0.237$. MSAR's comparable figures, on a **different** set of 697 paired dates, are RMSE $0.487$ and $R^2_{\mathrm{OOS}}$ $0.189$. The positive AR-relative values do not establish that ARMA and MSAR have been compared directly on the same calendar.
+
+The results therefore contain three different objects: the model's loss on its own dates, its loss relative to AR on a matched pairwise calendar, and its ranking on a calendar shared by all four families. The first two are reported directly here; the final common-calendar comparison is used as a supplementary consistency check but does not introduce a new formal test of model equivalence. Treating these objects as interchangeable can reverse a descriptive claim without changing a single forecast.
+
+This sensitivity also has an economic interpretation. The unemployment rate moved abruptly during the pandemic and then adjusted during the recovery. A single observation with a large forecast error can dominate a squared-loss average, particularly for an otherwise stable and persistent rate series. Excluding that observation solely because it is inconvenient would create selection bias. But comparing models on incompatible calendars without disclosure is equally problematic. The analysis therefore reports both own-valid and AR-matched sample sizes, and it does not claim unequivocal MSAR superiority in unemployment forecasting.
+
+At the one-step horizon, STAR's own-sample RMSE is $0.592$ and its mean absolute error is $0.216$, compared with AR's $0.169$ in absolute-error units. This difference is formally assessed below. Although the STAR model can fit unemployment levels closely in-sample, its threshold and covariance problems reduce confidence that its fitted transition has stable predictive meaning.
+
+### 3.4.4 Numerical instability of STAR forecasts
+
+The STAR forecast results are markedly different from the moderate MSAR results. For CPI inflation and industrial production, the reported STAR RMSEs are approximately $5.38\times10^{9}$ and $7.17\times10^{6}$ respectively. They are not typographical errors or truncated axes. They arise from extremely large but finite iterated forecasts produced by unstable fitted parameter combinations at some rolling origins. For M2, STAR's RMSE is $82.745$, against approximately $5.1$ for the linear and MSAR forecasts. These outcomes must remain visible because numerical fragility is part of the performance of the specified forecasting procedure.
+
+A very large RMSE is a descriptive result: it says that squared errors became enormous over the evaluated dates. It is not automatically accompanied by a valid hypothesis-test p-value. When a few loss differentials are many orders of magnitude larger than the others, procedures that estimate a long-run variance or calibrate a reference distribution can become numerically degenerate. In such cases, a reported non-rejection must not be used to claim equal forecast accuracy, and even a formally returned p-value may be uninformative.
+
+This is particularly important for CPI and industrial production STAR comparisons, where the numerical instability of forecasts overwhelms an ordinary presentation of model accuracy. The absence of a reliable formal test conclusion in these comparisons does not erase the enormous observed errors. Equally, the enormity of those errors does not validate an inference procedure whose numerical assumptions have broken down. The dissertation therefore separates the description of the forecasts from the formal assessment of their relative predictive ability.
+
+These outcomes also show that an in-sample transition function can be misleading as a predictor. A fitted STAR coefficient combination may behave reasonably over the observations used to estimate it, yet its iterated recursion can move toward values rarely represented in that window. This risk becomes more important as the horizon grows, but the one-step results already show that unstable predictions cannot be dismissed as a purely distant-horizon phenomenon. Section 4.7 returns to their sensitivity to estimation and numerical constraints.
+
+### 3.4.5 Formal inference: apparent gains versus statistically supported gains
+
+The primary inferential comparison uses the average-loss test of Harvey, Leybourne and Zu (2025). The test is designed to address possibly time-varying mean forecast-loss differentials, a relevant concern in samples covering crises, major policy changes and periods of unusually high volatility. Its application is defined in Section 2.10. The reported sign convention is competitor loss minus benchmark loss: a negative average differential favors the competitor, while a positive differential favors the benchmark.
+
+**Table 3.5. Primary one-step forecast-accuracy tests against AR**
+
+| Forecast target | MSAR vs AR: squared-loss $p$ | MSAR vs AR: absolute-loss $p$ | ARMA vs AR: squared-loss $p$ | ARMA vs AR: absolute-loss $p$ |
+|---|---:|---:|---:|---:|
+| Real GDP growth | 0.3566 | 0.6261 | 0.3684 | 0.7580 |
+| CPI inflation | 0.9750 | 0.3980 | 0.0986 | **0.0104** |
+| Unemployment rate | 0.3669 | 0.3217 | 0.3356 | 0.5182 |
+| Industrial production growth | 0.2317 | 0.1212 | 0.2658 | 0.2469 |
+| Federal funds rate change | 0.4989 | 0.9868 | 0.9694 | 0.3354 |
+| M2 growth | 0.2364 | 0.8711 | 0.4263 | 0.8275 |
+
+*Source: Author's computations.* *Note:* Two-sided Harvey–Leybourne–Zu p-values are calculated on the valid dates shared by each pair. Bold denotes a nominal 5% rejection. For CPI inflation, the significant ARMA–AR difference in absolute loss favors **AR**, not ARMA; a small p-value does not indicate which direction the difference takes. These are unadjusted pairwise results, not family-wise multiplicity-adjusted conclusions. Numerically degenerate STAR tests are discussed separately and not interpreted as evidence of equal accuracy.
+
+The central result is unambiguous within the stated test: **MSAR does not significantly outperform AR at the one-step horizon for any of the six U.S. targets under either squared or absolute loss.** For GDP, the $29.2\%$ descriptive AR-relative reduction in squared error corresponds to a squared-loss HLZ p-value of $0.3566$. For industrial production, the $23.6\%$ reduction corresponds to $p=0.2317$. Neither rejection threshold is met. Thus even comparatively large descriptive error reductions do not establish a reliably positive average forecasting advantage over the selected sample.
+
+For CPI inflation, the squared-loss p-value is $0.9750$, consistent with the almost identical RMSEs. The absolute-loss test likewise does not reject ($p=0.3980$). For unemployment, the corresponding p-values are $0.3669$ and $0.3217$. Changes in the federal funds rate and M2 growth also yield no rejection in favor of MSAR. A non-rejection does not demonstrate that AR and MSAR have equal predictive ability. It means the data and the chosen procedure do not provide sufficient evidence of a difference at the nominal significance level.
+
+The ARMA comparisons reinforce the need to distinguish the direction of a loss difference from its p-value. For CPI inflation, the absolute-loss comparison rejects at $p=0.0104$, but the mean competitor-minus-AR differential is positive. The evidence favors the AR benchmark over ARMA under this loss definition; it is not evidence that a richer classical family beats AR. Across the other targets, the stated ARMA–AR tests do not reject at 5%. The relative performance of linear alternatives therefore remains target- and loss-specific.
+
+For STAR, the inferential record is more uneven. Where comparisons remain informative, there is no credible general gain over AR. On unemployment at the one-step horizon, STAR is nominally **worse** than AR under absolute loss ($p=0.0015$). For changes in the federal funds rate, the absolute-loss test also favors AR ($p=0.0292$). Both findings concern individual unadjusted comparisons. They should not be inflated into a universal ranking across all targets, horizons and losses.
+
+Other STAR comparisons are compromised by extreme forecasts. In the CPI and industrial production squared-loss results, the enormous loss differences produce numerically degenerate test behavior. The corresponding nominal p-values cannot be interpreted as ordinary evidence of no difference. More generally, the fact that a testing routine returns a number does not prove that its finite-sample calibration remains informative under extreme numerical concentration. The correct conclusion separates an observed catastrophic forecast outcome from the inability to obtain reliable average-accuracy inference in that cell.
+
+The distinction is relevant to the study's broader methodological argument. One may observe a model with a lower historical BIC, a model with a lower descriptive RMSE, a model with a nominally significant average-loss difference, or a model whose numerical failures make the intended test uninformative. These are different evidential states. None should be substituted for another merely to produce a simple claim that nonlinear models either always win or always fail.
+
+### 3.4.6 Multiple-model uncertainty and the meaning of a winner
+
+Pairwise testing is supplemented by the Model Confidence Set (MCS) of Hansen et al. (2011), which assesses sets of models without selecting the smallest sample RMSE as a definitive winner. In the one-step squared-loss exercise, the 90% MCS retains AR, ARMA and MSAR for both GDP and industrial production, despite the numerical MSAR advantage in their respective own-sample RMSEs. That result is consistent with the primary HLZ comparisons: the apparent improvements are not enough to eliminate the classical competitors from the reported set.
+
+The MCS is not an equivalence test. Inclusion of two models does not prove equal predictive ability, and inclusion of a numerically unstable model should not be treated as evidence that its very large errors are harmless. This caution matters because the one-step squared-loss MCS also retains STAR for several targets where STAR's forecast errors are extremely large. The interaction of unusual losses, resampling variability and common-date selection can make formal set membership less discriminating than a simple ranking suggests. The set is therefore read as a supplementary measure of model-selection uncertainty, not as a certificate of adequate numerical behavior.
+
+The unemployment MCS likewise illustrates the sample issue. The four-model exercise uses the intersection of dates available to all members, which is smaller than the dates used for some pairwise comparisons. It therefore addresses a different empirical sample from the own-valid RMSE rankings in Table 3.4. A retained model on the common calendar is not necessarily the lowest-error model on its own larger or smaller calendar. The differences in these comparisons are reported rather than hidden by presenting one universal order.
+
+The secondary Diebold–Mariano/Harvey–Leybourne–Newbold comparison is retained as a sensitivity assessment, not substituted for the primary instability-aware procedure whenever its p-value is more favorable. Diebold and Mariano (1995) established the general loss-differential framework; the choice of variance estimator and finite-sample treatment matters when loss relationships vary through time. Using a fixed primary procedure avoids selecting an inferential rule after observing the direction of its conclusion.
+
+### 3.4.7 What the primary forecast experiment establishes
+
+The baseline evidence supports a bounded answer to the chapter's central question. Two-state MSAR models can describe certain historical observations more closely than classical autoregressions, and their one-step RMSEs are descriptively lower for GDP and industrial production. Yet none of the six MSAR–AR comparisons establishes a significant one-step gain under the primary test. CPI supplies the clearest example of a distinguishable inflation regime without a corresponding one-step forecasting advantage. The federal funds rate and M2 provide cases in which the extra Markov state has weak meaning and no descriptive gain over AR. Unemployment demonstrates why an apparent model ranking must be tied to a clearly stated evaluation calendar.
+
+STAR provides no general positive counterexample. Its one-step forecasts are sometimes less accurate than AR under an informative formal test and sometimes so extreme that the formal comparison itself becomes numerically unreliable. This is not evidence that all smooth-transition methods are incapable of forecasting macroeconomic variables. It is evidence that the selected STAR parameterizations, estimated under the stated protocol, do not establish a dependable advantage in this historical exercise.
+
+Neither result implies that linearity is the true data-generating law for the six targets. The pretests show departures from some linear nulls, especially for unemployment and CPI inflation. The regime diagnostics show that some nonlinear structures are detectable in-sample. What fails to emerge is a general, statistically credible improvement in one-step prediction. Forecast performance must therefore be kept distinct from the existence of nonlinear behavior in the observed series.
+
+A further question remains. The overall averages can conceal performance concentrated in recessions, expansions or neighborhoods of peaks and troughs. It is possible for a model to offer useful gains in a narrow state without reducing its average loss enough to yield a significant whole-sample result. It is equally possible for a model to appear superior in a retrospectively selected episode because extreme observations dominate the losses. Sections 3.5 and 3.6 examine these possibilities using the state definitions and formal conditional comparisons established in Chapter 2. The subsequent cross-aggregate synthesis and robustness analysis assess whether any state-specific interpretation survives changes in the relevant assumptions.
+
+---
+
+## References
+
+Cho, J. S., & White, H. (2007). Testing for regime switching. *Econometrica, 75*(6), 1671–1720. https://doi.org/10.1111/j.1468-0262.2007.00809.x
+
+Dickey, D. A., & Fuller, W. A. (1979). Distribution of the estimators for autoregressive time series with a unit root. *Journal of the American Statistical Association, 74*(366a), 427–431. https://doi.org/10.1080/01621459.1979.10482531
+
+Diebold, F. X., & Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic Statistics, 13*(3), 253–263. https://doi.org/10.1080/07350015.1995.10524599
+
+Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. *Econometrica, 50*(4), 987–1007. https://doi.org/10.2307/1912773
+
+Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357–384. https://doi.org/10.2307/1912559
+
+Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence set. *Econometrica, 79*(2), 453–497. https://doi.org/10.3982/ECTA5771
+
+Harvey, D. I., Leybourne, S. J., & Zu, Y. (2025). Testing for equal average forecast accuracy in possibly unstable environments. *Journal of Business & Economic Statistics, 43*(3), 643–656. https://doi.org/10.1080/07350015.2024.2418835
+
+Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review, 55*(2), 163–172. https://doi.org/10.2307/1403192
+
+Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root? *Journal of Econometrics, 54*(1–3), 159–178. https://doi.org/10.1016/0304-4076(92)90104-Y
+
+Lenza, M., & Primiceri, G. E. (2022). How to estimate a vector autoregression after March 2020. *Journal of Applied Econometrics, 37*(4), 688–699. https://doi.org/10.1002/jae.2895
+
+Ljung, G. M., & Box, G. E. P. (1978). On a measure of lack of fit in time series models. *Biometrika, 65*(2), 297–303. https://doi.org/10.1093/biomet/65.2.297
+
+Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988). Testing linearity against smooth transition autoregressive models. *Biometrika, 75*(3), 491–499. https://doi.org/10.1093/biomet/75.3.491
+
+Orphanides, A. (2001). Monetary policy rules based on real-time data. *American Economic Review, 91*(4), 964–985. https://doi.org/10.1257/aer.91.4.964
+
+Qu, Z., & Zhuo, F. (2021). Likelihood ratio-based tests for Markov regime switching. *The Review of Economic Studies, 88*(2), 937–968. https://doi.org/10.1093/restud/rdaa035
+
+Schwarz, G. (1978). Estimating the dimension of a model. *The Annals of Statistics, 6*(2), 461–464. https://doi.org/10.1214/aos/1176344136
+
+Teräsvirta, T. (1994). Specification, estimation, and evaluation of smooth transition autoregressive models. *Journal of the American Statistical Association, 89*(425), 208–218. https://doi.org/10.1080/01621459.1994.10476462
+
+Tsay, R. S. (1986). Nonlinearity tests for time series. *Biometrika, 73*(2), 461–466. https://doi.org/10.1093/biomet/73.2.461
+
+Zivot, E., & Andrews, D. W. K. (1992). Further evidence on the great crash, the oil-price shock, and the unit-root hypothesis. *Journal of Business & Economic Statistics, 10*(3), 251–270. https://doi.org/10.1080/07350015.1992.10509904
