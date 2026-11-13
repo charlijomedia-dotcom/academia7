@@ -34,19 +34,21 @@ Three propositions follow from this policy setting. First, instability matters f
 
 The interest rate reported in an economic data series is usually nominal. Its economic meaning depends partly on the future purchasing power of money. Fisher (1930) formalized the relation between nominal and real returns and the expected change in prices. In the standard one-period, low-inflation approximation, the ex ante relation is
 
-$$
+**Equation (1.1)**
+
+```math
 i_t \simeq r_t^{e}+E_t(\pi_{t+1}),
-\tag{1.1}
-$$
+```
 
 where $i_t$ is the nominal interest rate applying to the period, $r_t^{e}$ is the expected real return for a comparable claim and maturity, $E_t(\pi_{t+1})$ is expected inflation over the same period, and $E_t(\cdot)$ denotes the expectation formed with information available at $t$. The approximation neglects cross-products and the complications associated with uncertainty and risk premia. It is not an empirical identity that forces a constant real rate.
 
 Under certainty, and with exactly matched gross returns, the corresponding multiplicative relation is
 
-$$
+**Equation (1.2)**
+
+```math
 1+i_t=(1+r_t)(1+\pi_{t+1}).
-\tag{1.2}
-$$
+```
 
 When inflation is uncertain, defining an ex ante real return requires care. In general, the expected purchasing-power return is based on $E_t[(1+i_t)/(1+\pi_{t+1})]$, not merely the ratio of the nominal gross return to one plus expected inflation. Nonlinear expectation effects, tax treatment, maturity, default risk, liquidity, and inflation risk premia can make observed nominal yields deviate from the simple expression in (1.1). The approximation remains useful because it isolates two objects that a forecast must distinguish: expected inflation and the required real compensation for postponing consumption.
 
@@ -78,10 +80,11 @@ Inflation, unemployment, and real activity are connected through labour demand, 
 
 Phillips (1958) examined the association between unemployment and the rate of change of money wages in the United Kingdom over a long historical period. The original dependent variable was wage inflation, not the consumer price inflation used in this thesis. Phillips described a nonlinear empirical relation in which wages tended to rise more quickly when unemployment was low and more slowly when unemployment was high. In stylized terms, that relationship can be written as
 
-$$
+**Equation (1.3)**
+
+```math
 \Delta \ln W_t=f(u_t)+\varepsilon_t,\qquad f'(u_t)<0,
-\tag{1.3}
-$$
+```
 
 where $W_t$ is a nominal wage index, $u_t$ is the unemployment rate, $f$ describes the historical association, and $\varepsilon_t$ collects factors not represented by the curve. The inequality describes the local direction of the fitted relation in the relevant range. It does not guarantee one stable slope over all dates and countries. In the original historical analysis, nonlinearity of the wage response was part of the empirical description. It should not be rewritten as a universal straight-line relation between CPI inflation and unemployment.
 
@@ -91,10 +94,11 @@ The economic interpretation is intuitive but incomplete. When labour is scarce r
 
 Phelps (1967) showed why inflation expectations alter the interpretation of unemployment–inflation trade-offs. A commonly used expectations-augmented representation is
 
-$$
+**Equation (1.4)**
+
+```math
 \pi_t=E_{t-1}(\pi_t)-\kappa(u_t-u_t^{*})+s_t,\qquad \kappa>0,
-\tag{1.4}
-$$
+```
 
 where $\pi_t$ denotes current price inflation, $E_{t-1}(\pi_t)$ is expected inflation formed before the current outcome, $u_t^{*}$ is a reference or natural rate of unemployment, $\kappa$ measures the sensitivity of inflation to unemployment relative to that reference, and $s_t$ is a supply or price-setting disturbance. The expression is a stylized organizing equation, not an identity or the estimated model of this thesis. Different theoretical models use different timing, expectations measures, slack concepts, and disturbance structures.
 
@@ -112,19 +116,21 @@ A flattened curve is not equivalent to a nonlinear curve. A slope may change onc
 
 Okun (1962) linked changes in unemployment to changes in output and the distance between actual and potential production. One widely used growth-rate representation of this relationship is
 
-$$
+**Equation (1.5)**
+
+```math
 \Delta u_t=\alpha-\beta g_t+\eta_t,\qquad \beta>0,
-\tag{1.5}
-$$
+```
 
 where $\Delta u_t$ is the change in the unemployment rate, $g_t$ is real output growth over a corresponding period, $\alpha$ captures influences such as the output growth needed to prevent unemployment from rising, $\beta$ is a positive sensitivity coefficient, and $\eta_t$ is a residual. This is a stylized version of an empirical relationship, not a constant coefficient imposed on the thesis data. The intercept and coefficient can depend on the time period, growth convention, data definitions, and business-cycle conditions.
 
 An alternative gap formulation associates unemployment deviations with the output gap. Let $Y_t$ be actual real output and $Y_t^{*}$ an estimate of potential real output. A schematic version is
 
-$$
+**Equation (1.6)**
+
+```math
 u_t-u_t^{*}=-\theta\bigl(\ln Y_t-\ln Y_t^{*}\bigr)+\nu_t,\qquad \theta>0.
-\tag{1.6}
-$$
+```
 
 The two representations ask different empirical questions. Equation (1.5) links changes in unemployment to output growth, whereas equation (1.6) links estimated deviations from reference levels. Potential output and the natural unemployment rate are not directly observed; they depend on estimation and can be revised. The thesis does not estimate these latent structural reference levels. Its real GDP, industrial production, and unemployment targets are observed official aggregates or approved transformations of them.
 
@@ -151,10 +157,11 @@ The previous sections related inflation to expectations, interest rates, unemplo
 
 The familiar quantity relation can be written as
 
-$$
+**Equation (1.7)**
+
+```math
 M_tV_t=P_tY_t,
-\tag{1.7}
-$$
+```
 
 where $M_t$ is a specified nominal money aggregate, $V_t$ is its income velocity, $P_t$ is an aggregate price index consistent with the definition of nominal output, and $Y_t$ is real output. With coherent measurement, the expression is an accounting relation defining velocity as nominal income divided by money. In approximate growth rates, it becomes $\Delta\ln M_t+\Delta\ln V_t=\Delta\ln P_t+\Delta\ln Y_t$. An observed rise in money growth does not, by itself, determine how much nominal expenditure, prices, or real output will rise. Velocity and the demand for monetary assets can change. Money holders may retain balances rather than spend them immediately.
 
@@ -216,11 +223,12 @@ The term *nonlinear* is sometimes used as a general label for a difficult econom
 
 Let $y_t$ be a transformed macroeconomic forecast target and let $\mathcal{F}_{t-1}$ denote the information permitted before observing $y_t$. A stable autoregressive model of order $p$ takes the form
 
-$$
+**Equation (1.8)**
+
+```math
 y_t=c+\sum_{j=1}^{p}\phi_jy_{t-j}+\varepsilon_t,
 \qquad E(\varepsilon_t\mid\mathcal{F}_{t-1})=0.
-\tag{1.8}
-$$
+```
 
 Here $c$ and the coefficients $\phi_j$ are constant across the estimation period; the conditional mean is additive and linear in the included lagged observations. The equation does not require every observed path to be a straight line. It can generate persistent cycles, reversals, and surprisingly large observations when shocks are large. A model may also be linear in its conditional mean while having changing conditional variance. That distinction is important because volatility changes alone do not demonstrate nonlinear predictability of the mean.
 
@@ -317,21 +325,21 @@ The literature establishes three broad lessons. Nonlinear dynamics can exist and
 
 The theory and literature permit more than one empirical outcome. State-dependent nonlinear models might capture useful information when economic relationships change. They might also fit history better without improving future predictions. The purpose of a disciplined test is not to confirm the first possibility, but to distinguish it from the second and from alternative explanations. The research question therefore requires clear conditions under which the case for added complexity would be weakened.
 
-The first implication concerns *diagnosable dynamics*. If the selected targets contain persistent or state-dependent patterns not adequately represented by a constant linear conditional mean, formal diagnostics may reveal evidence of nonlinearity, breaks, or unusual persistence. However, those findings are not interchangeable. A unit root is not a transition regime; an abrupt break is not a smooth threshold; and volatility clustering is not necessarily nonlinear mean predictability. Failure to reject a linear specification also does not prove the absence of economically relevant nonlinear behavior. The evidence must be judged with the limitations of the tests in mind.
+The first implication concerns diagnosable dynamics. If the selected targets contain persistent or state-dependent patterns not adequately represented by a constant linear conditional mean, formal diagnostics may reveal evidence of nonlinearity, breaks, or unusual persistence. However, those findings are not interchangeable. A unit root is not a transition regime; an abrupt break is not a smooth threshold; and volatility clustering is not necessarily nonlinear mean predictability. Failure to reject a linear specification also does not prove the absence of economically relevant nonlinear behavior. The evidence must be judged with the limitations of the tests in mind.
 
-The second implication concerns *model adequacy and identification*. A nonlinear model should represent its historical data without relying on implausible parameters, empty states, transition probabilities at numerical boundaries, or a handful of exceptional dates. A smoother transition is not credible merely because an optimizer reports a transition function. If parameters are weakly identified or the estimation is sensitive to starting values, interpretation becomes limited even when an information criterion favors the fit. These weaknesses would directly challenge the argument that additional complexity represents a stable predictive mechanism.
+The second implication concerns model adequacy and identification. A nonlinear model should represent its historical data without relying on implausible parameters, empty states, transition probabilities at numerical boundaries, or a handful of exceptional dates. A smoother transition is not credible merely because an optimizer reports a transition function. If parameters are weakly identified or the estimation is sensitive to starting values, interpretation becomes limited even when an information criterion favors the fit. These weaknesses would directly challenge the argument that additional complexity represents a stable predictive mechanism.
 
-The third implication concerns *genuine predictive value*. If nonlinear structure supplies useful information beyond a well-specified linear model, that information should improve forecasts formed before outcomes are known. Forecast accuracy must be assessed on comparable dates and with clearly defined losses. A lower reported RMSE is a descriptive fact, not by itself a statistically established gain. If MSAR or STAR does not outperform AR under the approved primary inference, the thesis cannot claim nonlinear superiority at that horizon. Non-rejection would not prove equal predictive ability; it would mark a lack of statistically established superiority in the stated comparison.
+The third implication concerns genuine predictive value. If nonlinear structure supplies useful information beyond a well-specified linear model, that information should improve forecasts formed before outcomes are known. Forecast accuracy must be assessed on comparable dates and with clearly defined losses. A lower reported RMSE is a descriptive fact, not by itself a statistically established gain. If MSAR or STAR does not outperform AR under the approved primary inference, the thesis cannot claim nonlinear superiority at that horizon. Non-rejection would not prove equal predictive ability; it would mark a lack of statistically established superiority in the stated comparison.
 
-The fourth implication concerns *economic states*. The motivation for nonlinear forecasting is strongest where changes in dynamics might matter, especially around contractions, recoveries, and turning points. A genuine conditional advantage might therefore appear in some of those observations. But the opposite result would be informative. If an average gain comes entirely from ordinary expansions or disappears after adjusting for common evaluation dates, the specific turning-point rationale would be weakened. Recession labels assigned after the event cannot be used to claim that a forecaster correctly recognized a recession before it began.
+The fourth implication concerns economic states. The motivation for nonlinear forecasting is strongest where changes in dynamics might matter, especially around contractions, recoveries, and turning points. A genuine conditional advantage might therefore appear in some of those observations. But the opposite result would be informative. If an average gain comes entirely from ordinary expansions or disappears after adjusting for common evaluation dates, the specific turning-point rationale would be weakened. Recession labels assigned after the event cannot be used to claim that a forecaster correctly recognized a recession before it began.
 
-The fifth implication is that *classical misspecification can imitate nonlinearity*. Too few AR lags may leave serial dependence in the residuals. An ARMA specification may describe innovation dynamics omitted by an AR. A changing level or an unmodelled break may create a spurious appearance of regimes. A model that looks nonlinear in levels may behave differently after an appropriate predeclared transformation. These possibilities make lag, transformation, structural-break, and residual checks necessary competitors rather than optional decorations around a nonlinear result.
+The fifth implication is that classical misspecification can imitate nonlinearity. Too few AR lags may leave serial dependence in the residuals. An ARMA specification may describe innovation dynamics omitted by an AR. A changing level or an unmodelled break may create a spurious appearance of regimes. A model that looks nonlinear in levels may behave differently after an appropriate predeclared transformation. These possibilities make lag, transformation, structural-break, and residual checks necessary competitors rather than optional decorations around a nonlinear result.
 
-A sixth implication concerns *cross-variable information*. The Fisher, Phillips–Phelps, Okun, and monetary mechanisms link the selected variables economically, but the primary empirical models mainly forecast from each target's own past. If a limited VAR improves relevant forecasts or changes their ranking, some apparent failure of the univariate model may come from omitted predictors rather than insufficient nonlinear flexibility. The VAR comparison is a bounded predictive check; it does not identify the causal transmission channels in the economic theories.
+A sixth implication concerns cross-variable information. The Fisher, Phillips–Phelps, Okun, and monetary mechanisms link the selected variables economically, but the primary empirical models mainly forecast from each target's own past. If a limited VAR improves relevant forecasts or changes their ranking, some apparent failure of the univariate model may come from omitted predictors rather than insufficient nonlinear flexibility. The VAR comparison is a bounded predictive check; it does not identify the causal transmission channels in the economic theories.
 
-A seventh implication concerns *horizons and estimation windows*. The same model may be useful one month ahead and unhelpful one year ahead. A short window adapts more quickly to change but uses fewer observations. A longer window estimates parameters from more data but may include older dynamics that are less relevant after a break. A nonlinear advantage confined to one horizon or one window is weaker evidence of general utility than a result that survives the declared comparisons. Equally, the absence of gains at one horizon cannot settle every longer-horizon question.
+A seventh implication concerns horizons and estimation windows. The same model may be useful one month ahead and unhelpful one year ahead. A short window adapts more quickly to change but uses fewer observations. A longer window estimates parameters from more data but may include older dynamics that are less relevant after a break. A nonlinear advantage confined to one horizon or one window is weaker evidence of general utility than a result that survives the declared comparisons. Equally, the absence of gains at one horizon cannot settle every longer-horizon question.
 
-The eighth implication concerns *numerical feasibility*. Added parameters and latent states make nonlinear estimation more demanding. A fit may fail to converge, produce near-boundary estimates, or yield an explosive forecast. If failed forecasts are silently replaced or omitted without documenting the matched sample, the resulting horse race will not answer the declared question. A model's inability to supply reliable forecasts at some origins is relevant evidence about its practical usefulness. Numerical failure must be separated from statistical non-rejection, because an unusable test cannot demonstrate either superiority or equality.
+The eighth implication concerns numerical feasibility. Added parameters and latent states make nonlinear estimation more demanding. A fit may fail to converge, produce near-boundary estimates, or yield an explosive forecast. If failed forecasts are silently replaced or omitted without documenting the matched sample, the resulting horse race will not answer the declared question. A model's inability to supply reliable forecasts at some origins is relevant evidence about its practical usefulness. Numerical failure must be separated from statistical non-rejection, because an unusable test cannot demonstrate either superiority or equality.
 
 These conditions also prevent retrospective selection of favorable evidence. It would be inappropriate to change the transformation, regime count, sample, or loss measure solely because a particular nonlinear model then wins. The thesis uses the approved design and reports both baseline and specified robustness analyses. Additional checks can challenge the interpretation, but they cannot silently replace the baseline. A model that fits better yet remains statistically uncompetitive or numerically unstable does not satisfy the standard of credible forecasting value.
 
