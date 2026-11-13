@@ -264,3 +264,181 @@ A nonlinear model has to meet several additional demands. Its parameters and tra
 
 The statistical taxonomy therefore imposes discipline on the economic argument. Instability may mean nonstationarity, a one-time break, a change in volatility, occasional extreme shocks, changing coefficients, or recurring conditional-mean states. MSAR and STAR address some of these possibilities, not all of them. Identifying the form of instability is necessary for meaningful interpretation, and a forecast comparison is still required before concluding that modelling it adds predictive value.
 
+
+## 1.7 What the Theoretical and Empirical Literature Already Knows, and What Remains Unresolved
+
+The economic mechanisms described above provide several reasons for unstable macroeconomic forecasts. They do not show that nonlinear methods are superior. That question has a substantial prior literature. Research has established the usefulness of simple autoregressions, the existence of state-dependent dynamics, the importance of multivariate information, and the sensitivity of comparisons to the evaluation design. The unresolved issue for this thesis is narrower: whether the specific additional flexibility of MSAR and STAR provides a credible forecasting gain over well-defined AR and ARMA benchmarks for the six selected U.S. targets, once adequacy, numerical failures, horizons, changing states, and competing explanations are taken into account.
+
+### Classical models as serious competitors
+
+The AR and ARMA tradition provides an important scientific baseline because past observations often contain substantial predictive information. AR models use lagged targets to describe the conditional mean. ARMA models allow dependence in past innovations as well as past observations (Box et al., 2015). Their value is not that the economy is assumed to be structurally linear in every respect. Their value is that a parsimonious model sets a clear standard: a more complicated method should forecast better than a model that can already represent basic persistence and short-run adjustment.
+
+The literature has also shown why a strong univariate benchmark can be difficult to beat. Stock and Watson (2007) examine changes in U.S. inflation forecasting and emphasize evolving inflation persistence and volatility. Their analysis suggests that a time-varying univariate representation can be a demanding competitor for multivariate alternatives. The lesson is not that a fixed AR is always sufficient. It is that the forecasting problem must be defined carefully: a regression with many explanatory variables or nonlinear terms should not be credited with improvement unless it has been compared with a credible target-specific baseline.
+
+A further benefit of classical benchmarks is interpretability of failures. If a higher-order AR outperforms a lower-order AR, an apparent nonlinear gain may have reflected omitted linear lag dependence. If ARMA improves the forecast, innovation dynamics may matter more than regime switching. If all models suffer after an exceptional shock, the difficulty may be missing information rather than the form of the conditional mean. These are not reasons to exclude nonlinear alternatives. They are reasons to evaluate them against benchmarks chosen by declared rules rather than against the weakest available linear specification.
+
+### Discrete and smooth nonlinear dynamics
+
+Hamilton (1989) establishes the importance of latent regime switching for the analysis of U.S. output dynamics and the business cycle. The model separates an unobserved state process from observed economic data and permits their statistical behavior to differ across states. It provides a coherent representation of recurrent change. It does not imply that any two-state fit to any macroeconomic target must produce a useful forecasting improvement, nor that its states automatically coincide with NBER recessions.
+
+Smooth transition models address a different kind of variation. Teräsvirta (1994) presents a procedure for specification and evaluation; Teräsvirta et al. (2005) compare linear models, smooth-transition autoregressions, and neural networks in a broad macroeconomic forecasting exercise. Their results provide evidence that carefully specified nonlinear models can be competitive. They also make model specification and forecast evaluation central to the conclusion. A smooth transition adds parameters whose value depends on the observations available near the transition region. A plausible transition shape in-sample can still have little predictive value in a new estimation window.
+
+The distinction between discrete and smooth change is economically relevant. A sharp institutional shift might be represented by an abrupt break or a latent state change, while gradual adjustment in price-setting or policy expectations might be represented more naturally by changing or smoothly transitioning coefficients. Neither relationship has to be recurrent. Conversely, occasional extreme shocks may falsely suggest recurrent regimes to a flexible model. Economic theory therefore cannot select MSAR rather than STAR from the names of the models alone. The comparison requires diagnostics and predictions.
+
+### Modern nonlinear work broadens, rather than settles, the question
+
+More flexible statistical methods show that nonlinear relations can matter without proving the superiority of any one parametric model family. Goulet Coulombe et al. (2022) examine which ingredients of machine learning contribute to macroeconomic forecasting performance and identify nonlinear flexibility as important in their applications, particularly around uncertainty and stress. Goulet Coulombe (2024) develops a random-forest approach to changing macroeconomic relationships. These findings are relevant because a fixed conditional-mean representation may miss changing interactions. Yet the algorithms, predictors, tuning rules, and information sets are not the same as those in the present AR/MSAR/STAR comparison.
+
+Inflation forecasting offers a useful contrast. Clark et al. (2024) develop Bayesian nonparametric models that accommodate nonlinear relationships and asymmetric error behavior when forecasting U.S. inflation. Their design responds directly to the possibility that the inflation–unemployment relation changes over time. Naghi et al. (2024), however, show that the ranking of machine-learning approaches is sensitive to the model and evaluation period, with rival methods competitive during the pandemic and high-inflation episode. Taken together, these studies justify investigating flexibility but rule out treating it as a universal remedy.
+
+Other studies demonstrate that the object being forecast matters. Prüser and Huber (2024) model U.S. GDP growth quantiles and find gains from nonlinear specifications, especially in the tails of the predictive distribution. A model may improve the probability assigned to extreme adverse growth while leaving the point forecast of average growth largely unchanged. The present thesis evaluates declared point-forecast losses. It cannot borrow a gain in quantile or tail-risk forecasting as if it were a gain in mean-squared-error forecasting.
+
+Recent multivariate work also offers credible alternatives to own-history nonlinearity. Hauzenberger et al. (2025) propose a Gaussian-process VAR that allows flexible nonlinear dependencies and changing volatility in a macroeconomic system. Clark et al. (2026) augment a Bayesian VAR with nonlinear common factors and report density-forecast benefits in their U.S. application. These studies show that nonlinear gains may come from relationships across variables or from richer descriptions of uncertainty rather than from switching dynamics in one target alone. They do not determine whether a two-regime MSAR forecast for an individual target beats an AR in the approved data and horizon.
+
+The lower-bound literature supplies an especially clear competing model for interest rates. Carriero et al. (2025) build an explicit rate constraint into VAR forecasting. If the main challenge for the short-term policy rate is a bounded observable, a generic latent-regime model may be less suitable than a model designed for the constraint. Similarly, Lenza and Primiceri (2022) and Carriero et al. (2024) show why the extreme observations of the pandemic can require special treatment. A regime model that isolates the pandemic does not necessarily uncover a stable, recurring mechanism. These papers make model adequacy and unusual observations part of the scientific question.
+
+### Information sets, real-time boundaries, and changing states
+
+A second research stream considers the information available to the forecaster. Sims (1980) established the role of VARs in representing interactions among macroeconomic variables without imposing the full restrictions of a structural system. A VAR can therefore be a useful alternative to a single-equation model even when neither method identifies causal mechanisms. Its forecasts may benefit from information in other targets. This possibility is one threat to the claim that nonlinear dependence in a target's own history is the main missing feature.
+
+Mixed-frequency forecasting addresses a different information problem. Giannone et al. (2008) develop a nowcasting framework that uses the evolving flow of macroeconomic releases. Galvão and Owyang (2022) show that higher-frequency financial and economic information can improve probabilities for some lower-frequency macroeconomic events. These applications matter because observations arrive at different dates, not simply because models may be nonlinear. The present thesis retains native monthly and quarterly target frequencies and does not reproduce the live arrival of each data release. It must therefore be described as a historical pseudo-out-of-sample comparison, not as a true real-time nowcasting system.
+
+Performance can also vary across economic states. Giacomini and White (2006) establish a framework for assessing conditional predictive ability, while Odendahl et al. (2023) investigate forecast performance when the economic state matters. Their contribution is to distinguish overall performance from conditional patterns. A model could have similar average error to a benchmark yet perform better in one state and worse in another. However, recession and expansion comparisons must use valid state information and correct statistical hypotheses. A descriptive difference between recession-period errors and expansion-period errors does not alone establish a statistically significant state effect.
+
+### The burden of forecast inference
+
+The final stream concerns what constitutes evidence of improvement. Diebold and Mariano (1995) formalize comparisons of predictive accuracy. West (1996) studies inference when forecasts arise from estimated models. Hansen et al. (2011) develop the Model Confidence Set as a multiple-model procedure, which does not require selecting one model as a unique winner. Rossi and Inoue (2012) address sensitivity of out-of-sample tests to the estimation-window choice. These contributions show that a small gap between observed forecast errors may have different inferential meanings depending on sample construction, parameter estimation, the loss function, and the period of evaluation.
+
+Instability creates a particular concern for forecast-comparison tests. Harvey et al. (2025) study tests of equal average forecast accuracy when the mean loss differential may change over time. Their procedure is especially relevant when the research question itself concerns instability. This thesis therefore distinguishes descriptive rankings from formal inference under its predeclared primary test. The formal test design and its secondary checks are specified in Chapter 2, where null hypotheses, paired samples, and admissible forecasts can be defined without importing results into the theoretical discussion.
+
+The literature establishes three broad lessons. Nonlinear dynamics can exist and sometimes improve macroeconomic forecasts. Simple models remain serious competitors, and richer models can fail when their parameters or information sets are poorly suited to the next period. Finally, a forecast ranking is not meaningful without knowing the target, horizon, evaluation sample, diagnostic status, and statistical comparison. What the literature does not decide in advance is the outcome of one common, failure-aware contest between the approved classical and interpretable nonlinear models for the six U.S. series examined here. That bounded question, rather than the invention of a model or the discovery that economic relations can change, is the thesis's contribution.
+
+## 1.8 Testable Implications, Competing Explanations, and Evidence That Would Contradict the Argument
+
+The theory and literature permit more than one empirical outcome. State-dependent nonlinear models might capture useful information when economic relationships change. They might also fit history better without improving future predictions. The purpose of a disciplined test is not to confirm the first possibility, but to distinguish it from the second and from alternative explanations. The research question therefore requires clear conditions under which the case for added complexity would be weakened.
+
+The first implication concerns *diagnosable dynamics*. If the selected targets contain persistent or state-dependent patterns not adequately represented by a constant linear conditional mean, formal diagnostics may reveal evidence of nonlinearity, breaks, or unusual persistence. However, those findings are not interchangeable. A unit root is not a transition regime; an abrupt break is not a smooth threshold; and volatility clustering is not necessarily nonlinear mean predictability. Failure to reject a linear specification also does not prove the absence of economically relevant nonlinear behavior. The evidence must be judged with the limitations of the tests in mind.
+
+The second implication concerns *model adequacy and identification*. A nonlinear model should represent its historical data without relying on implausible parameters, empty states, transition probabilities at numerical boundaries, or a handful of exceptional dates. A smoother transition is not credible merely because an optimizer reports a transition function. If parameters are weakly identified or the estimation is sensitive to starting values, interpretation becomes limited even when an information criterion favors the fit. These weaknesses would directly challenge the argument that additional complexity represents a stable predictive mechanism.
+
+The third implication concerns *genuine predictive value*. If nonlinear structure supplies useful information beyond a well-specified linear model, that information should improve forecasts formed before outcomes are known. Forecast accuracy must be assessed on comparable dates and with clearly defined losses. A lower reported RMSE is a descriptive fact, not by itself a statistically established gain. If MSAR or STAR does not outperform AR under the approved primary inference, the thesis cannot claim nonlinear superiority at that horizon. Non-rejection would not prove equal predictive ability; it would mark a lack of statistically established superiority in the stated comparison.
+
+The fourth implication concerns *economic states*. The motivation for nonlinear forecasting is strongest where changes in dynamics might matter, especially around contractions, recoveries, and turning points. A genuine conditional advantage might therefore appear in some of those observations. But the opposite result would be informative. If an average gain comes entirely from ordinary expansions or disappears after adjusting for common evaluation dates, the specific turning-point rationale would be weakened. Recession labels assigned after the event cannot be used to claim that a forecaster correctly recognized a recession before it began.
+
+The fifth implication is that *classical misspecification can imitate nonlinearity*. Too few AR lags may leave serial dependence in the residuals. An ARMA specification may describe innovation dynamics omitted by an AR. A changing level or an unmodelled break may create a spurious appearance of regimes. A model that looks nonlinear in levels may behave differently after an appropriate predeclared transformation. These possibilities make lag, transformation, structural-break, and residual checks necessary competitors rather than optional decorations around a nonlinear result.
+
+A sixth implication concerns *cross-variable information*. The Fisher, Phillips–Phelps, Okun, and monetary mechanisms link the selected variables economically, but the primary empirical models mainly forecast from each target's own past. If a limited VAR improves relevant forecasts or changes their ranking, some apparent failure of the univariate model may come from omitted predictors rather than insufficient nonlinear flexibility. The VAR comparison is a bounded predictive check; it does not identify the causal transmission channels in the economic theories.
+
+A seventh implication concerns *horizons and estimation windows*. The same model may be useful one month ahead and unhelpful one year ahead. A short window adapts more quickly to change but uses fewer observations. A longer window estimates parameters from more data but may include older dynamics that are less relevant after a break. A nonlinear advantage confined to one horizon or one window is weaker evidence of general utility than a result that survives the declared comparisons. Equally, the absence of gains at one horizon cannot settle every longer-horizon question.
+
+The eighth implication concerns *numerical feasibility*. Added parameters and latent states make nonlinear estimation more demanding. A fit may fail to converge, produce near-boundary estimates, or yield an explosive forecast. If failed forecasts are silently replaced or omitted without documenting the matched sample, the resulting horse race will not answer the declared question. A model's inability to supply reliable forecasts at some origins is relevant evidence about its practical usefulness. Numerical failure must be separated from statistical non-rejection, because an unusable test cannot demonstrate either superiority or equality.
+
+These conditions also prevent retrospective selection of favorable evidence. It would be inappropriate to change the transformation, regime count, sample, or loss measure solely because a particular nonlinear model then wins. The thesis uses the approved design and reports both baseline and specified robustness analyses. Additional checks can challenge the interpretation, but they cannot silently replace the baseline. A model that fits better yet remains statistically uncompetitive or numerically unstable does not satisfy the standard of credible forecasting value.
+
+The economic interpretation has a final boundary. Even robust forecast improvement would not establish that a model identifies the cause of inflation or unemployment, that its statistical states correspond to structural policy regimes, or that using it would improve social welfare. Those claims require different evidence. The present experiment can establish a bounded predictive result for the targets, periods, and procedures actually studied. This is both the strength and the limitation of its research design.
+
+## 1.9 Chapter 1 Concluding Synthesis: From Macroeconomic Mechanisms to a Testable Forecasting Problem
+
+This chapter asked which economic mechanisms make inflation, output, unemployment, interest rates, and money important for policy, and why their relationships can become difficult to forecast. The answer is that economic decisions operate through expectations, adjustments, and feedback that need not remain constant. Fisherian reasoning shows why nominal-rate forecasts depend on expected inflation, real returns, and financial conditions. Phillips–Phelps and Okun mechanisms link prices, labour markets, and real activity, while also showing why expectations, productive capacity, and adjustment lags can change observed relationships. Monetary transmission adds changes in money demand, credit conditions, policy reactions, and constraints on short-term rates.
+
+Economic instability is not one statistical phenomenon. Innovation and institutional change may alter the longer-run environment; a recession or recovery may change the timing of adjustment; an isolated shock may generate an extreme observation without creating a recurring regime. A structural break, a stochastic trend, changing variance, a threshold, and an unobserved Markov state must therefore be distinguished. Each can affect forecasting, but no single nonlinear model captures all of them. Economic theory supplies reasons to examine state dependence, not a proof that it exists in every selected series or can be estimated reliably.
+
+Prior research offers credible approaches on both sides of the comparison. AR and ARMA provide transparent benchmarks for persistence and innovation dynamics. Markov-switching and smooth-transition models offer structured ways to represent discrete or gradual changes. Modern nonlinear, multivariate, and mixed-frequency studies demonstrate the importance of model flexibility and information sets, but their findings do not transfer automatically to the present point-forecast experiment. Forecast-evaluation research further shows that error rankings, significance, changing estimation windows, and conditional performance answer different questions.
+
+The unresolved issue is consequently precise. Given six policy-relevant U.S. macroeconomic targets, does a state-dependent conditional mean produce more credible forecasts than a properly defined classical benchmark under the same admissible information and evaluation rules? If a gain appears, is it robust to reasonable competing explanations and economically interpretable without overstating what the model identifies? If the gain does not appear, that is a valid scientific answer.
+
+Chapter 2 converts this economic question into an empirical contract. It defines the frozen data, transformations, stationarity and nonlinearity diagnostics, linear benchmarks, nonlinear specifications, forecast origins, evaluation criteria, and failure rules. It also fixes how recessions and turning points are used, what the robustness checks can test, and what the design cannot establish. That specification is necessary before any later result can be described as evidence that nonlinear complexity has earned its place.
+
+---
+
+## References
+
+An, Z., Jalles, J. T., & Loungani, P. (2018). How well do economists forecast recessions? *International Finance, 21*(2), 100–121. https://doi.org/10.1111/infi.12130
+
+Bernanke, B. S. (2024). *Forecasting for monetary policymaking and communication at the Bank of England: A review*. Bank of England. https://www.bankofengland.co.uk/independent-evaluation-office/forecasting-for-monetary-policy-making-and-communication-at-the-bank-of-england-a-review/forecasting-for-monetary-policy-making-and-communication-at-the-bank-of-england-a-review
+
+Bernanke, B. S., & Gertler, M. (1995). Inside the black box: The credit channel of monetary policy transmission. *Journal of Economic Perspectives, 9*(4), 27–48. https://doi.org/10.1257/jep.9.4.27
+
+Blanchard, O. (2016). The Phillips curve: Back to the '60s? *American Economic Review, 106*(5), 31–34. https://doi.org/10.1257/aer.p20161003
+
+Board of Governors of the Federal Reserve System. (2024, July 19). *What is the money supply? Is it important?* https://www.federalreserve.gov/faqs/money_12845.htm
+
+Board of Governors of the Federal Reserve System. (2026, September 22). *Money stock measures: H.6 release*. https://www.federalreserve.gov/releases/h6/20260922/
+
+Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015). *Time series analysis: Forecasting and control* (5th ed.). Wiley.
+
+Carriero, A., Clark, T. E., Marcellino, M., & Mertens, E. (2024). Addressing COVID-19 outliers in BVARs with stochastic volatility. *The Review of Economics and Statistics, 106*(5), 1403–1417. https://doi.org/10.1162/rest_a_01213
+
+Carriero, A., Clark, T. E., Marcellino, M., & Mertens, E. (2025). Forecasting with shadow rate VARs. *Quantitative Economics, 16*(3), 795–822. https://doi.org/10.3982/QE2547
+
+Chauvet, M., & Piger, J. (2008). A comparison of the real-time performance of business cycle dating methods. *Journal of Business & Economic Statistics, 26*(1), 42–49. https://doi.org/10.1198/073500107000000296
+
+Clark, T. E., Huber, F., Koop, G., & Marcellino, M. (2024). Forecasting U.S. inflation using Bayesian nonparametric models. *The Annals of Applied Statistics, 18*(2), 1421–1444. https://doi.org/10.1214/23-AOAS1841
+
+Clark, T. E., Huber, F., & Koop, G. (2026). A flexible approach to augmenting a Bayesian VAR with nonlinear factors. *Journal of Business & Economic Statistics*. Advance online publication. https://doi.org/10.1080/07350015.2026.2703238
+
+Diebold, F. X., & Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic Statistics, 13*(3), 253–263. https://doi.org/10.1080/07350015.1995.10524599
+
+Fisher, I. (1930). *The theory of interest: As determined by impatience to spend income and opportunity to invest it*. Macmillan. https://fraser.stlouisfed.org/title/theory-interest-6255
+
+Friedman, M. (1968). The role of monetary policy. *American Economic Review, 58*(1), 1–17. https://fraser.stlouisfed.org/title/american-economic-review-1161/role-monetary-policy-2352
+
+Galvão, A. B., & Owyang, M. T. (2022). Forecasting low-frequency macroeconomic events with high-frequency data. *Journal of Applied Econometrics, 37*(7), 1314–1333. https://doi.org/10.1002/jae.2931
+
+Giacomini, R., & White, H. (2006). Tests of conditional predictive ability. *Econometrica, 74*(6), 1545–1578. https://doi.org/10.1111/j.1468-0262.2006.00718.x
+
+Giannone, D., Reichlin, L., & Small, D. (2008). Nowcasting: The real-time informational content of macroeconomic data. *Journal of Monetary Economics, 55*(4), 665–676. https://doi.org/10.1016/j.jmoneco.2008.05.010
+
+Goulet Coulombe, P. (2024). The macroeconomy as a random forest. *Journal of Applied Econometrics, 39*(3), 401–421. https://doi.org/10.1002/jae.3030
+
+Goulet Coulombe, P., Leroux, M., Stevanovic, D., & Surprenant, S. (2022). How is machine learning useful for macroeconomic forecasting? *Journal of Applied Econometrics, 37*(5), 920–964. https://doi.org/10.1002/jae.2910
+
+Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357–384. https://doi.org/10.2307/1912559
+
+Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence set. *Econometrica, 79*(2), 453–497. https://doi.org/10.3982/ECTA5771
+
+Harvey, D. I., Leybourne, S. J., & Zu, Y. (2025). Testing for equal average forecast accuracy in possibly unstable environments. *Journal of Business & Economic Statistics, 43*(3), 643–656. https://doi.org/10.1080/07350015.2024.2418835
+
+Hauzenberger, N., Huber, F., Marcellino, M., & Petz, N. (2025). Gaussian process vector autoregressions and macroeconomic uncertainty. *Journal of Business & Economic Statistics, 43*(1), 27–43. https://doi.org/10.1080/07350015.2024.2322089
+
+Lenza, M., & Primiceri, G. E. (2022). How to estimate a vector autoregression after March 2020. *Journal of Applied Econometrics, 37*(4), 688–699. https://doi.org/10.1002/jae.2895
+
+Lucas, R. E., Jr. (1976). Econometric policy evaluation: A critique. *Carnegie-Rochester Conference Series on Public Policy, 1*, 19–46. https://doi.org/10.1016/S0167-2231(76)80003-6
+
+Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988). Testing linearity against smooth transition autoregressive models. *Biometrika, 75*(3), 491–499. https://doi.org/10.1093/biomet/75.3.491
+
+Naghi, A. A., O'Neill, E., & Danielova Zaharieva, M. (2024). The benefits of forecasting inflation with machine learning: New evidence. *Journal of Applied Econometrics, 39*(7), 1321–1331. https://doi.org/10.1002/jae.3088
+
+National Bureau of Economic Research. (n.d.). *Business cycle dating*. https://www.nber.org/research/business-cycle-dating
+
+Odendahl, F., Rossi, B., & Sekhposyan, T. (2023). Evaluating forecast performance with state dependence. *Journal of Econometrics, 237*(2), Article 105220. https://doi.org/10.1016/j.jeconom.2021.07.015
+
+Office for Budget Responsibility. (2026). *Forecast evaluation report: June 2026*. https://obr.uk/fer/forecast-evaluation-report-june-2026/
+
+Okun, A. M. (1962). Potential GNP: Its measurement and significance. *Proceedings of the Business and Economic Statistics Section of the American Statistical Association*, 98–104.
+
+Orphanides, A. (2001). Monetary policy rules based on real-time data. *American Economic Review, 91*(4), 964–985. https://doi.org/10.1257/aer.91.4.964
+
+Phelps, E. S. (1967). Phillips curves, expectations of inflation and optimal unemployment over time. *Economica, 34*(135), 254–281. https://doi.org/10.2307/2552025
+
+Phillips, A. W. (1958). The relation between unemployment and the rate of change of money wage rates in the United Kingdom, 1861–1957. *Economica, 25*(100), 283–299. https://doi.org/10.1111/j.1468-0335.1958.tb00003.x
+
+Prüser, J., & Huber, F. (2024). Nonlinearities in macroeconomic tail risk through the lens of big data quantile regressions. *Journal of Applied Econometrics, 39*(2), 269–291. https://doi.org/10.1002/jae.3018
+
+Rossi, B., & Inoue, A. (2012). Out-of-sample forecast tests robust to the choice of window size. *Journal of Business & Economic Statistics, 30*(3), 432–453. https://doi.org/10.1080/07350015.2012.693850
+
+Schumpeter, J. A. (1934). *The theory of economic development: An inquiry into profits, capital, credit, interest, and the business cycle* (R. Opie, Trans.). Harvard University Press. (Original work published 1911)
+
+Sims, C. A. (1980). Macroeconomics and reality. *Econometrica, 48*(1), 1–48. https://doi.org/10.2307/1912017
+
+Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become harder to forecast? *Journal of Money, Credit and Banking, 39*(s1), 3–33. https://doi.org/10.1111/j.1538-4616.2007.00014.x
+
+Taylor, J. B. (1993). Discretion versus policy rules in practice. *Carnegie-Rochester Conference Series on Public Policy, 39*, 195–214. https://doi.org/10.1016/0167-2231(93)90009-L
+
+Teräsvirta, T. (1994). Specification, estimation, and evaluation of smooth transition autoregressive models. *Journal of the American Statistical Association, 89*(425), 208–218. https://doi.org/10.1080/01621459.1994.10476462
+
+Teräsvirta, T., van Dijk, D., & Medeiros, M. C. (2005). Linear models, smooth transition autoregressions, and neural networks for forecasting macroeconomic time series: A re-examination. *International Journal of Forecasting, 21*(4), 755–774. https://doi.org/10.1016/j.ijforecast.2005.04.010
+
+Tsay, R. S. (1986). Nonlinearity tests for time series. *Biometrika, 73*(2), 461–466. https://doi.org/10.1093/biomet/73.2.461
+
+West, K. D. (1996). Asymptotic inference about predictive ability. *Econometrica, 64*(5), 1067–1084. https://doi.org/10.2307/2171956
