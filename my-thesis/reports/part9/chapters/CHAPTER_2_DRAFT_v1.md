@@ -26,7 +26,7 @@ The experimental contrast is also asymmetric in its burden of proof. The AR benc
 
 The study is predictive rather than causal. It does not identify monetary-policy shocks, estimate structural Phillips-curve slopes, or measure the welfare effects of forecast errors. A regression including only a target's own history cannot distinguish a change in expectations from a changing policy reaction or an exceptional external shock. The limited multivariate robustness exercise in Section 2.7 investigates an omitted-information explanation, but it is not a structural vector autoregression. The advantage of defining these boundaries before viewing the model rankings is that both favorable and unfavorable findings can be interpreted consistently.
 
-Finally, forecast evaluation is historical and pseudo-out-of-sample. Past observations are divided into rolling estimation windows and subsequent target dates. Parameters are estimated without using the target that will be forecast. However, the stored series all come from the fixed historical-vintage information set described next, not from the sequence of data releases available on every earlier forecasting date. This distinction limits claims about genuine real-time performance (Orphanides, 2001; Federal Reserve Bank of St. Louis, n.d.).
+Finally, forecast evaluation is historical and pseudo-out-of-sample. Past observations are divided into rolling estimation windows and subsequent target dates. Parameters are estimated without using the target that will be forecast. However, the stored series all come from the fixed historical-vintage information set described next, not from the sequence of data releases available on every earlier forecasting date. This distinction limits claims about genuine real-time performance (Federal Reserve Bank of St. Louis, n.d.; Orphanides, 2001).
 
 ## 2.2 Data, Aggregate Selection, Exact Samples, and Frozen-Vintage Policy
 
@@ -51,7 +51,7 @@ CPIAUCSL is a direct measure of U.S. consumer prices. It is not identical to the
 
 The monthly system has a common usable endpoint of August 2026. September 2026 observations were already available for some series in the historical archive, but not for every monthly target. Extending only those series would change the endpoint unevenly. Quarterly real GDP ends in the second quarter of 2026, the last GDP quarter available in the specified vintage. The full historical reach differs across series because the economic variables were not all recorded over identical periods. The common monthly VAR sample begins in January 1959, when M2 becomes available. These choices were fixed by measurement and information rules, not by a search for favorable forecast results.
 
-The U.S. recession indicator (USREC) is a seventh series with a different function. It follows the National Bureau of Economic Research (NBER) business-cycle chronology as distributed by FRED. It is not a forecast target and is not supplied to the univariate forecasting models as a contemporaneous regressor. It is used after outcomes are realized to classify forecast performance in expansions, recessions and neighborhoods of peaks and troughs. Its later-dated historical labels must not be confused with the information available to a forecaster when a recession was beginning (National Bureau of Economic Research, n.d.; Chauvet & Piger, 2008).
+The U.S. recession indicator (USREC) is a seventh series with a different function. It follows the National Bureau of Economic Research (NBER) business-cycle chronology as distributed by FRED. It is not a forecast target and is not supplied to the univariate forecasting models as a contemporaneous regressor. It is used after outcomes are realized to classify forecast performance in expansions, recessions and neighborhoods of peaks and troughs. Its later-dated historical labels must not be confused with the information available to a forecaster when a recession was beginning (Chauvet & Piger, 2008; National Bureau of Economic Research, n.d.).
 
 ### From official levels to comparable targets
 
@@ -366,9 +366,9 @@ The multivariate experiment therefore has a clear interpretation. If it changes 
 
 An econometric model can yield a plausible forecast even if its fitted residuals show important weaknesses. It can also obtain a strong likelihood while relying on nearly unobserved regimes or parameters at numerical boundaries. The revised design therefore uses in-sample adequacy as a distinct stage before presenting forecast rankings. This follows the jury's requirement that models must first earn the right to be interpreted as credible descriptions of the data. It does not imply that good historical fit is enough to establish predictive usefulness.
 
-The common descriptive measures are maximized log-likelihood where meaningful, Akaike and Bayesian information criteria, in-sample RMSE, and in-sample MAE. They answer different questions. Likelihood and information criteria describe a fitted probability model and its parameter penalty; RMSE gives relatively more weight to large residuals; MAE describes average absolute deviation. None is an independent out-of-sample forecast. Across different target units or nonmatching samples, raw magnitudes are not directly comparable.
+The common descriptive measures are maximized log-likelihood where meaningful, Akaike and Bayesian information criteria (Akaike, 1974; Schwarz, 1978), in-sample RMSE, and in-sample MAE. They answer different questions. Likelihood and information criteria describe a fitted probability model and its parameter penalty; RMSE gives relatively more weight to large residuals; MAE describes average absolute deviation. None is an independent out-of-sample forecast. Across different target units or nonmatching samples, raw magnitudes are not directly comparable.
 
-The diagnostic tests include Ljung–Box for residual serial correlation, ARCH–LM for remaining dependence in squared innovations, and Jarque–Bera for distributional normality. The primary Ljung–Box residual-screen horizons are 12 and 24 lags for monthly targets and four and eight lags for quarterly GDP. ARCH–LM is applied at 12 monthly or four quarterly lags. The significance level is 5%. Jarque–Bera is reported because distributional shape matters to likelihood-based inference, but rejection of normality alone is not treated as a fatal failure for a point-forecast model. During rare shocks, a useful mean forecast can coexist with heavy-tailed residuals.
+The diagnostic tests include Ljung–Box for residual serial correlation, ARCH–LM for remaining dependence in squared innovations, and Jarque–Bera for distributional normality (Jarque & Bera, 1987). The primary Ljung–Box residual-screen horizons are 12 and 24 lags for monthly targets and four and eight lags for quarterly GDP (Ljung & Box, 1978). ARCH–LM is applied at 12 monthly or four quarterly lags. The significance level is 5%. Jarque–Bera is reported because distributional shape matters to likelihood-based inference, but rejection of normality alone is not treated as a fatal failure for a point-forecast model. During rare shocks, a useful mean forecast can coexist with heavy-tailed residuals.
 
 A general residual-autocorrelation null can be written as
 
@@ -384,7 +384,7 @@ Rejection means that the fitted residuals retain evidence of serial dependence o
 
 A second adequacy layer is model-specific. AR and ARMA must satisfy their stability and invertibility requirements. An MSAR fit needs meaningful occupancy and transition behavior; a STAR fit needs an identifiable transition and finite parameters. A model may have residual autocorrelation but a converged, usable forecast, in which case it is classified as fragile. A failed optimization or non-finite prediction is not treated as an ordinary forecast observation.
 
-The classification follows three categories. An *adequate* fit has converged, contains finite parameters, satisfies mandatory stability restrictions, has no fatal structural warning and passes the primary residual-whiteness screen. A *fragile* fit converges but carries warnings such as residual autocorrelation, low regime occupancy, near-boundary probabilities, uncertain covariance or extreme but finite forecast behavior. A *failed* fit is unusable because of nonconvergence, non-finite likelihood or parameters, invalid essential covariance, violated mandatory stability, an effectively empty regime or a non-finite forecast path. The numerical thresholds behind these categories are operational flags explained in the next section, not confidence levels from a statistical theorem.
+The classification follows three categories. An adequate fit has converged, contains finite parameters, satisfies mandatory stability restrictions, has no fatal structural warning and passes the primary residual-whiteness screen. A fragile fit converges but carries warnings such as residual autocorrelation, low regime occupancy, near-boundary probabilities, uncertain covariance or extreme but finite forecast behavior. A failed fit is unusable because of nonconvergence, non-finite likelihood or parameters, invalid essential covariance, violated mandatory stability, an effectively empty regime or a non-finite forecast path. The numerical thresholds behind these categories are operational flags explained in the next section, not confidence levels from a statistical theorem.
 
 The separation is essential for scientific interpretation. A fragile forecast can still be evaluated if the value is finite and the common-date rule permits it, but its regimes should not receive strong economic names. A failed forecast remains visible in the estimation audit and is not quietly replaced by an AR forecast under its original model label. The effect of excluded failed origins on the matched comparison is disclosed. This lets the reader distinguish a model that forecasts poorly, a model that has insufficient statistical evidence of an advantage, and a model that cannot reliably supply a forecast at all.
 
@@ -650,6 +650,8 @@ Chapter 3 can now examine the empirical evidence in the required order: initial 
 
 ## References
 
+Akaike, H. (1974). A new look at the statistical model identification. *IEEE Transactions on Automatic Control, 19*(6), 716–723. https://doi.org/10.1109/TAC.1974.1100705
+
 Amisano, G., & Giacomini, R. (2007). Comparing density forecasts via weighted likelihood ratio tests. *Journal of Business & Economic Statistics, 25*(2), 177–190. https://doi.org/10.1198/073500106000000332
 
 Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. *Journal of Econometrics, 31*(3), 307–327. https://doi.org/10.1016/0304-4076(86)90063-1
@@ -686,7 +688,11 @@ Harvey, D., Leybourne, S., & Newbold, P. (1997). Testing the equality of predict
 
 Hyndman, R. J., & Koehler, A. B. (2006). Another look at measures of forecast accuracy. *International Journal of Forecasting, 22*(4), 679–688. https://doi.org/10.1016/j.ijforecast.2006.03.001
 
+Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review, 55*(2), 163–172. https://doi.org/10.2307/1403192
+
 Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root? *Journal of Econometrics, 54*(1–3), 159–178. https://doi.org/10.1016/0304-4076(92)90104-Y
+
+Ljung, G. M., & Box, G. E. P. (1978). On a measure of lack of fit in time series models. *Biometrika, 65*(2), 297–303. https://doi.org/10.1093/biomet/65.2.297
 
 Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988). Testing linearity against smooth transition autoregressive models. *Biometrika, 75*(3), 491–499. https://doi.org/10.1093/biomet/75.3.491
 
