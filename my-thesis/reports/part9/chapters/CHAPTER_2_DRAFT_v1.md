@@ -339,7 +339,7 @@ MSAR and STAR should not be merged conceptually. The former allows an unobserved
 
 *Note:* This table summarizes the declared comparison, not in-sample or out-of-sample rankings. Complete specification details and parameter estimates are presented in Appendices A and B.
 
-The earlier hybrid MSSTAR has been removed from the revised methodology. Combining latent-state switching with a smooth transition would introduce two nonlinear mechanisms before either has established independent forecast value. The present four-family comparison can test the more basic question directly. Excluding the hybrid is not an empirical assertion that it never works; it is a proportionality decision to keep the scientific question and numerical evidence manageable.
+A hybrid model combining Markov switching and smooth transition is not included. Its simultaneous use of two distinct nonlinear mechanisms would increase the identification burden and complicate the interpretation of any forecast difference. The separate MSAR and STAR specifications provide a clearer comparison of discrete and smooth state dependence within the stated research question.
 
 ## 2.7 Cross-Variable Information and the Boundary of Single-Equation Forecasting
 
@@ -375,9 +375,7 @@ A general residual-autocorrelation null can be written as
 **Equation (2.14): Primary residual-whiteness null**
 
 ```math
-H_0:\operatorname{Cov}(\widehat\varepsilon_t,
-\widehat\varepsilon_{t-k})=0
-\quad\text{for the tested positive lags }k.
+H_0:\;\rho_{\varepsilon}(1)=\rho_{\varepsilon}(2)=\cdots=\rho_{\varepsilon}(K)=0.
 ```
 
 Rejection means that the fitted residuals retain evidence of serial dependence over those lags. Non-rejection does not prove that innovations are independent or that the model is structurally correct. The reported test tables must include the null, statistic, reference distribution, p-value, 5% decision and its practical implication. Applying these tests consistently gives a common adequacy language even though the models have different internal state mechanisms.
@@ -589,21 +587,23 @@ Longer forecast horizons test whether nonlinear dynamics matter at distances bey
 
 ### Why the three-regime test is in-sample only
 
-A specific approved amendment concerns MSAR regime count. The original plan would have estimated a three-state MSAR at thousands of rolling forecast origins, even though the jury's central question was whether a two-state representation was credible. The amended design instead estimates K=3 once for each of the six target series, using the same full-sample observations, parameterization principles, lag rule, numerical starts and status checks as the corresponding K=2 model. It then examines information criteria, ordered regime means, standard errors, transition probabilities, effective occupancy and their relation to ex-post NBER states.
+The baseline Markov-switching model has two states. To test the sensitivity of this restriction, a three-state MSAR is estimated once for each of the six targets on the same full-sample observations used for the corresponding two-state fit. Both specifications use regime-dependent means, common autoregressive coefficients and a common innovation variance. The comparison concerns the statistical credibility of an additional latent state. It does not add a fifth competitor to the out-of-sample forecasting experiment.
 
-The planned K=3 fit-call arithmetic is transparent.
+An extra state is informative only if it represents an identifiable part of the observed sample. Effective occupancy measures the number and proportion of observations assigned to a state using smoothed probabilities.
 
-**Equation (2.21): Three-regime workload amendment**
+**Equation (2.21): Effective regime occupancy**
 
 ```math
-N_{\mathrm{old}}=3{,}527+6=3{,}533,\qquad
-N_{\mathrm{new}}=6,\qquad
-100\frac{3{,}527}{3{,}533}=99.83\%.
+\begin{aligned}
+\widehat p_{t,k} &= \Pr(s_t=k\mid y_{1:T};\widehat\theta),\\
+\widehat n_k &= \sum_{t=1}^{T}\widehat p_{t,k},
+\qquad \widehat\omega_k=\frac{\widehat n_k}{T}.
+\end{aligned}
 ```
 
-Thus **3,527 planned K=3 fitting calls** were avoided, reducing that part of the planned fit count by **99.83%**. This is a count of planned estimation calls, not a measured reduction in CPU time, memory usage or total computational cost. K=2 remains the declared forecast baseline regardless of the full-sample K=3 information criteria. There are no rolling K=3 point forecasts, HLZ tests, MCS rankings or state-loss regressions in the approved output.
+Here $\widehat p_{t,k}$ is the estimated smoothed probability of state $k$ at date $t$, $\widehat n_k$ its effective observation count, and $\widehat\omega_k$ its sample occupancy share. The same regime-occupancy warnings used for the two-state model apply to the three-state comparison. A credible additional state also requires usable covariance estimates, no boundary transition behavior and distinguishable adjacent ordered means. Differences in log-likelihood, AIC and BIC are interpreted jointly with those credibility conditions, not as proof that the additional regime is economically meaningful.
 
-The K=3 diagnostic applies the same occupancy, transition-boundary and covariance rules as K=2. Credibility requires a converged fit without failed status, no low-occupancy or effectively empty state, no flagged boundary probability, a usable observed-information covariance, and statistically distinguishable adjacent ordered regime means under the declared descriptive criterion. A lower full-sample BIC alone does not override those conditions. If the optimizer cannot distinguish plausible solutions, the regime-count conclusion is inconclusive rather than a proof that two states are correct. This is especially important for the unemployment K=3 exercise, whose numerical limitation remains explicit in the released final interpretation. Its consequences are examined in Chapter 4, not solved by inventing unperformed forecasts.
+The three-state results are strictly in-sample. No rolling three-state forecasts, forecast-loss tests or additional model rankings are implied. Even a more favorable information criterion cannot establish improved predictive accuracy. If numerical solutions are unstable or no defensible comparison can be drawn, the result remains inconclusive. The empirical consequences of this limited regime-count check are assessed in Section 4.4.
 
 ### Window-length and state sensitivity
 
@@ -621,15 +621,13 @@ The original hypothesis is not revised in response to these outcomes. Every unfa
 
 ## 2.13 Reproducibility and Numerical Traceability
 
-Reproducibility rests on three separate identities: the archived input data, the approved scientific design and the exact released results. The first is the frozen FRED/ALFRED 5 October 2026 historical snapshot and its author-processed canonical CSV, with a checksum manifest and two explicit October 2025 imputation records. The approved raw-source archive is stored under `data/frozen/fred_vintage_2026-10-05/`, and the canonical research input is `data/frozen/thesis_input_2026-10-05.csv`. A validated repeat loads the canonical file after hash verification instead of silently fetching current observations. The second is the Part 5 methodology, including the authorized amendments for missing data, alternative estimation-window lengths and the in-sample-only K=3 exercise. The third is the published Part 8 release, which provides the tables, figures, model-status records and forecast-comparison outputs actually used in the later chapters.
+The empirical analysis is designed to be reproducible from its stated data definitions, sample periods, transformations, estimation rules and forecast-evaluation procedures. The six official time series are taken from the historical FRED/ALFRED vintage of 5 October 2026. Their observation frequencies, sample limits and transformations are reported in Table 2.1. Two missing observations, for CPI and unemployment in October 2025, are treated through the explicitly stated carry-forward convention. Appendix A provides the detailed definitions, treatment of missing observations and supplementary stationarity and nonlinearity diagnostics.
 
-The final empirical release is pinned to GitHub commit [`9817daf91ac4cb4aaa42c2bef5deaff5b674841b`](https://github.com/charlijomedia-dotcom/academia7/tree/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output) and its inventory of **465 released files**. Its scientific code identity is `8aaa4217536ab3cb942dd248dd19ece7838a8d60`, and its published correction run is identified in the audit metadata. A later rerun must verify its input hashes, configuration and relevant software environment before being treated as equivalent. Values in superseded or provisional output branches are not substitutes for the finalized release, even if they carry similar filenames.
+For each target, discrete model choices are determined from the initial estimation window. The same choices are maintained during the baseline rolling experiment, while model parameters are re-estimated at each valid forecast origin. The specification grids, required stability restrictions, numerical convergence conditions and residual tests are defined in Sections 2.3–2.11. Full estimated coefficients, diagnostic statistics and additional model adequacy results are presented in Appendix B. Reporting these choices permits another researcher to distinguish an alternative specification from a replication of the model studied here.
 
-The design was fixed before the final estimation, but the computation produced some implementation problems that required documented correction. These included scoring failed forecasts, protecting numerical Model Confidence Set calculations, correcting an inferential sign convention, restoring required Zivot–Andrews diagnostics, fixing metadata and improving the readability of figures that contain extreme STAR forecasts. The corrections were validated against the final release without changing unapproved model specifications. Extreme but finite predictions remain visible rather than being silently clipped. MSAR numerical optimization remains sensitive to local solutions; in particular, the unemployment three-regime comparison is inconclusive. No global maximum is asserted merely because an optimizer returned success.
+The numerical assessment distinguishes a converged and adequately diagnosed estimate from a fragile estimate or an unusable one. Failed forecasts are not assigned hypothetical values or included in accuracy scores, but their occurrence and its effect on the available comparison sample are reported. The forecast tables identify the horizon, loss function, sample size and matched observations used for each comparison. Appendix C contains the additional robustness results, estimation-status information and relevant cases of numerical instability, including extreme but finite nonlinear forecasts.
 
-The thesis therefore reports both verified results and unresolved limitations. Model failures are stored in an auditable registry even when the associated forecasts cannot be scored. Full parameter tables, warnings, data hashes, selection calendars, software versions, intermediate transformations and correction records belong in the technical appendices and repository. The main text states the scientific consequences without turning the methodology into a programming diary. No additional estimation is claimed to have been performed for the purpose of drafting this chapter.
-
-This approach is consistent with the limitations already stated. The frozen vintage supports exact reproduction conditional on the historical data identity. It does not supply the full release calendar available to a forecaster at each past origin, establish global identification of every nonlinear likelihood, or prove that another country would produce the same model rankings. Those matters remain limits of the interpretation, not details a checksum can solve.
+These conventions make the empirical conclusions verifiable without implying that every optimizer has located a global maximum. They also preserve the central information-set limitation: all historical pseudo-out-of-sample forecasts use one fixed data vintage, rather than the changing releases that were available in real time. Reproducibility of the chosen experiment does not remove that limitation or establish that the forecast rankings would hold under other historical data vintages or in other economies.
 
 ## 2.14 Chapter 2 Concluding Synthesis: From Diagnostic Evidence to a Credible Forecast Experiment
 
