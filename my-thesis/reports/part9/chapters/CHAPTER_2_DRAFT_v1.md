@@ -159,3 +159,234 @@ Markov switching raises a separate testing problem. Under a one-state null, para
 
 The governing interpretation rule is simple. A nonlinearity diagnostic is evidence about a specific null and test power; a fitted nonlinear model is evidence about representation; and a subsequent forecast comparison is evidence about prediction. Only the last, when validly conducted, can establish forecast gains. Even then, no statistical state is assigned a structural economic identity without separate evidence.
 
+
+## 2.5 Classical Forecasting Benchmarks and What Each Benchmark Tests
+
+A nonlinear model can claim added predictive value only relative to a competent classical model. The thesis therefore does not compare a highly tuned nonlinear specification with a deliberately weak AR(1). It uses two classical families, selected on the initial estimation window and then held fixed in their discrete structure. The first captures dependence on the target's own past. The second allows additional dependence on earlier forecast innovations. Conditional-variance and deterministic-trend models are addressed, but their role is determined by the forecasting question rather than by the number of alternatives the study can list.
+
+### Autoregression as the primary reference
+
+For a stationary target $y_t$, an autoregression of order $p$ is
+
+**Equation (2.5): Classical AR model**
+
+```math
+y_t=c+\sum_{j=1}^{p}\phi_j y_{t-j}+\varepsilon_t,
+\qquad E(\varepsilon_t\mid\mathcal F_{t-1})=0.
+```
+
+The intercept $c$ and lag coefficients $\phi_j$ are constant over a given estimation window. An AR is a legitimate forecast model even if economic theory includes other variables: the procedure asks how far information in the target's own history can go. It can represent persistence, delayed adjustment and serial correlation when a sufficient number of lags is used. It does not, by itself, identify the cause of a change in inflation or unemployment.
+
+Monthly AR candidates have lag orders $p\in\{1,\ldots,12\}$, while quarterly GDP candidates have $p\in\{1,\ldots,4\}$. These different grids respect observation frequency and avoid treating 12 quarters as the same statistical adjustment span as 12 months. Within the declared grid, candidates are ranked by the Bayesian information criterion (BIC). A residual-whiteness screen prevents a low BIC from being accepted without checking whether systematic lag dependence remains. Among candidates passing the primary 5% Ljung–Box test, the lowest-BIC model is selected. If every candidate fails, the BIC minimum is retained, but the benchmark is labelled diagnostically weak rather than silently replaced.
+
+BIC balances maximized likelihood against the number of estimated parameters (Schwarz, 1978).
+
+**Equation (2.6): Bayesian information criterion**
+
+```math
+\mathrm{BIC}_m=-2\ell_m(\widehat\vartheta_m)+k_m\ln n,
+```
+
+where $\ell_m$ is the maximized log-likelihood, $k_m$ the number of estimated parameters and $n$ the estimation-sample size. Smaller BIC values favor models after this complexity penalty, provided the likelihoods concern comparable data and estimands. BIC is an in-sample model-selection device. It does not measure forecast error at future dates and should not be presented as proof that the selected model will win out-of-sample.
+
+The selected AR lag order is fixed from the initial window. At later forecast origins, the same model structure is re-estimated on new rolling observations, as Section 2.9 explains. This prevents a researcher from using later outcomes to select a favorable historical lag order. It also allows estimated coefficients to change as old observations leave and new ones enter the rolling window.
+
+### ARMA as a second classical competitor
+
+The autoregressive moving-average model permits past innovations to influence the current observation in addition to past values.
+
+**Equation (2.7): Classical ARMA model**
+
+```math
+y_t=c+\sum_{j=1}^{p}\phi_j y_{t-j}
++\varepsilon_t+\sum_{k=1}^{q}\theta_k\varepsilon_{t-k}.
+```
+
+The moving-average coefficients $\theta_k$ describe how recent innovations affect the target within the maintained invertible representation. Under stationarity and invertibility, an ARMA process can capture some serial-dependence patterns parsimoniously that a short AR might otherwise miss (Box et al., 2015). That makes ARMA a serious additional benchmark. A nonlinear model should not be declared useful merely because the initial AR had insufficient innovation dynamics.
+
+For monthly targets, the approved search covers $p,q\in\{0,\ldots,4\}$ excluding the white-noise model $(0,0)$. For quarterly GDP, each order is in $\{0,1,2\}$, again excluding $(0,0)$. The same BIC and residual-screen principle applies, with valid stationarity and invertibility required. Selection is conducted on the initial estimation window and held fixed throughout the baseline forecast evaluation.
+
+ARMA is a broader candidate class, but its selected realization need not have $q>0$. A pure autoregression can be the most defensible choice within the ARMA grid. This is precisely what occurs for several selected targets in the released specification table. The label ARMA therefore identifies the comparison family and its selection rule; it does not guarantee that a nonzero moving-average component has been selected or that it will outperform the primary AR benchmark.
+
+### The actual selected classical specifications
+
+The published selection record gives the following baseline orders. These are initial-window choices, not orders selected from subsequent forecast performance.
+
+**Table 2.3. Fixed baseline linear specifications and inherited nonlinear lag orders**
+
+| Target | AR order | Selected ARMA $(p,q)$ | MSAR lag order | STAR lag order |
+|---|---:|---|---:|---:|
+| Real GDP growth, quarterly | 1 | (1, 0) | 1 | 1 |
+| CPI inflation | 2 | (1, 0) | 2 | 2 |
+| Unemployment level | 6 | (3, 4) | 4 | 4 |
+| Industrial production growth | 12 | (1, 0) | 4 | 4 |
+| Federal funds rate change | 1 | (1, 0) | 1 | 1 |
+| M2 growth | 3 | (3, 0) | 3 | 3 |
+
+*Source:* [T2.5 selected specifications](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.5_selected_specs.csv). The nonlinear lag orders inherit the baseline AR order subject to the predeclared caps; they are not newly optimized for the nonlinear models.
+
+Two features merit explicit notice. UNRATE requires six linear AR lags, and INDPRO requires twelve, while the nonlinear competitors use four. This is an intentional complexity control, not evidence that an unrestricted nonlinear model has been given the same lag span. It makes the baseline AR a demanding own-history competitor and prevents the nonlinear models from multiplying too many state-dependent terms. Second, the selected ARMA for CPI, unemployment and industrial production did not pass the primary residual-whiteness screen even though its BIC-minimizing order was retained. Those weak diagnostic cases remain reported as such. A selected specification is not automatically adequate.
+
+### Conditional variance and polynomial trends
+
+ARCH and GARCH provide an explicit treatment of changing conditional variance. Engle (1982) developed ARCH to represent innovation variance dependent on past squared errors; Bollerslev (1986) extended the model to include past conditional variance. A standard GARCH(1,1) component is
+
+**Equation (2.8): Conditional-variance diagnostic**
+
+```math
+\sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2
++\beta\sigma_{t-1}^2,\qquad \omega>0,\quad\alpha,\beta\geq0.
+```
+
+This equation concerns the conditional spread of innovations, not necessarily their expected value. The approved design applies ARCH–LM to the selected classical-mean residuals. Where the 5% test rejects constant conditional variance, an ARMA–GARCH(1,1) diagnostic is estimated and its volatility persistence and standardized residuals are reported. A variance model is not credited with point-forecast superiority simply because it fits the variance better. A separate point-forecast comparison would be necessary to make that claim, and it is not the role assigned to GARCH here.
+
+A deterministic polynomial trend, for instance $a+bt+ct^2$, models the level's path as an explicit function of calendar time. It answers a different question from whether shocks and state transitions alter the conditional mean of an approved growth or rate target. Chapter 1 established that deterministic and stochastic trends need not be confused. The baseline transformation protocol removes or addresses the trending levels before fitting the main forecast families. Polynomial extrapolation is therefore excluded from the primary horse race for a scientific reason: it is not an appropriate like-for-like alternative to the specified dynamic forecasts of the transformed targets. If significant deterministic trends persisted in a final target, the approved methodology would require reconsideration before adding such a competitor. No polynomial specification was selected retrospectively to favor or disfavor a model.
+
+This hierarchy directly addresses the jury's concern about classical alternatives. AR provides the primary loss denominator and the transparent benchmark. ARMA tests whether richer linear innovation dynamics alter that conclusion. GARCH examines conditional variance when indicated by evidence. Polynomial trends are excluded from the central transformed-target contest with an explicit rationale. The nonlinear candidates must now justify the additional complexity they introduce.
+
+## 2.6 State-Dependent Alternatives and Their Economic Interpretation
+
+The thesis retains two nonlinear conditional-mean families. MSAR permits discrete changes among latent statistical states, while STAR permits a smooth change in autoregressive coefficients according to an observed transition variable. They express different hypotheses about the form of nonlinearity. Neither is automatically a structural model of economic recessions, and neither should be judged solely by its full-sample likelihood.
+
+### A two-state Markov-switching autoregression
+
+The baseline MSAR follows the parsimonious Hamilton-style idea of a state-dependent mean with common autoregressive coefficients and a common innovation variance (Hamilton, 1989). Let $s_t\in\{1,2\}$ be an unobserved state at date $t$. The model is
+
+**Equation (2.9): Baseline two-state MSAR**
+
+```math
+y_t=\mu_{s_t}
++\sum_{j=1}^{p}\phi_j\bigl(y_{t-j}-\mu_{s_{t-j}}\bigr)
++\varepsilon_t,\qquad
+\varepsilon_t\sim N(0,\sigma^2).
+```
+
+The regime means $\mu_1$ and $\mu_2$ may differ; the autoregressive coefficients $\phi_j$ and innovation variance $\sigma^2$ do not switch in this baseline. Lagged deviations are centered on the state belonging to each lagged observation. This detail matters because a simpler expression with only one common lagged mean would define a different parameterization. The nonlinear term here arises from the sequence of unobserved states, not from an observed unemployment or output threshold.
+
+The state process follows a first-order Markov chain. Define $p_{ij}=\Pr(s_t=j\mid s_{t-1}=i)$ for $i,j\in\{1,2\}$. Each row of the transition matrix sums to one:
+
+**Equation (2.10): Markov transition matrix**
+
+```math
+P=
+\begin{pmatrix}
+p_{11} & 1-p_{11}\\
+1-p_{22} & p_{22}
+\end{pmatrix},
+\qquad
+p_{ij}\in[0,1].
+```
+
+The parameter $p_{11}$ is the probability of remaining in state 1 for one period, and $p_{22}$ is the probability of remaining in state 2. Conditional on a homogeneous transition process, the expected duration of state $i$ is $1/(1-p_{ii})$ periods when $p_{ii}<1$. This is a property of the estimated Markov chain. It is not an estimate of the average length of U.S. recessions unless an additional empirical identification exercise establishes that the state corresponds to recessions.
+
+Because $s_t$ is hidden, the model estimates probabilities of being in each state rather than observing the state directly. Filtered probabilities condition on information available up to a date; smoothed probabilities also use subsequent observations. Smoothed probabilities can describe the historical allocation of observations to states, but they must not leak into a forecast from an earlier origin. A pseudo-out-of-sample forecast requires a distribution over future paths based on information available at that origin. State uncertainty is integrated into the forecast, not resolved by looking at the realized future path.
+
+A two-state model may distinguish periods with different average inflation, output growth or rate changes. It cannot be assumed to distinguish recession from expansion. The same NBER recession can contain different monetary conditions, and a high-inflation or policy-rate state can occur in either phase of the business cycle. Ordering states by their estimated means provides a stable way to avoid purely nominal label switching across reported tables. Economic labels are withheld until occupancy, persistence and historical correspondence have been inspected.
+
+The lag order $p$ is inherited from the initially selected AR, with a cap of four lags for both monthly and quarterly series. The cap limits proliferation of parameters in the nonlinear estimation. Under this design, the statistical difference from an AR concerns regime-dependent means and the implied state history rather than an unrestricted collection of regime-dependent slopes and variances. This makes the comparison more interpretable and computationally manageable, while also excluding potentially useful state-dependent variances or coefficients. Such exclusions are part of the model's stated scope.
+
+The full-sample regime display reports ordered means, transition probabilities, expected durations, smoothed occupancy and estimation status. Occupancy is the effective number of observations allocated to a regime, calculated from the sum of its smoothed probabilities. A state receiving almost no effective observations cannot support precise statements about a recurring economic regime. A transition probability close to one may indicate extreme persistence, but it may also indicate weak identification near a numerical boundary. Section 2.11 defines the operational warnings used to separate these cases from credible inference.
+
+The issue of regime-count selection is deliberately postponed to a bounded robustness exercise. A one-state versus two-state likelihood-ratio test does not have an ordinary chi-square null distribution because of unidentified nuisance parameters and boundary complications (Cho & White, 2007; Qu & Zhuo, 2021). The thesis does not add a naive significance claim. The baseline retains two states for the forecast comparison. A three-state version is assessed on the full sample only, with no K=3 rolling forecast exercise. Its precise conditions appear in Section 2.12.
+
+### A smooth transition autoregression
+
+STAR describes a different process. The conditional mean changes smoothly as an observable transition variable moves through part of its range. Let $x_t=(1,y_{t-1},\ldots,y_{t-p})'$ contain an intercept and lagged values, and let $z_{t-d}$ denote the lagged transition variable selected at delay $d$. A generic STAR model is
+
+**Equation (2.11): Smooth transition autoregression**
+
+```math
+y_t=\boldsymbol\phi'x_t
++G(z_{t-d};\gamma,c)\boldsymbol\theta'x_t+\varepsilon_t.
+```
+
+The coefficients $\boldsymbol\phi$ describe one limiting dynamic relation; the incremental coefficients $\boldsymbol\theta$ describe how that relation changes as the transition function $G$ moves from near zero toward one. Parameter $c$ is a transition location and $\gamma>0$ controls transition speed under the conventional normalization. The delay $d$ identifies which lagged observed condition governs the transition. Unlike the Markov model, the transition is conditional on a specified observed variable rather than an unobserved probabilistic state.
+
+The two admissible functions are logistic STAR (LSTAR) and exponential STAR (ESTAR). Conventional definitions, before any equivalent numerical scaling used for optimization, are
+
+**Equation (2.12): Logistic and exponential transition functions**
+
+```math
+\begin{aligned}
+G_{\mathrm{L}}(z;\gamma,c)
+&=\left[1+\exp\{-\gamma(z-c)\}\right]^{-1},\\
+G_{\mathrm{E}}(z;\gamma,c)
+&=1-\exp\{-\gamma(z-c)^2\}.
+\end{aligned}
+```
+
+The logistic function distinguishes observations below and above a location in an asymmetric way. The exponential function instead depends on the squared distance from that location and can distinguish normal middle observations from both types of extreme departures. These are statistical patterns, not evidence that the economy switches between identified demand and supply shocks. The transition type and delay come from the initial-window Teräsvirta procedure, not from a later examination of which forecast model wins (Luukkonen et al., 1988; Teräsvirta, 1994).
+
+The distinction also exposes an estimation risk. An estimated transition can be nearly constant across the observed data, so the nominally nonlinear terms are weakly identified. A very large estimated smoothness coefficient can make a smooth transition function approximate a sharp threshold. A threshold far outside the observed central range may leave the model effectively on one side of the transition. These cases can have an acceptable likelihood but supply little credible evidence of a meaningful economic state. They receive explicit fragility flags.
+
+The STAR lag order is inherited from the initial AR, capped at four lags monthly and two quarters for GDP. The permitted delays are one to six months or one to four quarters. These restrictions limit the size of the nonlinear estimation problem and maintain a transparent comparison. They also mean that STAR may use fewer own-history lags than the primary AR for some targets; that difference is disclosed in Table 2.3 rather than treated as a hidden advantage or ignored limitation.
+
+The final initial-window STAR selections were LSTAR with delays 3 for GDP, 6 for CPI, 1 for unemployment and 5 for M2; and ESTAR with delays 4 for industrial production and 1 for the federal funds rate. They follow the published specification record. The preliminary STAR linearity screen rejected at the chosen delay for CPI, unemployment and the federal funds rate, but not for GDP, industrial production or M2. These outcomes describe a pre-estimation diagnostic under one specific test. Chapter 3 assesses what subsequently happened to fit and forecast quality.
+
+### Comparing the two nonlinear hypotheses
+
+MSAR and STAR should not be merged conceptually. The former allows an unobserved discrete state to change a model's conditional mean, with transition probabilities that must be estimated. The latter modifies autoregressive coefficients through a continuous function of an observed lagged transition variable. MSAR may be useful if changes recur in distinct statistical regimes; STAR may be more suitable when adjustment varies smoothly with a measurable condition. Both can fit an episode unusually well and fail to forecast the next one. Both are vulnerable to limited observations in unusual states, nonlinear optimization and historical breaks that do not repeat.
+
+**Table 2.4. Model families, additional flexibility and their diagnostic burden**
+
+| Family | Conditional-mean mechanism | Main added estimation burden | What it does not identify |
+|---|---|---|---|
+| AR | Constant coefficients on past target values | Lag order, stability, residual dependence | Causal macroeconomic relationships |
+| ARMA | AR plus past innovations | Moving-average order, invertibility, residual dependence | Structural shocks merely from innovations |
+| MSAR(2) | Two latent-state means, common slopes and variance | State probabilities, transition matrix, occupancy, numerical maxima | NBER phases or structural policy regimes |
+| STAR | Smooth coefficient transition using observed lagged state | Threshold, smoothness, transition delay/type, nonlinear identification | A causal threshold or unique economic state |
+| VAR (robustness) | Lagged cross-variable information in a linear system | Common data calendar, joint lags, stability | Causal transmission absent structural restrictions |
+
+*Note:* This table summarizes the declared comparison, not in-sample or out-of-sample rankings. The released specification choices are documented in T2.5. Detailed optimization constraints and complete parameter outputs remain in the evidence appendices.
+
+The earlier hybrid MSSTAR has been removed from the revised methodology. Combining latent-state switching with a smooth transition would introduce two nonlinear mechanisms before either has established independent forecast value. The present four-family comparison can test the more basic question directly. Excluding the hybrid is not an empirical assertion that it never works; it is a proportionality decision to keep the scientific question and numerical evidence manageable.
+
+## 2.7 Cross-Variable Information and the Boundary of Single-Equation Forecasting
+
+The main AR, ARMA, MSAR and STAR forecasts are single-equation exercises. Each target is forecast from its own history and, where applicable, its state-dependent dynamics. Chapter 1 nevertheless described economic interactions among prices, interest rates, output, employment and money. An apparent nonlinear pattern may therefore be a proxy for information missing from the single-equation information set. This is a legitimate competing explanation and requires a focused multivariate response.
+
+The approved robustness model is a five-variable monthly vector autoregression (VAR), following the general multivariate forecasting framework of Sims (1980). Define the vector of monthly transformed targets as $Y_t=(\pi_t,\;g_t^{IP},\;u_t,\;\Delta i_t,\;g_t^{M2})'$, where the unemployment rate is in levels and the federal funds rate is in first differences. The VAR is
+
+**Equation (2.13): Five-variable monthly VAR**
+
+```math
+Y_t=a+\sum_{j=1}^{p}A_jY_{t-j}+v_t,
+\qquad p\in\{1,2,3\}.
+```
+
+The matrices $A_j$ allow one variable's past to contribute to forecasts of the others. The lag order is selected by BIC within the approved range, and estimated roots must satisfy the VAR stability condition. All five official series are available in raw form from January 1959; log-difference transformations and lag requirements shorten the fully aligned estimation sample. The system respects native monthly spacing and the approved October 2025 input rule.
+
+This check asks whether cross-variable information changes model rankings or explains some failures of own-history forecasting. It does not estimate a structural Phillips relationship, identify a monetary-policy shock, or distinguish demand from supply shocks. Without identifying restrictions, the VAR innovations are reduced-form residuals, not a set of independently interpreted economic disturbances. A better VAR forecast would therefore support a bounded omitted-information explanation, not prove which channel caused the gain.
+
+Quarterly GDP remains quarterly. It is not duplicated, interpolated or mechanically repeated across three months to insert it into the monthly VAR. A mixed-frequency VAR, MIDAS model or true release-calendar nowcast would have different information sets and additional research demands. Giannone et al. (2008) illustrate how the publication timing of mixed-frequency indicators matters for nowcasting. Carriero et al. (2025) show that explicit rate constraints can also be represented in a VAR. Those methods are serious alternatives, but neither is silently substituted for this thesis's declared, narrower robustness system.
+
+The multivariate experiment therefore has a clear interpretation. If it changes a target's forecast ranking, information omitted from the univariate models may help explain the earlier result. If it does not, the thesis cannot claim that cross-variable interactions are unimportant under all specifications; the VAR is small, linear, monthly and constrained to the five selected indicators. Its purpose is to challenge one explanation, not to settle the broader literature on macroeconomic forecast systems.
+
+## 2.8 In-Sample Model Adequacy as a Prerequisite for Forecast Interpretation
+
+An econometric model can yield a plausible forecast even if its fitted residuals show important weaknesses. It can also obtain a strong likelihood while relying on nearly unobserved regimes or parameters at numerical boundaries. The revised design therefore uses in-sample adequacy as a distinct stage before presenting forecast rankings. This follows the jury's requirement that models must first earn the right to be interpreted as credible descriptions of the data. It does not imply that good historical fit is enough to establish predictive usefulness.
+
+The common descriptive measures are maximized log-likelihood where meaningful, Akaike and Bayesian information criteria, in-sample RMSE, and in-sample MAE. They answer different questions. Likelihood and information criteria describe a fitted probability model and its parameter penalty; RMSE gives relatively more weight to large residuals; MAE describes average absolute deviation. None is an independent out-of-sample forecast. Across different target units or nonmatching samples, raw magnitudes are not directly comparable.
+
+The diagnostic tests include Ljung–Box for residual serial correlation, ARCH–LM for remaining dependence in squared innovations, and Jarque–Bera for distributional normality. The primary Ljung–Box residual-screen horizons are 12 and 24 lags for monthly targets and four and eight lags for quarterly GDP. ARCH–LM is applied at 12 monthly or four quarterly lags. The significance level is 5%. Jarque–Bera is reported because distributional shape matters to likelihood-based inference, but rejection of normality alone is not treated as a fatal failure for a point-forecast model. During rare shocks, a useful mean forecast can coexist with heavy-tailed residuals.
+
+A general residual-autocorrelation null can be written as
+
+**Equation (2.14): Primary residual-whiteness null**
+
+```math
+H_0:\operatorname{Cov}(\widehat\varepsilon_t,
+\widehat\varepsilon_{t-k})=0
+\quad\text{for the tested positive lags }k.
+```
+
+Rejection means that the fitted residuals retain evidence of serial dependence over those lags. Non-rejection does not prove that innovations are independent or that the model is structurally correct. The reported test tables must include the null, statistic, reference distribution, p-value, 5% decision and its practical implication. Applying these tests consistently gives a common adequacy language even though the models have different internal state mechanisms.
+
+A second adequacy layer is model-specific. AR and ARMA must satisfy their stability and invertibility requirements. An MSAR fit needs meaningful occupancy and transition behavior; a STAR fit needs an identifiable transition and finite parameters. A model may have residual autocorrelation but a converged, usable forecast, in which case it is classified as fragile. A failed optimization or non-finite prediction is not treated as an ordinary forecast observation.
+
+The classification follows three categories. An *adequate* fit has converged, contains finite parameters, satisfies mandatory stability restrictions, has no fatal structural warning and passes the primary residual-whiteness screen. A *fragile* fit converges but carries warnings such as residual autocorrelation, low regime occupancy, near-boundary probabilities, uncertain covariance or extreme but finite forecast behavior. A *failed* fit is unusable because of nonconvergence, non-finite likelihood or parameters, invalid essential covariance, violated mandatory stability, an effectively empty regime or a non-finite forecast path. The numerical thresholds behind these categories are operational flags explained in the next section, not confidence levels from a statistical theorem.
+
+The separation is essential for scientific interpretation. A fragile forecast can still be evaluated if the value is finite and the common-date rule permits it, but its regimes should not receive strong economic names. A failed forecast remains visible in the estimation audit and is not quietly replaced by an AR forecast under its original model label. The effect of excluded failed origins on the matched comparison is disclosed. This lets the reader distinguish a model that forecasts poorly, a model that has insufficient statistical evidence of an advantage, and a model that cannot reliably supply a forecast at all.
+
+Chapters 3 and 4 use these categories in different ways. Chapter 3 first examines full-sample adequacy and credibility before presenting the baseline horse race. Chapter 4 asks whether warning rates, alternative specifications and numerical fragility undermine any forecast advantage. Neither chapter treats a lower BIC as a sufficient forecasting result. The methodological distinction between representation and prediction remains binding.
+
