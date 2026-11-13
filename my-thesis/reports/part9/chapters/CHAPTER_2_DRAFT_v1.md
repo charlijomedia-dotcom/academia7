@@ -390,3 +390,258 @@ The separation is essential for scientific interpretation. A fragile forecast ca
 
 Chapters 3 and 4 use these categories in different ways. Chapter 3 first examines full-sample adequacy and credibility before presenting the baseline horse race. Chapter 4 asks whether warning rates, alternative specifications and numerical fragility undermine any forecast advantage. Neither chapter treats a lower BIC as a sufficient forecasting result. The methodological distinction between representation and prediction remains binding.
 
+
+## 2.9 Forecast Experiment: Origins, Windows, Horizons, and Re-estimation Policy
+
+### Rolling estimation as a response to instability
+
+A historical forecast comparison needs a rule for when estimation ends and evaluation begins. Fitting a model to the complete sample and then reporting its fitted values as forecasts would allow future information to influence earlier predictions. The approved design instead creates a sequence of forecasts at historical origins. At each origin, each model is estimated from a fixed number of preceding observations, produces a prediction for a later target date, and is then assessed against the realized target when it becomes part of the evaluation record.
+
+The baseline estimation-window lengths are 240 observations for monthly targets and 120 observations for quarterly GDP. These represent 20 years of monthly data or 30 years of quarterly data. They were selected as a compromise among parameter precision, the need to observe more than one economic episode, and adaptation to possible change. They are not mathematically optimal window lengths. A shorter window can respond more rapidly to a break but leaves fewer observations to identify nonlinear parameters. A longer window can estimate a stable model more precisely but may mix distinct historical relationships. Pesaran and Timmermann (2007) and Rossi and Inoue (2012) explain why estimation-window choice matters for forecast performance and its inference.
+
+Let $w_f$ be the baseline number of observations at frequency $f$, and let $t$ denote a valid forecast origin on the native monthly or quarterly calendar. The rolling window is
+
+**Equation (2.15): Fixed-length rolling sample**
+
+```math
+\mathcal W_t^{(w_f)}
+=\{y_{t-w_f+1},y_{t-w_f+2},\ldots,y_t\},
+\qquad w_M=240,\quad w_Q=120.
+```
+
+Every model for a given target uses the same chronological definition of the estimation window. The earliest eligible origin depends on the target's first transformed observation and the needed lag structure. The evaluation series therefore begin on different dates across targets. It would be misleading to treat those dates as evidence that one variable is easier to predict than another; differences in history, units and available forecasts must be acknowledged.
+
+The design is intentionally not a single fixed-parameter exercise. Estimated parameters are refitted at every valid forecast origin using the trailing rolling window. At the next origin, the oldest observation leaves and the newest eligible observation enters. Forecasting procedures are therefore allowed to update their parameters without observing the target outcome they are trying to predict. This is particularly important for MSAR and STAR because regime probabilities and nonlinear parameters may change as new episodes enter the estimation record.
+
+### Fixed specifications, updated parameters
+
+There is a distinction between selecting a model's discrete structure and estimating its parameters. AR lag orders, ARMA orders, STAR type and delay, and the related nonlinear lag caps are selected once from the initial baseline estimation window. They are then kept fixed in the main experiment. The coefficients, regime means, transition probabilities and other estimable quantities are updated at each forecast origin. This avoids an enormous repeated specification search, but it does not freeze the statistical model at its first fit.
+
+The rule prevents an important kind of look-ahead bias. If lag order were chosen after evaluating all future forecast losses, it could reflect information unavailable at the early forecast origins. Fixing the structure from the initial window avoids that retrospective selection. It also creates a limitation: the initially selected structure may no longer be ideal after a major break. The approved sensitivity exercises assess some such threats, but the baseline does not change its selection rule to improve results after they are known.
+
+The practical workflow is: select the discrete model structure on the initial window; refit each model on the current rolling data; check the fit and any forecast failure; issue the horizon-specific forecast using only eligible information; store the prediction and its provenance; advance to the next origin. This sequence is applied under the same date and admissibility conventions for all four core families. The detailed calendars, cache keys and optimizer settings are recorded outside the main body.
+
+### Forecast horizons and their interpretation
+
+The primary question uses **one-step-ahead forecasts**: one month for each monthly target and one quarter for GDP. The horizon is measured in native observation periods, not in a shared number of calendar days. A one-quarter-ahead GDP forecast is therefore not the same time span as a one-month-ahead CPI forecast, although each is one step for its own series.
+
+The longer-horizon robustness choices are $h\in\{3,6,12\}$ months for monthly targets and $h\in\{2,4\}$ quarters for GDP. They are obtained through iterated forecasts from the fitted dynamic model. For a general nonlinear model, this requires propagation of the state-dependent dynamics and, where relevant, state probabilities, rather than substituting the one-step forecast into an unrelated formula. Longer horizons test whether the relative value of nonlinear structure changes with the forecast distance. They do not replace the baseline $h=1$ answer.
+
+At $h>1$, forecast errors can overlap across origins, even with a correctly specified model. Consecutive forecasts of distant target dates may share underlying shocks, so an evaluation test cannot treat all loss differences as independent observations. Horizon-appropriate long-run variance or correction procedures are therefore part of the formal comparison in Section 2.10. The number of valid matched target dates must also be reported separately by horizon, because changing the horizon changes both forecast availability and the statistical evidence.
+
+Warm starts and caching improve the feasibility of the exercise without changing its scientific definition. A previous successful nonlinear parameter vector can serve as a starting value for the next rolling fit when technically appropriate. Fitted results are keyed by series, model, origin, specification and input-window identity. A valid repeat uses the stored result rather than re-estimating the same problem unnecessarily. Yet a warm start does not prove that the optimizer found a global likelihood maximum. Numerical uncertainty remains part of the assessment.
+
+### Comparability across procedures
+
+The essential requirement is that competing models face the same prediction problem. They must use the approved transformed target, comparable historical dates, the same horizon definition, and the same baseline rolling-window length. A method that cannot produce a valid forecast at an origin does not receive an invented substitute forecast. Its missing outcome is recorded; pairwise comparisons are then formed on the shared valid dates for the two models, and multiple-model comparisons use the intersection valid for their members. This creates a trade-off between a fair matched comparison and the number of usable dates. Both the matched sample size and the dates lost to failures remain visible.
+
+The baseline thus represents a controlled historical forecasting exercise. It is credible as a pseudo-out-of-sample comparison because later target outcomes are excluded from each origin's estimation. It is not equivalent to a full real-time experiment that preserves each information release and later data revision (Orphanides, 2001; West, 1996). That limitation is held constant across the competing model families and revisited in the dissertation's interpretation.
+
+## 2.10 Forecast Evaluation Across Normal Periods, Recessions, Expansions, Peaks, and Troughs
+
+### Common loss measures
+
+Forecasting performance is evaluated through observable prediction errors, not by selecting a model from in-sample information criteria. Three principal descriptive measures are reported: root mean squared error (RMSE), mean absolute error (MAE), and out-of-sample $R^2$ relative to the AR benchmark. For a model $m$ with $N$ valid evaluation dates, they are
+
+**Equation (2.16): Point-forecast accuracy measures**
+
+```math
+\begin{aligned}
+\mathrm{RMSE}_m
+&=\left(N^{-1}\sum_{t=1}^{N}e_{m,t}^{\,2}\right)^{1/2},\\
+\mathrm{MAE}_m
+&=N^{-1}\sum_{t=1}^{N}|e_{m,t}|.
+\end{aligned}
+```
+
+RMSE penalizes very large errors more strongly than MAE. This is relevant when the evaluation period contains pandemic observations, sharp monetary-policy changes or an unstable nonlinear forecast. Neither measure estimates the welfare cost of making an error. Each must be reported with the units and target of the forecast, so a large number for annualized industrial production growth is not mechanically compared with the numerical level of an unemployment-rate error.
+
+Out-of-sample $R^2$ is defined against the declared AR forecast over identical target dates:
+
+**Equation (2.17): AR-relative out-of-sample performance**
+
+```math
+R^2_{\mathrm{OOS},m\mid AR}
+=1-
+\frac{\sum_{t\in\mathcal I_{m,AR}}e_{m,t}^{\,2}}
+{\sum_{t\in\mathcal I_{m,AR}}e_{AR,t}^{\,2}}.
+```
+
+The set $\mathcal I_{m,AR}$ contains only dates on which both model $m$ and AR have valid observed outcomes and forecasts. A positive value means that the competitor's total squared error is lower on those shared dates; a negative value means it is higher. The denominator can be small or unstable for a highly predictable target or a small evaluation subsample. The statistic is descriptive, not itself a hypothesis test. When the benchmark denominator or shared sample is unusable, the comparison must be marked unavailable rather than treated as zero.
+
+Mean absolute percentage error (MAPE) is not reported. Several modelled targets, including changes in interest rates and annualized monthly growth, can be negative or close to zero. Dividing forecast errors by such realized values can create unbounded or economically misleading percentages. Hyndman and Koehler (2006) provide a general critique of these accuracy measures. RMSE, MAE and AR-relative $R^2$ better serve the present target transformations.
+
+### Pairwise tests and the primary inferential rule
+
+Descriptive accuracy differences can arise by chance. The core inferential object is the loss differential between a competitor $m$ and benchmark $b$ at the same forecast target date.
+
+**Equation (2.18): Signed paired loss differential**
+
+```math
+d_t^{(m,b)}
+=L(e_{m,t})-L(e_{b,t}),
+\qquad
+L(e)\in\{e^2,|e|\}.
+```
+
+A negative mean loss differential favors the competitor, because it has lower loss; a positive mean favors the benchmark. The five approved pairwise comparisons are AR versus ARMA, AR versus MSAR, AR versus STAR, ARMA versus MSAR, and ARMA versus STAR. Both squared-error and absolute-error losses are tested. The model-pair names do not erase the explicit sign convention, which must be stated in every inference table.
+
+The **primary test** is Harvey, Leybourne and Zu (2025), abbreviated HLZ. It addresses the null of equal average forecast accuracy when the expected loss differential may vary over the evaluation period. The basic average-null question is
+
+**Equation (2.19): Equal average predictive accuracy**
+
+```math
+H_0:\frac{1}{N}\sum_{t=1}^{N}E(d_t^{(m,b)})=0,
+\qquad
+H_1:\frac{1}{N}\sum_{t=1}^{N}E(d_t^{(m,b)})\neq0.
+```
+
+This formulation deliberately concerns average accuracy. It does not require the relative advantage to be identical in every recession, expansion or subperiod. Harvey et al. (2025) show that the conventional Diebold–Mariano long-run variance estimate can behave poorly when the mean loss differential varies through time. Their modification uses local nonparametric demeaning in the variance construction. The released implementation records its kernel and bandwidth rules and reference critical-value calibration, rather than silently substituting a generic heteroskedasticity- and autocorrelation-consistent calculation. The paper supplies a direct justification for the predeclared test under possible instability.
+
+The primary interpretation uses two-sided inference at the 5% level. A rejection, together with a negative estimated mean differential, supports a claim of lower average loss for the competitor in that pair, target, horizon and sample under the specified test. A positive mean differential after rejection supports the reverse directional comparison. A non-rejection means that equality of average loss was not rejected; it is not evidence that the forecasts have exactly the same skill. If the long-run variance or reference calculation is not numerically valid, no p-value is invented and the inference is recorded as unavailable.
+
+The conventional Diebold–Mariano test (Diebold & Mariano, 1995), with the Harvey–Leybourne–Newbold small-sample modification (Harvey et al., 1997), is retained as a **secondary** analysis. Its comparison set and losses match the primary test, and the long-run variance treatment accounts for overlapping multi-step forecasts. Differences between DM–HLN and HLZ conclusions are reported rather than resolved by choosing whichever test favors a particular model. The primary decision follows HLZ because instability in relative forecast loss is part of the thesis's economic motivation.
+
+A further issue is multiplicity. Many models, targets, losses, states and horizons generate multiple opportunities to observe a small p-value. A nominal 5% rejection in one isolated cell should not be presented as a general law of nonlinear superiority. The approved analysis preserves the declared primary and secondary tests, reports the family of comparisons, and treats broader multiplicity checks as an explicit limitation or audit rather than changing the primary inferential rule after the fact.
+
+### Comparing several admissible models
+
+Pairwise tests do not answer whether a model is uniquely superior among all admissible competitors. The Hansen–Lunde–Nason Model Confidence Set (MCS) procedure provides a complementary multiple-model assessment (Hansen et al., 2011). It sequentially evaluates a set of models under a chosen loss and reports those retained at the declared confidence level. The thesis reports 90% and 95% MCS results under squared and absolute losses.
+
+For a valid MCS calculation, all included models must have loss observations on a common target-date intersection. That intersection may be smaller than the date set for any particular pair. If too few valid observations or an unusable variance calculation prevents meaningful inference, the procedure is marked unavailable. MCS membership is not proof that all retained models are equally accurate, nor does exclusion automatically identify a uniquely best causal forecasting mechanism. It is an inferential complement to the pairwise and descriptive evidence.
+
+Clark and West (2007) develop tests for certain nested forecast comparisons. The central AR/MSAR and AR/STAR cases here involve nonregular nonlinear restrictions and hidden or weakly identified parameters under linearity, so their framework is not mechanically inserted as an additional baseline test. Amisano and Giacomini (2007) address density forecasts using weighted likelihood scores. The present study compares point forecasts and does not build a common validated predictive-density system. These are explicit scientific exclusions, not omissions of relevant statistical vocabulary.
+
+### Recession and expansion evaluation
+
+Overall average loss may conceal economically meaningful differences across phases. The thesis therefore evaluates RMSE and MAE separately for observations that are retrospectively classified as recession or expansion dates. It uses USREC, based on NBER business-cycle dates, at the forecast target date. For a monthly target, USREC equal to one defines recession and zero defines expansion. A quarterly GDP target is classified as recession-affected when any of its three calendar months is dated as a recession. These choices are reproducible rules for descriptive evaluation; they are not claims that the state was known when the forecast was issued.
+
+State-conditioned comparisons use a Giacomini–White-style loss regression for each competitor versus AR (Giacomini & White, 2006). With a competitor-minus-AR sign convention, the approved regression is
+
+**Equation (2.20): Ex-post state-dependent loss regression**
+
+```math
+d_t=\alpha+\beta_{\mathrm{rec}}REC_t
++\beta_{\mathrm{turn}}TURN_t+u_t.
+```
+
+Here $REC_t$ equals one for an ex-post recession target date, and $TURN_t$ equals one when the target falls within the declared turning-point neighborhood. $\alpha$ is the average differential in the omitted reference state, while the two slopes indicate shifts associated with recession and turning-neighborhood indicators in this regression. HAC standard errors are used with a horizon-appropriate rule. The tables report individual coefficient estimates and p-values, a joint test involving all coefficients, and a separate test of the state slopes. A significant joint Wald test does not, by itself, imply that $\beta_{\mathrm{rec}}$ or $\beta_{\mathrm{turn}}$ is significant.
+
+A central conceptual limit follows from the time at which states are known. The original conditional predictive ability framework asks whether information available for forecasting helps predict relative future model performance. Here, recession and turning indicators use retrospective target-date classifications. They are not necessarily in the forecaster's information set. Consequently, the regression is best interpreted as an **ex-post state association of loss differentials**, not a feasible real-time rule for choosing a model during a recession that has not yet been announced. Odendahl et al. (2023) provide broader context for state-dependent forecast evaluation, but the thesis does not adopt their full unknown-threshold method.
+
+If a state cell has very few observations, an indicator has no variation, or a regression is numerically unidentified, conditional inference is reported as unavailable. State-specific RMSE and MAE can still be presented with their sample counts. Recession-specific evidence must not be inferred from the sign of a coefficient without its uncertainty, and the sign convention must remain the same as in the overall forecast comparison.
+
+### Peaks, troughs and turning-point neighborhoods
+
+A recession is an interval; a peak or trough is a dated transition. For monthly USREC, the baseline peak is the month immediately preceding a change from expansion to recession, and the baseline trough is the month immediately preceding a change from recession to expansion. A symmetric **±3-month** window around each such date defines the primary monthly turning neighborhood. For GDP, the quarter containing the relevant monthly peak or trough is used with a baseline **±1-quarter** window. If neighborhoods overlap, an observation is counted once in their union.
+
+Neither the economic theory nor the business-cycle literature identifies the number three as an optimal universal width. Chauvet and Piger (2008) emphasize delays in identifying changes of business-cycle phase. The selected neighborhoods provide a transparent way to examine the errors near transitions without pretending that a single exact month fully captures the adjustment period. Chapter 4 therefore repeats the analysis with ±1 and ±6 months and with the turning quarter alone or ±2 quarters for GDP. A state-dependent finding that appears only under one arbitrary window definition receives a weaker interpretation.
+
+Peak/trough analysis complements the recession/expansion comparison. A model might predict relatively well in long expansions but fail at the first sharp downturn. Another could fit the crisis itself but miss the subsequent recovery. Both outcomes matter for the thesis question. The analysis always keeps distinct the observable historical forecast, the realized ex-post business-cycle phase, and the unobserved regime estimated by an econometric model.
+
+The evaluation design therefore defines several questions, not one interchangeable statistic. RMSE and MAE measure errors; AR-relative $R^2$ summarizes descriptive squared-loss differences; HLZ assesses average differences under possible time variation; DM–HLN supplies a conventional secondary comparison; MCS considers multiple admissible candidates; state regressions and turning windows describe where losses concentrate. Each conclusion is reported with its sample, horizon, test role and availability.
+
+## 2.11 Model Admissibility and Failure Rules
+
+Model failure is an empirical outcome, not a reason to conceal a forecast date. Nonlinear estimation can be sensitive to starting values, parameter boundaries and the small number of observations belonging to an unusual regime. An accurate-looking subset of surviving predictions may therefore tell a misleading story if other origins were silently discarded. The revised protocol defines adequacy, fragility and failure before looking at the final rankings, and it retains an audit trail of every relevant warning.
+
+For an MSAR fit, the main credibility checks concern numerical convergence, finite likelihood and parameters, covariance usability, regime occupancy, transition probabilities and the resulting forecast path. Occupancy is calculated from the summed smoothed probabilities for each ordered regime. Occupancy below **5%** of observations or below **20 effective observations** receives a low-occupancy warning. Transition probabilities at or below **0.005** or at or above **0.995** receive boundary warnings. These values are explicit operational thresholds. They are not asymptotic 5% hypothesis tests and must not be interpreted as statistical critical values.
+
+Low occupancy or a boundary transition is ordinarily a fragility flag, not an automatic failed fit. A state may legitimately be rare. The concern is that a rare state offers little information for stable parameter estimation or economic labeling. Failure is reserved for unusable cases such as nonconvergence, non-finite likelihood or parameters, an effectively empty/unidentified state, invalid covariance needed for meaningful inference, violated stability conditions or a non-finite forecast. Where covariance is ill-conditioned or near-singular rather than definitively unusable, the warning and its effect on the interpretation are made explicit.
+
+STAR has corresponding diagnostic flags. A smoothness estimate at its optimizer bound is fragile; a threshold outside the **5th–95th percentile** of the observed transition variable is fragile; and a transition function nearly constant across the sample provides weak evidence of a meaningful smooth change. Singular or unstable nonlinear Hessian and covariance calculations are documented. Non-finite estimation results or non-finite forecasts are failures. A STAR fit with extreme but finite predictions is not automatically erased: its score and economic scale remain visible, and its figure may be placed in a separate failure or extreme-behavior panel to prevent an unreadable plot of the other models.
+
+Classical models also have admissibility rules. An AR must satisfy the required stability restrictions; an ARMA must additionally satisfy invertibility. Residual whiteness and conditional variance are assessed as diagnostic issues rather than silently used to change the model's identity. A method with poor residual diagnostics can be fragile while still issuing a finite forecast. The distinction prevents the nonlinear models from receiving a harsher or more favorable scoring convention without disclosure.
+
+The implementation records model, target, origin, horizon, convergence, parameter warnings, covariance status, forecast availability, exclusion reason and whether a forecast was retained for scoring. A failed prediction cannot be replaced by another model's forecast and still be labelled MSAR or STAR. If an algorithm is retried under an authorized deterministic multi-start or warm-start rule, those attempts belong to the same declared fitting process and remain traceable. A new, unapproved model parameterization is not a permissible silent fallback.
+
+These rules imply different meanings for three empirical findings. Poor forecast accuracy indicates an observed loss disadvantage on valid target dates. Fragility indicates that even a favorable forecast may rest on weak statistical identification or numerical sensitivity. Failure indicates that a forecast or valid inference could not be supplied under the prescribed procedure. A non-rejection by a valid loss test is none of these. Separating the four concepts is necessary to avoid turning missing or unusable evidence into a false result about comparative predictive ability.
+
+A matched-date rule protects against one form of selection bias but cannot remove every issue. Pairwise tests use dates valid for the two compared methods; the MCS uses the intersection of dates valid for all included models. If failures cluster in recessions, the matched subset may omit precisely the periods in which nonlinear models are difficult to use. The study therefore reports how many origins were eligible, how many failed, and which comparisons lost dates. Overall conclusions must be read alongside that coverage, not just the surviving RMSE.
+
+## 2.12 Threat-Based Robustness Plan
+
+A robustness check is useful only when it challenges a named alternative explanation. Testing many arbitrary specifications until a preferred result appears would weaken the design. The approved plan therefore maps each test to a threat raised by economic theory, the literature or the jury. The baseline question remains the $h=1$ four-family forecast comparison; the supplementary analyses assess whether its interpretation is stable under specified changes.
+
+**Table 2.5. Prespecified alternative explanations and corresponding checks**
+
+| Threat to the baseline interpretation | Declared robustness exercise | What the check can establish |
+|---|---|---|
+| UNRATE or FEDFUNDS representation determines the ranking | Alternative level/first-difference specification | Sensitivity to persistence and transformation choices |
+| CPI or another target is undermodelled by the chosen AR lag structure | CPI AR lag choices $p=1,3,6,12$; compare on declared common dates | Whether apparent nonlinear value survives a stronger or altered classical lag representation |
+| Two latent states are too restrictive | Six full-sample MSAR(3) fits compared with full-sample MSAR(2) | In-sample regime-count credibility; no K=3 predictive ranking |
+| Gains depend on forecast distance | Monthly $h=3,6,12$; GDP $h=2,4$ | Horizon-specific changes under iterated forecasting |
+| Rolling history length drives rankings | Monthly $w=180,240,300$; GDP $w=90,120,150$ at $h=1$ | Sensitivity to three declared estimation-window lengths |
+| Historical phase labels or transition widths select favorable dates | Recession/expansion and turning neighborhoods: ±1/±3/±6 months, quarterly 0/±1/±2 quarters | Whether state results survive alternative short windows |
+| Own-history nonlinearity proxies for other macroeconomic variables | Five-variable monthly VAR, with native quarterly GDP excluded | A limited cross-variable forecasting explanation |
+| Changing variance is mistaken for nonlinear mean dynamics | ARCH–LM and triggered ARMA–GARCH(1,1) diagnostic | Evidence about conditional volatility rather than automatic point-forecast superiority |
+| October 2025 carry-forward changes outcomes | Directly affected dates plus later lag/rolling-window exposure audit | Conditionality of findings on the LOCF research input |
+| Optimizer behavior or failed forecasts favors survivors | Multi-start and warning records, common-date tests, status summaries and non-clipped figures | Numerical credibility and sample-selection limitations |
+| Many tested model-horizon cells produce a nominal small p-value | Clearly separated primary tests, full p-value family and multiplicity-sensitive audit | Whether isolated nominal findings justify a broader statement |
+
+*Note:* The threats are assessed one at a time under the approved design; the study does not estimate every possible cross-product of horizons, transformations, state widths and window lengths. Results and qualifications belong in Chapter 4, and the released detailed tables are preserved in the final Part 8 output commit.
+
+### Transformations, benchmark lags and horizons
+
+The alternate level/difference exercise is especially important for UNRATE and FEDFUNDS. A change in the target representation alters its persistence, scale and interpretation. The exercise asks whether a ranking reflects genuine forecast information or the way a unit root was handled. It does not allow an ex-post change in the official baseline transformation. CPI lag sensitivity answers a different criticism: a nonlinear model may appear attractive only because the linear comparator omits a useful seasonal or autoregressive dependence. The approved test compares the specified lag alternatives, not every conceivable AR order, and keeps its common-date and inference rules visible.
+
+Longer forecast horizons test whether nonlinear dynamics matter at distances beyond one observation. The monthly $3$, $6$ and $12$-month and quarterly $2$- and $4$-quarter horizons may produce different rankings. A gain at a longer horizon would still be a horizon-specific result, not a retroactive change to the baseline. In the same way, the variance diagnostic checks a different model property than the main conditional-mean comparison. These results must not be combined into one undifferentiated claim that "nonlinear forecasting wins."
+
+### Why the three-regime test is in-sample only
+
+A specific approved amendment concerns MSAR regime count. The original plan would have estimated a three-state MSAR at thousands of rolling forecast origins, even though the jury's central question was whether a two-state representation was credible. The amended design instead estimates K=3 once for each of the six target series, using the same full-sample observations, parameterization principles, lag rule, numerical starts and status checks as the corresponding K=2 model. It then examines information criteria, ordered regime means, standard errors, transition probabilities, effective occupancy and their relation to ex-post NBER states.
+
+The planned K=3 fit-call arithmetic is transparent.
+
+**Equation (2.21): Three-regime workload amendment**
+
+```math
+N_{\mathrm{old}}=3{,}527+6=3{,}533,\qquad
+N_{\mathrm{new}}=6,\qquad
+100\frac{3{,}527}{3{,}533}=99.83\%.
+```
+
+Thus **3,527 planned K=3 fitting calls** were avoided, reducing that part of the planned fit count by **99.83%**. This is a count of planned estimation calls, not a measured reduction in CPU time, memory usage or total computational cost. K=2 remains the declared forecast baseline regardless of the full-sample K=3 information criteria. There are no rolling K=3 point forecasts, HLZ tests, MCS rankings or state-loss regressions in the approved output.
+
+The K=3 diagnostic applies the same occupancy, transition-boundary and covariance rules as K=2. Credibility requires a converged fit without failed status, no low-occupancy or effectively empty state, no flagged boundary probability, a usable observed-information covariance, and statistically distinguishable adjacent ordered regime means under the declared descriptive criterion. A lower full-sample BIC alone does not override those conditions. If the optimizer cannot distinguish plausible solutions, the regime-count conclusion is inconclusive rather than a proof that two states are correct. This is especially important for the unemployment K=3 exercise, whose numerical limitation remains explicit in the released final interpretation. Its consequences are examined in Chapter 4, not solved by inventing unperformed forecasts.
+
+### Window-length and state sensitivity
+
+For the window exercise, monthly lengths are 180, 240 and 300 observations; quarterly GDP lengths are 90, 120 and 150 observations. The two alternatives are 25% below and above the baseline. Every four-family $h=1$ comparison is made on an aligned target-date calendar beginning only when the longest candidate window is available. Discrete model choices remain those selected from the original baseline initial window, and parameters are re-estimated at every origin under the alternative trailing length. This prevents a longer-window model from gaining extra tuning discretion simply because more history is available.
+
+The outputs report RMSE, MAE, AR-relative out-of-sample $R^2$, pairwise tests, MCS membership, sample sizes and fit-status incidence, with the original primary inference procedure unchanged. Conclusions are labelled unchanged, weakened, reversed or unavailable, with strengthened support recorded separately where warranted. These labels describe sensitivity to three chosen lengths rather than invariance to every possible window. They also force numerical fragility to remain visible: a shorter estimation history may leave insufficient evidence for a stable nonlinear regime.
+
+Turning-window sensitivity follows the same principle. A claim concentrated at peaks or troughs is weaker if it disappears when the neighborhood changes by a few months or quarters. Recession classifications remain external and retrospective; no realized future recession label enters the forecasting model. The sensitivity analysis tests the description of where errors occurred, not the feasibility of a real-time state-dependent trading or policy rule.
+
+### Robustness is a test of the claim, not a route to a new baseline
+
+A result survives a robustness exercise only with the correct inferential status, comparison sample and magnitude. Some robustness tables are descriptive; others can supply valid pairwise inference. If a sensitivity test loses validity because one model fails, it is not evidence of equal performance. If a model appears stronger only when particular dates are removed, the selection of those dates must be justified by the declared threat. If an effect occurs only at one horizon or under one transformation, the conclusion is qualified accordingly.
+
+The original hypothesis is not revised in response to these outcomes. Every unfavorable and inconclusive exercise remains part of the evidence. This makes the threat map useful for a doctoral dissertation: it exposes where a seemingly attractive model result is fragile and where a negative finding remains robust, without claiming that a fixed list of checks proves universal validity.
+
+## 2.13 Reproducibility and Numerical Traceability
+
+Reproducibility rests on three separate identities: the archived input data, the approved scientific design and the exact released results. The first is the frozen FRED/ALFRED 5 October 2026 historical snapshot and its author-processed canonical CSV, with a checksum manifest and two explicit October 2025 imputation records. The second is the Part 5 methodology, including the authorized amendments for missing data, alternative estimation-window lengths and the in-sample-only K=3 exercise. The third is the published Part 8 release, which provides the tables, figures, model-status records and forecast-comparison outputs actually used in the later chapters.
+
+The final empirical release is pinned to GitHub commit [`9817daf91ac4cb4aaa42c2bef5deaff5b674841b`](https://github.com/charlijomedia-dotcom/academia7/tree/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output) and its inventory of **465 released files**. Its scientific code identity is `8aaa4217536ab3cb942dd248dd19ece7838a8d60`, and its published correction run is identified in the audit metadata. A later rerun must verify its input hashes, configuration and relevant software environment before being treated as equivalent. Values in superseded or provisional output branches are not substitutes for the finalized release, even if they carry similar filenames.
+
+The design was fixed before the final estimation, but the computation produced some implementation problems that required documented correction. These included scoring failed forecasts, protecting numerical Model Confidence Set calculations, correcting an inferential sign convention, restoring required Zivot–Andrews diagnostics, fixing metadata and improving the readability of figures that contain extreme STAR forecasts. The corrections were validated against the final release without changing unapproved model specifications. Extreme but finite predictions remain visible rather than being silently clipped. MSAR numerical optimization remains sensitive to local solutions; in particular, the unemployment three-regime comparison is inconclusive. No global maximum is asserted merely because an optimizer returned success.
+
+The thesis therefore reports both verified results and unresolved limitations. Model failures are stored in an auditable registry even when the associated forecasts cannot be scored. Full parameter tables, warnings, data hashes, selection calendars, software versions, intermediate transformations and correction records belong in the technical appendices and repository. The main text states the scientific consequences without turning the methodology into a programming diary. No additional estimation is claimed to have been performed for the purpose of drafting this chapter.
+
+This approach is consistent with the limitations already stated. The frozen vintage supports exact reproduction conditional on the historical data identity. It does not supply the full release calendar available to a forecaster at each past origin, establish global identification of every nonlinear likelihood, or prove that another country would produce the same model rankings. Those matters remain limits of the interpretation, not details a checksum can solve.
+
+## 2.14 Chapter 2 Concluding Synthesis: From Diagnostic Evidence to a Credible Forecast Experiment
+
+Chapter 1 established the economic possibility of unstable relations among inflation, output, unemployment, interest rates and money. The task of this chapter was to determine how that possibility could be tested without treating complexity as an answer in advance. The resulting empirical design uses six officially measured U.S. forecast targets, an external business-cycle chronology and one declared historical-vintage information set. It keeps quarterly GDP at its true frequency and documents the two exceptional October 2025 input replacements rather than representing them as observed data.
+
+The model comparison follows a controlled sequence. Pre-estimation stationarity and nonlinearity diagnostics define what can be said about persistence, transformations and possible state dependence. AR and ARMA provide serious classical competitors. MSAR and STAR test two distinct forms of nonlinear conditional-mean flexibility under fixed and interpretable specifications. A monthly five-variable VAR asks whether omitted cross-variable information helps explain results from the univariate systems. Conditional-variance diagnostics and the explicit exclusion of a deterministic polynomial baseline keep related but different statistical questions in their proper place.
+
+The experiment separates specification choice from parameter estimation. Discrete model forms are selected on the initial rolling window. Parameters are re-estimated at every eligible historical forecast origin, and each model faces the same target transformation, horizon and date-matching principles. Baseline windows contain 240 monthly or 120 quarterly observations. The primary forecast is one step ahead, while additional horizons, window lengths, transformations and state definitions challenge specific vulnerabilities. This sequence permits meaningful comparisons without using future forecast errors to choose a preferred specification.
+
+No model earns predictive authority from a good likelihood alone. Residual diagnostics, stability, convergence, regime occupancy, transition behavior and forecast availability determine whether a fit is adequate, fragile or failed. Failed predictions remain in the record but do not enter valid loss calculations. Fragility is reported even when a finite forecast is scored. RMSE, MAE and AR-relative out-of-sample $R^2$ describe losses, while the instability-aware HLZ test provides the primary formal average comparison. Conventional DM–HLN, MCS and ex-post state-loss analysis address distinct supporting questions and cannot be substituted for one another.
+
+The design can establish bounded claims about historical predictive performance under a frozen U.S. dataset. It cannot identify the structural causes of macroeconomic outcomes, validate authentic release-by-release forecasting, infer an optimal policy or guarantee international model rankings. Those limits do not weaken the validity of the declared comparison; they define what the evidence is allowed to mean.
+
+Chapter 3 can now examine the empirical evidence in the required order: initial diagnostics, in-sample model adequacy, credibility of estimated states, baseline forecasts and their formal comparisons, and performance around recessions and turning points. Only after those results are visible can Chapter 4 challenge their robustness and assess where, if anywhere, nonlinear complexity has supplied a credible forecasting advantage.
+
