@@ -34,7 +34,7 @@ Finally, forecast evaluation is historical and pseudo-out-of-sample. Past observ
 
 The empirical design keeps the six targets motivated in Chapter 1. They cover five related but distinct blocks: inflation, real activity, unemployment, monetary policy and the money stock. Each target has an official U.S. source, an established FRED/ALFRED series identifier and a sufficiently long history for repeated rolling forecasts. The selection rule is conceptual rather than opportunistic: a variable is included because the thesis can explain its economic role, measure it reproducibly and evaluate it under the approved forecasting design. No extra target is added because it happens to produce a favorable result.
 
-**Table 2.1. Approved U.S. forecast targets and exact usable samples**
+**Table 2.1. U.S. forecasting variables and usable samples**
 
 | Block and target (FRED ID) | Official underlying source | Frequency | Usable raw levels | Modelled target and first modelled date |
 |---|---|---|---|---|
@@ -45,7 +45,7 @@ The empirical design keeps the six targets motivated in Chapter 1. They cover fi
 | Money: M2 stock (M2SL) | Federal Reserve Board | Monthly | Jan. 1959–Aug. 2026 | $1200\Delta\ln(\mathrm{M2})$; Feb. 1959 |
 | Real activity: real GDP (GDPC1) | Bureau of Economic Analysis | Quarterly | 1947 Q1–2026 Q2 | $400\Delta\ln(\mathrm{GDP})$; 1947 Q2 |
 
-*Source:* Author-processed frozen historical-vintage data dictionary, released in [T2.1](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/data_audit/T2.1_data_dictionary.csv). Dates refer to calendar observations, not to the date on which the underlying statistical agency published them. The official raw data remain unchanged in the source archive. The two October 2025 exceptions affect only the derived research input, as explained below.
+*Source: Author's computations using official U.S. data from the Bureau of Labor Statistics, Bureau of Economic Analysis and Federal Reserve Board (FRED/ALFRED historical vintage of 5 October 2026).* *Note:* The dates refer to observation periods, not publication dates. The treatment of the two missing October 2025 observations is explained below.
 
 CPIAUCSL is a direct measure of U.S. consumer prices. It is not identical to the Federal Reserve's preferred personal consumption expenditures inflation measure, but its longer postwar history supports the intended analysis of changing inflation dynamics. Industrial production begins earlier than the postwar period, but the study deliberately starts its usable series in January 1947 to avoid importing prewar and wartime industrial regimes absent from most other targets. Quarterly real GDP represents comprehensive real production; monthly industrial production provides more frequent but narrower cyclical information. The two are not converted to an artificial common monthly frequency. UNRATE and FEDFUNDS are already rates, so their modelled representations are determined by stationarity diagnostics rather than automatic logarithms. M2SL is explicitly a monetary aggregate, not a claim that the money supply determines inflation proportionally.
 
@@ -72,7 +72,7 @@ Transformed dates begin one period after the first usable raw level for the four
 
 ### Historical vintage and research-input identity
 
-All inputs originate from the frozen FRED/ALFRED historical information set dated **5 October 2026**. ALFRED permits retrieval of series values as they appeared at a declared vintage date (Federal Reserve Bank of St. Louis, n.d.). The source snapshot preserves the original official observations and missing markers. A single canonical research-input CSV is then generated from that frozen snapshot, with the series identifier, date, frequency, value, original source value, observation status and any imputation metadata recorded on each row. Data files and manifests carry checksums so a later researcher can distinguish a verified rerun from a changed data input.
+All inputs originate from the frozen FRED/ALFRED historical information set dated **5 October 2026**. ALFRED permits retrieval of series values as they appeared at a declared vintage date (Federal Reserve Bank of St. Louis, n.d.). The official series and their missing observations are kept distinct from the transformed research data. The transformations and the two documented missing-value treatments determine the estimation sample. This makes the treatment of missing observations explicit and reproducible.
 
 Freezing the data prevents later official revisions from silently altering an otherwise identical estimation. It does not solve real-time information uncertainty. In a true historical release-by-release evaluation, a forecast formed in an earlier year might have had access to a different version of GDP or inflation, and some indicators would not yet have been published. The present experiment does not reconstruct those earlier ragged-edge datasets. Results are therefore evidence about forecasting procedures conditional on the fixed vintage, not about the exact decisions possible with the original information on each historical origin (Orphanides, 2001).
 
@@ -82,7 +82,7 @@ The frozen 5 October 2026 source has a missing observation at **1 October 2025**
 
 The consequences differ across targets. CPI inflation is calculated from log differences. Since the carried-forward October CPI level equals September's level, computed October 2025 inflation equals zero by construction. The November 2025 growth transformation then compares November with the carried-forward September-level value, so the missing interval is not distributed across October and November. For UNRATE, the October rate is repeated in levels; the observed outcome is replaced by a modelling assumption, not a measured period of unchanged unemployment. These values may influence not only the directly affected target dates, but also later lag vectors, fitted rolling-window parameters, latent-state probabilities and model comparisons.
 
-The canonical file marks the two entries as imputed and records the predecessor month. The original raw data are never represented as though the observations existed. The finalized imputation audit and exposure sensitivity are preserved in [the published imputation audit](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/data_audit/october_2025_imputation_audit.csv) and [T4.9](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/data_audit/T4.9_locf_sample_comparison.csv). The local imputation does not revise the frozen official snapshot or the approved final study endpoint.
+These two October entries are treated as imputed observations, with September 2025 as the reference month. The original raw data are never represented as though the observations existed. The data treatment is documented in Appendix A, while the sensitivity of the forecast comparisons to these observations is examined in Section 4.2 and Appendix C. The local imputation does not revise the frozen official snapshot or the approved final study endpoint.
 
 This disclosure matters for interpretation. Carry-forward is a pragmatic, traceable way to retain a declared study calendar, but it creates artificial stability at a specific date and may affect surrounding observations. Any inference using those observations is conditional on the authorized choice. Chapter 4 treats their direct and indirect exposure as a robustness threat rather than a factual description of U.S. inflation or unemployment in October 2025.
 
@@ -125,7 +125,7 @@ The decision rules form a hierarchy. If the initial-window ADF rejects a unit ro
 | FEDFUNDS: initial 240 observations | 0.9530 | ≤0.0100 (bound) | 0.8113 | Clear nonstationarity under the ADF/KPSS rule; first difference selected |
 | FEDFUNDS: full sample | 0.1285 | ≤0.0100 (bound) | 0.3203 | Full-sample ADF/KPSS supports the original difference decision |
 
-*Source:* [T2.2 stationarity test output](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.2_stationarity.csv) and [locked transformation decisions](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.2_transformation_decisions.csv). *The KPSS implementation reports p-values at the edge of its critical-value table; inequalities and the word 'bound' indicate a tabulated limit rather than an exact tail probability.* All decisions use 5%.
+*Source: Author's computations.* *Note:* KPSS p-values reported as inequalities are bounds of the reference table, rather than exact tail probabilities. All decisions use 5%.
 
 The initial-window evidence resolves the disputed target forms without looking at the later forecast errors. UNRATE is forecast in levels, and FEDFUNDS is forecast in first differences. Both initial- and full-sample ZA tests fail to reject their unit-root nulls even allowing one endogenous break. This does not overturn the declared ADF/KPSS decision because ZA was specified as a tie-breaker only if those two tests disagreed. It does limit any claim that the tested level series has been shown stationary around a single estimated break.
 
@@ -153,7 +153,7 @@ H_0:\ E(y_t\mid\mathcal F_{t-1})\text{ has the selected linear AR form};
 H_1:\ \text{the conditional mean departs from that form.}
 ```
 
-The alternative in an actual test is narrower than all conceivable nonlinear processes. Tsay's auxiliary form and the STAR-specific sequence can respond to different features. A non-rejection in one test and rejection in another is therefore not automatically a contradiction. The output records the statistic, test reference distribution or algorithm, p-value, 5% decision, delay and, for STAR, the chosen transition type. Detailed target-specific evidence is examined in Chapter 3 from [T2.3](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.3_tsay.csv) and [T2.4](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.4_star_linearity.csv). No post hoc filter removes a predeclared nonlinear competitor merely because its specification test did not reject.
+The alternative in an actual test is narrower than all conceivable nonlinear processes. Tsay's auxiliary form and the STAR-specific sequence can respond to different features. A non-rejection in one test and rejection in another is therefore not automatically a contradiction. Results are reported with the test statistic, reference distribution, p-value, 5% decision and, for STAR, the selected delay and transition function. The target-specific findings are examined in Section 3.1; full diagnostics are presented in Appendix A. No post hoc filter removes a predeclared nonlinear competitor merely because its specification test did not reject.
 
 Markov switching raises a separate testing problem. Under a one-state null, parameters associated with the second state may be unidentified, and some probabilities lie on boundaries. A conventional likelihood-ratio statistic cannot simply be assigned a standard chi-square distribution. Cho and White (2007) and Qu and Zhuo (2021) address these nonregular features. The approved design does not produce an unverified one-state-versus-two-state p-value. MSAR is retained as a theory-motivated forecasting alternative, while its regimes are assessed by occupancy, transition behavior, estimation quality and prediction. The full-sample three-state check is an additional credibility exercise, not a substitute for a valid regime-number hypothesis test.
 
@@ -206,11 +206,11 @@ The moving-average coefficients $\theta_k$ describe how recent innovations affec
 
 For monthly targets, the approved search covers $p,q\in\{0,\ldots,4\}$ excluding the white-noise model $(0,0)$. For quarterly GDP, each order is in $\{0,1,2\}$, again excluding $(0,0)$. The same BIC and residual-screen principle applies, with valid stationarity and invertibility required. Selection is conducted on the initial estimation window and held fixed throughout the baseline forecast evaluation.
 
-ARMA is a broader candidate class, but its selected realization need not have $q>0$. A pure autoregression can be the most defensible choice within the ARMA grid. This is precisely what occurs for several selected targets in the released specification table. The label ARMA therefore identifies the comparison family and its selection rule; it does not guarantee that a nonzero moving-average component has been selected or that it will outperform the primary AR benchmark.
+ARMA is a broader candidate class, but its selected realization need not have $q>0$. A pure autoregression can be the most defensible choice within the ARMA grid. This occurs for several targets in Table 2.3. The label ARMA therefore identifies the comparison family and its selection rule; it does not guarantee that a nonzero moving-average component has been selected or that it will outperform the primary AR benchmark.
 
 ### The actual selected classical specifications
 
-The published selection record gives the following baseline orders. These are initial-window choices, not orders selected from subsequent forecast performance.
+The initial-window estimation gives the following orders. These are initial-window choices, not orders selected from subsequent forecast performance.
 
 **Table 2.3. Fixed baseline linear specifications and inherited nonlinear lag orders**
 
@@ -223,7 +223,7 @@ The published selection record gives the following baseline orders. These are in
 | Federal funds rate change | 1 | (1, 0) | 1 | 1 |
 | M2 growth | 3 | (3, 0) | 3 | 3 |
 
-*Source:* [T2.5 selected specifications](https://github.com/charlijomedia-dotcom/academia7/blob/9817daf91ac4cb4aaa42c2bef5deaff5b674841b/my-thesis/output/diagnostics/T2.5_selected_specs.csv). The nonlinear lag orders inherit the baseline AR order subject to the predeclared caps; they are not newly optimized for the nonlinear models.
+*Source: Author's computations.* *Note:* MSAR and STAR inherit the selected AR lag orders subject to the limits specified in Section 2.6.
 
 Two features merit explicit notice. UNRATE requires six linear AR lags, and INDPRO requires twelve, while the nonlinear competitors use four. This is an intentional complexity control, not evidence that an unrestricted nonlinear model has been given the same lag span. It makes the baseline AR a demanding own-history competitor and prevents the nonlinear models from multiplying too many state-dependent terms. Second, the selected ARMA for CPI, unemployment and industrial production did not pass the primary residual-whiteness screen even though its BIC-minimizing order was retained. Those weak diagnostic cases remain reported as such. A selected specification is not automatically adequate.
 
@@ -321,7 +321,7 @@ The distinction also exposes an estimation risk. An estimated transition can be 
 
 The STAR lag order is inherited from the initial AR, capped at four lags monthly and two quarters for GDP. The permitted delays are one to six months or one to four quarters. These restrictions limit the size of the nonlinear estimation problem and maintain a transparent comparison. They also mean that STAR may use fewer own-history lags than the primary AR for some targets; that difference is disclosed in Table 2.3 rather than treated as a hidden advantage or ignored limitation.
 
-The final initial-window STAR selections were LSTAR with delays 3 for GDP, 6 for CPI, 1 for unemployment and 5 for M2; and ESTAR with delays 4 for industrial production and 1 for the federal funds rate. They follow the published specification record. The preliminary STAR linearity screen rejected at the chosen delay for CPI, unemployment and the federal funds rate, but not for GDP, industrial production or M2. These outcomes describe a pre-estimation diagnostic under one specific test. Chapter 3 assesses what subsequently happened to fit and forecast quality.
+The final initial-window STAR selections were LSTAR with delays 3 for GDP, 6 for CPI, 1 for unemployment and 5 for M2; and ESTAR with delays 4 for industrial production and 1 for the federal funds rate. They follow the specification procedure described above. The preliminary STAR linearity screen rejected at the chosen delay for CPI, unemployment and the federal funds rate, but not for GDP, industrial production or M2. These outcomes describe a pre-estimation diagnostic under one specific test. Chapter 3 assesses what subsequently happened to fit and forecast quality.
 
 ### Comparing the two nonlinear hypotheses
 
@@ -337,7 +337,7 @@ MSAR and STAR should not be merged conceptually. The former allows an unobserved
 | STAR | Smooth coefficient transition using observed lagged state | Threshold, smoothness, transition delay/type, nonlinear identification | A causal threshold or unique economic state |
 | VAR (robustness) | Lagged cross-variable information in a linear system | Common data calendar, joint lags, stability | Causal transmission absent structural restrictions |
 
-*Note:* This table summarizes the declared comparison, not in-sample or out-of-sample rankings. The released specification choices are documented in T2.5. Detailed optimization constraints and complete parameter outputs remain in the evidence appendices.
+*Note:* This table summarizes the declared comparison, not in-sample or out-of-sample rankings. Complete specification details and parameter estimates are presented in Appendices A and B.
 
 The earlier hybrid MSSTAR has been removed from the revised methodology. Combining latent-state switching with a smooth transition would introduce two nonlinear mechanisms before either has established independent forecast value. The present four-family comparison can test the more basic question directly. Excluding the hybrid is not an empirical assertion that it never works; it is a proportionality decision to keep the scientific question and numerical evidence manageable.
 
@@ -496,7 +496,7 @@ H_0:\frac{1}{N}\sum_{t=1}^{N}E(d_t^{(m,b)})=0,
 H_1:\frac{1}{N}\sum_{t=1}^{N}E(d_t^{(m,b)})\neq0.
 ```
 
-This formulation deliberately concerns average accuracy. It does not require the relative advantage to be identical in every recession, expansion or subperiod. Harvey et al. (2025) show that the conventional Diebold–Mariano long-run variance estimate can behave poorly when the mean loss differential varies through time. Their modification uses local nonparametric demeaning in the variance construction. The released implementation records its kernel and bandwidth rules and reference critical-value calibration, rather than silently substituting a generic heteroskedasticity- and autocorrelation-consistent calculation. The paper supplies a direct justification for the predeclared test under possible instability.
+This formulation deliberately concerns average accuracy. It does not require the relative advantage to be identical in every recession, expansion or subperiod. Harvey et al. (2025) show that the conventional Diebold–Mariano long-run variance estimate can behave poorly when the mean loss differential varies through time. Their modification uses local nonparametric demeaning in the variance construction. The test uses the prescribed local-demeaning kernel, bandwidth choice and critical-value calibration rather than a generic heteroskedasticity- and autocorrelation-consistent approximation. The paper supplies a direct justification for the predeclared test under possible instability.
 
 The primary interpretation uses two-sided inference at the 5% level. A rejection, together with a negative estimated mean differential, supports a claim of lower average loss for the competitor in that pair, target, horizon and sample under the specified test. A positive mean differential after rejection supports the reverse directional comparison. A non-rejection means that equality of average loss was not rejected; it is not evidence that the forecasts have exactly the same skill. If the long-run variance or reference calculation is not numerically valid, no p-value is invented and the inference is recorded as unavailable.
 
@@ -579,7 +579,7 @@ A robustness check is useful only when it challenges a named alternative explana
 | Optimizer behavior or failed forecasts favors survivors | Multi-start and warning records, common-date tests, status summaries and non-clipped figures | Numerical credibility and sample-selection limitations |
 | Many tested model-horizon cells produce a nominal small p-value | Clearly separated primary tests, full p-value family and multiplicity-sensitive audit | Whether isolated nominal findings justify a broader statement |
 
-*Note:* The threats are assessed one at a time under the approved design; the study does not estimate every possible cross-product of horizons, transformations, state widths and window lengths. Results and qualifications belong in Chapter 4, and the released detailed tables are preserved in the final Part 8 output commit.
+*Note:* The threats are assessed one at a time under the approved design; the study does not estimate every possible cross-product of horizons, transformations, state widths and window lengths. Results and their qualifications are examined in Chapter 4, with supporting tables in Appendix C.
 
 ### Transformations, benchmark lags and horizons
 
