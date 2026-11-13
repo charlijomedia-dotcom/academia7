@@ -188,7 +188,7 @@ The theory of money and transmission thus adds three forecasting threats. Moneta
 
 ## 1.5 Schumpeterian Disruption, Structural Change, and Turning Points
 
-Economic relationships can change not only because a short-lived shock moves prices or output, but also because the economy itself changes. Innovation alters production methods, products, firms, and the allocation of resources. Schumpeter (1934/1911) placed innovation and economic development at the centre of economic change. His argument is relevant to this dissertation because the environment that produced a historical series may not remain constant. It does not, by itself, predict a numerical break date or establish a statistical Markov regime.
+Economic relationships can change not only because a short-lived shock moves prices or output, but also because the economy itself changes. Innovation alters production methods, products, firms, and the allocation of resources. Schumpeter (1934) placed innovation and economic development at the centre of economic change. His argument is relevant to this dissertation because the environment that produced a historical series may not remain constant. It does not, by itself, predict a numerical break date or establish a statistical Markov regime.
 
 An innovation can affect several aggregate variables at different speeds. New production methods may raise productivity and reduce some costs. Employment may shift between sectors before aggregate unemployment settles. Financial technology may change how households hold liquid balances. New forms of production may alter the weight of industrial output within total activity. These changes can shift trends, relative prices, and the timing of adjustment. A forecaster estimating constant parameters over several decades may average across environments in which the same historical relationship has different meanings.
 
@@ -373,9 +373,9 @@ Carriero, A., Clark, T. E., Marcellino, M., & Mertens, E. (2025). Forecasting wi
 
 Chauvet, M., & Piger, J. (2008). A comparison of the real-time performance of business cycle dating methods. *Journal of Business & Economic Statistics, 26*(1), 42–49. https://doi.org/10.1198/073500107000000296
 
-Clark, T. E., Huber, F., Koop, G., & Marcellino, M. (2024). Forecasting U.S. inflation using Bayesian nonparametric models. *The Annals of Applied Statistics, 18*(2), 1421–1444. https://doi.org/10.1214/23-AOAS1841
-
 Clark, T. E., Huber, F., & Koop, G. (2026). A flexible approach to augmenting a Bayesian VAR with nonlinear factors. *Journal of Business & Economic Statistics*. Advance online publication. https://doi.org/10.1080/07350015.2026.2703238
+
+Clark, T. E., Huber, F., Koop, G., & Marcellino, M. (2024). Forecasting U.S. inflation using Bayesian nonparametric models. *Annals of Applied Statistics, 18*(2), 1421–1444. https://doi.org/10.1214/23-AOAS1841
 
 Diebold, F. X., & Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic Statistics, 13*(3), 253–263. https://doi.org/10.1080/07350015.1995.10524599
 
