@@ -36,6 +36,12 @@ The frozen source did not supply two October 2025 observations. The analysis pre
 
 The sensitivity of relative forecast accuracy to directly affected target dates is reported in Appendix C, Table C.8. Removing the directly affected realized targets does **not** eliminate all lag-vector and rolling-estimation exposure to the imputed inputs. The established full-sample analysis is therefore retained as the baseline, with its limitation stated.
 
+**Figure A.1. CPI level, transformed inflation target and the October 2025 constructed observation**
+
+![Historical CPI index level and annualized monthly inflation target, with retrospective U.S. recessions and the constructed October 2025 observation distinguished.](../../../output/figures/F2.1_CPIAUCSL.png)
+
+*Source: Author's computations from U.S. Bureau of Labor Statistics data.* *Note:* The upper panel contains the observed index level, while the lower shows the annualized one-month log-change inflation target. Shaded recessions are retrospective dates. The dotted marker indicates the author-constructed October 2025 input, not an official publication. The plot illustrates variation in inflation and the data treatment; it does **not** test whether a 12-month autoregressive coefficient is statistically necessary or identify a seasonal mechanism. The relevant CPI lag comparison is reported in Section 4.3 and Appendix C, Table C.2.
+
 ## A.3 Unit-root, stationarity and break-sensitive supplementary results
 
 **Table A.3. Unemployment and federal funds rate level tests**
