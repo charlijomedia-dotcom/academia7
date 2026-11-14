@@ -373,6 +373,134 @@ The five-variable robustness exercise also does not turn this dissertation into 
 Together, Sections 4.2–4.6 establish the main robustness finding of the first half of this chapter. Alternative unemployment and interest-rate transformations do not reveal a supported nonlinear advantage. The CPI lag exercise shows sensitivity to specification and loss but provides no direct evidence that AR(12) improves on the declared AR(2). Three-state MSAR fits offer better penalized historical likelihoods for most targets without identifying credible additional regimes; unemployment remains inconclusive because the larger likelihood is unreliable. Longer forecast horizons reveal one nominal MSAR gain for twelve-month CPI inflation that does not survive the family-wise sensitivity. A five-variable VAR does not outperform AR significantly under the primary test. These results do not eliminate every alternative explanation, but they progressively narrow the circumstances in which extra nonlinear complexity could be claimed to improve prediction.
 
 The remaining sections examine the factors most difficult to summarize through a conventional model-comparison table: numerical fragility, failures, estimation-window sensitivity, the limits of the historical information set, and the economic scope of the conclusions. The purpose is to determine whether the absence of general nonlinear superiority is a robust scientific finding rather than an artifact of one estimation procedure or unusually favorable historical episode.
+
+## 4.7 Model Fragility as Evidence, Not a Technical Footnote
+
+### 4.7.1 Why numerical admissibility enters an economic forecast comparison
+
+A model that cannot be estimated reliably at the dates when forecasts are required has an empirical limitation that is distinct from its average error on dates when it succeeds. This distinction becomes important for latent-state and smooth-transition models, whose likelihoods and nonlinear least-squares criteria may contain flat regions, parameter boundaries, singular covariance matrices and multiple local optima. A fit may provide a finite point prediction while remaining weakly identified. A different fit may fail to provide a usable forecast at all. Neither outcome can be represented adequately by a single RMSE.
+
+Chapter 2 therefore distinguishes *adequate*, *fragile* and *failed* estimates. Adequacy means that the specified numerical and diagnostic requirements are met. Fragility identifies a retained fit with one or more material warnings, such as low effective state occupancy, a transition probability at a boundary, a smooth-transition slope at its imposed limit, an extreme threshold or an ill-conditioned covariance estimate. Failure means that a valid forecast cannot be retained under the stated rules. A model can therefore issue a numerically finite forecast and be fragile without being classified as failed. Conversely, a failed fit is not silently given the prediction of a competing model and scored as if it were its own.
+
+These classifications serve a substantive purpose. Consider two forecasting procedures with similar RMSEs computed on their surviving forecast dates. If one procedure produces a valid estimate consistently, while the other fails during large shocks and is evaluated only on more ordinary observations, its apparent average accuracy may exaggerate its operational reliability. The issue is not solved merely by computing pairwise loss differentials on common valid dates. Alignment makes the retained forecasts comparable, but the common set can still exclude dates on which one of the models was unable to forecast. Coverage and conditional accuracy must therefore be reported together.
+
+For an estimation family $m$ and forecast horizon $h$, the empirical proportion of attempted forecast origins yielding retained predictions is
+
+**Equation (4.4): Forecast availability over attempted origins**
+
+```math
+\widehat A_{m,h}
+=
+\frac{N^{\mathrm{retained}}_{m,h}}
+     {N^{\mathrm{attempted}}_{m,h}},
+\qquad
+0\leq\widehat A_{m,h}\leq1.
+```
+
+This proportion measures forecast availability under the specified procedure; it is not a probability of correct forecasts and does not replace RMSE or MAE. In particular, a numerically extreme but finite STAR forecast can be retained and counted as available while producing an economically unacceptable error. Availability, statistical credibility and predictive accuracy are therefore three distinct dimensions of performance. Their separation is necessary to evaluate whether extra complexity is worthwhile.
+
+### 4.7.2 How frequently are rolling nonlinear estimates credible?
+
+**Table 4.7. Numerical and diagnostic classification of rolling model fits**
+
+| Model family | Adequate fits | Fragile fits | Failed fits | Total fits | Fragile share |
+|---|---:|---:|---:|---:|---:|
+| AR | 18,204 | 21 | 78 | 18,303 | 0.1% |
+| ARMA | 15,317 | 27 | 99 | 15,443 | 0.2% |
+| MSAR(2) | 5,128 | 10,246 | 69 | 15,443 | 66.3% |
+| STAR | 2,741 | 12,702 | 0 | 15,443 | 82.3% |
+
+*Source: Author's computations.* *Note:* Counts pool the corresponding estimation exercises and targets. The AR family has a different number of recorded fits from the three other baseline families, so raw counts should not be read as equal-exposure failure risks. Each fit is classified once as adequate, fragile or failed. A separate record of individual diagnostic warnings can contain multiple entries for one fit and must not be mistaken for a count of distinct failures. A fragile fit may still provide a finite forecast and enter an accuracy comparison; a failed fit does not.
+
+The dominant contrast is between the classical and nonlinear models. Across the pooled records, 10,246 of 15,443 MSAR fits and 12,702 of 15,443 STAR fits are classified as fragile. These correspond to approximately two-thirds and four-fifths of their respective estimation records. The difference is not simply that the nonlinear families fail to return any numerical answer. In the STAR baseline family, no estimates meet the specified definition of *failed* within the pooled status table, but most are fragile. This observation is fully consistent with the extreme finite forecasts reported in Chapter 3: returning a number is not equivalent to returning a stable or useful forecast.
+
+The AR and ARMA families have far fewer fragility warnings as proportions of their recorded fits, although they are not immune to failure. The AR table includes 78 failed estimates across 18,303 fits and ARMA includes 99 across 15,443. The presence of failures among classical models matters because model-availability restrictions must be applied symmetrically. A valid nonlinear forecast on a target date for which AR failed should be retained in the nonlinear model's own-sample accuracy but cannot be used in a paired test against an unavailable AR forecast. This distinction is particularly consequential for unemployment around the exceptionally large pandemic disturbance.
+
+The pooled percentages should not be generalized to every series. Unemployment MSAR is an instructive exception: its 3,520 recorded fits comprise 2,120 adequate, 1,380 fragile and 20 failed estimates. Adequate fits therefore outnumber fragile ones for that variable even though MSAR is predominantly fragile when the six series are pooled. By contrast, M2 growth has only 40 adequate and 2,245 fragile MSAR fits in its corresponding estimation records. Thus *nonlinear fragility* is an empirical feature of the specific target, model and sample, not a universal property that must be assigned unchanged to every chain.
+
+The types of warnings also differ across models. In MSAR, effective regime occupancy and transition boundaries are central because they affect whether the state-dependent means are supported by repeated observations. In STAR, extreme thresholds, transition parameters at their bounds and covariance singularity are especially consequential. These problems do not all have the same statistical interpretation. A low-occupancy regime may be a legitimate but rare event, while a singular covariance indicates that conventional uncertainty estimation is unreliable. Both require disclosure; neither should be treated as automatic proof that the entire class of nonlinear models is invalid.
+
+### 4.7.3 Local optima and the interpretation of Markov-switching estimates
+
+The credibility of a nonlinear likelihood depends not only on its fitted parameters but on whether the numerical procedure has located a sufficiently reliable solution. Markov-switching likelihoods can have multiple local maxima. A convergence flag usually indicates that an algorithm has satisfied a specified stopping criterion near its current solution; it does not certify that every other admissible parameter vector has a lower objective value. Weakly identified transition probabilities and extremely rare states make this difficulty more acute.
+
+A sensitivity examination of two MSAR estimation sequences produced 20 changes in fit classifications and 29 additional shifts to different local solutions. The practical implication is that optimizer-dependent likelihood variation can occur even when the underlying target and model family are unchanged. The resulting uncertainty should not be suppressed by presenting an estimate as the unique global optimum. None of the MSAR fits in this research is asserted to have been globally maximized.
+
+This consideration connects directly to the three-state unemployment result in Section 4.4. Its obtained three-state log-likelihood is below the two-state value despite the more flexible parameterization. That outcome is not a valid demonstration that the smaller model fits better at the global optimum; it indicates that the larger model was not reliably optimized. By the same logic, a favorable two-state fit with an unusually sparse regime is not proof that a stable economic mechanism has been identified. The likelihood is evidence only to the extent that the estimation and identification conditions support its interpretation.
+
+An operational consequence follows for forecasting. A state probability inferred from a poorly identified likelihood can change substantially as an estimation window moves, even if the economic environment has not undergone a corresponding structural transformation. The model may then produce unstable forecast paths. Multiple starting values and consistent estimation criteria reduce the dependence on arbitrary initialization, but they do not eliminate the possibility of an inferior local solution. This is a limitation on the strength of the economic claims, not merely a computational inconvenience.
+
+### 4.7.4 Explosive STAR forecasts and the limits of formal accuracy inference
+
+The STAR results require a separate distinction between numerical forecasting failure and statistical inference. For CPI inflation, the baseline one-step STAR RMSE exceeds $5\times10^9$ in the units of the transformed target. For industrial production it exceeds $7\times10^6$. These values arise from extreme but finite forecast errors and are retained in the descriptive scoring. They are not evidence of a large ordinary forecast bias that could be repaired by choosing a different axis on a plot. They reveal that particular fitted nonlinear recursions can produce extrapolations far outside the historical scale of the macroeconomic series.
+
+**Figure 4.1. CPI inflation forecasts: baseline comparisons and separated extreme STAR behavior**
+
+![CPI inflation forecast-error visualization with the extreme smooth-transition forecast behavior presented separately from the ordinary-scale model comparisons.](../../../output/figures/F3.4_CPIAUCSL.png)
+
+*Source: Author's computations.* *Note:* Extreme finite STAR forecasts are displayed separately to preserve the legibility of the AR, ARMA and MSAR comparisons. Separation of visual scales does not remove these observations from the RMSE or MAE calculations and does not imply that the extreme forecast is an admissible economic scenario.
+
+The empirical problem extends beyond visualization. A pairwise average-loss test depends on the distribution and variability of forecast-loss differentials. When one or a few STAR predictions yield squared errors many orders of magnitude greater than all others, the estimated loss variability and its numerical calibration can become degenerate. Under those conditions, a nominal p-value near a conventional non-rejection threshold cannot be interpreted as ordinary evidence that the competing methods have equal forecasting accuracy. Numerical degeneracy supplies no usable affirmative conclusion in either direction.
+
+The correct reporting practice separates three statements. First, the observed finite STAR errors can be extremely large, and this is a descriptive fact relevant to forecast use. Second, the corresponding formal average-accuracy test may be numerically uninformative and must be identified as such. Third, a statistically valid comparison in another target, horizon or loss function remains interpretable on its own terms. Thus the observed CPI and industrial production explosions do not invalidate all STAR tests, but neither can the unreliable tests be treated as support for a benign conclusion.
+
+For instance, the informative one-step absolute-loss comparisons for unemployment and changes in the federal funds rate favor AR over STAR, with nominal HLZ p-values approximately 0.0015 and 0.0292. These are evidence against STAR in those specifically defined comparisons, not evidence of universal AR superiority. They do, however, refute any suggestion that smooth-transition flexibility necessarily provides an advantage during periods of uncertainty.
+
+The distinction also illustrates why the fitted state should not be interpreted as a policy-relevant shock detector. A sharply varying transition function might appear to react to an extreme observation, but that response is useful only if it generates a stable predictive distribution or point forecast from information genuinely available at the origin. A model that becomes explosive precisely when the target departs from its usual range may fail the economic purpose for which state dependence was introduced. Reliable numerical behavior is therefore part of the substantive forecasting assessment.
+
+### 4.7.5 Estimation-window sensitivity: the unemployment counterexample
+
+The historical window length is a separate source of model uncertainty. Shorter windows may adapt more quickly to parameter instability but estimate more parameters from fewer observations. Longer windows may reduce sampling variation while retaining observations from older policy regimes or unusual shocks. Both channels can change the relative performance of linear and nonlinear models (Pesaran & Timmermann, 2007; Rossi & Inoue, 2012).
+
+The one-step robustness exercise therefore compares monthly estimation windows of 180, 240 and 300 observations and quarterly GDP windows of 90, 120 and 150 observations. Each alternative is evaluated on a target-date calendar beginning only when the longest candidate window is available. This alignment prevents a difference in the number of eligible target dates from being mistaken for a window-length effect. It does not ensure that every model provides a valid prediction at every eligible origin, so the paired valid-date rule remains necessary.
+
+The principal inferential finding is stable: **none of the nonlinear families acquires a supported gain over the AR benchmark under the primary HLZ test at any of the declared window lengths.** Across the 108 reported model-pair, loss and window comparisons, 97 retain the baseline conclusion. Ten changes concern reversals in the descriptive direction of the loss differential without a new significant nonlinear gain; one comparison loses prior support, concerning a classical ARMA absolute-loss result for CPI. These figures should not be converted into a claim that all RMSE rankings are identical. They indicate that the principal inferential absence of a general nonlinear gain survives the window exercise.
+
+Unemployment provides the strongest counterexample to a *stable descriptive ranking*. For MSAR against AR at one month, the AR-relative out-of-sample $R^2$ on the matched dates is approximately 0.240 with 180 months of history, 0.190 with 240 months and **−1.102** with 300 months. MSAR ranks first by its own-sample RMSE at the two shorter lengths but fourth among the four baseline families with the longest window. Its one-step RMSE on the long-window evaluation is approximately 0.819, compared with AR's 0.558 on its corresponding valid calendar.
+
+The relative loss-test evidence does not turn that reversal into a significant finding in favor of either model. For squared loss, the unemployment MSAR–AR HLZ p-values are approximately 0.392, 0.370 and 0.316 for the short, baseline and long windows respectively. The mean competitor-minus-AR loss differential also changes sign with window length. Thus the apparent one-step MSAR advantage for unemployment is sensitive to estimation history, even though the formal experiment provides no significant positive gain at any length.
+
+STAR's window sensitivity is still more pronounced for some targets. For CPI inflation on the aligned window-comparison calendar, its one-step RMSE is approximately $5.62\times10^9$ with a 240-month window, 27.23 with 180 months and 3.45 with 300 months. These scales reveal strong sensitivity of a nonlinear recursion to its estimation history. One should not conclude that 300 months is universally an optimal STAR window from this particular comparison. The finding instead reinforces that a numerical forecast procedure can be unstable under plausible changes in how much history is used.
+
+The evidence for an inferential disadvantage of unemployment STAR is more stable than the descriptive MSAR ranking. Under one-step absolute loss, the HLZ comparisons favor AR at all three monthly window lengths, with nominal p-values approximately 0.0463, 0.0012 and 0.0017 for 180, 240 and 300 months. These results concern the specified unadjusted tests and should not be promoted to a universal statement about smooth-transition models. They nevertheless demonstrate that a result about relative forecast performance can be stable in direction even while the models' numerical accuracy varies with the window.
+
+Taken together, the window evidence qualifies a simplistic interpretation of Chapter 3. The baseline absence of a *general statistically supported nonlinear advantage* is robust to the selected history lengths, but several *descriptive* rankings are not. For unemployment in particular, a claim that MSAR has an enduring one-step advantage would fail this robustness test. This is a stronger economic lesson than an assertion that every model performs identically under all windows: the extra flexibility may produce some favorable historical errors without identifying a stable predictive mechanism.
+
+### 4.7.6 The combined adequacy, coverage and forecast-loss judgment
+
+A forecasting model earns evidential credibility only when its available predictions, estimation behavior and formal loss comparisons are read together. A finite forecast from a fragile model can still be scored. A lower RMSE can still be informative, especially when it appears repeatedly across related horizons or windows. But neither consideration erases the possibility that the estimated regime is unidentifiable, that a numerical solution is local, or that the apparent gain depends heavily on a short sequence of extraordinary observations.
+
+The full evidence does not establish that the classical families always produce the lowest errors. GDP and industrial production show notable descriptive MSAR improvements in some comparisons, and unemployment has some windows in which MSAR ranks first. The result instead concerns the *additional claim* that nonlinear complexity produces a generally credible and statistically supported predictive advantage. That stronger claim has not survived the combined adequacy and robustness assessment.
+
+The most defensible inference is therefore methodological as well as empirical. Numerical fragility and model availability should be treated as observable features of the forecasting procedure rather than discarded as incidental implementation details. Treating failures consistently, retaining extreme finite losses, reporting matched-date comparisons and disclosing sensitivity to local likelihood solutions prevent a favorable subset of forecasts from being mistaken for the full performance of a model.
+
+The detailed model-status, warning and estimation-window comparisons are reported in Appendix C. They document where numerical problems occur without turning the economic argument into a catalogue of individual optimization records. The next section explains a related limitation: the empirical experiment is a historical pseudo-out-of-sample comparison and does not reconstruct the information flow of real-time macroeconomic nowcasting.
+
+## 4.8 What Nowcasting and Mixed-Frequency Methods Could Answer That This Design Does Not
+
+### 4.8.1 Historical pseudo-out-of-sample forecasting is not real-time nowcasting
+
+The comparison in this dissertation is pseudo-out-of-sample. At every historical origin, the fitted models exclude the later realized target value from the rolling estimation window. This simulates an important aspect of forecasting under temporal separation between estimation and evaluation. Yet the research uses a fixed vintage of historical macroeconomic observations. It does not reconstruct what each variable looked like before subsequent statistical revisions, how quickly each release became available, or which publications had reached forecasters on each date.
+
+This distinction matters because macroeconomic series are frequently revised. An initially published GDP observation may later incorporate benchmark revisions, and seasonal adjustment can change previously reported monthly observations. In such circumstances, the forecaster's historical information set is not identical to a fixed later-vintage dataset truncated at a past calendar date. Orphanides (2001) demonstrated why monetary-policy analysis can change when actual real-time data replace retrospectively revised observations. The same concern limits the interpretation of historical forecast-accuracy comparisons.
+
+Nowcasting poses a different information problem. When a quarter has not ended or when its official GDP release is pending, a researcher may seek a timely estimate of current economic activity from information already arriving within that quarter. Giannone et al. (2008) develop a framework for exploiting the changing informational content of macroeconomic releases in real-time nowcasting. Such a framework must handle missing observations at the ragged end of the data, different release frequencies and the arrival of new information between formal target observations. The models in the present comparison do not solve this problem.
+
+The quarterly GDP forecasts here use observed quarterly history and fixed quarterly horizons; the monthly series use their native monthly observations. The monthly VAR in Section 4.6 likewise compares future monthly targets using historical lagged aggregates. It is not a system that updates an unobserved current-quarter GDP estimate when industrial production or labor-market data are released. Consequently, statements about the relative RMSEs of these models cannot be recast as claims about their real-time nowcasting accuracy.
+
+### 4.8.2 What mixed-frequency models would add
+
+A mixed-frequency framework could combine monthly indicators with quarterly GDP while preserving the fact that observations arrive at different intervals. Dynamic-factor nowcasting, mixed-data sampling specifications and mixed-frequency vector autoregressions offer different statistical ways to do so. Their potential value lies partly in using information that becomes observable before the quarterly target is published, rather than in forcing a monthly GDP number to exist.
+
+Such an extension would require explicit assumptions about observation equations, temporal aggregation, release calendars and missing-data patterns. It would also require a real-time or reconstructed historical vintage structure for a genuinely real-time evaluation. The definition of a forecast origin could shift from a calendar quarter to a particular information-update date, and the evaluation would need to account for the target's initial release versus its subsequent revisions. None of these elements can be inferred from the present univariate and monthly VAR accuracy tables.
+
+The same methodological caution applies to real-time recession probabilities. The ex-post NBER recession indicator used for state-conditioned analysis is not a forecast-time variable announcing that a recession has begun. A nowcasting or real-time business-cycle classification exercise would need to estimate the current state from information available before the eventual retrospective date is known. As Chauvet and Piger (2008) show in their assessment of real-time business-cycle dating methods, the timeliness of phase identification is itself an empirical dimension. It should not be assumed from good forecasts around dates subsequently identified as peaks or troughs.
+
+### 4.8.3 Research scope and the unanswered information question
+
+The omission of real-time nowcasting does not invalidate the historical comparison, but it narrows its scope. The dissertation asks whether specific nonlinear conditional-mean models improve prediction relative to classical benchmarks under a common historical dataset and explicit rolling windows. It does not claim to determine the best model for a statistical agency releasing provisional nowcasts or for a central bank responding to partial information during a meeting week.
+
+A future study could retain the same core principle, namely that additional complexity must demonstrate a gain under comparable information sets, while replacing the historical fixed-vintage inputs with actual past release vintages and news-arrival dates. It could then ask whether a nonlinear state mechanism has incremental value beyond a strong mixed-frequency nowcasting benchmark. That would be a new empirical question, not an unreported extension of the results presented here. The distinction preserves the credibility of both the completed forecasting experiment and the possible contribution of a separate nowcasting research program.
 ---
 
 ## References
