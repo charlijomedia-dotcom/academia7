@@ -455,9 +455,110 @@ The evidence also does not validate an economic interpretation of a model's late
 
 The combined implication of Sections 3.5 and 3.6 is consequently precise. Recessions and turning neighborhoods are periods of relatively high forecast difficulty, but the comparison offers **no statistically established evidence of an MSAR or STAR advantage concentrated in those states**. Some numerical rankings depend on the particular dates and neighborhood widths, while several STAR regressions are affected by extreme forecast losses. The next task is to relate these results to the economic functions of each aggregate without collapsing six different targets into one universal model ranking.
 
+## 3.7 Cross-Aggregate Synthesis: Inflation, Activity, Labor-Market and Monetary Evidence
+
+### 3.7.1 Why the six targets do not imply a single economic forecast ranking
+
+The empirical comparison holds the broad evaluation principles constant across six targets, but the targets differ in their economic meaning, frequency, persistence, volatility and response to shocks. A model that improves annualized industrial production growth forecasts does not thereby improve predictions of unemployment levels. Even where the same loss measure is used, the numerical scales are different, so comparing RMSE levels across target variables would have no sensible interpretation. The relevant comparison concerns a model's performance **relative to its benchmark for the same target, horizon and dates**.
+
+The four economic groups therefore require different interpretations. Inflation concerns the persistence and variation of price changes; GDP and industrial production capture distinct dimensions and frequencies of activity; unemployment is a slowly adjusting stock-related rate that can change abruptly during crises; and the policy rate and M2 describe monetary conditions through quite different statistical transformations. Their separate results are more informative than a pooled statement that one model family is the winner.
+
+The common finding is limited but important. The nonlinear models can generate better in-sample likelihoods for several transformed series, and the initial diagnostic tests identify evidence of nonlinear conditional-mean dynamics in some targets. Nevertheless, the out-of-sample evidence does not establish a general one-step predictive gain over AR. This distinction holds across multiple economic functions, although the reasons differ in ways that matter for the interpretation of each result.
+
+### 3.7.2 Inflation: interpretable regime means without a one-step gain
+
+CPI inflation presents the strongest case for interpreting an estimated two-state mean process. Its full-sample MSAR fit identifies a higher inflation mean, a substantial occupancy share relative to the sparse states found elsewhere, and finite expected state durations. The smooth-transition diagnostic also rejects its linear null at the selected delay. Thus the data provide reasons to study nonlinear dependence rather than assuming that a constant-parameter autoregression is the only plausible historical description.
+
+The forecasting result is much less favorable to a claim of additional predictive value. The one-step MSAR and AR RMSEs are nearly identical, and neither squared nor absolute loss supports a significant MSAR advantage under the primary comparison. The recession and turning-point subsamples do not reveal a reliable conditional advantage either. The full-sample CPI residuals still display serial dependence under both classical and nonlinear specifications. Thus an interpretable inflation state does not, by itself, eliminate predictable residual structure or improve the next month's forecast.
+
+This finding is consistent with the broader point that inflation dynamics can change without a particular nonlinear forecasting specification being the best representation for near-term prediction. Stock and Watson (2007) documented the difficulty of forecasting U.S. inflation under changing dynamics. Their work helps explain the relevance of instability but does not determine the outcome of the present MSAR–AR comparison. The question tested here is narrower: whether the estimated two-state or smooth-transition function produces an incremental predictive gain once historical own-lag dependence has been accounted for.
+
+The relation between in-sample nonlinearity and forecast value also depends on the horizon. The primary conclusion in this chapter concerns one-step forecasts. Chapter 4 examines longer horizons and the isolated CPI MSAR result at twelve months. That finding must remain horizon-specific and qualified by the number of comparisons examined; it cannot be used to revise the baseline one-month conclusion after the fact.
+
+### 3.7.3 Economic activity: large descriptive gains, but weak identification and uncertain inference
+
+Quarterly GDP and monthly industrial production provide the largest descriptive reductions in one-step squared-error loss associated with MSAR. Both series were strongly affected by the exceptional output movements surrounding 2020, and both full-sample MSAR fits isolate approximately one effective observation in a distinct state. This correspondence between extreme economic observations and sparse likelihood states explains why fit and forecast evidence must be interpreted together. It does not show that the same latent mechanism will be available to improve prediction during an unrelated downturn.
+
+The baseline AR-relative out-of-sample $R^2$ figures are approximately $0.292$ for GDP and $0.236$ for industrial production. Their magnitudes should be acknowledged, not dismissed because the primary HLZ tests fail to reject. A descriptive reduction of this scale is potentially economically relevant for a forecasting system. Yet statistical uncertainty remains substantial, and the inference does not establish superiority under either loss. Moreover, the regime identification and covariance warnings prevent a strong interpretation of the fitted extra state as a stable, recurrent mechanism.
+
+The recession and turning analyses reinforce the distinction. MSAR produces lower descriptive errors at some economically important GDP and industrial production dates, including near GDP troughs. But these differences are not supported by the recession or turning coefficients in the conditional loss regressions. Changing the width of the turning neighborhood also changes the magnitude of the estimated benefit. Consequently, a model's capacity to accommodate an exceptional activity shock is not equivalent to a demonstrated ability to forecast future business-cycle transitions.
+
+GDP and industrial production should also not be treated as two frequency versions of an identical series. Quarterly real GDP includes the broader economy, while monthly industrial production measures a narrower production sector. The distinct data frequency means that GDP turning neighborhoods comprise quarters whereas industrial production neighborhoods comprise months. The results have a common interpretive theme, but the numerical RMSE scales, the number of forecast origins and the mapping from economic events to observations are not interchangeable.
+
+### 3.7.4 Unemployment: informative nonlinear diagnostics and sample-sensitive rankings
+
+The unemployment rate has the strongest initial evidence against linear autoregressive dynamics because both the Tsay and smooth-transition tests reject. A reader might therefore expect nonlinear models to perform particularly well for this variable. Yet the full-sample MSAR estimate features near-absorbing transitions, while the STAR specification has a threshold far from the central range of observed unemployment and a singular covariance matrix. The diagnostic rejection and the parameter-identification problem can coexist: detecting a departure from a specified linear null does not guarantee that a particular nonlinear alternative can estimate that departure reliably.
+
+The forecast comparisons also resist a simple winner claim. MSAR has the smallest one-step RMSE on its own valid dates. ARMA achieves a stronger AR-relative out-of-sample $R^2$ on its own AR-matched date intersection. The two paired comparisons use different observation sets, and neither competitor is established as significantly superior to AR under the primary test. Treating the numerical closeness of ARMA and MSAR on selected dates as statistical equivalence would require a distinct test with an explicit equivalence criterion, which is not part of this experiment.
+
+The phase-specific unemployment results supply an additional qualification. MSAR has lower descriptive RMSE during expansion dates but a higher one during recession dates, and the number of valid forecasts differs. The conditional state regressions do not reject a nonlinear recession or turning effect. The isolated ARMA-versus-AR joint rejection includes the intercept and does not establish significance of the state slopes. These findings limit the claim that nonlinear flexibility is most useful precisely when unemployment changes rapidly.
+
+This example has a more general implication for macroeconomic forecasting. Persistent rates can appear easy to predict over extended periods while rare and abrupt disturbances dominate squared losses. A small difference in which observations are included can then reverse a model ranking. Model evaluation must disclose the valid target calendar before assigning economic meaning to a numerical reduction in error.
+
+### 3.7.5 Monetary variables: structural mechanisms are not necessarily identified by a switching mean
+
+The monetary variables provide a useful contrast to the inflation and real-activity results. Under the baseline transformation, the effective federal funds rate is modelled as a monthly change rather than a level. The corresponding two-state MSAR fit produces indistinguishable regime means. This is not evidence that monetary-policy behavior is constant over time; it is evidence that this specification does not identify separate mean-change regimes in the historical sample. An occasionally binding policy-rate constraint and a fitted Markov-switching mean are different statistical mechanisms.
+
+For M2 growth, the second state is represented by only a few effective observations, with boundary transition behavior. This limits its interpretation as a recurrent monetary state. In both variables, the AR benchmark attains the lowest own-valid one-step RMSE, and the primary MSAR comparison does not support nonlinear superiority. Their phase-specific results show little stable descriptive benefit, while STAR introduces additional estimation or forecasting fragility.
+
+It would be inappropriate to conclude that monetary aggregates or interest rates have no nonlinear economic relationships. Money demand, policy responses, expectations and financial conditions can vary over time, as discussed in Chapter 1. The empirical conclusion is instead tied to the defined forecast target and conditional-mean models. Economic theory motivates plausible sources of instability, while the evidence determines whether those sources are captured by an admissible predictive specification.
+
+The cross-aggregate result is therefore asymmetrical rather than universal. CPI offers the strongest case for an interpretable nonlinear *description*; GDP and industrial production offer the largest descriptive MSAR *forecast-error reductions*; unemployment offers the strongest initial nonlinearity *diagnostics* but the greatest sample-alignment ambiguity in its one-step ranking; and the monetary variables show weak state identification and little predictive support. None of these differences overturns the common conclusion that a general one-step nonlinear advantage has not been statistically established.
+
+## 3.8 What the Baseline Evidence Establishes, and What Remains Vulnerable
+
+The purpose of the baseline chapter is to state what follows from the primary experiment before changing its assumptions. Not every number carries the same inferential weight. A parameter estimate describes the fitted sample; a diagnostic rejection concerns one null hypothesis; a smaller observed forecast loss is descriptive; and a properly calibrated rejection of a forecast-loss null supports an inferential claim within a defined target, horizon and sample. These categories cannot be combined into a generic assertion that nonlinear forecasting succeeds or fails everywhere.
+
+**Table 3.9. Status and limits of the baseline empirical findings**
+
+| Empirical finding | What the evidence establishes | What it does not establish |
+|---|---|---|
+| Nonlinearity diagnostics reject for selected targets | Unemployment, CPI inflation and the federal funds rate exhibit specified departures from linearity | All six processes are nonlinear, or the fitted nonlinear forecasts are superior |
+| Full-sample nonlinear BIC is frequently lower | Flexible specifications improve penalized historical likelihood in many cases | Statistically identified recurrent regimes or predictive superiority |
+| CPI has interpretable MSAR regime means | A distinguishable higher-mean inflation state is present in the fitted description | A causal inflation mechanism or reliable one-step forecast gain |
+| GDP and industrial production have lower MSAR one-step RMSE | Descriptive squared-loss reductions of approximately 29% and 24% against AR on the paired dates | A significant average forecast gain under the primary test |
+| No significant MSAR improvement over AR at $h=1$ | The primary test does not establish nonlinear superiority for any of the six targets | Equal forecast accuracy or universal superiority of AR |
+| Recession and turning-window MSAR effects are not significant | No supported concentration of nonlinear gains in the retrospectively identified states | Model-independent predictability of recessions or irrelevance of turning points |
+| STAR exhibits severe forecast instability in selected targets | Extreme finite forecast errors and limitations of associated statistical inference | A valid claim of equal forecast accuracy from degenerate tests |
+| Unemployment model rankings depend on forecast dates | Own-valid and matched-date descriptive comparisons answer different questions | A unique or statistically equivalent ARMA/MSAR ranking |
+
+*Source: Author's synthesis of the empirical results in Sections 3.1–3.6.* *Note:* The table separates descriptive evidence, tests of specified null hypotheses and claims that remain unsupported. A failed rejection is not an equivalence finding; numerical degeneracy is not a hypothesis-test decision.
+
+Three types of vulnerability remain particularly important. The first concerns **specification**. The target transformations and lag orders were selected according to explicit rules, but those rules do not guarantee that the chosen linear AR is the strongest admissible benchmark in every historical environment. In particular, a higher-order AR can absorb persistence that a nonlinear model might otherwise capture. The CPI lag exercise in Section 4.3 addresses this possibility. Alternative level and difference representations for unemployment and the policy rate address a related concern: an apparent nonlinear gain may depend on how persistence is transformed.
+
+The second vulnerability concerns **sample and forecast horizon**. A descriptive gain dominated by a small number of pandemic observations may not survive different estimation-window lengths. A model that cannot improve one-step forecasts might nevertheless have different performance several months or quarters ahead, particularly if its nonlinear dynamics accumulate under iteration. Conversely, increasing the horizon may magnify estimation errors and instability. Chapter 4 therefore examines longer horizons and alternative rolling-window lengths without using them to replace the baseline after the results have been observed. The isolated twelve-month CPI MSAR result is considered with explicit attention to the multiplicity of model, target, horizon and loss comparisons.
+
+The third vulnerability concerns **identification and information**. Two regimes need not be the appropriate number, but adding a third state also need not solve the problem of low occupancy, boundary transitions and local likelihood maxima. Section 4.4 treats the three-state comparison as an in-sample credibility exercise, not as an additional forecasting competitor or proof that the two-state specification is correct. Section 4.6 examines whether a five-variable monthly VAR captures information absent from single-equation autoregressions. This is a test of cross-variable predictive information, not a claim about causal monetary transmission. Quarterly GDP is not interpolated into that monthly system.
+
+Further limits arise from conditional variance, numerical estimation and the historical information set. Volatility clustering can coexist with weak evidence for nonlinear conditional-mean forecasts. A numerical optimizer can return a finite estimate without establishing a globally optimal likelihood. A model whose predictions become extreme at some origins should not be assessed only on attractive surviving dates. Finally, the use of a fixed historical data vintage does not reconstruct the publications and revisions visible at each past origin. These qualifications restrict what can be inferred for operational real-time forecasting.
+
+The scope of generalization must also remain explicit. The six targets come from the United States, and the sample covers its particular inflation episodes, recessions, monetary-policy settings and major shocks. The results are not direct estimates of performance in Lebanon, France or any other economy. Nor do they measure the effect of adopting one model on central-bank decisions or public welfare. What may be transferable is a disciplined approach to forecast evaluation: maintain a credible benchmark, assess residual and regime adequacy, disclose fragile estimates and unavailable forecasts, compare losses on matched dates, and challenge numerical improvements against explicit alternative explanations (Pesaran & Timmermann, 2007; Rossi & Inoue, 2012).
+
+At this stage the baseline question has a defensible answer. The historical sample offers evidence of nonlinear dynamics and occasional descriptive advantages for particular model–target combinations. It does not establish that greater conditional-mean complexity generally improves one-step prediction, including during recessions and around turning points. Chapter 4 tests whether this absence of a general gain is stable to the most consequential alternatives rather than treating the negative result as beyond further examination.
+
+## 3.9 Chapter 3 Concluding Synthesis: Where Nonlinear Complexity Earns Its Place, If Anywhere
+
+This chapter has moved from macroeconomic explanations of instability to evidence about the models proposed to forecast through it. The order of evaluation is important. Before comparing forecast errors, the analysis examined target transformations, stationarity and nonlinearity tests, residual adequacy and the identification of nonlinear parameters. These stages distinguish a plausible statistical departure from linearity from a model that can be estimated and forecast with sufficient credibility. The resulting evidence is more nuanced than a simple ranking of four model names.
+
+The initial tests show target-specific departures from linear autoregressive dynamics. Unemployment rejects under both the Tsay and smooth-transition procedures, while CPI inflation and changes in the federal funds rate reject under the selected smooth-transition test. This is evidence worth examining, not proof that a nonlinear family will forecast better. The tests do not reject for quarterly GDP growth, industrial production growth and M2 growth at the stated significance level. Moreover, the stationarity diagnostics show that the choice of transformation remains a substantive part of the question, especially for inflation and industrial production.
+
+Full-sample estimation often favors the nonlinear specifications in terms of penalized likelihood. Yet the additional parameters are not uniformly credible. The clearest two-state interpretation occurs for CPI inflation, where the model estimates distinguishable lower- and higher-mean states with nontrivial occupancy. For GDP, industrial production and M2, a rare regime is built around very few observations, limiting its interpretation as a recurrent economic process. Unemployment displays extreme state persistence, and the federal funds rate has indistinguishable estimated regime means. Several STAR estimates exhibit poorly located thresholds, transition slopes at parameter bounds or unusable covariance information. Thus a better in-sample fit is not sufficient evidence of a better economic representation.
+
+The primary one-step forecast comparison gives the chapter's central answer. Two-state MSAR does not significantly outperform AR under the Harvey–Leybourne–Zu procedure for any of the six U.S. targets. GDP and industrial production show important descriptive reductions in RMSE, but those advantages are not established statistically and are concentrated in a historically exceptional period. CPI offers an interpretable nonlinear regime without a material one-step improvement. Unemployment's descriptive ordering changes with the alignment of valid forecast dates. The two monetary targets do not exhibit a compelling incremental gain from the fitted Markov structure. A failure to reject equal average forecast accuracy is an absence of evidence of superiority, not evidence of exact equivalence.
+
+STAR does not supply a reliable general alternative. For some targets its iterated forecasts become extraordinarily large. Those observations reveal serious numerical forecasting risk, but the resulting degenerate statistical tests cannot be interpreted as ordinary support for equal predictive ability. Model fragility, observed forecast error and formal statistical inference are separate empirical findings. All three must remain visible when assessing whether a model is a credible candidate for practical use.
+
+The economic-state comparisons further restrict the case for nonlinear forecasting. The AR benchmark's errors are generally larger during historically classified recessions than expansions, and substantial forecast errors accumulate around peaks and troughs. Nevertheless, the conditional loss regressions do not establish that MSAR or STAR gains concentrate in those states. The result survives the distinction between recession and turning indicators, the separation of a joint all-coefficient test from a state-slope test, and sensitivity to different turning-neighborhood widths. These statements concern retrospective evaluation of aggregate forecasts, not the real-time identification or prediction of recession dates.
+
+The findings support a limited general principle: additional complexity earns a role in forecasting only when its fitted mechanism is sufficiently identified, its predictions are admissible, and its relative loss improvement is credible under a stated evaluation procedure. The existence of a nonlinear historical pattern satisfies none of these conditions automatically. Nor does the lack of a general significant gain establish that the simplest model is universally optimal. The contribution of the chapter is to make these distinctions observable for six policy-relevant macroeconomic targets.
+
+The remaining task is to challenge that conclusion. Chapter 4 considers whether alternative transformations, lag structures, estimation windows and forecast horizons change the evidence. It also evaluates the limited three-regime specification, cross-variable information, conditional variance and numerical sensitivity. Those exercises determine whether the baseline absence of general nonlinear superiority is robust or whether a narrowly defined gain survives once competing explanations are considered. The final economic interpretation must remain bounded by the historical U.S. sample and the distinction between predictive accuracy and policy effectiveness.
+
 ---
 
 ## References
+
+Chauvet, M., & Piger, J. (2008). A comparison of the real-time performance of business cycle dating methods. *Journal of Business & Economic Statistics, 26*(1), 42–49. https://doi.org/10.1198/073500107000000296
 
 Cho, J. S., & White, H. (2007). Testing for regime switching. *Econometrica, 75*(6), 1671–1720. https://doi.org/10.1111/j.1468-0262.2007.00809.x
 
@@ -466,6 +567,8 @@ Dickey, D. A., & Fuller, W. A. (1979). Distribution of the estimators for autore
 Diebold, F. X., & Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic Statistics, 13*(3), 253–263. https://doi.org/10.1080/07350015.1995.10524599
 
 Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. *Econometrica, 50*(4), 987–1007. https://doi.org/10.2307/1912773
+
+Giacomini, R., & White, H. (2006). Tests of conditional predictive ability. *Econometrica, 74*(6), 1545–1578. https://doi.org/10.1111/j.1468-0262.2006.00718.x
 
 Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357–384. https://doi.org/10.2307/1912559
 
@@ -483,11 +586,21 @@ Ljung, G. M., & Box, G. E. P. (1978). On a measure of lack of fit in time series
 
 Luukkonen, R., Saikkonen, P., & Teräsvirta, T. (1988). Testing linearity against smooth transition autoregressive models. *Biometrika, 75*(3), 491–499. https://doi.org/10.1093/biomet/75.3.491
 
+National Bureau of Economic Research. (n.d.). *Business cycle dating*. https://www.nber.org/research/business-cycle-dating
+
+Odendahl, F., Rossi, B., & Sekhposyan, T. (2023). Evaluating forecast performance with state dependence. *Journal of Econometrics, 237*(2), Article 105220. https://doi.org/10.1016/j.jeconom.2021.07.015
+
 Orphanides, A. (2001). Monetary policy rules based on real-time data. *American Economic Review, 91*(4), 964–985. https://doi.org/10.1257/aer.91.4.964
+
+Pesaran, M. H., & Timmermann, A. (2007). Selection of estimation window in the presence of breaks. *Journal of Econometrics, 137*(1), 134–161. https://doi.org/10.1016/j.jeconom.2006.03.010
 
 Qu, Z., & Zhuo, F. (2021). Likelihood ratio-based tests for Markov regime switching. *The Review of Economic Studies, 88*(2), 937–968. https://doi.org/10.1093/restud/rdaa035
 
+Rossi, B., & Inoue, A. (2012). Out-of-sample forecast tests robust to the choice of window size. *Journal of Business & Economic Statistics, 30*(3), 432–453. https://doi.org/10.1080/07350015.2012.693850
+
 Schwarz, G. (1978). Estimating the dimension of a model. *The Annals of Statistics, 6*(2), 461–464. https://doi.org/10.1214/aos/1176344136
+
+Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become harder to forecast? *Journal of Money, Credit and Banking, 39*(s1), 3–33. https://doi.org/10.1111/j.1538-4616.2007.00014.x
 
 Teräsvirta, T. (1994). Specification, estimation, and evaluation of smooth transition autoregressive models. *Journal of the American Statistical Association, 89*(425), 208–218. https://doi.org/10.1080/01621459.1994.10476462
 
