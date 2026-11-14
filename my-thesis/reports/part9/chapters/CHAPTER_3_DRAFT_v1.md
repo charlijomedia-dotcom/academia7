@@ -292,6 +292,14 @@ That conclusion would be incorrect. One unusually large unemployment forecast er
 
 The results therefore contain three different objects: the model's loss on its own dates, its loss relative to AR on a matched pairwise calendar, and its ranking on a calendar shared by all four families. The first two are reported directly here; the final common-calendar comparison is used as a supplementary consistency check but does not introduce a new formal test of model equivalence. Treating these objects as interchangeable can reverse a descriptive claim without changing a single forecast.
 
+**Figure 3.2. Unemployment: one-step forecasts and separately displayed flagged observations**
+
+![Observed unemployment and four one-step forecast series on the ordinary percentage scale, with flagged finite extremes and an unscored failed AR fit displayed in a distinct diagnostic panel.](../../../output/figures/F3.4_UNRATE.png)
+
+*Source: Author's computations.* *Note:* The upper panel displays ordinary-scale observed and valid one-step forecasts. The lower panel identifies extreme finite predictions that remain in the applicable error scores, together with a failed AR fit that is **not** scored. Separating the scales preserves visibility of ordinary forecast differences without clipping or discarding the exceptional observations. NBER recession shading is retrospective.
+
+Figure 3.2 makes the sample-alignment problem visible rather than reducing it to a table of RMSEs. The extreme unemployment disturbance generates retained predictions for some models while an AR estimate is unavailable at the relevant origin. The open-circle failed-fit marker in the diagnostic panel is not an observed unemployment outcome or a scored AR forecast. A ranking based only on the upper panel, or one that silently counted the failed prediction, would misrepresent the evidence. Additional fit-status counts and evaluation-calendar sensitivity are reported in Appendix C, Tables C.7–C.9.
+
 ### 3.4.4 Numerical instability of STAR forecasts
 
 The STAR forecast results are markedly different from the moderate MSAR results. For CPI inflation and industrial production, the reported STAR RMSEs are approximately $5.38\times10^{9}$ and $7.17\times10^{6}$ respectively. They are not typographical errors or truncated axes. They arise from extremely large but finite iterated forecasts produced by unstable fitted parameter combinations at some rolling origins. For M2, STAR's RMSE is $82.745$, against approximately $5.1$ for the linear and MSAR forecasts. These outcomes must remain visible because numerical fragility is part of the performance of the specified forecasting procedure.
