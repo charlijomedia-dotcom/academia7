@@ -302,7 +302,7 @@ These outcomes also show that an in-sample transition function can be misleading
 
 ### 3.4.5 Formal inference: apparent gains versus statistically supported gains
 
-The primary inferential comparison uses the average-loss test of Harvey, Leybourne and Zu (2025). The test is designed to address possibly time-varying mean forecast-loss differentials, a relevant concern in samples covering crises, major policy changes and periods of unusually high volatility. Its application is defined in Section 2.10. The reported sign convention is competitor loss minus benchmark loss: a negative average differential favors the competitor, while a positive differential favors the benchmark.
+The primary inferential comparison uses the average-loss test of Harvey et al. (2025). The test is designed to address possibly time-varying mean forecast-loss differentials, a relevant concern in samples covering crises, major policy changes and periods of unusually high volatility. Its application is defined in Section 2.10. The reported sign convention is competitor loss minus benchmark loss: a negative average differential favors the competitor, while a positive differential favors the benchmark.
 
 **Table 3.5. Primary one-step forecast-accuracy tests against AR**
 
