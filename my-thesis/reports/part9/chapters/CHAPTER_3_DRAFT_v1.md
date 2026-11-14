@@ -307,15 +307,14 @@ When observations are partitioned into disjoint recession and expansion sets, th
 **Equation (3.2): Decomposition of overall squared forecast loss by economic phase**
 
 ```math
-\operatorname{RMSE}_{m}^{2}
-=
-\frac{N_{\mathrm{rec},m}}{N_m}
-\operatorname{RMSE}_{\mathrm{rec},m}^{2}
-+
-\frac{N_{\mathrm{exp},m}}{N_m}
-\operatorname{RMSE}_{\mathrm{exp},m}^{2},
-\qquad
-N_m=N_{\mathrm{rec},m}+N_{\mathrm{exp},m}.
+\begin{aligned}
+\mathrm{RMSE}_{m}^{2}
+&= \frac{N_{\mathrm{rec},m}}{N_m}\,
+   \mathrm{RMSE}_{\mathrm{rec},m}^{2}\\
+&\quad + \frac{N_{\mathrm{exp},m}}{N_m}\,
+   \mathrm{RMSE}_{\mathrm{exp},m}^{2},\\[4pt]
+N_m &= N_{\mathrm{rec},m}+N_{\mathrm{exp},m}.
+\end{aligned}
 ```
 
 The identity demonstrates why a small recession subsample can contribute disproportionately to full-sample squared forecast loss. Its effect depends both on the number of dates and on the scale of the errors. It does not imply that recession errors are statistically independent, that model differences are significant, or that competing models necessarily have the same valid dates. Those matters require matched-date comparisons and formal uncertainty assessment.
