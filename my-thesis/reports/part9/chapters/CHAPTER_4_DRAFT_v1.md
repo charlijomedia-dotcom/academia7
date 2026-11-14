@@ -218,6 +218,32 @@ Nevertheless, the smallest occupancy share fails the stated 5% criterion. Twenty
 
 This qualified result should be read alongside the two-state CPI model. Chapter 3 found that its lower- and higher-mean regimes were more interpretable than the corresponding regimes for most other targets. The three-state fit does not disprove that descriptive finding. Rather, it asks whether a third regime is necessary and reliably identified. The present criteria do not support that stronger conclusion. Thus the two-state CPI description can remain informative while its regime count remains a maintained modelling restriction rather than an empirically certified truth.
 
+The numerical estimates show precisely what the additional inflation state represents. The following equation uses the same state-mean-centered autoregressive parameterization as the two-state CPI model in Chapter 3. It is a **full-sample, in-sample three-regime fit**, not a model evaluated in the rolling forecast comparison.
+
+**Equation (4.3): Estimated three-state CPI MSAR robustness specification**
+
+```math
+\begin{aligned}
+\widehat m_t^{(3)}(\mathbf S)
+&=\widehat\mu^{(3)}_{S_t}
+ +0.4204\bigl(\pi_{t-1}-\widehat\mu^{(3)}_{S_{t-1}}\bigr)\\
+&\quad+0.1493\bigl(\pi_{t-2}-\widehat\mu^{(3)}_{S_{t-2}}\bigr),\\[4pt]
+\widehat{\boldsymbol\mu}^{(3)}
+&=\begin{pmatrix}
+-6.6495\\2.8016\\12.0407
+\end{pmatrix},
+\qquad \widehat\sigma^{(3)}=2.4327,\\[4pt]
+\widehat P^{(3)}
+&=\begin{pmatrix}
+0.4300&0.4771&0.0930\\
+0.0135&0.9703&0.0162\\
+0.0085&0.1810&0.8105
+\end{pmatrix}.
+\end{aligned}
+```
+
+The approximate standard errors for the regime means are $0.9131$, $0.2081$ and $0.6056$, and those for the two common autoregressive coefficients are $0.0382$ and $0.0484$. The common innovation standard deviation has an approximate standard error of $0.0633$. Entries in the displayed transition matrix are rounded; its rows sum to one before rounding. Although the fitted means are numerically distinct, the first state accounts for only $2.24\%$ of the sample, with approximately 21 effective observations and an expected uninterrupted duration of approximately 1.75 months. The reported BIC reduction therefore does not establish a well-identified third recurrent inflation state. This estimated equation describes an in-sample robustness candidate and supplies no direct evidence of three-state out-of-sample performance.
+
 ### 4.4.4 Unemployment: why an apparently favorable two-state BIC is not decisive
 
 The unemployment comparison is a distinct identification issue. The estimated two-state log-likelihood is approximately 102.04, while the obtained three-state log-likelihood is only 13.88. The latter is lower by about 88.16 likelihood units. A larger unconstrained model should be capable of reproducing the restricted model's likelihood in principle when the parameter spaces are nested or can approach the restricted solution. Obtaining a substantially inferior value in the larger specification therefore signals a local optimum or an unsuccessful search over the larger parameter space, not that the data establish the restricted model as superior.
@@ -306,7 +332,7 @@ The baseline AR, ARMA, MSAR and STAR models forecast each target primarily from 
 
 A vector autoregression (VAR) provides a parsimonious way to introduce lagged values of other variables without imposing a fully specified structural model. It represents the conditional mean of each variable as a linear function of its own past and the past of the other variables. The basic first-order monthly system used for the robustness comparison can be written as follows.
 
-**Equation (4.3): Five-variable monthly first-order vector autoregression**
+**Equation (4.4): Five-variable monthly first-order vector autoregression**
 
 ```math
 \begin{aligned}
@@ -316,8 +342,8 @@ A vector autoregression (VAR) provides a parsimonious way to introduce lagged va
 \mathbf y_t
 &=\begin{pmatrix}
 \pi_t\\
-u_t\\
 g_t^{IP}\\
+u_t\\
 \Delta i_t\\
 g_t^{M2}
 \end{pmatrix}.
@@ -331,6 +357,38 @@ Quarterly GDP is not interpolated to monthly observations for this exercise. Rep
 ### 4.6.2 VAR selection, stability and the common evaluation calendar
 
 The linear VAR lag order is selected from candidate orders one through three, subject to the stated stability conditions. The first-order model has the lowest initial-window BIC, approximately 4,195.56, compared with 4,197.21 for two lags and 4,256.67 for three. Its estimated companion-matrix maximum modulus is approximately 0.978, below one in the selected initial window. This supports using VAR(1) for the specified robustness comparison. It does not establish that its coefficients remain constant over the entire historical sample.
+
+The coefficient matrix can also be reported numerically. The VAR(1) estimates below use the **initial 240-month balanced window, February 1959 through January 1979**, with 239 effective observations after forming one lag. The order of the response variables and lagged regressors is $(\pi_t,g_t^{IP},u_t,\Delta i_t,g_t^{M2})$, as defined in Equation (4.4). The coefficients were obtained by equation-by-equation least squares under the stated specification. They reproduce the selected initial-window VAR BIC of $4{,}195.5602$ to numerical precision.
+
+**Equation (4.5): Estimated initial-window monthly VAR(1) coefficient system**
+
+```math
+\begin{aligned}
+\widehat{\mathbf y}_t
+&=\widehat{\mathbf c}
+ +\widehat{\mathbf A}_1\mathbf y_{t-1},\\[4pt]
+\widehat{\mathbf c}
+&=\begin{pmatrix}
+1.0268\\
+-0.9054\\
+0.0992\\
+0.0766\\
+0.5892
+\end{pmatrix},\\[4pt]
+\widehat{\mathbf A}_1
+&=\begin{pmatrix}
+ 0.5868&-0.0275& 0.1349& 1.5511& 0.0146\\
+-0.3604& 0.3730& 0.5754& 2.9023& 0.2270\\
+ 0.0038&-0.0067& 0.9910&-0.0565&-0.0045\\
+ 0.0093& 0.0047&-0.0452& 0.3754& 0.0167\\
+-0.0583& 0.0187& 0.4011&-1.6014& 0.6728
+\end{pmatrix}.
+\end{aligned}
+```
+
+The estimated matrix shows the distinction between a fitted multivariate equation and the general VAR notation. For example, the unemployment equation has an own-lag coefficient of approximately $0.9910$, reflecting strong persistence in that initial period. The CPI equation includes a coefficient of approximately $1.5511$ on the lagged federal funds rate **change**, not on its level. Conventional equation-by-equation OLS standard errors for the CPI equation, ordered as intercept, lagged CPI, industrial production, unemployment, policy-rate change and M2, are respectively $(0.8142,\,0.0524,\,0.0159,\,0.1607,\,0.4727,\,0.0581)$. For the unemployment equation the corresponding standard errors are $(0.0501,\,0.0032,\,0.0010,\,0.0099,\,0.0291,\,0.0036)$. These are conventional regression standard errors, not heteroskedasticity-robust uncertainty measures, and no structural identification follows from them.
+
+This numerical matrix describes only the **initial** estimation window used to select the VAR lag order. Subsequent rolling VAR forecasts re-estimate the coefficients at each historical origin; Equation (4.5) is not a fixed-coefficient explanation of the entire out-of-sample forecast sequence. A relatively large coefficient in this historical initial window is not, by itself, a causal monetary-policy multiplier or a stable predictive relationship for later decades.
 
 The common-date construction is essential. A multivariate system requires each of the five relevant lagged variables to be available and its estimated dynamics to satisfy the stability rule. Of the 571 attempted VAR forecast origins in the relevant evaluation, 27 are excluded because the VAR stability condition is not satisfied. Additional missing model forecasts lead to target-specific intersections when the VAR is compared with all four univariate families. The common-date count is 544 for CPI, industrial production and M2, 527 for unemployment and 538 for the federal funds rate.
 
@@ -386,7 +444,7 @@ These classifications serve a substantive purpose. Consider two forecasting proc
 
 For an estimation family $m$ and forecast horizon $h$, the empirical proportion of attempted forecast origins yielding retained predictions is
 
-**Equation (4.4): Forecast availability over attempted origins**
+**Equation (4.6): Forecast availability over attempted origins**
 
 ```math
 \widehat A_{m,h}
