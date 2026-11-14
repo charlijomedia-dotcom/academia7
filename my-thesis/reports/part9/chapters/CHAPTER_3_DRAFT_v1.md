@@ -176,7 +176,50 @@ This is a descriptive interpretation, not a structural explanation of the causes
 
 The credibility of the state distinction also does not make the complete CPI forecasting equation adequate on every criterion. The full-sample MSAR residuals reject the Ljung–Box null at both twelve and twenty-four months. This means that, despite the regime-dependent means, detectable dependence remains in the errors. The CPI MSAR fit is accordingly classified as fragile on the full sample because of residual autocorrelation, even though its regime parameters are considerably more interpretable than those for several other targets.
 
-### 3.3.4 Unemployment and the policy rate: two forms of weak identification
+### 3.3.4 Estimated CPI equations: classical persistence and state-dependent means
+
+The comparison between AR and MSAR can be made more concrete by reporting their actual fitted parameters, rather than only their information criteria and regime summaries. Both examples below are estimated over the full available transformed CPI inflation series, with 953 usable observations after constructing two autoregressive lags. They are **retrospective full-sample estimates**, not parameter vectors held fixed across the rolling pseudo-out-of-sample evaluation. The rolling experiment re-estimates each model at its own forecast origin, so the numerical coefficients displayed here illustrate the fitted specifications rather than reproducing every historical forecast.
+
+For the classical AR(2), estimated by ordinary least squares with an intercept, the fitted one-step conditional mean is
+
+**Equation (3.2): Full-sample estimated AR(2) for monthly CPI inflation**
+
+```math
+\widehat{\pi}_{t}^{\,\mathrm{AR}}
+=
+1.3184
++0.5048\,\pi_{t-1}
++0.1070\,\pi_{t-2}.
+```
+
+The values are annualized percentage-point inflation units, with approximate conventional standard errors of $0.1476$, $0.0319$ and $0.0319$ for the intercept and the two lag coefficients, respectively. The estimated innovation standard deviation is $3.2915$ in the same inflation units. The full-sample BIC is $4{,}995.79$. These numerical coefficients reproduce the reported AR log-likelihood and BIC when the specified linear model is fitted to the frozen historical input.
+
+The corresponding two-state MSAR specification has state-dependent means but **common** autoregressive coefficients. Because it is formulated around the means of both the current and lagged latent states, its conditional-mean equation is not a conventional AR(2) with a switching intercept added to uncentered lags. The estimated state-conditional mean and transition matrix are
+
+**Equation (3.3): Full-sample estimated two-state MSAR(2) for CPI inflation**
+
+```math
+\begin{aligned}
+\widehat m_t(\mathbf S)
+&=\widehat\mu_{S_t}
+ +0.4573\bigl(\pi_{t-1}-\widehat\mu_{S_{t-1}}\bigr)\\
+&\quad+0.0502\bigl(\pi_{t-2}-\widehat\mu_{S_{t-2}}\bigr),\\[4pt]
+(\widehat\mu_1,\widehat\mu_2)
+&=(2.5630,\;12.4941),\\[4pt]
+\widehat P
+&=\begin{pmatrix}
+0.9842&0.0158\\
+0.1593&0.8407
+\end{pmatrix},
+\qquad \widehat\sigma=2.7720.
+\end{aligned}
+```
+
+Here $\mathbf S=(S_t,S_{t-1},S_{t-2})$ denotes the unobserved state path and $\widehat m_t$ is conditional on that path. The approximate standard errors are $0.1965$ and $0.6387$ for the two means; $0.0380$ and $0.0388$ for the common autoregressive coefficients; and $0.0726$ for the common innovation standard deviation. The transition-probability standard errors are approximately $0.0050$ for $\widehat p_{11}$ and $0.0480$ for $\widehat p_{22}$. The rows of $\widehat P$ give transitions from the current state to the next state. The fitted stationary-state interpretation is descriptive; usable forecast-time predictions integrate over uncertain states rather than assuming the future state path is observed.
+
+The estimated MSAR BIC is $4{,}879.14$, below the AR BIC, while its higher-mean state occupies approximately $8.6\%$ of the sample. The model thus offers a statistically meaningful *description* of a high-inflation state. Its residual serial correlation and the almost identical one-step AR and MSAR forecast RMSEs nevertheless prevent this in-sample fitted equation from being presented as evidence of superior prediction. The parameter standard errors are approximate conditional-model uncertainty measures; they do not account for the choice of model family, the economic identity of a state or uncertainty over future state realizations.
+
+### 3.3.5 Unemployment and the policy rate: two forms of weak identification
 
 The unemployment MSAR model assigns approximately $91.8\%$ of observations to one state and $8.2\%$ to the other. Occupancy alone would not necessarily rule out this division. The difficulty lies in its estimated transitions and parameter uncertainty. The two stay probabilities are approximately $0.9991$ and $0.9966$, which imply expected durations of roughly 1,092 and 295 months. These durations are exceptionally long relative to the recurring expansions and contractions that a reader might be tempted to associate with unemployment regimes. In addition, the estimated standard errors of the regime means are large relative to their differences in economically plausible unemployment ranges.
 
@@ -188,7 +231,7 @@ The policy-rate MSAR illustrates a near-complete collapse of the state distincti
 
 This result does not disprove the existence of occasionally binding lower bounds or changes in monetary-policy behavior. It shows that a two-state common-variance autoregression of the **change** in the federal funds rate fails to identify those mechanisms through distinct state means in this sample. A shadow-rate model and a regime-switching mean model impose different restrictions and answer different questions. The weak regime diagnosis is therefore a statement about the fitted model, not a universal conclusion about monetary policy.
 
-### 3.3.5 The credibility of smooth transitions
+### 3.3.6 The credibility of smooth transitions
 
 The STAR estimates also differ substantially across targets. For quarterly GDP, the logistic specification has an ill-conditioned covariance matrix, with a reported condition number of approximately $2.79\times10^{16}$. This means that small perturbations can make conventional parameter-uncertainty calculations unreliable. The estimated transition may vary over the observations, but its slope and threshold cannot be regarded as precisely estimated solely because a numerical fit exists.
 
@@ -304,7 +347,7 @@ On the baseline one-step evaluation dates of the AR benchmark, the recession cel
 
 When observations are partitioned into disjoint recession and expansion sets, their squared-error averages satisfy the following identity for a given model and its own valid evaluation calendar.
 
-**Equation (3.2): Decomposition of overall squared forecast loss by economic phase**
+**Equation (3.4): Decomposition of overall squared forecast loss by economic phase**
 
 ```math
 \begin{aligned}
