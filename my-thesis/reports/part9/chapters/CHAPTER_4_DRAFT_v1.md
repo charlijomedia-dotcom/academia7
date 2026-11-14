@@ -220,10 +220,10 @@ The numerical estimates clarify what the extra state represents. As in the two-s
 
 ```math
 \begin{aligned}
-\widehat m_t^{(3)}(\mathbf S)
-&=\widehat\mu^{(3)}_{S_t}
- +0.4204\bigl(\pi_{t-1}-\widehat\mu^{(3)}_{S_{t-1}}\bigr)\\
-&\quad+0.1493\bigl(\pi_{t-2}-\widehat\mu^{(3)}_{S_{t-2}}\bigr),\\[4pt]
+\widehat m_t^{(3)}(\mathbf s)
+&=\widehat\mu^{(3)}_{s_t}
+ +0.4204\bigl(\pi_{t-1}-\widehat\mu^{(3)}_{s_{t-1}}\bigr)\\
+&\quad+0.1493\bigl(\pi_{t-2}-\widehat\mu^{(3)}_{s_{t-2}}\bigr),\\[4pt]
 \widehat{\boldsymbol\mu}^{(3)}
 &=\begin{pmatrix}
 -6.6495\\2.8016\\12.0407
