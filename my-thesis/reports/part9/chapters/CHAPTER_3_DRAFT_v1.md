@@ -174,6 +174,14 @@ The CPI model has the most interpretable two-state mean structure of the six tar
 
 This is a descriptive interpretation, not a structural explanation of the causes of inflation. The estimated high-mean state may reflect periods of sustained price pressure, but the model does not identify whether those pressures came from monetary policy, supply constraints, demand conditions or changes in expectations. Neither the sign nor the timing of its state probability is sufficient to identify a causal economic mechanism. The model is useful here because it offers the clearest example of a recurrent difference in fitted means, not because it resolves the structural debate about inflation.
 
+Figure 3.1 displays the full-sample smoothed probabilities of the two CPI states, alongside historically dated NBER recessions. The higher-mean state has substantial probability during several high-inflation intervals, notably in the 1970s and early 1980s, but it is neither confined to nor synonymous with recessions. Because these are **smoothed** probabilities, later observations contribute to the classification of earlier dates. The figure is therefore evidence about retrospective regime description, not about states known when a forecast was issued.
+
+**Figure 3.1. Smoothed probabilities of CPI inflation regimes in the fitted two-state MSAR**
+
+![Full-sample smoothed probabilities for the low-inflation and high-inflation states, with NBER recession periods shaded.](../../../output/figures/F3.3_CPIAUCSL_MSAR.png)
+
+*Source: Author's computations.* *Note:* The first panel refers to the lower-mean regime and the second to the higher-mean regime. Shading denotes retrospective NBER recession dates, not an input defining the estimated states. Smoothed probabilities depend on observations beyond a given historical forecast origin and must not be interpreted as real-time regime signals.
+
 The credibility of the state distinction also does not make the complete CPI forecasting equation adequate on every criterion. The full-sample MSAR residuals reject the Ljung–Box null at both twelve and twenty-four months. This means that, despite the regime-dependent means, detectable dependence remains in the errors. The CPI MSAR fit is accordingly classified as fragile on the full sample because of residual autocorrelation, even though its regime parameters are considerably more interpretable than those for several other targets.
 
 ### 3.3.4 Estimated CPI equations: classical persistence and state-dependent means
