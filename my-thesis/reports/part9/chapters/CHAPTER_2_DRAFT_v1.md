@@ -346,16 +346,16 @@ A hybrid model combining Markov switching and smooth transition is not included.
 
 The main AR, ARMA, MSAR and STAR forecasts are single-equation exercises. Each target is forecast from its own history and, where applicable, its state-dependent dynamics. Chapter 1 nevertheless described economic interactions among prices, interest rates, output, employment and money. An apparent nonlinear pattern may therefore be a proxy for information missing from the single-equation information set. This is a legitimate competing explanation and requires a focused multivariate response.
 
-The multivariate robustness model is a five-variable monthly vector autoregression (VAR), following the general multivariate forecasting framework of Sims (1980). Define the vector of monthly transformed targets as $Y_t=(\pi_t,\;g_t^{IP},\;u_t,\;\Delta i_t,\;g_t^{M2})'$, where the unemployment rate is in levels and the federal funds rate is in first differences. The VAR is
+The multivariate robustness model is a five-variable monthly vector autoregression (VAR), following the general multivariate forecasting framework of Sims (1980). Define the column vector of monthly transformed targets as $\mathbf y_t=(\pi_t,\;g_t^{IP},\;u_t,\;\Delta i_t,\;g_t^{M2})^{\top}$, with the unemployment rate in levels and the federal funds rate in first differences. The order of components is also used in the fitted VAR equations in Chapter 4. The VAR is
 
 **Equation (2.13): Five-variable monthly VAR**
 
 ```math
-Y_t=a+\sum_{j=1}^{p}A_jY_{t-j}+v_t,
+\mathbf y_t=\mathbf c+\sum_{j=1}^{p}\mathbf A_j\mathbf y_{t-j}+\boldsymbol\varepsilon_t,
 \qquad p\in\{1,2,3\}.
 ```
 
-The matrices $A_j$ allow one variable's past to contribute to forecasts of the others. The lag order is selected by BIC within the specified range, and estimated roots must satisfy the VAR stability condition. All five official series are available in raw form from January 1959; log-difference transformations and lag requirements shorten the fully aligned estimation sample. The system respects native monthly spacing and the stated October 2025 missing-data treatment.
+The coefficient matrices $\mathbf A_j$ allow each variable's past to contribute to forecasts of the others; $\mathbf c$ is the reduced-form intercept vector and $\boldsymbol\varepsilon_t$ is its innovation vector. The lag order is selected by BIC within the specified range, and estimated roots must satisfy the VAR stability condition. All five official series are available in raw form from January 1959; log-difference transformations and lag requirements shorten the fully aligned estimation sample. The system respects native monthly spacing and the stated October 2025 missing-data treatment.
 
 This check asks whether cross-variable information changes model rankings or explains some failures of own-history forecasting. It does not estimate a structural Phillips relationship, identify a monetary-policy shock, or distinguish demand from supply shocks. Without identifying restrictions, the VAR innovations are reduced-form residuals, not a set of independently interpreted economic disturbances. A better VAR forecast would therefore support a bounded omitted-information explanation, not prove which channel caused the gain.
 
@@ -521,10 +521,10 @@ State-conditioned comparisons use a Giacomini–White-style loss regression for 
 
 ```math
 d_t=\alpha+\beta_{\mathrm{rec}}REC_t
-+\beta_{\mathrm{turn}}TURN_t+u_t.
++\beta_{\mathrm{turn}}TURN_t+\xi_t.
 ```
 
-Here $REC_t$ equals one for an ex-post recession target date, and $TURN_t$ equals one when the target falls within the declared turning-point neighborhood. $\alpha$ is the average differential in the omitted reference state, while the two slopes indicate shifts associated with recession and turning-neighborhood indicators in this regression. HAC standard errors are used with a horizon-appropriate rule. The tables report individual coefficient estimates and p-values, a joint test involving all coefficients, and a separate test of the state slopes. A significant joint Wald test does not, by itself, imply that $\beta_{\mathrm{rec}}$ or $\beta_{\mathrm{turn}}$ is significant.
+Here $REC_t$ equals one for an ex-post recession target date, and $TURN_t$ equals one when the target falls within the declared turning-point neighborhood. $\alpha$ is the average differential in the omitted reference state, while the two slopes indicate shifts associated with recession and turning-neighborhood indicators in this regression. The disturbance $\xi_t$ is specific to the loss regression and is deliberately distinct from the unemployment-rate variable $u_t$. HAC standard errors are used with a horizon-appropriate rule. The tables report individual coefficient estimates and p-values, a joint test involving all coefficients, and a separate test of the state slopes. A significant joint Wald test does not, by itself, imply that $\beta_{\mathrm{rec}}$ or $\beta_{\mathrm{turn}}$ is significant.
 
 A central conceptual limit follows from the time at which states are known. The original conditional predictive ability framework asks whether information available for forecasting helps predict relative future model performance. Here, recession and turning indicators use retrospective target-date classifications. They are not necessarily in the forecaster's information set. Consequently, the regression is best interpreted as an **ex-post state association of loss differentials**, not a feasible real-time rule for choosing a model during a recession that has not yet been announced. Odendahl et al. (2023) provide broader context for state-dependent forecast evaluation, but the thesis does not adopt their full unknown-threshold method.
 
