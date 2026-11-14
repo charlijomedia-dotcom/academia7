@@ -194,13 +194,14 @@ All paths below were checked against the **465-file published release inventory*
 
 ## 7. Appendix architecture and computation
 
-**Appendix A, data and diagnostics:** full T2.0–T2.5, historical-vintage policy, canonical input and two October 2025 LOCF cells, NBER state definitions, model equations too detailed for the main text. No obsolete MSSTAR theorem.
+**Final reader-facing structure (14 November 2026).** Four appendices now exist and correspond to the existing in-text citations, not the competing provisional layout previously used in the writing blueprint.
 
-**Appendix B, estimation and forecast output:** T3.1–T3.6 complete, nonlinearity and residual screens, selected parameter matrices, all horizon/target comparisons and verified figure panels. The body must still identify the main negative finding.
+- **Appendix A (Tables A.1–A.5; Figure A.1):** official series and endpoints, source and transformation distinctions, constructed October 2025 CPI/UNRATE cells, ADF/KPSS/ZA diagnostics, linearity screens and initial-window model orders.
+- **Appendix B (Tables B.1–B.7):** baseline full-sample adequacy, nonlinear state credibility, baseline RMSE/MAE/HLZ/MCS detail, recession/expansion comparisons, peaks/troughs and separate joint-versus-state-slope tests.
+- **Appendix C (Tables C.1–C.10; Figure C.1):** alternate target representations, CPI lags, K=3 in-sample limits, longer horizons, VAR and GARCH, model-status counts, pre-gap LOCF sensitivity, window length and turning-width exercises.
+- **Appendix D (Tables D.1–D.3):** fit retention rules, reason-code versus unique-fit distinction, numerical safeguards and corrections, planned K=3 work reduction and actual archived resource observations.
 
-**Appendix C, robustness and fragility:** T4.1–T4.9 full results, K3 in-sample parameter matrices and F4.3 plots, window-length F4.8, corrected F3.4 alternate panels, T4.7 reason-code registry, LOCF exposure.
-
-**Appendix D, computational workload and corrections:** report actual fits attempted by model/series, runtime where recorded, memory/CPU platform and configuration, 3,527 avoided rolling K3 origins, caching/warm starts, a short original-methodology vs approved-amendment vs implementation-correction table, and unresolved F6. Link full code/logs instead of reproducing them.
+Do not place essential equations, test nulls, main numerical findings or Reviewer 1's contested displays solely in an appendix. The separate front-matter abbreviation and notation register answers Reviewer 1's entry-level notation concern. Complete archived outputs and audit-only calculations are not reproduced as giant tables. All chapter references should name an existing numbered appendix exhibit.
 
 **The K3 arithmetic:** originally 3,527 rolling fits plus six full-sample fits equals 3,533; approved revised exercise requires six in-sample fits. Thus 3,527 fits avoided, or **99.83% fewer K3 estimation calls**. This is **not** a 99.83% CPU-time saving, nor evidence that K3 forecasts worse. No K3 out-of-sample forecasts exist or may be claimed.
 
