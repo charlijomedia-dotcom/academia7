@@ -161,3 +161,248 @@ For CPI, the mean point forecasts from the ARMA–GARCH exercise have an RMSE of
 
 The broader implication is that nonlinear dependence in the conditional mean, conditional variance and state-transition probabilities are not interchangeable phenomena. A residual ARCH rejection does not establish that MSAR or STAR can improve the expected level or growth rate. Conversely, a fragile MSAR mean model does not demonstrate that a GARCH variance model is the correct structural explanation of an economic shock. Chapter 4 separates these dimensions to avoid explaining all instability through one statistical mechanism.
 
+## 4.4 Two Regimes or More? Testing the Economic Meaning of Latent-State Structure
+
+### 4.4.1 Why a third state is a substantive hypothesis
+
+The two-regime Markov-switching autoregression is a deliberately restricted representation of changes in the conditional mean. A two-state process distinguishes two distributions, but the macroeconomic environment may contain more than two recurring configurations. Inflation may have periods of low and moderate inflation in addition to a high-inflation episode. Output can display ordinary expansion, severe contraction and rapid recovery. Monetary variables may behave differently during effective-lower-bound periods, disinflations and normal policy adjustments. These possibilities are economically plausible, but they do not establish that three distinct regimes can be identified from the observed sample.
+
+A third state adds flexibility in regime means and the transition matrix. It also adds parameters, starting-value sensitivity and the possibility of partitioning a rare extreme observation into its own state. A lower information criterion may arise because this extra state isolates a small group of observations rather than representing a recurrent economic process. The credibility of a three-state fit must consequently be assessed alongside its likelihood improvement.
+
+The regime-count exercise is restricted to one full-sample fit of MSAR(2) and MSAR(3) for each of the six targets. Both representations share the same conditional-mean family, a common set of autoregressive coefficients and the maintained common-variance assumption; the larger model permits three rather than two regime means. No rolling MSAR(3) forecasts are estimated, so no three-state out-of-sample RMSE, forecast-ranking conclusion or predictive-accuracy test follows from this exercise.
+
+The comparison uses an information-criterion difference defined in a consistent direction:
+
+**Equation (4.2): In-sample BIC difference between three- and two-state models**
+
+```math
+\Delta\mathrm{BIC}_{3-2}
+=
+\mathrm{BIC}_{K=3}
+-
+\mathrm{BIC}_{K=2}.
+```
+
+A negative value favors three regimes in terms of the reported penalized likelihood; a positive value favors two. The sign is not a likelihood-ratio test, a measure of structural truth or evidence of forecast superiority. Furthermore, the usual regular chi-square approximation to a regime-count likelihood-ratio statistic is not justified automatically because transition probabilities and regime parameters can be unidentified or lie on a boundary under the restricted model (Cho & White, 2007; Qu & Zhuo, 2021).
+
+### 4.4.2 What the additional state achieves statistically
+
+**Table 4.4. Full-sample MSAR regime-count comparison and credibility assessment**
+
+| Forecast target | BIC, two states | BIC, three states | $\Delta\mathrm{BIC}_{3-2}$ | Three-state credibility qualification |
+|---|---:|---:|---:|---|
+| Real GDP growth | 1,775.04 | 1,744.68 | −30.36 | Two states contain approximately one effective observation each; boundary transitions and unusable covariance |
+| CPI inflation | 4,879.14 | 4,823.33 | −55.81 | A 2.24% occupancy state falls below the credibility threshold |
+| Unemployment rate | −142.46 | 68.08 | +210.54 | Inconclusive likelihood comparison; sparse states, boundary transitions and singular covariance |
+| Industrial production growth | 7,289.93 | 7,222.55 | −67.37 | Rare states, boundary transitions and unusable covariance |
+| Federal funds rate change | 1,078.36 | 581.20 | −497.16 | Two rare states, one with approximately two effective observations, and boundary transitions |
+| M2 growth | 4,460.85 | 4,390.07 | −70.78 | One state contains fewer than eight effective observations; boundary transitions |
+
+*Source: Author's computations.* *Note:* All figures describe full-sample in-sample estimation. A negative difference favors three states under BIC only; it does not demonstrate a credible additional economic state. The unemployment three-state likelihood is below the two-state likelihood despite nesting, indicating that its numerical solution cannot be used as a valid global optimum for regime-count inference. No three-state out-of-sample forecasts were estimated.
+
+The table offers a paradox that is only apparent. For five targets, BIC favors the estimated three-state fit. Nevertheless, none of the six three-state solutions satisfies the specified credibility conditions for an interpretable additional regime. Thus the reported penalized likelihood improvement cannot be equated with identification of a recurrent third macroeconomic state. The exception in the BIC sign, unemployment, is not evidence that two states are definitively superior; it reflects an unresolved numerical likelihood problem discussed below.
+
+For GDP, the three-state fit divides the sample into one dominant state and two states each accounting for approximately one effective observation. Its transition estimates are on problematic boundaries, and its covariance matrix does not permit reliable uncertainty assessment. Adding a third regime therefore does not repair the sparse-state concern documented for the two-state model in Chapter 3. It partitions the history more finely around very unusual observations while making the state interpretation harder to defend.
+
+Industrial production behaves similarly. The three-state solution assigns approximately five effective observations to one state and about twenty-one to another, with nearly all remaining observations in the dominant state. Even the state with slightly more than twenty effective observations remains below the minimum 5% occupancy requirement, and the fit contains boundary and covariance warnings. Its lower BIC cannot support an assertion that two distinct, recurrent exceptional production states have been identified.
+
+For M2 growth, one additional state contains fewer than eight effective observations, accompanied by boundary transition behavior. The model may describe major shifts in money growth, but the evidence is too concentrated to estimate the dynamics of another recurring state reliably. The result does not warrant a causal label such as a separate money-demand, monetary-expansion or liquidity regime. Such interpretations require economic restrictions or independent identification evidence not provided by the present likelihood.
+
+The federal funds rate produces the largest raw BIC improvement, yet its three-state fit allocates approximately two effective observations to one state and fewer than twenty to another. This result is instructive precisely because the magnitude of a BIC difference can be misleading when viewed without state credibility. A flexible latent-state likelihood may capture unusual rate changes more closely while offering no stable estimates of recurrent transition probabilities. The original two-state change-rate model already collapses to indistinguishable regime means. The third state does not transform that specification into a credible, economically distinct policy-state model.
+
+### 4.4.3 The qualified inflation result
+
+CPI inflation is the most interesting counterexample to the claim that all extra states merely isolate single extreme observations. The three-state solution has effective observation counts of approximately 21, 848 and 84, corresponding to occupancy shares near 2.24%, 88.97% and 8.79%. Its covariance calculation is usable, and the estimated regime means are more readily distinguishable than in several of the other targets. The additional state therefore reflects more than one isolated observation.
+
+Nevertheless, the smallest occupancy share fails the stated 5% criterion. Twenty-one effective observations in a sample of approximately 953 observations are not sufficient by themselves to establish a well-populated recurrent third state. This is a threshold-based credibility judgment, not a formal hypothesis test that the third state does not exist. The analysis remains cautious because the estimated likelihood can improve by assigning a relatively small group of unusual inflation observations to another conditional mean.
+
+This qualified result should be read alongside the two-state CPI model. Chapter 3 found that its lower- and higher-mean regimes were more interpretable than the corresponding regimes for most other targets. The three-state fit does not disprove that descriptive finding. Rather, it asks whether a third regime is necessary and reliably identified. The present criteria do not support that stronger conclusion. Thus the two-state CPI description can remain informative while its regime count remains a maintained modelling restriction rather than an empirically certified truth.
+
+### 4.4.4 Unemployment: why an apparently favorable two-state BIC is not decisive
+
+The unemployment comparison is a distinct identification issue. The estimated two-state log-likelihood is approximately 102.04, while the obtained three-state log-likelihood is only 13.88. The latter is lower by about 88.16 likelihood units. A larger unconstrained model should be capable of reproducing the restricted model's likelihood in principle when the parameter spaces are nested or can approach the restricted solution. Obtaining a substantially inferior value in the larger specification therefore signals a local optimum or an unsuccessful search over the larger parameter space, not that the data establish the restricted model as superior.
+
+Consequently, the positive unemployment $\Delta\mathrm{BIC}_{3-2}$ in Table 4.4 cannot be interpreted as a meaningful comparison of correctly maximized likelihoods. The reported three-state fit also has a singular covariance estimate, boundary transition probabilities and two sparsely occupied states. These warnings reinforce the conclusion that the three-state unemployment estimate is not credible. But they do not repair the global-optimization uncertainty.
+
+The correct classification for unemployment is **inconclusive**, not “two regimes validated.” The two-state fit itself is fragile, with near-absorbing transitions described in Chapter 3. One weak candidate and one unreliable larger-model solution cannot establish an optimal number of economic states. Nor can the researcher improve the evidential status merely by treating an optimizer's convergence flag as proof of a global maximum. For hidden-state likelihoods, the shape of the likelihood and dependence on starting values are part of the scientific limitation.
+
+This qualification matters for the thesis's broader conclusion. The failure to identify a credible third state does not prove that a true unemployment process has precisely two regimes. It means the available full-sample exercise does not supply sufficiently reliable evidence for increasing the maintained state count. The forecasting comparison in Chapter 3 therefore retains the originally specified two-state MSAR without making a stronger claim about the true number of regimes.
+
+### 4.4.5 What can be concluded about the regime-count restriction?
+
+The six comparisons support three propositions. First, information criteria alone are insufficient for assessing an extra state when its occupancy or transition probabilities are close to problematic boundaries. Second, the case for a credible three-state description is not established for any target under the stated requirements, with unemployment additionally constrained by a non-global likelihood solution. Third, **failure to justify three states is not validation of two states**, especially where the two-state estimate is itself fragile.
+
+The exercise provides an in-sample check of whether the two-state assumption is overly restrictive. It does not assess whether three regimes would generate better forecasts, because no rolling three-state forecasts were estimated. It also does not settle whether other forms of nonlinear dependence, alternative state-transition structures or economic switching variables could be more identifiable. The question answered is intentionally narrower: does this three-state version of the stated MSAR family produce a credible additional historical state? The available evidence does not establish one.
+
+This conclusion is especially important for economic interpretation. A regression regime is a property of a fitted conditional distribution. It cannot be given a policy, recession or structural label without independent evidence. The presence of three estimated mean levels does not identify three policy regimes, three monetary environments or three stages of the business cycle. Preserving that distinction prevents statistical flexibility from becoming unsupported causal storytelling.
+
+## 4.5 Does Model Ranking Change with the Forecast Horizon?
+
+### 4.5.1 Why forecast distance may change the value of nonlinear dynamics
+
+One-step accuracy is a natural primary objective, but it is not the only horizon that matters for economic planning. Budget decisions, monetary-policy transmission, labor-market expectations and investment choices can depend on forecasts several months or quarters ahead. A nonlinear model may identify a state transition that has little effect on the immediately following observation but accumulates into a larger difference under repeated forecasting. Conversely, a small parameter error can propagate over several iterations and make a complex model increasingly unstable. It is therefore possible for a model's comparative performance to change with the forecast horizon.
+
+The robustness horizons are 3, 6 and 12 months for CPI inflation, unemployment, industrial production, changes in the federal funds rate and M2 growth; for quarterly GDP they are 2 and 4 quarters. The baseline remains one month or one quarter respectively. Models are re-estimated under their specified rolling windows, and the selected nonlinear transition structure is iterated to the required horizon. The procedure evaluates the same transformed target definitions rather than replacing a growth-rate target with an accumulated level change.
+
+A critical comparability issue arises from the evaluation calendar. A twelve-month-ahead forecast issued at origin $t$ has a target date later than a three-month-ahead forecast issued at the same origin. Because the historical sample has a fixed final date, the number of valid target observations also changes with horizon. The horizon-specific RMSE values are therefore not directly comparable as if each used the same realized targets. Within each horizon, however, a competitor and AR can be compared on their common valid target dates.
+
+The inferential rule remains the two-sided HLZ test of average accuracy for each pair and loss. A small p-value at one horizon can support a horizon-specific finding if the inference is usable. It cannot be read automatically as a finding about all horizons or as a reason to rewrite the one-step baseline. Moreover, testing many horizons, targets and loss functions increases the chance of nominally significant results. That concern is addressed explicitly after the numerical comparisons.
+
+### 4.5.2 The pattern across the six targets
+
+**Table 4.5. Selected longer-horizon MSAR forecasts relative to AR**
+
+| Forecast target | Horizon | AR RMSE | MSAR RMSE | AR-relative $R^2_{\mathrm{OOS}}$ | HLZ $p$, squared loss |
+|---|---:|---:|---:|---:|---:|
+| Real GDP growth | 2 quarters | 4.601 | 4.393 | 0.088 | 0.3727 |
+| Real GDP growth | 4 quarters | 4.459 | 4.348 | 0.049 | 0.4253 |
+| CPI inflation | 3 months | 3.460 | 3.473 | −0.007 | 0.7065 |
+| CPI inflation | 6 months | 3.656 | 3.628 | 0.015 | 0.3564 |
+| CPI inflation | 12 months | 3.949 | 3.865 | 0.042 | **0.0329** |
+| Unemployment rate | 3 months | 0.942 | 1.064 | −0.129 | 0.3773 |
+| Unemployment rate | 6 months | 1.165 | 1.410 | −0.538 | 0.3158 |
+| Industrial production growth | 3 months | 13.273 | 12.126 | 0.165 | 0.2677 |
+| Industrial production growth | 6 months | 12.663 | 12.111 | 0.085 | 0.2939 |
+| Federal funds rate change | 6 months | 0.512 | 0.511 | 0.003 | 0.1878 |
+| M2 growth | 12 months | 6.216 | 6.311 | −0.031 | 0.2904 |
+
+*Source: Author's computations.* *Note:* RMSEs use each model's own valid dates; the AR-relative $R^2$ and HLZ tests use the paired dates appropriate to the stated horizon. Bold is a nominal 5% rejection; it is not adjusted for multiple comparisons. The full matrix, including all omitted horizons, absolute-loss tests, ARMA and STAR, is reported in Appendix C. Each horizon has a distinct set of eligible target dates.
+
+The results are heterogeneous. For GDP, MSAR preserves a descriptive squared-error advantage at two and four quarters, with out-of-sample $R^2$ of 0.088 and 0.049. These figures are smaller than the one-quarter baseline value near 0.292, and the primary squared-loss tests do not reject at either longer horizon. Thus increasing the horizon does not create formally established GDP forecast superiority. It also does not imply that a state-dependent model can predict the timing of a recession several quarters in advance.
+
+For industrial production, the MSAR descriptive advantage persists at three and six months but diminishes with horizon. At twelve months, the AR-relative squared-error improvement is approximately zero and slightly negative in the reported results. None of the corresponding HLZ tests establishes a gain. This pattern is consistent with a model that captures some short-run unusual movements but does not generate a stable long-run advantage. That interpretation is descriptive, not a structural account of industrial production dynamics.
+
+Unemployment moves in the opposite direction. Its own-valid AR RMSE is lower than MSAR at three and six months, and the matched MSAR AR-relative $R^2$ is negative, approximately −0.129 and −0.538. At twelve months the matched $R^2$ is still more negative, approximately −0.952. The longer-horizon performance therefore weakens any argument based on MSAR's smallest own-sample one-step RMSE. Yet even these larger numerical disadvantages should not be confused with a formal rejection without the corresponding test. The primary tests at these horizons do not establish a statistically significant difference under the stated squared-loss procedure.
+
+The two monetary targets show very limited positive evidence. Changes in the federal funds rate are forecast almost equally in descriptive RMSE terms by AR and MSAR at three and six months, and the matched out-of-sample $R^2$ is close to zero. M2 growth generally shows negative MSAR AR-relative values at longer horizons, including approximately −0.031 at twelve months. Neither case supports a robust benefit of the estimated switching mean under the primary inference. This is consistent with the weak regime identification noted in the full-sample fits, but it remains a forecast-performance result conditional on the chosen transformations.
+
+### 4.5.3 The isolated twelve-month CPI inflation finding
+
+CPI inflation contains the one meaningful exception to the general lack of nonlinear-over-AR rejection. At the twelve-month forecast horizon, MSAR has an RMSE of approximately 3.865 compared with AR's 3.949 on 704 common forecast dates. The matched out-of-sample $R^2$ is approximately 0.042, indicating a 4.2% reduction in mean squared forecast loss relative to AR on that calendar. Under the primary HLZ test, the two-sided squared-loss p-value is 0.03288. Under absolute loss, the p-value is 0.00444 and the competitor-minus-AR loss differential is negative. Both are nominally significant at 5%, and both favor MSAR for that target and horizon.
+
+This finding should neither be ignored nor exaggerated. The reduction in RMSE is modest in absolute terms, and it occurs at a robustness horizon rather than the one-month baseline. The result offers some evidence that a two-state description can matter more for medium-term CPI inflation than for the next monthly observation. It does not establish that nonlinear dynamics generally improve CPI forecasts or that the estimated high-inflation state identifies a policy mechanism.
+
+The distinction between squared and absolute loss is also useful. The nominal rejection appears under both, so it does not depend entirely on a single loss function. Nevertheless, the broader empirical exercise includes six targets, multiple horizons, several models and two losses. Even without changing the primary test, the family of comparisons raises a multiple-testing problem. An isolated p-value below 0.05 is more likely to occur somewhere in a large test family than in a single predeclared comparison.
+
+A transparent sensitivity calculation applies Holm's (1979) step-down family-wise correction to the 46 available MSAR-versus-AR HLZ comparisons spanning the six targets, their eligible horizons and both loss functions. This is a **supplementary multiplicity sensitivity**, not a replacement for the nominal primary testing convention. Under this adjustment, the CPI twelve-month absolute-loss p-value rises from 0.00444 to approximately 0.204, and the squared-loss p-value rises from 0.03288 to 1.000. Neither survives a 5% family-wise criterion. The adjustment does not prove the horizon-specific effect is zero. It shows that the nominal significance does not remain robust when the stated family of related comparisons is considered.
+
+The distinction is scientific rather than rhetorical. The unadjusted primary result is a valid description of the particular pairwise test. The step-down sensitivity asks a different question: would the same result remain significant while controlling the family-wise chance of at least one false rejection across the 46 tested hypotheses? Because it does not, the appropriate conclusion is **qualified horizon-specific evidence**, not a systematic nonlinear forecasting advantage.
+
+The associated CPI MSAR has a relatively interpretable two-state fitted distribution, as discussed in Chapter 3. This gives the twelve-month result economic interest, but it does not eliminate the multiplicity concern or the need for future independent validation. A model that records a modest gain in one historical horizon could still fail when the inflation process, policy response or publication vintage changes. Thus the relevant proposition to carry forward is narrow: the twelve-month CPI result is a nominal positive exception that does not survive the broader multiple-testing sensitivity.
+
+### 4.5.4 Why the horizon exercise does not revise the primary question
+
+The horizon analysis clarifies the scope of the baseline result. One-step forecasting is not a universal proxy for all planning horizons. The relative performance of MSAR changes with distance, sometimes improving and sometimes deteriorating. A broad negative claim that *no* nonlinear model ever improves any forecast would therefore be too strong. Yet the evidence also does not support the opposite claim that longer horizons reveal a systematic advantage. The only nominally supported nonlinear-over-AR finding is confined to CPI at twelve months and is weakened by multiplicity.
+
+The distinction between selecting a horizon and evaluating a horizon is consequential. A policymaker may need a particular lead time because of transmission lags, budgeting cycles or institutional decisions. The research can evaluate that lead time, but it should not choose the lead time after seeing where a model performs best and then present it as if it were selected independently. The declared horizon grid permits a disciplined comparison. The subsequent interpretation must preserve the nominal versus multiplicity-sensitive distinction.
+
+Finally, horizon dependence does not reveal causality. An MSAR model may show lower CPI forecast loss at twelve months because its estimated persistence and state probabilities improve statistical prediction over that distance. This does not show that manipulating monetary policy would change inflation in the manner predicted by its transition equation. Causal policy inference requires identification of policy shocks, counterfactual responses and a decision criterion not supplied by a point-forecast loss comparison.
+
+## 4.6 Does Cross-Variable Information Explain Apparent Nonlinear Gains?
+
+### 4.6.1 Why a univariate model may be missing relevant information
+
+The baseline AR, ARMA, MSAR and STAR models forecast each target primarily from its own history. That design isolates the contribution of alternative functional forms. It does not imply that inflation, unemployment, output, interest rates and money are economically independent. An autoregression can miss predictive information contained in other aggregates, while a nonlinear state process may partly proxy for their joint evolution. A test of cross-variable information is therefore a natural challenge to the claim that greater own-history nonlinearity is what matters most.
+
+A vector autoregression (VAR) provides a parsimonious way to introduce lagged values of other variables without imposing a fully specified structural model. It represents the conditional mean of each variable as a linear function of its own past and the past of the other variables. The basic first-order monthly system used for the robustness comparison can be written as follows.
+
+**Equation (4.3): Five-variable monthly first-order vector autoregression**
+
+```math
+\begin{aligned}
+\mathbf y_t
+&=\mathbf c+\mathbf A_1\mathbf y_{t-1}
++\mathbf u_t,\\
+\mathbf y_t
+&=\begin{pmatrix}
+\pi_t & u_t & g_t^{IP} & \Delta i_t & g_t^{M2}
+\end{pmatrix}^{\!\top}.
+\end{aligned}
+```
+
+Here $\pi_t$ is CPI inflation, $u_t$ the unemployment rate, $g_t^{IP}$ industrial production growth, $\Delta i_t$ the federal funds rate change and $g_t^{M2}$ M2 growth, all at monthly frequency under their baseline transformations. The vector of innovations $\mathbf u_t$ is not an identified structural economic shock. The unrestricted coefficients in $\mathbf A_1$ describe lagged conditional associations, not causal policy multipliers.
+
+Quarterly GDP is not interpolated to monthly observations for this exercise. Replacing observed GDP with a mechanical monthly interpolation would introduce constructed variation and mix forecast-information questions with an arbitrary frequency-conversion assumption. The VAR therefore covers only the five native monthly targets, preserving the baseline GDP analysis as a separate univariate comparison.
+
+### 4.6.2 VAR selection, stability and the common evaluation calendar
+
+The linear VAR lag order is selected from candidate orders one through three, subject to the stated stability conditions. The first-order model has the lowest initial-window BIC, approximately 4,195.56, compared with 4,197.21 for two lags and 4,256.67 for three. Its estimated companion-matrix maximum modulus is approximately 0.978, below one in the selected initial window. This supports using VAR(1) for the specified robustness comparison. It does not establish that its coefficients remain constant over the entire historical sample.
+
+The common-date construction is essential. A multivariate system requires each of the five relevant lagged variables to be available and its estimated dynamics to satisfy the stability rule. Of the 571 attempted VAR forecast origins in the relevant evaluation, 27 are excluded because the VAR stability condition is not satisfied. Additional missing model forecasts lead to target-specific intersections when the VAR is compared with all four univariate families. The common-date count is 544 for CPI, industrial production and M2, 527 for unemployment and 538 for the federal funds rate.
+
+These intersections must be used to avoid a misleading comparison. For example, the unemployment AR baseline has a one-step own-valid RMSE around 0.551 over 703 dates in Chapter 3. Its RMSE on the smaller five-model VAR common sample is approximately 0.613. The change does not mean that re-estimating AR within the VAR exercise has inherently worsened the model; it reflects a different selection of dates and, in some instances, the more constrained common evaluation calendar. Similarly, a VAR RMSE should not be set against an unrelated AR score and read as a causal performance gain.
+
+### 4.6.3 Forecast evidence when the five model families share dates
+
+**Table 4.6. One-step five-variable VAR comparison on target-specific common dates**
+
+| Monthly target | Common dates | AR RMSE | MSAR RMSE | VAR RMSE | VAR–AR HLZ $p$: squared / absolute |
+|---|---:|---:|---:|---:|---|
+| CPI inflation | 544 | 2.925 | 2.936 | 3.011 | 0.1470 / 0.0662 |
+| Unemployment rate | 527 | 0.613 | 0.550 | 0.493 | 0.3464 / 0.8107 |
+| Industrial production growth | 544 | 14.207 | 12.196 | 12.983 | 0.3460 / 0.5569 |
+| Federal funds rate change | 538 | 0.484 | 0.491 | 0.498 | 0.4549 / **0.0036** |
+| M2 growth | 544 | 5.052 | 5.084 | 4.820 | 0.4755 / 0.4072 |
+
+*Source: Author's computations.* *Note:* All descriptive columns within a row use dates common to AR, ARMA, MSAR, STAR and VAR. The reported HLZ p-values compare VAR against AR under squared and absolute loss. Bold identifies a nominal 5% rejection; in the federal funds rate row, the positive VAR-minus-AR absolute-loss differential favors AR. No reported p-value supports VAR forecast superiority over AR.
+
+The VAR comparison does not provide a general alternative explanation for the nonlinear results. For CPI inflation, VAR has a higher RMSE than AR on their 544 common dates. The squared-loss HLZ test does not reject, while the absolute-loss p-value of 0.0662 remains above the 5% threshold. The available evidence therefore does not support a gain from lagged cross-variable predictors for next-month inflation under this simple linear specification.
+
+Industrial production shows a more favorable descriptive VAR outcome than AR: RMSE falls from approximately 14.207 to 12.983. Yet the MSAR RMSE on the same common calendar is lower still, approximately 12.196, and the VAR–AR squared-loss HLZ p-value is 0.3460. This is a useful example of why a strong descriptive improvement is not a significant result. It also shows that introducing cross-variable information does not necessarily remove the descriptive advantage observed for MSAR, even though neither advantage is established by the relevant primary test.
+
+For unemployment, the VAR has the lowest descriptive RMSE among the five families on the 527 target dates common to the exercise, approximately 0.493. The corresponding AR RMSE is 0.613, and MSAR's is 0.550. The VAR's AR-relative out-of-sample $R^2$ is approximately 0.353, suggesting a noticeable squared-error reduction on that specific calendar. However, the primary squared-loss p-value is 0.3464, and the absolute-loss p-value is 0.8107. Thus the numerical gain does not establish significant superiority. It must also not be compared directly with the own-valid unemployment rankings from Chapter 3, which use different dates and numbers of retained forecasts.
+
+M2 growth also favors VAR descriptively on the common calendar, with RMSE 4.820 compared with AR's 5.052. The squared-loss HLZ p-value is 0.4755, and the absolute-loss p-value is 0.4072. There is therefore no formal evidence that the added linear predictors deliver a significant improvement for M2. The result does, however, indicate that a more complete information set can alter a ranking even when none of the models meets the inferential threshold.
+
+The federal funds rate provides the clearest inferential result in the opposite direction. Under absolute loss, the VAR–AR comparison rejects at $p=0.0036$ and the positive mean loss differential favors the AR benchmark. Its squared-loss comparison does not reject ($p=0.4549$). Thus the VAR is significantly worse than AR under one nominal loss criterion, not significantly better. This loss-specific finding reinforces the point that added information is not costless: more coefficients and cross-variable forecasts can increase estimation variance or incorporate relationships that do not remain stable.
+
+### 4.6.4 What the VAR evidence can and cannot explain
+
+The VAR results address an informational alternative to the baseline univariate comparison. If MSAR appeared useful only because it captured information from other macroeconomic variables, a five-variable linear VAR might have performed consistently better than the AR and perhaps removed the apparent nonlinear descriptive advantage. The evidence does not support such a simple explanation. In some targets the VAR improves the descriptive RMSE, but it does not provide statistically established superiority over AR, and for the policy rate it is nominally worse under absolute loss.
+
+This does not prove that cross-variable information has no predictive content. A VAR(1) is one finite-dimensional linear specification selected from a short candidate grid. It cannot exhaust all possible factor, Bayesian, time-varying-parameter or nonlinear multivariate relationships. It is also estimated under the historical data vintage and the fixed rolling-window constraints. More flexible multivariate approaches may behave differently; testing them would require a separate empirical design and further protection against data mining.
+
+The causal interpretation is narrower still. A coefficient linking the lagged federal funds rate to inflation, for example, is not a monetary-policy treatment effect. A forecast reduction when an additional lagged variable is included does not establish the effect of an exogenous intervention in that variable. The VAR innovations need not be structural shocks, and contemporaneous economic responses are not identified through the unrestricted predictive equations. Consequently, the present results inform model-selection discipline but cannot determine optimal interest-rate decisions or estimate the welfare benefits of policy intervention.
+
+The five-variable robustness exercise also does not turn this dissertation into a nowcasting study. The forecasts use lagged monthly observations in a fixed historical vintage. They do not reproduce each historical release calendar, forecast missing current-quarter GDP, or update predictions as economic releases arrive within the month. The distinction between predicting a future target and constructing a timely estimate of the present state is examined in Section 4.8.
+
+Together, Sections 4.2–4.6 establish the main robustness finding of the first half of this chapter. Alternative unemployment and interest-rate transformations do not reveal a supported nonlinear advantage. The CPI lag exercise shows sensitivity to specification and loss but provides no direct evidence that AR(12) improves on the declared AR(2). Three-state MSAR fits offer better penalized historical likelihoods for most targets without identifying credible additional regimes; unemployment remains inconclusive because the larger likelihood is unreliable. Longer forecast horizons reveal one nominal MSAR gain for twelve-month CPI inflation that does not survive the family-wise sensitivity. A five-variable VAR does not outperform AR significantly under the primary test. These results do not eliminate every alternative explanation, but they progressively narrow the circumstances in which extra nonlinear complexity could be claimed to improve prediction.
+
+The remaining sections examine the factors most difficult to summarize through a conventional model-comparison table: numerical fragility, failures, estimation-window sensitivity, the limits of the historical information set, and the economic scope of the conclusions. The purpose is to determine whether the absence of general nonlinear superiority is a robust scientific finding rather than an artifact of one estimation procedure or unusually favorable historical episode.
+---
+
+## References
+
+Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. *Journal of Econometrics, 31*(3), 307–327. https://doi.org/10.1016/0304-4076(86)90063-1
+
+Cho, J. S., & White, H. (2007). Testing for regime switching. *Econometrica, 75*(6), 1671–1720. https://doi.org/10.1111/j.1468-0262.2007.00809.x
+
+Dickey, D. A., & Fuller, W. A. (1979). Distribution of the estimators for autoregressive time series with a unit root. *Journal of the American Statistical Association, 74*(366a), 427–431. https://doi.org/10.1080/01621459.1979.10482531
+
+Diebold, F. X., & Mariano, R. S. (1995). Comparing predictive accuracy. *Journal of Business & Economic Statistics, 13*(3), 253–263. https://doi.org/10.1080/07350015.1995.10524599
+
+Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. *Econometrica, 50*(4), 987–1007. https://doi.org/10.2307/1912773
+
+Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357–384. https://doi.org/10.2307/1912559
+
+Harvey, D. I., Leybourne, S. J., & Zu, Y. (2025). Testing for equal average forecast accuracy in possibly unstable environments. *Journal of Business & Economic Statistics, 43*(3), 643–656. https://doi.org/10.1080/07350015.2024.2418835
+
+Holm, S. (1979). A simple sequentially rejective multiple test procedure. *Scandinavian Journal of Statistics, 6*(2), 65–70. https://www.jstor.org/stable/4615733
+
+Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root? *Journal of Econometrics, 54*(1–3), 159–178. https://doi.org/10.1016/0304-4076(92)90104-Y
+
+Lenza, M., & Primiceri, G. E. (2022). How to estimate a vector autoregression after March 2020. *Journal of Applied Econometrics, 37*(4), 688–699. https://doi.org/10.1002/jae.2895
+
+Orphanides, A. (2001). Monetary policy rules based on real-time data. *American Economic Review, 91*(4), 964–985. https://doi.org/10.1257/aer.91.4.964
+
+Pesaran, M. H., & Timmermann, A. (2007). Selection of estimation window in the presence of breaks. *Journal of Econometrics, 137*(1), 134–161. https://doi.org/10.1016/j.jeconom.2006.03.010
+
+Qu, Z., & Zhuo, F. (2021). Likelihood ratio-based tests for Markov regime switching. *The Review of Economic Studies, 88*(2), 937–968. https://doi.org/10.1093/restud/rdaa035
+
+Rossi, B., & Inoue, A. (2012). Out-of-sample forecast tests robust to the choice of window size. *Journal of Business & Economic Statistics, 30*(3), 432–453. https://doi.org/10.1080/07350015.2012.693850
+
+Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become harder to forecast? *Journal of Money, Credit and Banking, 39*(s1), 3–33. https://doi.org/10.1111/j.1538-4616.2007.00014.x
+
+Teräsvirta, T. (1994). Specification, estimation, and evaluation of smooth transition autoregressive models. *Journal of the American Statistical Association, 89*(425), 208–218. https://doi.org/10.1080/01621459.1994.10476462
+
+Zivot, E., & Andrews, D. W. K. (1992). Further evidence on the great crash, the oil-price shock, and the unit-root hypothesis. *Journal of Business & Economic Statistics, 10*(3), 251–270. https://doi.org/10.1080/07350015.1992.10509904
