@@ -290,6 +290,171 @@ These results do not imply that linearity is the true data-generating law for th
 
 A further question remains. The overall averages can conceal performance concentrated in recessions, expansions or neighborhoods of peaks and troughs. It is possible for a model to offer useful gains in a narrow state without reducing its average loss enough to yield a significant whole-sample result. It is equally possible for a model to appear superior in a retrospectively selected episode because extreme observations dominate the losses. Sections 3.5 and 3.6 examine these possibilities using the state definitions and formal conditional comparisons established in Chapter 2. The subsequent cross-aggregate synthesis and robustness analysis assess whether any state-specific interpretation survives changes in the relevant assumptions.
 
+## 3.5 Forecast Performance in Expansions and Recessions
+
+### 3.5.1 Economic phases as an ex-post evaluation of forecast difficulty
+
+A forecast model can be more accurate on average without being more useful during periods when policy decisions are especially difficult. Recessions, for example, can involve unusually large changes in production, employment, financing conditions and monetary policy. A model that predicts ordinary monthly movements accurately may nevertheless miss an abrupt contraction. Conversely, a model with relatively large errors during expansions may forecast a crisis observation unusually well and achieve a lower full-sample squared-error average. For this reason, the overall forecast comparisons in Section 3.4 are supplemented by a phase-specific evaluation.
+
+The state definitions are external to the competing AR, ARMA, MSAR and STAR models. Monthly target dates are classified using the U.S. recession chronology underlying the USREC indicator, which reflects the business-cycle dates established by the National Bureau of Economic Research (NBER, n.d.). For quarterly GDP, a quarter is classified as recession-affected when at least one of its constituent months is dated as a recession. All other evaluation dates are classified as expansions. The labels refer to the realized forecast **target date**, not to the information available when a forecast was made.
+
+This distinction is fundamental. The NBER business-cycle chronology is retrospective. An individual observation can eventually be assigned to a recession even when that classification had not been announced at the forecast origin. In the present exercise, the label is a device for evaluating realized errors conditional on the historical phase. It is not an additional predictor supplied to the models. The estimated latent state of MSAR is also a different object: it is inferred from a statistical likelihood and does not inherit an NBER label merely because its probability rises near a recession.
+
+On the baseline one-step evaluation dates of the AR benchmark, the recession cells contain 23 observations for quarterly GDP, 85 each for CPI inflation, unemployment and industrial production, 66 for the federal funds rate change, and 58 for M2 growth. Their corresponding expansion counts are 174, 630, 618, 630, 559 and 513. The exact counts differ when a competing method has failed at particular forecast origins. These sample sizes are large enough to provide descriptive comparisons, but the recession subsamples remain much smaller than the expansion subsamples. One exceptional observation can therefore have considerable influence on a recession-specific RMSE.
+
+When observations are partitioned into disjoint recession and expansion sets, their squared-error averages satisfy the following identity for a given model and its own valid evaluation calendar.
+
+**Equation (3.2): Decomposition of overall squared forecast loss by economic phase**
+
+```math
+\operatorname{RMSE}_{m}^{2}
+=
+\frac{N_{\mathrm{rec},m}}{N_m}
+\operatorname{RMSE}_{\mathrm{rec},m}^{2}
++
+\frac{N_{\mathrm{exp},m}}{N_m}
+\operatorname{RMSE}_{\mathrm{exp},m}^{2},
+\qquad
+N_m=N_{\mathrm{rec},m}+N_{\mathrm{exp},m}.
+```
+
+The identity demonstrates why a small recession subsample can contribute disproportionately to full-sample squared forecast loss. Its effect depends both on the number of dates and on the scale of the errors. It does not imply that recession errors are statistically independent, that model differences are significant, or that competing models necessarily have the same valid dates. Those matters require matched-date comparisons and formal uncertainty assessment.
+
+### 3.5.2 Error magnitudes across the six macroeconomic targets
+
+**Table 3.6. One-step forecast RMSE in expansions and recessions**
+
+| Forecast target | AR: expansion RMSE ($n$) | AR: recession RMSE ($n$) | MSAR: expansion RMSE ($n$) | MSAR: recession RMSE ($n$) |
+|---|---:|---:|---:|---:|
+| Real GDP growth | 4.725 (174) | 8.382 (23) | 3.666 (174) | 8.231 (23) |
+| CPI inflation | 2.678 (630) | 4.570 (85) | 2.683 (630) | 4.546 (85) |
+| Unemployment rate | 0.404 (618) | 1.150 (85) | 0.266 (615) | 1.227 (83) |
+| Industrial production growth | 11.355 (630) | 23.127 (85) | 9.294 (630) | 22.343 (85) |
+| Federal funds rate change | 0.325 (559) | 1.115 (66) | 0.334 (559) | 1.112 (66) |
+| M2 growth | 3.838 (513) | 11.113 (58) | 3.953 (513) | 10.983 (58) |
+
+*Source: Author's computations.* *Note:* Phases are dated retrospectively from the NBER chronology. The quarterly GDP classification includes quarters with at least one recession month. The sample count is the number of retained forecasts in the specified phase, not necessarily a common sample across models. A lower conditional RMSE is descriptive only. The complete phase-specific results for ARMA and STAR, including MAE and paired loss differentials, are reported in Appendix B.
+
+For each target, the AR model's recession RMSE is higher than its expansion RMSE. The difference is especially striking for the federal funds rate change, unemployment and M2 growth. The policy-rate benchmark rises from approximately 0.325 percentage points in expansions to 1.115 in recessions. The unemployment benchmark increases from 0.404 to 1.150 percentage points, while the RMSE of M2 growth rises from 3.838 to 11.113 annualized percentage points. These contrasts are consistent with abrupt rate adjustments, labor-market disturbances and changes in monetary balances during turbulent periods. They do not identify the causes of individual shocks, since the models use past observations rather than structural instruments.
+
+For quarterly real GDP, the recession AR RMSE is 8.382 compared with 4.725 in expansions. MSAR produces a lower descriptive RMSE in both groups, 8.231 and 3.666 respectively. The recession difference is small relative to the scale of those errors. Moreover, the GDP recession cell contains only 23 target quarters. A handful of exceptionally large contractions and recoveries can determine the comparison. The full-sample MSAR improvement in Table 3.4 should therefore not be reinterpreted as proof of superior recession forecasting on the basis of the phase-specific RMSE alone.
+
+Industrial production offers a similar but not identical pattern. The MSAR expansion RMSE is 9.294 against AR's 11.355, while its recession RMSE is 22.343 against 23.127. The apparent improvement is numerically larger in ordinary expansions than the difference in recession RMSE. This does not establish that the model has greater predictive skill in one phase: squared-error differentials vary considerably across dates, and the recession and expansion cells have different lengths. The large size of industrial production shocks also means that RMSE can respond sharply to a small number of observations.
+
+CPI inflation illustrates the relative absence of a phase-specific one-step gain despite the more interpretable two-state inflation fit described in Section 3.3. In expansions, the AR and MSAR RMSEs are 2.678 and 2.683. In recessions they are 4.570 and 4.546. These differences are minor when compared with the variation in inflation errors over the historical sample. They are not evidence that the high-inflation MSAR state provides a dependable signal for recessions. High inflation and NBER recessions are not synonymous economic states, and the fitted CPI regime uses inflation dynamics rather than business-cycle labels.
+
+The unemployment comparison is more complicated because the number of available forecasts differs across models. In expansions, MSAR has a smaller own-valid-sample RMSE than AR, 0.266 against 0.404, but the counts are 615 and 618 respectively. In recessions, MSAR has a **larger** descriptive RMSE, 1.227 against AR's 1.150, on 83 rather than 85 dates. The divergent ranking between phases is compatible with the possibility that MSAR smooths comparatively ordinary unemployment movements while struggling with rapid labor-market changes. It does not demonstrate that explanation, because the samples are not identical and the state-dependent tests must account for variation in loss differences.
+
+For changes in the federal funds rate and for M2 growth, the phase-specific MSAR gains are small or inconsistent. In recessions the rate-change RMSE moves from 1.115 under AR to 1.112 under MSAR, while in expansions the corresponding figures are 0.325 and 0.334. M2 exhibits a recession RMSE of 11.113 for AR and 10.983 for MSAR, but the expansion RMSE rises from 3.838 to 3.953. These observations provide no persuasive descriptive case for a substantial and stable state-conditioned advantage. Nor does the weak identification of the full-sample MSAR monetary regimes support a strong economic interpretation.
+
+The STAR forecasts raise a separate issue. Some recession-conditioned errors are extraordinarily large: for CPI inflation the STAR recession RMSE is about $1.56\times10^{10}$, and for industrial production it is about $2.08\times10^{7}$. Their size reflects extreme finite forecasts, not ordinary variation in predictive accuracy. Presenting these alongside moderate AR and MSAR numbers in a common linear-scale graph would obscure the informative comparisons. The full numerical values are therefore retained in the detailed results, while the main text emphasizes that numerical instability cannot be turned into a positive inference about recession-specific forecasting ability.
+
+### 3.5.3 Conditional loss regressions: which hypothesis is actually tested?
+
+Separate recession and expansion RMSEs show how errors are distributed, but they do not establish whether a model's *relative* forecasting advantage depends on economic state. The relevant test concerns the signed loss differential between a competitor and the AR benchmark on their shared valid target dates. Section 2.10 specifies a Giacomini–White-style regression that relates this differential to the retrospective recession indicator and to the turning-neighborhood indicator (Giacomini & White, 2006).
+
+These indicators overlap in time. A target date near a trough can be classified both as a recession date and as part of a turning neighborhood. The regression therefore estimates each slope **conditional on the other indicator**. The coefficient of the recession dummy is not simply the difference between the two unconditional RMSEs in Table 3.6. In addition, its dependent variable is the squared-error difference, not the square root of that difference. A comparison based on the sign of two reported RMSEs is consequently not equivalent to a significance test of the recession coefficient.
+
+For clarity, three null hypotheses have different meanings. The recession-specific null is $\beta_{\mathrm{rec}}=0$; the turning-neighborhood null is $\beta_{\mathrm{turn}}=0$. A third hypothesis jointly restricts both slopes to zero. These are tests of *state dependence* in the relative loss. By contrast, the joint Wald test that constrains the intercept **and** both slopes to zero, $(\alpha,\beta_{\mathrm{rec}},\beta_{\mathrm{turn}})=(0,0,0)$, is broader. It may reject because average relative accuracy differs from zero, without any slope being distinguishable from zero.
+
+**Table 3.7. One-step squared-loss regression tests of MSAR performance relative to AR**
+
+| Forecast target | Paired dates ($N$) | Recession dates ($N$) | $p(\beta_{\mathrm{rec}}=0)$ | $p(\beta_{\mathrm{turn}}=0)$ | Joint slope test $p$ |
+|---|---:|---:|---:|---:|---:|
+| Real GDP growth | 197 | 23 | 0.3484 | 0.3149 | 0.5334 |
+| CPI inflation | 715 | 85 | 0.7740 | 0.9447 | 0.9174 |
+| Unemployment rate | 697 | 83 | 0.9744 | 0.1326 | 0.1620 |
+| Industrial production growth | 715 | 85 | 0.3600 | 0.2718 | 0.5437 |
+| Federal funds rate change | 625 | 66 | 0.5688 | 0.8136 | 0.8501 |
+| M2 growth | 571 | 58 | 0.2775 | 0.4900 | 0.5312 |
+
+*Source: Author's computations.* *Note:* The dependent variable is MSAR squared forecast loss minus AR squared forecast loss, with negative values favoring MSAR. The regression contains an intercept and simultaneous recession and turning-neighborhood indicators. The final column tests only the two state slopes jointly, not the intercept; the baseline turning neighborhoods are $\pm3$ months or $\pm1$ quarter. P-values are nominal, based on the stated horizon-specific covariance convention, and do not demonstrate equivalence when the null is not rejected.
+
+No recession coefficient in Table 3.7 is significant at 5%. No turning-neighborhood coefficient is significant at that level, either. The joint slope tests also do not reject for any of the six targets. Accordingly, the signed loss regressions provide no statistically supported basis for claiming that the relative performance of MSAR against AR changes systematically during recessions or near turning points.
+
+This conclusion is stronger and more precise than saying that MSAR never has a smaller recession RMSE. It sometimes does. The distinction is that a smaller observed error does not provide sufficient evidence of a reproducible state-conditioned improvement. Even for GDP and industrial production, whose full-sample descriptive RMSE gains are notable, the recession and turning coefficients remain imprecise. The results thus fail to establish the hypothesis that MSAR earns its extra complexity specifically when macroeconomic conditions are unstable.
+
+The same caution applies to STAR. At the one-step horizon, the separate state slopes and their joint tests do not establish a positive nonlinear advantage over AR for any target. For CPI and industrial production, the regression coefficients involve enormous loss differentials arising from explosive forecast errors. Their associated p-values must be interpreted in light of numerical degeneracy rather than as ordinary evidence of either equality or superior performance. A large estimated coefficient with an uninformative standard error cannot identify reliable recession sensitivity.
+
+An important qualification arises in the **classical ARMA comparison for unemployment**. At the one-step horizon, the joint Wald test of $(\alpha,\beta_{\mathrm{rec}},\beta_{\mathrm{turn}})=(0,0,0)$ rejects with $p=0.0343$. However, the separate test that restricts only the two state slopes does not reject ($p=0.2820$). The recession coefficient has $p=0.1169$, and the turning coefficient has $p=0.9983$. The joint result therefore cannot be reported as evidence that relative ARMA accuracy changes significantly in recessions or around turning points. It concerns a broader null that includes the regression intercept, and its apparent significance must be reported separately from state dependence.
+
+This example shows why state-conditioned interpretation requires more than an automated decision to reject one omnibus null. Economic claims must correspond to the actual parameter restrictions tested. The present evidence does not establish a recurrent nonlinear forecasting advantage conditional on an ex-post recession label; nor does the unemployment ARMA joint rejection supply such evidence for a classical model.
+
+### 3.5.4 What economic conclusions follow from the phase-specific evidence?
+
+The phase-specific analysis suggests a consistent descriptive fact: predicting the six transformed U.S. aggregates is generally harder during historically dated recessions than during expansions, at least under the AR benchmark and the stated RMSE measure. This is unsurprising from an economic perspective. Aggregate shocks and policy responses can be unusually large during recessions. What is less obvious, and more relevant to the thesis, is that the additional state-dependent structure has not produced a formally supported relative advantage in those periods.
+
+There are limits to this interpretation. The number of recessions in a fixed historical sample is small even when the monthly number of recession observations is reasonably large. Adjacent months in a recession are not independent replications of a new economic regime. The pandemic can dominate squared forecast loss. The analysis also uses a fixed data vintage, while retrospective recession dating may differ sharply from what policymakers knew in real time. These features limit claims of general applicability to a future recession whose shocks and release patterns may differ.
+
+The distinction between detecting a recession and forecasting an aggregate during a period later identified as recession is especially important. Chauvet and Piger (2008) examine the real-time performance of business-cycle dating methods. Their work illustrates that classification accuracy depends on information timing. The present exercise does not estimate the probability of a recession at each historical forecast origin. It tests whether forecast errors, computed without the future target observation, differ across subsequently assigned phases. The two questions should not be confused.
+
+The evidence therefore supports a narrow interpretation of instability: historical recession dates are associated with greater forecast difficulty, but they do not identify an empirically reliable comparative advantage for the MSAR or STAR conditional-mean specifications tested here. The next section examines the sharper question of whether relative forecast performance changes near the transitions between expansions and recessions.
+
+## 3.6 Peaks, Troughs and Turning-Point Forecasting
+
+### 3.6.1 Why turning points warrant separate analysis
+
+A recession is a period, but a turning point is a boundary between phases. The difference matters for forecasting. Models can fail to anticipate the first contraction even when they predict the later recession months reasonably well. They can also miss the rebound after a trough while remaining accurate through a prolonged expansion. Averaging the entire recession may conceal these short episodes. A state-dependent model could, in principle, earn its complexity by adjusting more rapidly when the economy changes direction rather than by minimizing its average error during all recession observations.
+
+The analysis therefore distinguishes neighborhoods of NBER-dated business-cycle peaks and troughs from recession intervals as a whole. For monthly series, the peak and trough dates are determined from the transitions of the historical recession chronology, with the reference date taken immediately before the observed change in the indicator. The baseline neighborhood contains the reference month plus three months on each side. For quarterly GDP, the quarter containing the corresponding monthly date and the adjacent quarter on each side define the baseline neighborhood.
+
+A turning neighborhood may include both recession and expansion observations. It is not an alternative mutually exclusive recession classification. Moreover, the union of windows around different turning dates can overlap. Each target observation is counted only once in the overall turning-window RMSE, although a date can be represented in the separate peak and trough descriptive subsets when their neighborhoods overlap. Hence the peak and trough sample counts do not necessarily add to the number of observations in the union of all turning neighborhoods.
+
+The choice of a three-month or one-quarter neighborhood is an operational sensitivity definition, not an estimate of the economically optimal warning horizon. Turning points may be recognized with delay, and the timing of GDP, unemployment and interest-rate responses can differ (Chauvet & Piger, 2008). The robustness analysis therefore considers narrower and wider neighborhoods. A model whose apparent gain disappears or reverses under small changes to the width should not be described as robustly superior around turning points.
+
+### 3.6.2 The distribution of forecast errors near turning points
+
+At the one-step horizon, turning-neighborhood errors are typically much larger than errors outside those neighborhoods. For the GDP AR benchmark, RMSE is $11.256$ within the baseline turning union and $2.566$ outside it, with 35 and 162 respective target quarters. For industrial production, the corresponding figures are $25.721$ and $9.637$ over 106 and 609 months. The unemployment AR benchmark has RMSE $1.080$ near turning points and $0.390$ outside. These contrasts reflect the concentration of large movements around changes in economic activity; they do not indicate that a model could have identified those turns beforehand.
+
+**Table 3.8. One-step RMSE near historically dated peaks and troughs**
+
+| Forecast target | AR: peak window | MSAR: peak window | AR: trough window | MSAR: trough window |
+|---|---:|---:|---:|---:|
+| Real GDP growth | 3.424 (18) | 3.520 (18) | 15.430 (18) | 12.003 (18) |
+| CPI inflation | 3.802 (56) | 3.853 (56) | 3.616 (56) | 3.549 (56) |
+| Unemployment rate | 1.414 (55) | 1.500 (56) | 1.483 (55) | 1.695 (52) |
+| Industrial production growth | 29.158 (56) | 26.908 (56) | 34.835 (56) | 31.105 (56) |
+| Federal funds rate change | 0.868 (42) | 0.854 (42) | 1.116 (49) | 1.118 (49) |
+| M2 growth | 11.995 (42) | 11.740 (42) | 13.661 (42) | 13.809 (42) |
+
+*Source: Author's computations.* *Note:* Parentheses give each model's number of retained forecasts in the indicated historical neighborhood. The windows are $\pm3$ months or $\pm1$ quarter around reference peak and trough dates. These are descriptive RMSEs, not paired inferential comparisons. Peak and trough neighborhoods can overlap, and recession and turning indicators are distinct. Detailed dates, MAEs and the complete four-family comparison appear in Appendix B.
+
+The GDP figures illustrate how forecast difficulty can differ between the onset of a downturn and its aftermath. Around the selected peaks, the AR and MSAR errors are relatively close, with AR slightly lower. Around troughs, the MSAR RMSE is 12.003 compared with 15.430 for AR. This is a noticeable descriptive difference, but it occurs within 18 selected target-quarter observations that include exceptional historical events. It does not establish that the model would have recognized a trough in advance or that its apparent improvement represents a recurring nonlinear recovery mechanism.
+
+Industrial production has higher errors near troughs than near peaks for both AR and MSAR. Its MSAR RMSE is lower than AR's in both types of neighborhood, yet the difference is not sufficient to establish the state-dependent regression effect reported in Table 3.7. In particular, the recession and turning slopes are tested jointly with their uncertainties rather than inferred from two separate RMSE columns. The direct predictive interpretation is therefore narrower than the descriptive comparison suggests.
+
+The unemployment estimates show the opposite ordering in the baseline peak and trough subsets: MSAR's own-valid RMSE is larger than AR's in both. The counts are also unequal, especially near troughs, where MSAR retains 52 observations against AR's 55. These differences can arise from failed or inadmissible forecasts near the periods of rapid unemployment adjustment. A purported turning-point ranking that ignores those missing dates would be difficult to interpret. The result strengthens the need for common-date comparison and an explicit account of numerical coverage.
+
+For CPI inflation, MSAR is slightly worse near peaks and slightly better near troughs; neither difference is large relative to the forecast errors. The effective federal funds rate exhibits nearly identical AR and MSAR RMSEs in both types of neighborhood. M2 changes its descriptive ordering between peaks and troughs. There is consequently no uniform pattern in which the nonlinear model outperforms the classical benchmark at both transition types across the six targets.
+
+The STAR results provide further evidence of why turning-point interpretation cannot rely solely on a model's nonlinear form. In the CPI data, the extreme forecast errors are concentrated in the peak-neighborhood subset, whose STAR RMSE is approximately $1.92\times10^{10}$. For industrial production, the trough-neighborhood STAR RMSE reaches approximately $2.56\times10^{7}$. These are failures of numerical forecasting performance at dates later identified as economically important. They are not evidence that the transition model anticipates those turning points; nor should an uninformative p-value calculated from such extreme losses be used to claim equal accuracy.
+
+### 3.6.3 Sensitivity to the width of a turning neighborhood
+
+The conclusions should not depend on treating a specific calendar width as a natural economic constant. A narrow window concentrates on the most immediate transition months, where shock magnitudes are often largest and observations are few. A wide window includes more of the surrounding expansion and recession, increasing the sample while reducing the precision of the phrase *near a turning point*. Both definitions are useful as sensitivity checks, but neither is a universal identification rule.
+
+For quarterly GDP, the analysis contrasts the turning quarter alone, the baseline $\pm1$ quarter and a wider $\pm2$ quarters. For the five monthly targets, it contrasts $\pm1$, $\pm3$ and $\pm6$ months. Changing the width changes the observations included and can alter both the sign and magnitude of an estimated model-minus-AR loss differential. It does not generate new forecasts; it changes the retrospective subset on which already-computed forecast errors are evaluated.
+
+The GDP MSAR comparison is a useful example. Its mean squared-loss differential near turning dates is approximately $-4.71$ when only the turning quarter is included, $-48.03$ under the baseline $\pm1$-quarter neighborhood and $-32.95$ under $\pm2$ quarters. Each negative value indicates lower observed MSAR squared loss on the corresponding paired subset. The differences in magnitude show that a few observations can strongly influence the estimated benefit. None of these neighborhoods yields statistically supported turning-specific superiority under the corresponding conditional criterion.
+
+For unemployment, the direction is less stable. The MSAR mean loss differential near turning points is approximately $+0.345$ with a three-month neighborhood, favoring AR, but falls to approximately $-0.227$ under a six-month neighborhood, favoring MSAR. The narrower one-month neighborhood also favors AR. The result shows a change of descriptive ranking when the episode definition changes. Neither direction is statistically supported as a reliable turning-specific effect. This is a direct reason not to generalize an unemployment ranking from a single chosen window.
+
+The federal funds rate and M2 likewise display changes in the sign of some turning-window differentials as the neighborhood varies. For the policy rate, the MSAR-minus-AR mean squared-loss differential is slightly negative under the baseline three-month window, but positive under the one-month and six-month alternatives. For M2, it is positive under the baseline and wider six-month windows but negative under the narrow one-month window. CPI's baseline differential is slightly negative, becomes approximately zero and positive in the narrowest window, and remains negative in the wider window. These sign changes need not be economically large, but they show that the ranking is sensitive to how transition dates are grouped.
+
+Industrial production retains a negative descriptive MSAR-minus-AR differential in all three selected windows. Even there, the conditional tests do not establish a statistically significant nonlinear gain near turning points. Sign stability is weaker evidence than a well-calibrated rejection of the relevant null. A positive conclusion would require both a substantively meaningful reduction in loss and statistical support that survives the declared changes in the definition of the state.
+
+Across the specified window-width exercises, **no MSAR or STAR turning-window advantage acquires robust statistical support**. The evidence therefore provides no basis for declaring the baseline three-month or one-quarter definition uniquely favorable. The detailed alternative-window results are reported in Chapter 4, where their sensitivity is assessed alongside horizon, estimation-window and specification robustness.
+
+### 3.6.4 Economic interpretation of the turning-point evidence
+
+The peak–trough results provide evidence about *where forecasting becomes difficult*, not proof that any of the models can foresee the change of phase itself. An AR forecast can be wrong because the latest shock differs from historical innovations, while an MSAR forecast can be wrong because its latent-state probabilities have not yet shifted enough to reflect the new environment. STAR can be wrong because an estimated threshold or transition slope poorly represents the observations at the relevant origin. The observed losses do not, by themselves, identify which of these mechanisms caused a particular error.
+
+The distinction between forecast-time and retrospective information is especially important near a trough. Once the recovery has occurred, it may be straightforward to identify the historical lowest point of a contraction. Before that point, output, employment and financial conditions may supply conflicting signals. A model that has a relatively low RMSE on dates surrounding a known trough has not necessarily predicted the trough date. Such a claim would require a separate real-time classification or event-prediction experiment, including its own loss measure and timely information set.
+
+The evidence also does not validate an economic interpretation of a model's latent state solely because its filtered or smoothed probability changes near NBER dates. Smoothed probabilities incorporate later observations, and the estimated Markov state may respond to inflation or a statistical outlier rather than the cycle of aggregate activity. Relating the state path to historical peaks and troughs can be informative descriptively, but it is not sufficient for causal identification or operational recession forecasting.
+
+The combined implication of Sections 3.5 and 3.6 is consequently precise. Recessions and turning neighborhoods are periods of relatively high forecast difficulty, but the comparison offers **no statistically established evidence of an MSAR or STAR advantage concentrated in those states**. Some numerical rankings depend on the particular dates and neighborhood widths, while several STAR regressions are affected by extreme forecast losses. The next task is to relate these results to the economic functions of each aggregate without collapsing six different targets into one universal model ranking.
+
 ---
 
 ## References
