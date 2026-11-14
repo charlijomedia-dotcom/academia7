@@ -208,10 +208,10 @@ The corresponding two-state MSAR specification has state-dependent means but **c
 
 ```math
 \begin{aligned}
-\widehat m_t(\mathbf S)
-&=\widehat\mu_{S_t}
- +0.4573\bigl(\pi_{t-1}-\widehat\mu_{S_{t-1}}\bigr)\\
-&\quad+0.0502\bigl(\pi_{t-2}-\widehat\mu_{S_{t-2}}\bigr),\\[4pt]
+\widehat m_t(\mathbf s)
+&=\widehat\mu_{s_t}
+ +0.4573\bigl(\pi_{t-1}-\widehat\mu_{s_{t-1}}\bigr)\\
+&\quad+0.0502\bigl(\pi_{t-2}-\widehat\mu_{s_{t-2}}\bigr),\\[4pt]
 (\widehat\mu_1,\widehat\mu_2)
 &=(2.5630,\;12.4941),\\[4pt]
 \widehat P
@@ -223,7 +223,7 @@ The corresponding two-state MSAR specification has state-dependent means but **c
 \end{aligned}
 ```
 
-Here $\mathbf S=(S_t,S_{t-1},S_{t-2})$ denotes the unobserved state path and $\widehat m_t$ is conditional on that path. The approximate standard errors are $0.1965$ and $0.6387$ for the two means; $0.0380$ and $0.0388$ for the common autoregressive coefficients; and $0.0726$ for the common innovation standard deviation. The transition-probability standard errors are approximately $0.0050$ for $\widehat p_{11}$ and $0.0480$ for $\widehat p_{22}$. The rows of $\widehat P$ give transitions from the current state to the next state. The historical regime interpretation is descriptive. Forecast-time predictions integrate over uncertainty in the latent states rather than treating the future state path as observed.
+Here $\mathbf s=(s_t,s_{t-1},s_{t-2})$ denotes the unobserved state path and $\widehat m_t$ is conditional on that path. The approximate standard errors are $0.1965$ and $0.6387$ for the two means; $0.0380$ and $0.0388$ for the common autoregressive coefficients; and $0.0726$ for the common innovation standard deviation. The transition-probability standard errors are approximately $0.0050$ for $\widehat p_{11}$ and $0.0480$ for $\widehat p_{22}$. The rows of $\widehat P$ give transitions from the current state to the next state. The historical regime interpretation is descriptive. Forecast-time predictions integrate over uncertainty in the latent states rather than treating the future state path as observed.
 
 The full-sample MSAR BIC of $4{,}879.14$ is below the AR(2) BIC of $4{,}995.79$, establishing the direction of the penalized in-sample fit comparison. This numerical improvement is consistent with the descriptive high-inflation state discussed in Section 3.3.3, but it does not establish greater predictive accuracy. As Section 3.4 shows, the one-step AR and MSAR forecast RMSEs are almost identical, while residual autocorrelation remains in the fitted MSAR. The reported standard errors quantify approximate conditional parameter uncertainty; they do not account for model-family selection, the economic identity of a state or uncertainty over future state realizations.
 
