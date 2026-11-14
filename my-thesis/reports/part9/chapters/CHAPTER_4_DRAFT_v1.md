@@ -141,7 +141,7 @@ The secondary conventional test also differs from HLZ. For AR(3) against AR(1) u
 
 ### 4.3.3 A seasonal lag is not a seasonality test
 
-Twelve months is an intuitive lag choice for a monthly variable, but an AR(12) forecast comparison is not a formal test of seasonal integration or deterministic seasonality. The input CPI is already a seasonally adjusted official series. The presence of lag twelve in an unrestricted autoregression would not, by itself, establish an annual seasonal economic mechanism. Nor would the absence of improved RMSE prove that all forms of seasonal dependence are absent.
+Twelve months is an intuitive lag choice for a monthly variable, but an AR(12) forecast comparison is not a formal test of seasonal integration or deterministic seasonality. The input CPI is already a seasonally adjusted official series. Appendix A, Figure A.1, displays its index level and transformed monthly inflation history; that descriptive plot is not itself a test for a seasonal lag. The presence of lag twelve in an unrestricted autoregression would not, by itself, establish an annual seasonal economic mechanism. Nor would the absence of improved RMSE prove that all forms of seasonal dependence are absent.
 
 Seasonality may enter through changing measurement conventions, recurring administrative price changes, seasonal adjustment errors or time-varying economic responses. These mechanisms require different model restrictions and, in some cases, different data. The present analysis tests whether an extended own-history approximation helps one-step CPI forecasts under the fixed rolling-window design. It is appropriately narrower than a comprehensive empirical investigation of seasonal inflation dynamics.
 
@@ -497,6 +497,8 @@ The STAR results require a separate distinction between numerical forecasting fa
 ![CPI inflation forecast-error visualization with the extreme smooth-transition forecast behavior presented separately from the ordinary-scale model comparisons.](../../../output/figures/F3.4_CPIAUCSL.png)
 
 *Source: Author's computations.* *Note:* Extreme finite STAR forecasts are displayed separately to preserve the legibility of the AR, ARMA and MSAR comparisons. Separation of visual scales does not remove these observations from the RMSE or MAE calculations and does not imply that the extreme forecast is an admissible economic scenario.
+
+The scale issue is not confined to inflation. Figure 3.2 shows how the unemployment series and its flagged forecasts can be presented on separate panels without either scoring a failed fit or concealing extreme finite predictions. Appendix C, Table C.7, reports the corresponding target-by-model fit classifications.
 
 The empirical problem extends beyond visualization. A pairwise average-loss test depends on the distribution and variability of forecast-loss differentials. When one or a few STAR predictions yield squared errors many orders of magnitude greater than all others, the estimated loss variability and its numerical calibration can become degenerate. Under those conditions, a nominal p-value near a conventional non-rejection threshold cannot be interpreted as ordinary evidence that the competing methods have equal forecasting accuracy. Numerical degeneracy supplies no usable affirmative conclusion in either direction.
 
