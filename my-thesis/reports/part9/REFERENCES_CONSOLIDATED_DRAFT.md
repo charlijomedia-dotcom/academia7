@@ -94,7 +94,7 @@ Office for Budget Responsibility. (2026). *Forecast evaluation report: June 2026
 
 Okun, A. M. (1962). Potential GNP: Its measurement and significance. *Proceedings of the Business and Economic Statistics Section of the American Statistical Association*, 98–104.
 
-Organisation for Economic Co-operation and Development. (2023). *OECD employment outlook 2023: Artificial intelligence and the labour market*. OECD Publishing. https://doi.org/10.1787/08785bba-en
+Organisation for Economic Co-operation and Development. (2023). *OECD employment outlook 2023: Artificial intelligence and the labour market*. https://doi.org/10.1787/08785bba-en
 
 Orphanides, A. (2001). Monetary policy rules based on real-time data. *American Economic Review, 91*(4), 964–985. https://doi.org/10.1257/aer.91.4.964
 
