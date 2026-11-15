@@ -109,7 +109,7 @@ The robustness chapter tests whether the baseline finding survives reasonable al
 | UNRATE | 689 of 689 | 0.555 | 0.261 | 0.457 | No |
 | FEDFUNDS | 505 of 505 | 0.968 | 0.028 | 0.323 | No |
 
-*Source: Author's computations.* *Note:* These experiments respond to residual ARCH evidence in CPI, unemployment and the federal funds rate. GARCH is used as a **conditional-variance diagnostic**, not introduced into the predeclared AR/ARMA/MSAR/STAR ranking or the Model Confidence Set. Lower RMSE for a GARCH variant is therefore not an approved primary claim of mean-forecast superiority. The persistence statistic is the mean of fitted ARCH plus GARCH coefficients over rolling origins, not a single full-sample estimate.
+*Source: Author's computations.* *Note:* These experiments respond to residual ARCH evidence in CPI, unemployment and the federal funds rate. GARCH is used as a **conditional-variance diagnostic**, not introduced into the predeclared AR/ARMA/MSAR/STAR ranking or the Model Confidence Set. Lower RMSE for a GARCH variant is therefore not an approved primary claim of mean-forecast superiority. The persistence statistic is the mean of fitted ARCH plus GARCH coefficients over rolling origins. The “rolling variance-model fits” column reports converged diagnostic origins in the variance-robustness summary (688 for CPI, 689 for unemployment and 505 for the funds rate). The broader fit-status inventory in Appendix D, Table D.4, additionally records 162 failed ARMA–GARCH fit attempts, so its 2,044 classified records cover both successful and failed estimates. These denominators serve different reporting purposes.
 
 ## C.7 Model availability and fitting status
 
