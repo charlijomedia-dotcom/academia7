@@ -120,14 +120,14 @@ The decision rules form a hierarchy. If the initial-window ADF rejects a unit ro
 
 | Series and tested sample | ADF p-value ($H_0$: unit root) | KPSS p-value ($H_0$: stationary) | ZA p-value ($H_0$: unit root allowing a break in the alternative) | Implication |
 |---|---:|---:|---:|---|
-| UNRATE: initial 240 observations | 0.0251 | ≥0.1000 (bound) | 0.1887 | Clear level stationarity under the ADF/KPSS rule; ZA is reported but not the tie-breaker |
+| UNRATE: initial 240 observations | 0.0251 | ≥0.1000 (bound) | 0.1887 | ADF rejection and KPSS non-rejection support the initial-window level choice; ZA is not the tie-breaker |
 | UNRATE: full sample | 0.0028 | 0.0783 | 0.1691 | Full-sample ADF/KPSS agrees with retaining levels |
 | FEDFUNDS: initial 240 observations | 0.9530 | ≤0.0100 (bound) | 0.8113 | Clear nonstationarity under the ADF/KPSS rule; first difference selected |
 | FEDFUNDS: full sample | 0.1285 | ≤0.0100 (bound) | 0.3203 | Full-sample ADF/KPSS supports the original difference decision |
 
 *Source: Author's computations.* *Note:* KPSS p-values reported as inequalities are bounds of the reference table, rather than exact tail probabilities. All decisions use 5%.
 
-The initial-window evidence resolves the disputed target forms without looking at the later forecast errors. UNRATE is forecast in levels, and FEDFUNDS is forecast in first differences. Both initial- and full-sample ZA tests fail to reject their unit-root nulls even allowing one endogenous break. This does not overturn the declared ADF/KPSS decision because ZA was specified as a tie-breaker only if those two tests disagreed. It does limit any claim that the tested level series has been shown stationary around a single estimated break.
+The initial-window diagnostic rules determine the disputed target forms without looking at the later forecast errors. UNRATE is forecast in levels, and FEDFUNDS is forecast in first differences. Both initial- and full-sample ZA tests fail to reject their unit-root nulls even allowing one endogenous break. This does not overturn the declared ADF/KPSS decision because ZA was specified as a tie-breaker only if those two tests disagreed. It does limit any claim that the tested level series has been shown stationary around a single estimated break.
 
 The full frozen-sample tests for the four annualized log-change targets are also informative. ADF rejects the unit-root null for all four transformed series at 5%. KPSS does not reject for GDP growth ($p=0.0529$) and M2 growth ($p=0.0766$), but it narrowly rejects for CPI inflation ($p=0.0494$) and rejects for industrial production growth ($p=0.0355$). These conflicting results should not be concealed behind a blanket statement that all transformed series are stationary. Their existence is consistent with caution about stable moments, level shifts, changing variance or other forms of instability. They do not, by themselves, prove a unit root, a particular break or a STAR-type conditional mean. The baseline transformations are retained, while robustness and adequacy checks assess their implications.
 
@@ -167,7 +167,7 @@ A nonlinear model can claim added predictive value only relative to a competent 
 
 ### Autoregression as the primary reference
 
-For a stationary target $y_t$, an autoregression of order $p$ is
+For a target $y_t$ treated as suitable for a stable autoregressive representation within each estimation window, an autoregression of order $p$ is
 
 **Equation (2.5): Classical AR model**
 
@@ -292,7 +292,7 @@ The issue of regime-count selection is deliberately postponed to a bounded robus
 
 ### A smooth transition autoregression
 
-STAR describes a different process. The conditional mean changes smoothly as an observable transition variable moves through part of its range. Let $x_t=(1,y_{t-1},\ldots,y_{t-p})'$ contain an intercept and lagged values, and let $z_{t-d}$ denote the lagged transition variable selected at delay $d$. A generic STAR model is
+STAR describes a different process. The conditional mean changes smoothly as an observable transition variable moves through part of its range. Let $x_t=(1,y_{t-1},\ldots,y_{t-p})'$ contain an intercept and lagged values. In the estimated univariate models, the observed transition variable is the delayed target itself, $z_{t-d}=y_{t-d}$, with delay $d$ selected on the initial window; the transition delay can exceed the autoregressive lag order. A generic STAR model is
 
 **Equation (2.11): Smooth transition autoregression**
 
@@ -420,7 +420,7 @@ There is a distinction between selecting a model's discrete structure and estima
 
 The rule prevents an important kind of look-ahead bias. If lag order were chosen after evaluating all future forecast losses, it could reflect information unavailable at the early forecast origins. Fixing the structure from the initial window avoids that retrospective selection. It also creates a limitation: the initially selected structure may no longer be ideal after a major break. The window-length sensitivity exercises assess some such threats, but the baseline does not change its selection rule to improve results after they are known.
 
-The practical workflow is: select the discrete model structure on the initial window; refit each model on the current rolling data; check the fit and any forecast failure; issue the horizon-specific forecast using only eligible information; store the prediction and its provenance; advance to the next origin. This sequence is applied under the same date and admissibility conventions for all four core families. The detailed calendars, cache keys and optimizer settings are recorded outside the main body.
+The practical workflow is: select the discrete model structure on the initial window; refit each model on the current rolling data; check the fit and any forecast failure; issue the horizon-specific forecast using only eligible information; store the prediction and its provenance; advance to the next origin. This sequence is applied under the same date and admissibility conventions for all four core families. The detailed estimation calendars, numerical settings and admissibility decisions are documented separately from the main economic argument.
 
 ### Forecast horizons and their interpretation
 
@@ -430,7 +430,7 @@ The longer-horizon robustness choices are $h\in\{3,6,12\}$ months for monthly ta
 
 At $h>1$, forecast errors can overlap across origins, even with a correctly specified model. Consecutive forecasts of distant target dates may share underlying shocks, so an evaluation test cannot treat all loss differences as independent observations. Horizon-appropriate long-run variance or correction procedures are therefore part of the formal comparison in Section 2.10. The number of valid matched target dates must also be reported separately by horizon, because changing the horizon changes both forecast availability and the statistical evidence.
 
-Warm starts and caching improve the feasibility of the exercise without changing its scientific definition. A previous successful nonlinear parameter vector can serve as a starting value for the next rolling fit when technically appropriate. Fitted results are keyed by series, model, origin, specification and input-window identity. A valid repeat uses the stored result rather than re-estimating the same problem unnecessarily. Yet a warm start does not prove that the optimizer found a global likelihood maximum. Numerical uncertainty remains part of the assessment.
+Warm starts reduce the computational burden but may also make successive estimates sensitive to earlier local solutions. When the prescribed conditions permit it, a previous successful nonlinear parameter vector can initialize the next rolling fit alongside the declared multi-start procedure. Neither warm starts nor repeated starting values prove that the optimizer has located a global likelihood maximum. This numerical uncertainty is part of the assessment of regime credibility.
 
 ### Comparability across procedures
 
@@ -487,7 +487,7 @@ L(e)\in\{e^2,|e|\}.
 
 A negative mean loss differential favors the competitor, because it has lower loss; a positive mean favors the benchmark. The five pairwise comparisons are AR versus ARMA, AR versus MSAR, AR versus STAR, ARMA versus MSAR, and ARMA versus STAR. Both squared-error and absolute-error losses are tested. The model-pair names do not erase the explicit sign convention, which must be stated in every inference table.
 
-The **primary test** is Harvey, Leybourne and Zu (2025), abbreviated HLZ. It addresses the null of equal average forecast accuracy when the expected loss differential may vary over the evaluation period. The basic average-null question is
+The **primary test** is the Harvey–Leybourne–Zu (HLZ) procedure (Harvey et al., 2025). It addresses the null of equal average forecast accuracy when the expected loss differential may vary over the evaluation period. The basic average-null question is
 
 **Equation (2.19): Equal average predictive accuracy**
 
