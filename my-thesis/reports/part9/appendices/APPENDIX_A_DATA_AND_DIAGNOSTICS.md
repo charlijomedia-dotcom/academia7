@@ -8,16 +8,16 @@ This appendix supports the definitions and diagnostic decisions in Sections 2.2â
 
 | Target | Frequency | Official concept and units | Raw observed span | Modelled transformed span | Baseline transformation |
 |---|---|---|---|---|---|
-| GDPC1 | Q | Billions of Chained 2017 Dollars; SAAR | 1947-01 to 2026-04 | 1947-04 to 2026-04 | 400 x dlog |
-| CPIAUCSL | M | Index 1982-1984=100; SA | 1947-01 to 2026-08 | 1947-02 to 2026-08 | 1200 x dlog |
-| UNRATE | M | Percent; SA | 1948-01 to 2026-09 | 1948-01 to 2026-08 | level (no transformation) |
-| INDPRO | M | Index 2017=100; SA | 1919-01 to 2026-08 | 1947-02 to 2026-08 | 1200 x dlog |
-| FEDFUNDS | M | Percent; NSA | 1954-07 to 2026-09 | 1954-08 to 2026-08 | first difference |
-| M2SL | M | Billions of Dollars; SA | 1959-01 to 2026-08 | 1959-02 to 2026-08 | 1200 x dlog |
+| GDPC1 | Q | Billions of chained 2017 dollars; SAAR | 1947-01 to 2026-04 | 1947-04 to 2026-04 | $400\Delta\ln X_t$ |
+| CPIAUCSL | M | Index (1982â€“1984 = 100); SA | 1947-01 to 2026-08 | 1947-02 to 2026-08 | $1200\Delta\ln X_t$ |
+| UNRATE | M | Percent; SA | 1948-01 to 2026-09 | 1948-01 to 2026-08 | $u_t$ (observed rate) |
+| INDPRO | M | Index (2017 = 100); SA | 1919-01 to 2026-08 | 1947-02 to 2026-08 | $1200\Delta\ln X_t$ |
+| FEDFUNDS | M | Percent; NSA | 1954-07 to 2026-09 | 1954-08 to 2026-08 | $\Delta i_t$ (percentage points) |
+| M2SL | M | Billions of dollars; SA | 1959-01 to 2026-08 | 1959-02 to 2026-08 | $1200\Delta\ln X_t$ |
 
 *Source: Author's computations from Bureau of Economic Analysis, Bureau of Labor Statistics, Board of Governors of the Federal Reserve System, and FRED/ALFRED observations, as applicable.* *Note:* M denotes monthly, Q quarterly, SA seasonally adjusted and SAAR seasonally adjusted at an annual rate. Date spans refer to the original source series and then to the *transformed series retained for analysis*; they should not be confused with the shorter dates of the rolling forecast evaluation. UNRATE's source may contain an additional month after the common analysis endpoint, which is not used for the declared forecasts.
 
-The baseline transformations are defined consistently as follows. For positive monthly level series (X_t), annualized growth is (g_t=1200log(X_t/X_{t-1})). Quarterly annualized real GDP growth is (g_t^{GDP}=400log(GDPC1_t/GDPC1_{t-1})). The unemployment rate (u_t) remains in percentage-point levels, whereas the effective federal funds rate enters the principal forecast design through (Delta i_t=i_t-i_{t-1}). The log-growth scale expresses the one-period continuously compounded growth rate in annualized percentage units.
+The baseline transformations are defined consistently as follows. For positive monthly level series $X_t$, annualized growth is $g_t=1200\ln(X_t/X_{t-1})$. Quarterly annualized real GDP growth is $g_t^{GDP}=400\ln(GDPC1_t/GDPC1_{t-1})$. The unemployment rate $u_t$ is modelled in its observed percentage-point level, while the effective federal funds rate enters the forecasting comparison through its monthly change $\Delta i_t=i_t-i_{t-1}$. The log-growth scale expresses the one-period continuously compounded growth rate in annualized percentage units.
 
 The CPI series measures the seasonally adjusted, all-items Consumer Price Index for All Urban Consumers. Industrial production measures real activity in the industrial sector, while real GDP measures economy-wide production. The M2 series is the Federal Reserve's broad monetary aggregate, with observed data and transformed values extending to the specified 2026 endpoint; its monetary interpretation remains sensitive to measurement and institutional changes. The effective federal funds rate is the observed monthly average of an overnight market rate, used here as a short-term policy-rate proxy. Chapter 2 explains the implications of these measurement choices.
 
