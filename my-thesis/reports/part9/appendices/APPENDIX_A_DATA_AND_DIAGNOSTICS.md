@@ -1,6 +1,6 @@
 # Appendix A. Data Definitions, Transformations, and Supplementary Diagnostic Evidence
 
-This appendix supports the definitions and diagnostic decisions in Sections 2.2–2.4 and the empirical screening in Section 3.1. It provides verifiable numerical detail without displacing the central methodology or the findings from the main chapters. The indicators are U.S. official macroeconomic statistics accessed through the historical frozen collection of 5 October 2026, with the explicitly documented local carry-forward treatment. A historical pseudo-out-of-sample sample is **not** a reconstruction of every originally published real-time vintage.
+This appendix supports the definitions and diagnostic decisions in Sections 2.2–2.4 and the empirical screening in Section 3.1. It provides verifiable numerical detail without displacing the central methodology or the findings from the main chapters. The indicators are U.S. official macroeconomic statistics accessed through the historical frozen collection of 5 October 2026, with the local carry-forward treatment defined in Section 2.2. A historical pseudo-out-of-sample sample is **not** a reconstruction of every originally published real-time vintage.
 
 ## A.1 Official variables, units and usable dates
 
@@ -21,30 +21,15 @@ The baseline transformations are defined consistently as follows. For positive m
 
 The CPI is the broad all-items Consumer Price Index for All Urban Consumers, not personal consumption expenditures inflation. Industrial production measures real production activity, not GDP. M2 is the official broad monetary aggregate as published for the observed sample; it is **not** a series ending in 1992. Its updated measurement history and monetary interpretation warrant care, but its available transformed values extend to the stated 2026 endpoint. The effective federal funds rate is an observed short-term policy-rate proxy, not the Federal Reserve's announced target rate, a theoretical real rate or a three-month Treasury bill rate. Their different institutional meanings are acknowledged in Chapter 2.
 
-## A.2 Missing observations in October 2025
-
-The frozen source did not supply two October 2025 observations. The analysis preserved the historical endpoint by creating **author-processed** local carry-forward levels from September 2025. These replacement cells are not relabelled as official data.
-
-**Table A.2. Explicitly constructed historical levels**
-
-| Series | Missing month | Previous observed month | Previous observed value | Author-constructed October level | Official October value? |
-|---|---|---|---:|---:|---|
-| CPIAUCSL | 2025-10 | 2025-09 | 324.245 | 324.245 | No |
-| UNRATE | 2025-10 | 2025-09 | 4.4 | 4.4 | No |
-
-*Source: Author's computations and missing-observation record.* *Note:* The CPI level carry-forward produces a zero October 2025 log change and affects the following log-difference comparison; the unemployment value is in levels and is also used by subsequent lagged regressors. The directly affected realized CPI growth targets are October and November 2025. Indirect exposure can persist through lagged inputs and model-estimation windows. This imputation is an explicitly acknowledged modelling decision, not independent evidence of economic stability in October 2025.
-
-The sensitivity of relative forecast accuracy to directly affected target dates is reported in Appendix C, Table C.8. Removing the directly affected realized targets does **not** eliminate all lag-vector and rolling-estimation exposure to the imputed inputs. The established full-sample analysis is therefore retained as the baseline, with its limitation stated.
-
-**Figure A.1. CPI level, transformed inflation target and the October 2025 constructed observation**
+**Figure A.1. CPI level and the transformed annualized monthly inflation target**
 
 ![Historical CPI index level and annualized monthly inflation target, with retrospective U.S. recessions and the constructed October 2025 observation distinguished.](../../../output/figures/F2.1_CPIAUCSL.png)
 
 *Source: Author's computations from U.S. Bureau of Labor Statistics data.* *Note:* The upper panel contains the observed index level, while the lower shows the annualized one-month log-change inflation target. Shaded recessions are retrospective dates. The dotted marker indicates the author-constructed October 2025 input, not an official publication. The plot illustrates variation in inflation and the data treatment; it does **not** test whether a 12-month autoregressive coefficient is statistically necessary or identify a seasonal mechanism. The relevant CPI lag comparison is reported in Section 4.3 and Appendix C, Table C.2.
 
-## A.3 Unit-root, stationarity and break-sensitive supplementary results
+## A.2 Unit-root, stationarity and break-sensitive supplementary results
 
-**Table A.3. Unemployment and federal funds rate level tests**
+**Table A.2. Unemployment and federal funds rate level tests**
 
 | Series | Sample | Test and tested representation | Statistic | p-value | Decision at 5% |
 |---|---|---|---:|---:|---|
@@ -65,9 +50,9 @@ The sensitivity of relative forecast accuracy to directly affected target dates 
 
 Unemployment is retained in levels because the initial-window ADF/KPSS decisions agree in the direction of level stationarity at the declared 5% criterion. The funds rate is differenced because the corresponding level tests indicate nonstationarity. The full-sample results and break-sensitive non-rejections qualify the diagnosis rather than establishing causal stationarity or irreversibility of either choice. Alternative transformations are evaluated in Chapter 4 and detailed in Appendix C.
 
-## A.4 Nonlinearity diagnostics
+## A.3 Nonlinearity diagnostics
 
-**Table A.4. Six-target nonlinearity tests before nonlinear interpretation**
+**Table A.3. Six-target nonlinearity tests before nonlinear interpretation**
 
 | Target | Tsay test, p | STAR linearity, selected delay | STAR p at selected delay | Transition selected | Rejection at 5%? |
 |---|---:|---:|---:|---|---|
@@ -82,9 +67,9 @@ Unemployment is retained in levels because the initial-window ADF/KPSS decisions
 
 The Tsay result rejects for unemployment, while the selected STAR linearity procedure rejects for unemployment, CPI and the policy-rate change. For other targets, a non-rejection is absence of test evidence against the relevant restriction, **not** proof of global linearity. The nonlinear model families remain in the declared forecasting comparison even when an initial screening test fails to reject, so the results are not selected retrospectively for significance.
 
-## A.5 Model orders fixed before the principal forecast comparisons
+## A.4 Model orders fixed before the principal forecast comparisons
 
-**Table A.5. Baseline autoregressive and nonlinear order selections**
+**Table A.4. Baseline autoregressive and nonlinear order selections**
 
 | Target | Selected AR order | ARMA candidate (p,q) | MSAR lag order | STAR lag, delay and type | AR initial-window residuals pass? |
 |---|---:|---|---:|---|---|
@@ -97,4 +82,4 @@ The Tsay result rejects for unemployment, while the selected STAR linearity proc
 
 *Source: Author's computations.* *Note:* The ARMA candidate family often chooses a zero moving-average order. Such a selected ARMA representation is technically a member of the ARMA class but is not evidence of an independently identified MA component. The additional ceiling on nonlinear autoregressive orders limits numerical complexity; it must not be confused with the longer order of the AR benchmark. “Residuals pass” records the initial-window primary whiteness screen, not a guarantee of full-sample adequacy.
 
-Together, Tables A.1–A.5 allow the reader to inspect the contested unemployment/policy-rate transformation, the CPI model order and the status of monetary and activity variables. The corresponding residual diagnostics and fitted nonlinear parameter evidence appear in Appendix B, whereas Section 3.1 gives the inference required for the main argument.
+Together, Tables A.1–A.4 allow the reader to inspect the contested unemployment/policy-rate transformation, the CPI model order and the status of monetary and activity variables. The corresponding residual diagnostics and fitted nonlinear parameter evidence appear in Appendix B, whereas Section 3.1 gives the inference required for the main argument.
