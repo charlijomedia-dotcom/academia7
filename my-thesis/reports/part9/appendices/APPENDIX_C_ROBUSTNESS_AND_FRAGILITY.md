@@ -38,12 +38,12 @@ The robustness chapter tests whether the baseline finding survives reasonable al
 
 | Target | K=2 BIC | K=3 BIC | K=3 − K=2 | K=3 fit classification | Credible additional state? |
 |---|---:|---:|---:|---|---|
-| GDPC1 | 1775.04 | 1744.68 | -30.36 | fragile: SINGULAR_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY | No |
-| CPIAUCSL | 4879.14 | 4823.33 | -55.81 | fragile: LOW_OCCUPANCY;RESIDUAL_AUTOCORR | No |
-| UNRATE | -142.46 | 68.08 | 210.54 | fragile: SINGULAR_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY;RESIDUAL_AUTOCORR | No (likelihood comparison inconclusive) |
-| INDPRO | 7289.93 | 7222.55 | -67.37 | fragile: SINGULAR_COV;LOW_OCCUPANCY;TRANSITION_BOUNDARY;RESIDUAL_AUTOCORR | No |
-| FEDFUNDS | 1078.36 | 581.20 | -497.16 | fragile: LOW_OCCUPANCY;TRANSITION_BOUNDARY;RESIDUAL_AUTOCORR | No |
-| M2SL | 4460.85 | 4390.07 | -70.78 | fragile: LOW_OCCUPANCY;TRANSITION_BOUNDARY;RESIDUAL_AUTOCORR | No |
+| GDPC1 | 1775.04 | 1744.68 | -30.36 | fragile: singular covariance;low regime occupancy;boundary transition probability | No |
+| CPIAUCSL | 4879.14 | 4823.33 | -55.81 | fragile: low regime occupancy;residual autocorrelation | No |
+| UNRATE | -142.46 | 68.08 | 210.54 | fragile: singular covariance;low regime occupancy;boundary transition probability;residual autocorrelation | No (likelihood comparison inconclusive) |
+| INDPRO | 7289.93 | 7222.55 | -67.37 | fragile: singular covariance;low regime occupancy;boundary transition probability;residual autocorrelation | No |
+| FEDFUNDS | 1078.36 | 581.20 | -497.16 | fragile: low regime occupancy;boundary transition probability;residual autocorrelation | No |
+| M2SL | 4460.85 | 4390.07 | -70.78 | fragile: low regime occupancy;boundary transition probability;residual autocorrelation | No |
 
 *Source: Author's computations.* *Note:* The K=3 model is estimated solely for retrospective **in-sample regime credibility**, never as an out-of-sample challenger. A lower BIC can accompany regimes supported by only one or two observations, boundary transitions or unusable standard errors. For unemployment, the three-state obtained log-likelihood is below the two-state value despite the additional flexibility, so the **likelihood-based regime-count comparison is inconclusive**. It does not establish K=2 optimality or identify a global optimum. Chapter 4 reports the CPI three-state fitted equation and its uncertainty.
 
@@ -51,7 +51,7 @@ The robustness chapter tests whether the baseline finding survives reasonable al
 
 ![Smoothed probabilities for the estimated unemployment three-state model, visibly concentrated in a dominant state and a few isolated assignments.](../../../output/figures/F4.3_UNRATE_MSAR3.png)
 
-*Source: Author's computations.* *Note:* These are retrospective smoothed probabilities from a numerically fragile fit; the drawing is not an independently validated economic phase classification. Near-degenerate probabilities and the associated unusable covariance are part of the result.
+*Source: Author's computations.* *Note:* These are retrospective smoothed probabilities from a numerically fragile fit; the drawing is not an independently validated economic phase classification. Near-degenerate probabilities and the associated unusable covariance are part of the result. The diagnostic labels printed in the original plot title refer to a singular covariance matrix, insufficient effective observations in some regimes, transition probabilities near their parameter boundaries, and residual autocorrelation. The plot uses the fitted full-sample state probabilities, not information available at a historical forecast origin.
 
 ## C.4 Forecast-horizon robustness
 
