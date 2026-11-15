@@ -46,6 +46,8 @@ Chapter 2 operationalizes the question using fixed data transformations, benchma
 
 **Misleading numerical presentation corrected:** Appendix B, Table B.2 originally printed the M2 state-1 implied duration as `1000000000000.00` periods. It now reports **at least `10^{12}` periods, numerical cap**, together with the implemented truncation of the duration denominator at `10^{-12}`. This makes near-absorbing numerical behavior evident without implying an economically measured trillion-month cycle.
 
+**Data and variance-accounting refinements:** Appendix A, Table A.1 now presents log-difference transformations in proper inline mathematical notation, with the relevant units and modelled date spans. Appendix C, Table C.6 now distinguishes its 1,882 completed ARMA–GARCH diagnostic-origin fits (688 CPI, 689 unemployment and 505 funds-rate) from the 2,044 classified ARMA–GARCH records in Appendix D, Table D.4, which also count 162 failed fit attempts. These categories are reconciled while maintaining their different denominators.
+
 ## 4. Prose quality, repetition and document architecture
 
 Targeted sentence and paragraph revisions were applied across the General Introduction, all four chapters, General Conclusion and Appendices A–D. The editing priority was to make propositions affirmative and precise, favoring economic meaning and observed evidence over rhetorical disclaimers. Examples include:
