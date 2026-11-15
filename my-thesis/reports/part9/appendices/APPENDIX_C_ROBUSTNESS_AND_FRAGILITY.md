@@ -161,7 +161,7 @@ The unemployment MSAR chain contrasts with the pooled predominance of fragile no
 | UNRATE | MSAR | 698 | 0.491 | 687 | 0.495 |
 | UNRATE | STAR | 704 | 0.592 | 693 | 0.595 |
 
-*Source: Author's computations.* *Note:* The pre-gap calendar ends **September 2025**; the full baseline extends to August 2026. These are different historical evaluation spans and therefore different scored samples, not a pure deletion of just two directly affected realized targets. The comparison checks whether the major descriptive conclusions change when all post-gap targets are excluded. It does **not** remove the effect of imputed values from all models in the full baseline, and it is not an alternative historical-vintage reconstruction. Directly constructed inputs are described in Appendix A, Table A.2.
+*Source: Author's computations.* *Note:* The pre-gap calendar ends **September 2025**; the full baseline extends to August 2026. These are different historical evaluation spans and therefore different scored samples, not a pure deletion of just two directly affected realized targets. The comparison checks whether the major descriptive conclusions change when all post-gap targets are excluded. It does **not** remove the effect of imputed values from all models in the full baseline, and it is not an alternative historical-vintage reconstruction. The two constructed October 2025 observations and the carry-forward methodology are documented in Chapter 2, Section 2.2.
 
 ## C.9 Estimation-window sensitivity
 
