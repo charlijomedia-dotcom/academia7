@@ -1,7 +1,7 @@
 # Academic review memorandum: General Introduction, Chapter 1 and Chapter 2
 
 **Review date:** 15 November 2026  
-**Manuscript branch:** \`part9-thesis-writing\`  
+**Manuscript branch:** `part9-thesis-writing`  
 **Status:** Detailed substantive and editorial review completed; **doctoral-level working drafts, not independently certified submission-ready**.  
 **Scope:** Review of all prose, numbered equations, tables, headings, source lists and logical transitions in the current General Introduction v2, Chapter 1 v1 and Chapter 2 v1, against the approved scientific plan and the prioritized reviewer requirements. This memorandum is an **internal quality-control record**, not a thesis appendix or reader-facing manuscript text.
 
@@ -11,12 +11,12 @@ The complete drafts reviewed were:
 
 | File | Scope | Structural check |
 |---|---|---|
-| \`chapters/GENERAL_INTRODUCTION_DRAFT_v2.md\` | Research motivation, Joseph/Genesis opening, contemporary forecast error evidence, prior literature, research gap, contribution, bounded preview and roadmap | Contains complete general introduction and a working chapter-specific reference list |
-| \`chapters/CHAPTER_1_DRAFT_v1.md\` | Sections 1.1–1.9, economic mechanisms, eight displayed numbered equations (1.1–1.8), conceptual distinctions, established literature and falsifiable alternatives | All nine approved sections are present, with one concluding synthesis |
-| \`chapters/CHAPTER_2_DRAFT_v1.md\` | Sections 2.1–2.14, six data targets, transformation and diagnostics, four main forecast families, VAR and GARCH checks, twenty-one numbered equations (2.1–2.21), five main tables, forecast evaluation and numerical failure rules | All fourteen approved sections are present, with one concluding synthesis |
-| \`front_matter/LIST_OF_ABBREVIATIONS_AND_NOTATION.md\` | Mathematical and acronym consistency audit | Specific chapter-spanning symbol collision corrected |
+| `chapters/GENERAL_INTRODUCTION_DRAFT_v2.md` | Research motivation, Joseph/Genesis opening, contemporary forecast error evidence, prior literature, research gap, contribution, bounded preview and roadmap | Contains complete general introduction and a working chapter-specific reference list |
+| `chapters/CHAPTER_1_DRAFT_v1.md` | Sections 1.1–1.9, economic mechanisms, eight displayed numbered equations (1.1–1.8), conceptual distinctions, established literature and falsifiable alternatives | All nine approved sections are present, with one concluding synthesis |
+| `chapters/CHAPTER_2_DRAFT_v1.md` | Sections 2.1–2.14, six data targets, transformation and diagnostics, four main forecast families, VAR and GARCH checks, twenty-one numbered equations (2.1–2.21), five main tables, forecast evaluation and numerical failure rules | All fourteen approved sections are present, with one concluding synthesis |
+| `front_matter/LIST_OF_ABBREVIATIONS_AND_NOTATION.md` | Mathematical and acronym consistency audit | Specific chapter-spanning symbol collision corrected |
 
-**Controlling documents:** \`WRITING_BLUEPRINT.md\`; approved Part 4 chapter plan; approved Part 5 methodology; \`SECTION_EVIDENCE_MAP.md\`; \`REVIEWER1_APPENDIX_COVERAGE_AND_CROSS_REFERENCES.md\`; the Part 8 final allowed-claims report. Numerically authoritative release: commit \`9817daf91ac4cb4aaa42c2bef5deaff5b674841b\`, **not** provisional results on the writing branch.
+**Controlling documents:** `WRITING_BLUEPRINT.md`; approved Part 4 chapter plan; approved Part 5 methodology; `SECTION_EVIDENCE_MAP.md`; `REVIEWER1_APPENDIX_COVERAGE_AND_CROSS_REFERENCES.md`; the Part 8 final allowed-claims report. Numerically authoritative release: commit `9817daf91ac4cb4aaa42c2bef5deaff5b674841b`, **not** provisional results on the writing branch.
 
 **Author's governing instruction:** scholarly coherence, correct interpretation and Reviewer #1's substantive requests supersede provisional page allocations. The four-chapter European-style monograph must not be compressed to satisfy a nonbinding page budget.
 
@@ -52,7 +52,7 @@ These judgments concern the **quality and correspondence of the written research
 | 1.1 | Policy relevance is bounded; distinguishes actual economic harm from the informational problem of forecast error; respects native target frequencies and real-time information limitations |
 | 1.2 | Fisher additive approximation and exact gross-return relationship are used with matched-period and inflation-risk qualifications; FEDFUNDS is not falsely equated to an ex-ante real rate |
 | 1.3 | Phillips (1958) is correctly introduced as a wage-inflation/unemployment relation; Phelps, Friedman and Lucas qualify expectations and structural invariance; Okun growth and gap expressions are visibly stylized, with unobserved reference rates explicitly identified |
-| 1.4 | The identity \`MV=PY\` is not misrepresented as a structural money-to-CPI law; CPI versus GDP deflator distinguished; M2 definition and historical measurement qualifications are explained |
+| 1.4 | The identity `MV=PY` is not misrepresented as a structural money-to-CPI law; CPI versus GDP deflator distinguished; M2 definition and historical measurement qualifications are explained |
 | 1.5 | Schumpeterian transformation, singular outliers, permanent breaks and recurring statistical states are not conflated; NBER peaks and troughs are retrospective |
 | 1.6 | Clearly distinguishes conditional-mean nonlinearity, stochastic trend, deterministic trend, breaks, moving coefficients, thresholds, hidden states, changing variance, and outliers; establishes limits of statistical diagnostics |
 | 1.7 | Surveys both classical and nonlinear/multivariate/mixed-frequency alternatives; compares forecast *objects*, especially point versus density/tail outcomes; presents a specific, defensible gap |
@@ -61,7 +61,7 @@ These judgments concern the **quality and correspondence of the written research
 
 **Equations (1.1)–(1.8):** examined as symbolic definitions and economic arguments; the Fisher relation, wage-Phillips equation, expectations-augmented Phillips–Phelps equation, Okun's growth/gap forms, monetary quantity identity and stable AR reference are consistent at the level of the stated assumptions. No numerical results are manufactured in these theoretical expressions. The thesis explicitly warns when quantities such as equilibrium unemployment, potential GDP, and inflation expectations are unobserved.
 
-**Important correction committed:** Chapter 1 had used \`s_t\` for the supply disturbance in its Phillips–Phelps equation while Chapters 2–4 use the *same symbol* \`s_t\` for the hidden Markov state. The disturbance is now \`\\zeta_t\` in Eq. (1.4) and its defining paragraph, and the global notation list was amended accordingly. This directly addresses Reviewer #1's request for unambiguous symbols. Also expanded CPI/FRED/ALFRED on first use.
+**Important correction committed:** Chapter 1 had used `s_t` for the supply disturbance in its Phillips–Phelps equation while Chapters 2–4 use the *same symbol* `s_t` for the hidden Markov state. The disturbance is now `\zeta_t` in Eq. (1.4) and its defining paragraph, and the global notation list was amended accordingly. This directly addresses Reviewer #1's request for unambiguous symbols. Also expanded CPI/FRED/ALFRED on first use.
 
 **Limits:** The chapter gives economic motivation for **predictive** nonlinearity, not an empirically identified Fisher/Phillips/Okun transmission model. That is scientifically correct for this dissertation. Stronger explicit discussion of the closest comparator studies may still improve the final intellectual contribution discussion, but a structural rewrite is not required by the results reviewed here.
 
@@ -71,12 +71,12 @@ These judgments concern the **quality and correspondence of the written research
 |---|---|
 | Six official targets | Table 2.1 uses CPIAUCSL, UNRATE, INDPRO, FEDFUNDS, M2SL, GDPC1 and native monthly/quarterly frequencies; annualized log growth uses 1200/400; FEDFUNDS first-difference remains in percentage points |
 | Vintage/information set | Fixed ALFRED vintage 2026-10-05, monthly target endpoint 2026-08 and GDP 2026Q2; explicit October 2025 CPI/UNRATE LOCF imputations in *research input*, not official series |
-| ADF/KPSS/ZA, Table 2.2 | Rechecked against release \`output/diagnostics/T2.2_stationarity.csv\` and transformation decision records: reported level/difference selections and displayed p-values agree |
-| Linearity diagnostics | Tsay and STAR-specification interpretations checked against release \`T2.3_tsay.csv\` and \`T2.4_star_linearity.csv\`; pretests are interpretation checks rather than forecast-winner selectors |
-| Selected models, Table 2.3 | All six AR orders, ARMA orders, capped MSAR/STAR lag orders, STAR types and delays agree with release \`T2.5_selected_specs.csv\` |
+| ADF/KPSS/ZA, Table 2.2 | Rechecked against release `output/diagnostics/T2.2_stationarity.csv` and transformation decision records: reported level/difference selections and displayed p-values agree |
+| Linearity diagnostics | Tsay and STAR-specification interpretations checked against release `T2.3_tsay.csv` and `T2.4_star_linearity.csv`; pretests are interpretation checks rather than forecast-winner selectors |
+| Selected models, Table 2.3 | All six AR orders, ARMA orders, capped MSAR/STAR lag orders, STAR types and delays agree with release `T2.5_selected_specs.csv` |
 | MSAR equation (2.9) | Matches the regime-specific-mean/common-coefficient/shared-variance equation in the approved methodology, with regime-dependent lag mean centering |
 | Markov chain (2.10) | Correct row-stochastic 2-state matrix, occupancy, expected-duration definition, and distinction between filtered forecast-time and full-sample smoothed probabilities |
-| STAR equation (2.11–2.12) | Correct generic LSTAR/ESTAR forms; the text now identifies the **actually implemented** transition variable \`z_(t-d) = y_(t-d)\`, which may use a lag outside the linear AR regressor set; checked against \`code/src/thesis/models/star.py\` |
+| STAR equation (2.11–2.12) | Correct generic LSTAR/ESTAR forms; the text now identifies the **actually implemented** transition variable `z_(t-d) = y_(t-d)`, which may use a lag outside the linear AR regressor set; checked against `code/src/thesis/models/star.py` |
 | VAR (2.13) | Five monthly transformed variables with quarterly GDP excluded; reduced-form comparison is not called a structural monetary transmission estimate |
 | Adequacy and failures | Clear adequate/fragile/failed distinction, declared occupancy and transition-boundary warning thresholds, separate non-finite versus extreme *finite* predictions, and common-date exclusion rules |
 | Forecast experiment | Correct 240-month / 120-quarter baseline windows, iterative long-horizon specification, matched dates, own-valid RMSE versus paired out-of-sample R², caveats on hidden-state optimization |
@@ -95,7 +95,7 @@ These judgments concern the **quality and correspondence of the written research
 |---|---|
 | European monograph: two parts, two chapters each | **Conforms**: approved architecture, complete General Introduction and Part I |
 | R1-02: academic writing, math typography | **Substantively reviewed**; final paginated equations, plots and table layout still need checking |
-| R1-03/04: acronyms and unambiguous symbols | **Improved**; specific \`s_t\` collision corrected and front-matter glossary aligned; final complete thesis first-use sweep pending |
+| R1-03/04: acronyms and unambiguous symbols | **Improved**; specific `s_t` collision corrected and front-matter glossary aligned; final complete thesis first-use sweep pending |
 | R1-05/08/10/11: body equations, Fisher/MSAR/STAR, nonlinearity, Markov state/transition definitions | **Main-text provision present**, including equation derivations and restrictions; attribution and self-contained final page check required |
 | R1-09/13/14/16: what “better” means, test nulls, reference distributions and signs | **Substantially conforms**; BIC ≠ point-loss ≠ inferential rejection, numbered test hypotheses, clear two-sided loss interpretation |
 | R1-12/15/23: rate, M2 data sample, CPI lag/seasonality concern | **Addressed in scope** by exact official definitions and clearly delimited lag sensitivity; AR(2)/AR(12) direct-test limitation remains |
@@ -106,7 +106,7 @@ These judgments concern the **quality and correspondence of the written research
 
 ## 7. Outstanding final acceptance gates
 
-1. **Cross-chapter and conclusion sweep:** ensure the exact first-use acronyms, the \`\\zeta_t\` versus \`s_t\` distinction, all numbered-equation references and all date/target terminology remain consistent through Chapters 3–4 and the Conclusion.
+1. **Cross-chapter and conclusion sweep:** ensure the exact first-use acronyms, the `\zeta_t` versus `s_t` distinction, all numbered-equation references and all date/target terminology remain consistent through Chapters 3–4 and the Conclusion.
 2. **One consolidated APA 7 bibliography:** reconcile chapter-level references, verify metadata and DOIs, remove duplicates, and check that every author–date claim has a source actually supporting its sentence. The reviewed source anchors were cross-checked, but not all referenced full texts were independently read.
 3. **Production review:** render the final Word/PDF, inspect actual mathematical notation and equation numbers, table and figure readability, section pagination and appendix references.
 4. **Independent methodological assessment:** global MSAR maximum cannot be certified; rare regimes, nonlinear optimization, nonstandard regime tests and forecast-test calibration still warrant qualified interpretation or additional independent scrutiny.
