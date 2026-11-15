@@ -196,7 +196,7 @@ All paths below were checked against the **465-file published release inventory*
 
 **Final reader-facing structure (14 November 2026).** Four appendices now exist and correspond to the existing in-text citations, not the competing provisional layout previously used in the writing blueprint.
 
-- **Appendix A (Tables A.1–A.5; Figure A.1):** official series and endpoints, source and transformation distinctions, constructed October 2025 CPI/UNRATE cells, ADF/KPSS/ZA diagnostics, linearity screens and initial-window model orders.
+- **Appendix A (Tables A.1–A.4; Figure A.1):** official series and endpoints, source and transformation distinctions, ADF/KPSS/ZA diagnostics, linearity screens and initial-window model orders. The two constructed October 2025 values and the bounded LOCF justification are documented in Chapter 2, Section 2.2, without a separate Appendix A missing-data table.
 - **Appendix B (Tables B.1–B.7):** baseline full-sample adequacy, nonlinear state credibility, baseline RMSE/MAE/HLZ/MCS detail, recession/expansion comparisons, peaks/troughs and separate joint-versus-state-slope tests.
 - **Appendix C (Tables C.1–C.10; Figure C.1):** alternate target representations, CPI lags, K=3 in-sample limits, longer horizons, VAR and GARCH, model-status counts, pre-gap LOCF sensitivity, window length and turning-width exercises.
 - **Appendix D (Tables D.1–D.3):** fit retention rules, reason-code versus unique-fit distinction, numerical safeguards and corrections, planned K=3 work reduction and actual archived resource observations.
