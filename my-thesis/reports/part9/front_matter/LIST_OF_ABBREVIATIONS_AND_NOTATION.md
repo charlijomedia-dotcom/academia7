@@ -78,7 +78,7 @@ The definitions below apply throughout the dissertation. A symbol with an additi
 | $\kappa$, $\alpha$, $\beta$, $\theta$ | Equation-specific stylized Phillips/Okun sensitivity or intercept coefficients; these symbols are re-used with distinct definitions in the forecasting equations |
 | $\rho$, $\psi_j$, $v_t$ | Unit-root coefficient, lagged-difference coefficients and disturbance in the ADF auxiliary regression (Equation 2.3) |
 | $\sigma^2$, $\sigma_t^2$ | Constant innovation variance and time-varying conditional innovation variance |
-| $\omega$, $\alpha_{G}$, $\beta_{G}$ | GARCH variance intercept, lagged squared-innovation effect and lagged variance effect in Equation (2.8); there the displayed equation abbreviates $\alpha_G,\beta_G$ as $\alpha,\beta$ |
+| $\omega$, $\alpha$, $\beta$ (GARCH) | Variance intercept, lagged squared-innovation effect and lagged conditional-variance effect in Equation (2.8); these coefficients are distinct from similarly named coefficients in the stylized economic equations |
 | $\zeta_t$ | Supply or price-setting disturbance in the stylized Phillips–Phelps equation (1.4); distinct from the latent Markov state |
 | $s_t\in\{1,\ldots,K\}$ | Unobserved Markov state (the same lowercase symbol in Chapters 2, 3 and 4) |
 | $\mu_k$ | Mean parameter of Markov state $k$ |
