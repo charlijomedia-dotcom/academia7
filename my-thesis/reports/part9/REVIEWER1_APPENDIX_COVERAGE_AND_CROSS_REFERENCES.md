@@ -1,6 +1,6 @@
 # Reviewer 1 Priority Matrix and Appendix Cross-Reference Register
 
-**Status:** 14 November 2026; internal academic quality-control document, not a reader-facing thesis appendix.  
+**Status:** Updated 15 November 2026; internal academic quality-control document, not a reader-facing thesis appendix. This register maps requested responses. A separate manuscript-level verification is now recorded in `FINAL_REVIEWER1_COMPLIANCE_AUDIT_2026-11-15.md`; that audit does not certify final pagination or global MSAR optima.  
 **Scope:** Reviewer 1 (Philippe de Peretti) remarks R1-01 through R1-23 are prioritized over supplementary President requests when distributing manuscript space and determining which evidence must be visible in the main text. The President's separate scientific requirements remain addressed where they materially overlap.  
 **Editing standard:** Scientific meaning, full logical coherence and Reviewer 1 compliance take precedence over previously proposed chapter/page budgets.
 
@@ -78,4 +78,4 @@ A named appendix table is a reader-facing condensed extract from the frozen outp
 4. Preserve the honest negative/qualified findings: no universal superiority, no claim of AR(2)/AR(12) forecast equivalence, no globally verified MSAR optima and no three-state out-of-sample result (R1-09/15/17/22).
 5. Consolidate chapter references into one final dissertation bibliography and use a coherent Appendix A–D index in final manuscript production.
 
-The completed appendix architecture resolves the earlier conflicting planned labels. The **23 Reviewer 1 remarks are all mapped to a concrete response or explicitly disclosed remaining production/identification limitation**, but mapping a remark does not certify that a supervisor will consider it fully resolved.
+The completed appendix architecture resolves the earlier conflicting planned labels. The **23 Reviewer 1 remarks are all mapped to reader-facing responses or explicitly disclosed limitations**. The 15 November manuscript-level audit has additionally inspected the working equations, numerical estimates, five actual figure assets, reference labels and test calibrations. It identifies remaining final-assembly and typesetting gates, as well as **uncertified global MSAR likelihood optima** and an **inconclusive unemployment K=3 likelihood comparison**. The evidence is therefore suitable for a qualified dissertation working draft, not an unconditional claim that a jury has accepted every response. See `FINAL_REVIEWER1_COMPLIANCE_AUDIT_2026-11-15.md`.
