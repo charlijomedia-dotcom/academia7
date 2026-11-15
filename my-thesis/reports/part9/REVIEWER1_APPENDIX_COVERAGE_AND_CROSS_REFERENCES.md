@@ -16,7 +16,7 @@
 
 **Appendix C:** Threat-by-threat robustness and numerical fragility. Tables C.1–C.10 and Figure C.1.
 
-**Appendix D:** Forecast availability, methodological safeguards and reproducibility. Tables D.1–D.3.
+**Appendix D:** Forecast availability, methodological safeguards, an exact fit-count reconciliation and distinct computation units. Tables D.1–D.5.
 
 This arrangement already corresponds to the original A/B/C shorthand used throughout Chapters 2–4. The entire working manuscript now refers to named tables wherever the cited appendix contains a corresponding exhibit.
 
@@ -45,7 +45,7 @@ This arrangement already corresponds to the original A/B/C shorthand used throug
 | **R1-19** | No multivariate response | Ch. 2.7 and Ch. 4.6 five-variable VAR, estimated coefficient matrix | C.5 matched-date five-variable forecasts | **Addressed as bounded VAR robustness**; not structural transmission identification |
 | **R1-20** | Missing mixed-frequency/nowcasting literature | Ch. 1.7, Ch. 2.7 and Ch. 4.8 scope and comparison | D.1 release/vintage limitation | **Literature and boundary addressed**; no unperformed mixed-frequency nowcasting experiment claimed |
 | **R1-21** | Excess generic theory but missing key body definitions | Ch. 1 focused economic mechanisms, Ch. 2 formal models and tests | A–D contain secondary rather than essential proof | **Substantively addressed**; content coherence, not strict page totals, is now the governing length criterion |
-| **R1-22** | Verify and broaden suspicious econometrics | Ch. 3 pretests/fits/forecast evidence and Ch. 4 threats, numerical caveats | A–C numerical exhibits, D.1–D.3 scoring/correction record | **Evidence substantially addressed**, but optimizer globality and some numerically degenerate inference remain honest limitations |
+| **R1-22** | Verify and broaden suspicious econometrics | Ch. 3 pretests/fits/forecast evidence and Ch. 4 threats, numerical caveats | A–C numerical exhibits, D.1–D.5 scoring/correction and computation inventory | **Evidence substantially addressed**, but optimizer globality and some numerically degenerate inference remain honest limitations |
 | **R1-23** | M2 source sample apparently ending in 1992 | Ch. 2 M2 sample and monetary meaning | A.1 official source and transformed series ending 2026-08 | **Data-range concern addressed** |
 
 **Priority distinction:** The President's concerns about stationarity, the policy rate, K3 and horizon scope overlap Reviewer 1's concern and remain represented in the main work. Their presence does not justify moving Reviewer 1's mathematical definitions, essential evidence, figure corrections or multivariate argument out of the main chapters.
@@ -57,7 +57,7 @@ This arrangement already corresponds to the original A/B/C shorthand used throug
 | Chapter 2.2 | Appendix A, Table A.1; Appendix C, Table C.8 | Source spans and time-calendar sensitivity; the author-constructed values and LOCF rationale are fully in Chapter 2.2 |
 | Chapter 2.4 | Appendix A, Tables A.2–A.3 | Stationarity, break-sensitive and nonlinear test evidence |
 | Chapter 2.6–2.7 | Appendix A, Table A.4; Appendix B, Tables B.1–B.2 | Initial selected orders and fitted state credibility |
-| Chapter 2.12–2.13 | Appendix C, Tables C.1–C.10; Appendix D, Tables D.1–D.3 | Declared robustness and failure/reproducibility distinctions |
+| Chapter 2.12–2.13 | Appendix C, Tables C.1–C.10; Appendix D, Tables D.1–D.5 | Declared robustness, K3 feasibility and nonadditive fit/forecast/test accounting |
 | Chapter 3.3 | Appendix B, Table B.2 | State occupancy, persistence, and credibility |
 | Chapter 3.4 | Appendix B, Table B.3; Appendix C, Tables C.7–C.9 | Model-specific valid dates and failed-fit/evaluation-calendar issues |
 | Chapter 3.5 | Appendix B, Tables B.4 and B.6 | Recession/expansion error by family and distinct conditional tests |
