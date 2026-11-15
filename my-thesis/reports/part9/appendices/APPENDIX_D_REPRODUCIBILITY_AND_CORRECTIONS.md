@@ -24,7 +24,7 @@ The regression-oriented baseline covers monthly CPI, unemployment, industrial pr
 
 *Source: Author's methodological definitions and empirical classifications.* *Note:* A fit can have multiple warnings, but it receives one status in the fit-status table (Appendix C, Table C.7). The associated reason-code event count is a different object. These rules prevent a favorable sample of successfully fitted models from being mistaken for the full performance of the estimation method.
 
-The archived baseline contains **67,253 fit records** in its main fitting register. A separate diagnostic registry contains **34,122 reason-code events** in the corrected released analysis, comprising **512 failed-category and 33,610 fragile-category events**. These 34,122 entries are warning/failure *events*, not unique failed or fragile fits; several events may arise from one fit. The counts are therefore not interchangeable with totals in Table C.7, which aggregates classified fit records for the four named model families and target chains. A zero in the recorded failed-fit column of one family does not imply an absence of fragility or outlying finite forecasts.
+The archived estimation register contains **67,253 classified model-fit records** across the principal forecasting families and the supplementary ARMA–GARCH, VAR and three-state MSAR exercises. Their exact model-by-model reconciliation is provided in Table D.4. A separate diagnostic registry contains **34,122 reason-code events** in the corrected released analysis, comprising **512 failed-category and 33,610 fragile-category events**. These 34,122 entries are warning/failure *events*, not unique failed or fragile fits; several events may arise from one fit. The counts are therefore not interchangeable with totals in Table C.7, which aggregates classified fit records for the four named model families and target chains. A zero in the recorded failed-fit column of one family does not imply an absence of fragility or outlying finite forecasts.
 
 ## D.3 Regime-count and likelihood limitations
 
@@ -71,6 +71,49 @@ The recorded execution environment used Python 3.11.18 on a Linux x86-64 platfor
 | finalize | 7.1 | 7.1 | 933.2 |
 
 *Source: Author's recorded environment and stage summaries.* *Note:* This is a **record for one baseline run**, not a sum of all historical calculations or of later correction and robustness runs. The separate wall and CPU stage columns may reflect parallel execution or child processes and cannot be naively added across stages to recover the entire project's CPU-time expense. “Fits attempted” fields in this selected log are not populated with reliable nonzero per-stage totals; model-attempt and classification counts instead come from the dedicated records used in Appendix C. Recorded peak resident memory is a stage-level observation, not a hardware limit.
+
+The total number of recorded model fits can be reconciled exactly by retaining the distinction between the four principal univariate forecasting families and the additional models examined for robustness. Table C.7 summarizes the four main families by target, giving **64,632** records. That subtotal does not include the triggered conditional-variance exercise, the monthly multivariate comparison or the six in-sample three-regime estimates. The corresponding supplementary totals are 2,044, 571 and 6 records, respectively. Table D.4 brings these categories together. All entries are counts of **classified fit records**, not counts of distinct numerical starting values or an independently measured number of processor-level operations.
+
+**Table D.4. Reconciliation of the complete recorded model-fit inventory**
+
+| Estimation family or robustness component | Adequate fits | Fragile fits | Failed fits | Total classified fits |
+|---|---:|---:|---:|---:|
+| AR, primary benchmark | 18,204 | 21 | 78 | 18,303 |
+| ARMA, secondary classical comparator | 15,317 | 27 | 99 | 15,443 |
+| Two-state MSAR, principal nonlinear competitor | 5,128 | 10,246 | 69 | 15,443 |
+| STAR, principal nonlinear competitor | 2,741 | 12,702 | 0 | 15,443 |
+| **Four-family subtotal** | **41,390** | **22,996** | **246** | **64,632** |
+| ARMA–GARCH, conditional-variance robustness | 1,882 | 0 | 162 | 2,044 |
+| Five-variable monthly VAR, multivariate robustness | 544 | 0 | 27 | 571 |
+| Three-state MSAR, full-sample regime-count check only | 0 | 6 | 0 | 6 |
+| **All recorded model fits** | **43,816** | **23,002** | **435** | **67,253** |
+
+*Source: Author's computations.* *Note:* The inventory is exhaustive **for the classified model-fit records** used in the completed experiment, including the supplementary families omitted from Table C.7. Each record has one status; a fragile fit is not necessarily an unusable forecast. Summing the four-family subtotal and the three supplementary categories gives exactly 67,253. The six three-state records are full-sample estimates, **not rolling forecasts**. Repeated numerical starting values, diagnostic events, forecast horizons and statistical-test replications are not separate fit records in this table.
+
+The number of fitted-model records also must not be confused with the number of forecasts or statistical tests. A rolling fitted model can supply forecasts at several horizons; forecasts may be omitted from a particular loss comparison because the target is unavailable or the fit has failed. Conversely, one fitted model can generate more than one diagnostic warning. Table D.5 distinguishes the principal observable counts by the unit being counted.
+
+**Table D.5. Supplementary accounting of forecasts, diagnostics and inferential records**
+
+| Workstream and unit of counting | Documented count | Interpretation and boundary |
+|---|---:|---|
+| Principal AR, ARMA, two-state MSAR and STAR model–target chains | 24 | Six targets for each of four forecasting families |
+| Attempted baseline rolling model–origin combinations | 14,108 | 3,527 attempted origins in each of the four families; not additional fit records beyond Table D.4 |
+| Attempted baseline forecast–target–horizon observations | 55,268 | 92 distinct model–target–horizon summary cells; some estimates support several horizons |
+| Retained baseline forecast–target–horizon observations | 55,152 | Of the 55,268 attempted observations, 116 are not retained for scoring |
+| Stationarity and break-sensitive test records | 36 | Augmented Dickey–Fuller, KPSS and Zivot–Andrews entries |
+| Tsay nonlinearity test records | 6 | One reported target-level test for each aggregate |
+| Smooth-transition linearity and associated selection-test entries | 52 | Delay-specific linearity entries and associated test components; not 52 independent model fits |
+| Residual autocorrelation, conditional-variance and distributional diagnostic entries | 126 | Ljung–Box, ARCH–LM and Jarque–Bera tests |
+| State-conditioned loss-regression Wald test entries | 134 | Joint and state-slope restrictions attached to the conditional-loss analysis |
+| **All five categories of registered diagnostic and conditional-test results** | **354** | 36 + 6 + 52 + 126 + 134; the corresponding 69 state-loss regression rows are a related output, not an additional disjoint test population |
+| Primary Harvey–Leybourne–Zu pairwise test rows | 230 | 115 squared-loss and 115 absolute-loss comparisons across eligible targets, horizons and candidates |
+| Secondary modified Diebold–Mariano pairwise test rows | 230 | Same squared/absolute-loss output units under the declared secondary method |
+| Model confidence set membership records | 368 | Four model-membership entries in each of 92 target–horizon–loss–confidence combinations; **not** 368 independent model confidence set procedures |
+| Recorded diagnostic reason-code events | 34,122 | 512 failure-category and 33,610 fragility-category **events**; warnings may repeat within a fit |
+
+*Source: Author's computations.* *Note:* The rows describe **different measurement units** and **must not be added** into a single number of “computations.” The 67,253 total in Table D.4 is the uniquely reconciled count of classified *model-fit records*. Baseline origin and target–horizon counts are descriptive forecast-accounting units; the study also performed the additional robustness exercises already represented in the model-fit register. The 354 registered diagnostic and conditional-test entries do not exhaust the separately tabulated pairwise tests or resampling work. Model-confidence-set membership rows are outcomes of grouped procedures, not the number of distinct bootstrap calculations. The 34,122 reason-code events count diagnostic flags rather than unique fitted models. None of these output counts is a defensible estimate of total floating-point operations, optimizer evaluations, bootstrap replications or cumulative CPU time.
+
+The full proposed three-state rolling extension is deliberately kept outside the reported experiment. As calculated in Section D.3, the proposed extension would require 3,527 further rolling model-origin fits beyond the six in-sample K=3 fits already classified in Table D.4. Those 3,527 **unperformed** fits must never be added to either the 67,253 completed fit records or the 55,268 baseline forecast–target–horizon observations. A future predictive comparison would also require its own forecast scoring, common-date alignment, formal inference and independent numerical-credibility assessment.
 
 ## D.6 Auditability and remaining boundaries
 
