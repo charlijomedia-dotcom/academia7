@@ -44,8 +44,6 @@ Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimate
 
 Federal Reserve Bank of St. Louis. (n.d.). *FRED API real-time periods*. https://fred.stlouisfed.org/docs/api/fred/realtime_period.html
 
-Fisher, I. (1930). *The theory of interest: As determined by impatience to spend income and opportunity to invest it*. Macmillan.
-
 Fisher, I. (1930). *The theory of interest: As determined by impatience to spend income and opportunity to invest it*. Macmillan. https://fraser.stlouisfed.org/title/theory-interest-6255
 
 Friedman, M. (1968). The role of monetary policy. *American Economic Review, 58*(1), 1–17. https://fraser.stlouisfed.org/title/american-economic-review-1161/role-monetary-policy-2352
