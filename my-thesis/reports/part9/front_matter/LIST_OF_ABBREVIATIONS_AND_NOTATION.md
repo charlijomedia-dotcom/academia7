@@ -66,7 +66,8 @@ The definitions below apply throughout the dissertation. A symbol with an additi
 | $c$ | Generic intercept or STAR threshold, distinguished by equation context; $\gamma$ is a STAR transition-slope parameter |
 | $\varepsilon_t$ | Scalar stochastic innovation in an AR, ARMA, MSAR or STAR equation |
 | $\sigma^2$, $\sigma_t^2$ | Constant innovation variance and time-varying conditional innovation variance |
-| $\zeta_t$ | Supply or price-setting disturbance in the stylized Phillips–Phelps equation (1.4); distinct from the latent Markov state |\n| $s_t\in\{1,\ldots,K\}$ | Unobserved Markov state (the same lowercase symbol in Chapters 2, 3 and 4) |
+| $\zeta_t$ | Supply or price-setting disturbance in the stylized Phillips–Phelps equation (1.4); distinct from the latent Markov state |
+| $s_t\in\{1,\ldots,K\}$ | Unobserved Markov state (the same lowercase symbol in Chapters 2, 3 and 4) |
 | $\mu_k$ | Mean parameter of Markov state $k$ |
 | $p_{ij}$ | Markov transition probability from state $i$ to state $j$ |
 | $\mathbf P$ or $P$ | Markov transition matrix with row sums equal to one |
