@@ -10,7 +10,7 @@
 
 **Main empirical narrative:** Chapters 2–4 contain the core model equations, test hypotheses, relevant distributions, fitted CPI AR/MSAR and VAR examples, principal inference and corrected figures. Appendix-only explanation is *not* accepted for a central mathematical or empirical claim.
 
-**Appendix A:** Data, missing observations and diagnostic decisions. Tables A.1–A.5 and Figure A.1.
+**Appendix A:** Data definitions and supplementary diagnostic decisions. Tables A.1–A.4 and Figure A.1; the two missing October 2025 values and the LOCF rationale are now entirely in Chapter 2, Section 2.2.
 
 **Appendix B:** Full-sample and forecasting evidence. Tables B.1–B.7.
 
@@ -33,15 +33,15 @@ This arrangement already corresponds to the original A/B/C shorthand used throug
 | **R1-07** | Missing confidence bands on cross-correlations | No unqualified cross-correlation figure retained | Appendix D.6 explicitly documents omission | **Not applicable to retained figures**; any later new correlation plot requires uncertainty bands |
 | **R1-08** | Fisher/STAR/MSAR definitions and essential equations missing | Ch. 1 Fisher, Phillips/Phelps, Okun; Ch. 2 AR/ARMA, MSAR, STAR, VAR models | A diagnostic setup, B fitted state statistics | **Addressed in main narrative** |
 | **R1-09** | Meaning of one model being “better” | Ch. 2 BIC versus loss; Ch. 3 RMSE/MAE, paired HLZ and MCS, distinct samples | B.1, B.3, B.7 | **Addressed with criterion and sample** |
-| **R1-10** | Vague concept of nonlinearity | Ch. 1 taxonomy and Ch. 2 restricted forms | A.4 diagnostics | **Addressed** |
+| **R1-10** | Vague concept of nonlinearity | Ch. 1 taxonomy and Ch. 2 restricted forms | A.3 diagnostics | **Addressed** |
 | **R1-11** | Underdefined Markov chain/probabilities | Ch. 2 states and row-stochastic transitions; Ch. 3 CPI numerical MSAR | B.2 occupancy and durations; C.3 K3 fragility | **Written as complete core exposition**; final self-containment proof still recommended |
-| **R1-12** | Variable definitions, policy rate, M2 and software jargon | Ch. 2 target definitions and rate choice | A.1 exact spans, A.2 missing cells; front-matter glossary | **Substantively addressed** |
-| **R1-13** | Test definitions, nulls and distributions | Ch. 2 ADF/KPSS/ZA, Ljung–Box, ARCH–LM, Jarque–Bera, HLZ/MCS and state tests | A.3–A.4, B.1 and B.6 | **Expanded in main text** with diagnostic reference-distribution paragraph; broader test audit remains a final review gate |
+| **R1-12** | Variable definitions, policy rate, M2 and software jargon | Ch. 2 target definitions and rate choice | A.1 exact spans, Ch. 2.2 missing-cell construction; front-matter glossary | **Substantively addressed** |
+| **R1-13** | Test definitions, nulls and distributions | Ch. 2 ADF/KPSS/ZA, Ljung–Box, ARCH–LM, Jarque–Bera, HLZ/MCS and state tests | A.2–A.3, B.1 and B.6 | **Expanded in main text** with diagnostic reference-distribution paragraph; broader test audit remains a final review gate |
 | **R1-14** | Dated/incomplete forecast testing | Ch. 2 primary HLZ, secondary DM–HLN, MCS, GW-style retrospective regression, justified exclusion of inappropriate density/nested tests | B.3/B.6/B.7 and C.1–C.5 | **Addressed for the declared point-forecast design** |
 | **R1-15** | CPI lag 12 and seasonality concern | Ch. 4.3 AR(1)/AR(3)/AR(6)/AR(12) comparisons, no unperformed AR(2)–AR(12) equivalence claim | **A.1 CPI plot, C.2 lag results** | **Qualified**: direct AR(2)–AR(12) statistical comparison was not conducted; no stronger superiority claim permitted |
 | **R1-16** | Consistent significance notation | Numerical p-values, one star-reporting rule, superscripts only if used | Front matter reporting convention | **Convention established; final typesetting check still required** |
 | **R1-17** | Markov state identification, boundary probabilities | Ch. 3.3, Ch. 4.4 and Ch. 4.7; numerical CPI examples | B.2, C.3 and Figure C.1, D.3 | **Qualified**: no global MSAR optimum certified; UNRATE K3 remains inconclusive |
-| **R1-18** | Pretest nonlinearity | Ch. 2.4 test specification, Ch. 3.1 results | A.4 tests and selected delay | **Addressed without using rejection to preselect forecast winners** |
+| **R1-18** | Pretest nonlinearity | Ch. 2.4 test specification, Ch. 3.1 results | A.3 tests and selected delay | **Addressed without using rejection to preselect forecast winners** |
 | **R1-19** | No multivariate response | Ch. 2.7 and Ch. 4.6 five-variable VAR, estimated coefficient matrix | C.5 matched-date five-variable forecasts | **Addressed as bounded VAR robustness**; not structural transmission identification |
 | **R1-20** | Missing mixed-frequency/nowcasting literature | Ch. 1.7, Ch. 2.7 and Ch. 4.8 scope and comparison | D.1 release/vintage limitation | **Literature and boundary addressed**; no unperformed mixed-frequency nowcasting experiment claimed |
 | **R1-21** | Excess generic theory but missing key body definitions | Ch. 1 focused economic mechanisms, Ch. 2 formal models and tests | A–D contain secondary rather than essential proof | **Substantively addressed**; content coherence, not strict page totals, is now the governing length criterion |
@@ -54,9 +54,9 @@ This arrangement already corresponds to the original A/B/C shorthand used throug
 
 | Manuscript location | Reader-facing supporting exhibits | Scientific point supported |
 |---|---|---|
-| Chapter 2.2 | Appendix A, Tables A.1–A.2; Appendix C, Table C.8 | Source spans, author-constructed inputs and time-calendar sensitivity |
-| Chapter 2.4 | Appendix A, Tables A.3–A.4 | Stationarity, break-sensitive and nonlinear test evidence |
-| Chapter 2.6–2.7 | Appendix A, Table A.5; Appendix B, Tables B.1–B.2 | Initial selected orders and fitted state credibility |
+| Chapter 2.2 | Appendix A, Table A.1; Appendix C, Table C.8 | Source spans and time-calendar sensitivity; the author-constructed values and LOCF rationale are fully in Chapter 2.2 |
+| Chapter 2.4 | Appendix A, Tables A.2–A.3 | Stationarity, break-sensitive and nonlinear test evidence |
+| Chapter 2.6–2.7 | Appendix A, Table A.4; Appendix B, Tables B.1–B.2 | Initial selected orders and fitted state credibility |
 | Chapter 2.12–2.13 | Appendix C, Tables C.1–C.10; Appendix D, Tables D.1–D.3 | Declared robustness and failure/reproducibility distinctions |
 | Chapter 3.3 | Appendix B, Table B.2 | State occupancy, persistence, and credibility |
 | Chapter 3.4 | Appendix B, Table B.3; Appendix C, Tables C.7–C.9 | Model-specific valid dates and failed-fit/evaluation-calendar issues |
