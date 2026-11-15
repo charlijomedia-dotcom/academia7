@@ -4,7 +4,7 @@ The appendices support the dissertation's main argument and follow the order in 
 
 | Appendix | Contents | Exhibits |
 |---|---|---|
-| **A. Data Definitions, Transformations, and Supplementary Diagnostic Evidence** | Official target identifiers, available date spans, constructed October 2025 values, ADF/KPSS/ZA results, Tsay/STAR diagnostics and initial-window orders | Tables **A.1–A.5**, Figure **A.1** |
+| **A. Data Definitions, Transformations, and Supplementary Diagnostic Evidence** | Official target identifiers, available date spans, ADF/KPSS/ZA results, Tsay/STAR diagnostics, initial-window orders and an illustrative CPI level/growth figure; the October 2025 LOCF construction is explained in Chapter 2 | Tables **A.1–A.4**, Figure **A.1** |
 | **B. Model Adequacy and Detailed Forecast Evaluation** | Full-sample likelihood and diagnostic results, MSAR two-state credibility, one-step forecast loss and HLZ inference, NBER states, peaks/troughs, state slopes and model-confidence sets | Tables **B.1–B.7** |
 | **C. Specification Robustness, Numerical Fragility, and Sensitive Forecast Comparisons** | Transformations, CPI lag sensitivity, K3 state counts, horizons, VAR, GARCH, model status, missing-input sensitivity, estimation-window and turning-neighborhood robustness | Tables **C.1–C.10**, Figure **C.1** |
 | **D. Reproducibility, Forecast Availability, and Methodological Corrections** | What is scored, how failures are handled, differences between fit records and diagnostic events, K3 workload, computation and unresolved global-optimization limitations | Tables **D.1–D.3** |
