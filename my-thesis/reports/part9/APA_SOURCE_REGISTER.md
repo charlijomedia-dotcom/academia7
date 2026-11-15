@@ -75,7 +75,7 @@
 
 ### S05 | Institutional primary
 
-**APA 7:** Organisation for Economic Co-operation and Development. (2023). *OECD employment outlook 2023: Artificial intelligence and the labour market*. OECD Publishing. https://doi.org/10.1787/08785bba-en
+**APA 7:** Organisation for Economic Co-operation and Development. (2023). *OECD employment outlook 2023: Artificial intelligence and the labour market*. https://doi.org/10.1787/08785bba-en
 
 **Use:** GI; 1.1; 4.9.
 
@@ -603,7 +603,7 @@
 
 ### S49 | Foundational translated book
 
-**APA 7:** Schumpeter, J. A. (1934). *The theory of economic development: An inquiry into profits, capital, credit, interest, and the business cycle* (R. Opie, Trans.). Harvard University Press. (Original work published 1911).
+**APA 7:** Schumpeter, J. A. (1934). *The theory of economic development: An inquiry into profits, capital, credit, interest, and the business cycle* (R. Opie, Trans.). Harvard University Press. (Original work published 1911)
 
 **Use:** 1.5.
 
