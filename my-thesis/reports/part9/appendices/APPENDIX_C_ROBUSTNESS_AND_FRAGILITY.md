@@ -1,6 +1,6 @@
 # Appendix C. Specification Robustness, Numerical Fragility, and Sensitive Forecast Comparisons
 
-The robustness chapter tests whether the baseline finding survives reasonable alternative transformations, lag orders, state counts, forecast horizons, estimation windows and lagged cross-variable information. This appendix provides the corresponding empirical numerical contrasts. It is not a collection of newly estimated models: all values are taken from the same final frozen research results. Unless otherwise indicated, lower RMSE/MAE means a smaller descriptive error; formal superiority requires a separately supported loss comparison.
+The robustness chapter tests whether the baseline finding survives reasonable alternative transformations, lag orders, state counts, forecast horizons, estimation windows and lagged cross-variable information. This appendix provides the corresponding empirical numerical contrasts. Every numerical entry is drawn from the final frozen research results used in Chapter 4. Unless otherwise indicated, lower RMSE/MAE means a smaller descriptive error; formal superiority requires a separately supported loss comparison.
 
 ## C.1 Alternative unemployment and federal-funds-rate representations
 
@@ -17,7 +17,7 @@ The robustness chapter tests whether the baseline finding survives reasonable al
 | FEDFUNDS | level | MSAR | 577.0 | 0.456 | 0.219 | 0.2369 / 0.1452 |
 | FEDFUNDS | level | STAR | 626.0 | 0.974 | 0.276 | 0.1413 / 0.1017 |
 
-*Source: Author's computations.* *Note:* The unemployment alternative is the first difference and the policy-rate alternative is the rate level. These correspond to **different target definitions** and therefore must not be compared with the baseline transformation by simply comparing their RMSE magnitudes. A p-value belongs to the matched model-versus-AR comparison **within the same transformation**. Neither alternative provides a significant positive MSAR or STAR gain under the primary test. The secondary DM–HLN tests may disagree and do not replace the primary decision.
+*Source: Author's computations.* *Note:* The unemployment alternative is the first difference and the policy-rate alternative is the rate level. These represent **different forecasting targets**, so comparisons across transformations require attention to the target definition and the matched forecast calendar. A p-value belongs to the matched model-versus-AR comparison **within the same transformation**. Neither alternative provides a significant positive MSAR or STAR gain under the primary test. Differences in the secondary DM–HLN results are interpreted as sensitivity to the inferential procedure; HLZ remains the declared primary test.
 
 ## C.2 CPI lag-order alternatives
 
@@ -30,7 +30,7 @@ The robustness chapter tests whether the baseline finding survives reasonable al
 | AR(p=6) | 714 | 0 | 2.969 | 2.093 | 0.0678 |
 | AR(p=12) | 714 | 0 | 2.967 | 2.080 | 0.0688 |
 
-*Source: Author's computations.* *Note:* The approved AR(2) benchmark is reported in the main text and is **not** one of these four re-fitted alternative-order rows. The direct formal tests accompanying the lag variants compare the alternatives with AR(1), not AR(2) with AR(12). The presence of a 12-month lag alone does not prove monthly seasonality, and a numerical difference in RMSE is not a direct significance or equivalence test.
+*Source: Author's computations.* *Note:* The approved AR(2) benchmark is reported separately in Chapter 3; this table covers four re-fitted supplementary orders. Formal comparisons of the lag variants use AR(1) as the common reference. A direct AR(2)-versus-AR(12) test remains an open comparison. The presence of a 12-month lag alone does not prove monthly seasonality, and a numerical difference in RMSE is not a direct significance or equivalence test.
 
 ## C.3 Three-state versus two-state MSAR estimates
 
@@ -161,7 +161,7 @@ The unemployment MSAR chain contrasts with the pooled predominance of fragile no
 | UNRATE | MSAR | 698 | 0.491 | 687 | 0.495 |
 | UNRATE | STAR | 704 | 0.592 | 693 | 0.595 |
 
-*Source: Author's computations.* *Note:* The pre-gap calendar ends **September 2025**; the full baseline extends to August 2026. These are different historical evaluation spans and therefore different scored samples, not a pure deletion of just two directly affected realized targets. The comparison checks whether the major descriptive conclusions change when all post-gap targets are excluded. It does **not** remove the effect of imputed values from all models in the full baseline, and it is not an alternative historical-vintage reconstruction. The two constructed October 2025 observations and the carry-forward methodology are documented in Chapter 2, Section 2.2.
+*Source: Author's computations.* *Note:* The pre-gap calendar ends **September 2025**; the full baseline extends to August 2026. These are different historical evaluation spans and therefore different scored samples, not a pure deletion of just two directly affected realized targets. The comparison checks whether the major descriptive conclusions change when all post-gap targets are excluded. The pre-gap exercise varies the evaluation calendar and sample size; later rolling estimates under the full baseline can still incorporate the constructed observations. Separate analysis would be required to isolate imputation effects or reconstruct alternative historical vintages. The two constructed October 2025 observations and the carry-forward methodology are documented in Chapter 2, Section 2.2.
 
 ## C.9 Estimation-window sensitivity
 
