@@ -10,6 +10,8 @@ Bernanke, B. S. (2024). *Forecasting for monetary policymaking and communication
 
 Bernanke, B. S., & Gertler, M. (1995). Inside the black box: The credit channel of monetary policy transmission. *Journal of Economic Perspectives, 9*(4), 27–48. https://doi.org/10.1257/jep.9.4.27
 
+*The Bible, Douay-Rheims, complete* (Challoner revision). (1998). Project Gutenberg. https://www.gutenberg.org/ebooks/1581
+
 Blanchard, O. (2016). The Phillips curve: Back to the '60s? *American Economic Review, 106*(5), 31–34. https://doi.org/10.1257/aer.p20161003
 
 Board of Governors of the Federal Reserve System. (2024, July 19). *What is the money supply? Is it important?* https://www.federalreserve.gov/faqs/money_12845.htm
@@ -123,8 +125,6 @@ Taylor, J. B. (1993). Discretion versus policy rules in practice. *Carnegie-Roch
 Teräsvirta, T. (1994). Specification, estimation, and evaluation of smooth transition autoregressive models. *Journal of the American Statistical Association, 89*(425), 208–218. https://doi.org/10.1080/01621459.1994.10476462
 
 Teräsvirta, T., van Dijk, D., & Medeiros, M. C. (2005). Linear models, smooth transition autoregressions, and neural networks for forecasting macroeconomic time series: A re-examination. *International Journal of Forecasting, 21*(4), 755–774. https://doi.org/10.1016/j.ijforecast.2005.04.010
-
-*The Bible, Douay-Rheims, complete* (Challoner revision). (1998). Project Gutenberg. https://www.gutenberg.org/ebooks/1581
 
 Tsay, R. S. (1986). Nonlinearity tests for time series. *Biometrika, 73*(2), 461–466. https://doi.org/10.1093/biomet/73.2.461
 
